@@ -309,13 +309,14 @@
   /**
    * read stdin
    * @param {string|Buffer} chunk - chunk
-   * @returns <void>
+   * @returns {void}
    */
   const readStdin = chunk => input.read(chunk, handleMsg);
 
   /* exit */
   /**
    * handle exit
+   * @param {number} code - exit code
    * @returns {void}
    */
   const handleExit = code => {
@@ -325,10 +326,10 @@
         exit,
         pid: APP,
         status: "exit",
-      }
+      },
     });
     removeDirSync(path.join(...DIR_TMP));
-    output && stdout.write(output);
+    output && process.stdout.write(output);
   };
 
   /* process */
