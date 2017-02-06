@@ -22,6 +22,9 @@
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
+  const CMD_ARGS = "cmdArgs";
+  const CMD_BEFORE_FILE = "cmdArgsBeforeFile";
+  const EDITOR_PATH = "editorPath";
   const DIR_TMP = [os.tmpdir(), LABEL, APP];
   const DIR_TMP_FILES = [...DIR_TMP, TMP_FILES];
   const DIR_TMP_FILES_PB = [...DIR_TMP, TMP_FILES_PB];
@@ -29,9 +32,9 @@
 
   /* variables */
   const vars = {
-    cmdArgs: [],
-    cmdArgsBeforeFile: false,
-    editorPath: "",
+    [CMD_ARGS]: [],
+    [CMD_BEFORE_FILE]: false,
+    [EDITOR_PATH]: "",
   };
 
   /**
