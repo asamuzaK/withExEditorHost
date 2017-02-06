@@ -10,7 +10,6 @@
     getFileTimestamp, isExecutable, isFile, removeDir, removeDirSync, readFile,
   } = require("./modules/file-util");
   const {execFile} = require("child_process");
-  const fs = require("fs");
   const os = require("os");
   const path = require("path");
   const process = require("process");
@@ -247,16 +246,6 @@
   }).then(writeStdout).catch(throwErr);
 
   /**
-   * read editor config
-   * @param {string} file - editor config file path
-   * @returns {Object} - Promise.<?string>, editor config
-   */
-  const readEditorConfig = file => new Promise(resolve => {
-    const data = fs.existsSync(file) && fs.readFileSync(file, CHAR);
-    resolve(data || null);
-  });
-
-  /**
    * handle created temporary file
    * @param {string} filePath - file path
    * @param {Object} data - file data
@@ -280,7 +269,7 @@
         const obj = msg[item];
         switch (item) {
           case EDITOR_CONFIG_GET:
-            func.push(readEditorConfig(obj).then(portEditorConfig));
+            func.push(readFile(obj, portEditorConfig));
             break;
           case LOCAL_FILE_VIEW:
             func.push(convUriToFilePath(obj.uri).then(spawnChildProcess));
