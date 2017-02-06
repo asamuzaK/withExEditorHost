@@ -5,7 +5,6 @@
 {
   /* api */
   const os = require("os");
-  const process = require("process");
 
   /* constants */
   const BYTE_LEN = 4;
@@ -72,7 +71,7 @@
                     Buffer.from(chunk);
       buf &&
         (this._input = this._input && Buffer.concat([this._input, buf]) || buf);
-      if (callback) {
+      if (isFunction(callback)) {
         const arr = this._decodeMessage();
         arr.length && arr.forEach(a => a && callback(a));
       }
