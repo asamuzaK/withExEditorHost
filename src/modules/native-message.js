@@ -65,7 +65,6 @@
      * read input
      * @param {string|Buffer} chunk - chunk
      * @param {Function} callback - callback
-     * @throws {TypeError} - when callback is not a function
      * @returns {void}
      */
     read(chunk, callback) {
@@ -89,22 +88,17 @@
 
     /**
      * encode message
-     * @throws {TypeError} - when message is not a JSON like object
-     * @returns {Buffer} - buffered message
+     * @returns {?Buffer} - buffered message
      */
     _encodeMessage() {
       let msg = JSON.stringify(this._output);
-      if (!isString(msg)) {
-        this._output = null;
-        throw new TypeError(
-          `${process.pid}: Expected a JSON like object, but got ${typeof msg}.`
-        );
+      if (isString(msg)) {
+        const buf = Buffer.from(msg);
+        const len = Buffer.alloc(BYTE_LEN);
+        IS_BE && len.writeUIntBE(buf.length, 0, BYTE_LEN) ||
+        len.writeUIntLE(buf.length, 0, BYTE_LEN);
+        msg = Buffer.concat([len, buf]);
       }
-      const buf = Buffer.from(msg);
-      const len = Buffer.alloc(BYTE_LEN);
-      IS_BE && len.writeUIntBE(buf.length, 0, BYTE_LEN) ||
-      len.writeUIntLE(buf.length, 0, BYTE_LEN);
-      msg = Buffer.concat([len, buf]);
       this._output = null;
       return Buffer.isBuffer(msg) && msg || null;
     }
