@@ -1,0 +1,11 @@
+{
+  "name": "withexeditorhost",
+  "description": "Native messaging host for withExEditor",
+  "author": "asamuzaK",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.1.0"
+}
