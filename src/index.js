@@ -25,6 +25,7 @@
   const DIR_TMP = [os.tmpdir(), LABEL, APP];
   const DIR_TMP_FILES = [...DIR_TMP, TMP_FILES];
   const DIR_TMP_FILES_PB = [...DIR_TMP, TMP_FILES_PB];
+  const PROCESS_CHILD = "childProcess";
 
   /* variables */
   const vars = {
@@ -103,12 +104,25 @@
         env: process.env,
       };
       proc = execFile(editor, args, opt, (e, stdout, stderr) => {
+        const output = new Output();
+        let msg;
         if (e) {
-          throw e;
+          msg = output.write(e);
+          msg && process.stderr.write(msg);
         }
-        // TODO: implement stdout / stderr handling
-        console.log(stdout);
-        console.log(stderr);
+        if (stderr) {
+          msg = output.write({
+            [LABEL_HOST]: {
+              message: stderr,
+              pid: APP,
+              status: `${PROCESS_CHILD}Stderr`,
+            },
+          });
+          msg && process.stdout.write(msg);
+        }
+        // TODO: implement stdout handling?
+        //if (stdout) {
+        //}
       });
     }
     resolve(proc || null);
@@ -172,8 +186,8 @@
    * @returns {Object} - Promise.<?boolean>
    */
   const writeStdout = msg => new Promise(resolve => {
-    const output = (new Output()).write(msg);
-    resolve(output && process.stdout.write(output) || null);
+    const outputMsg = (new Output()).write(msg);
+    resolve(outputMsg && process.stdout.write(outputMsg) || null);
   });
 
   /**
@@ -182,6 +196,7 @@
    */
   const portAppStatus = () => writeStdout({
     [LABEL_HOST]: {
+      message: EDITOR_CONFIG_GET,
       pid: APP,
       status: "ready",
     },
@@ -309,16 +324,15 @@
    * @returns {void}
    */
   const handleExit = code => {
-    const exit = code || 0;
-    const output = (new Output()).write({
+    const msg = (new Output()).write({
       [LABEL_HOST]: {
-        exit,
+        message: code || 0,
         pid: APP,
         status: "exit",
       },
     });
     removeDirSync(path.join(...DIR_TMP));
-    output && process.stdout.write(output);
+    msg && process.stdout.write(msg);
   };
 
   /* process */
