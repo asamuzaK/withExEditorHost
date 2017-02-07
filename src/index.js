@@ -173,7 +173,7 @@
   const appendTimestamp = (data = {}) => new Promise(resolve => {
     const {filePath} = data;
     const timestamp = filePath && getFileTimestamp(filePath);
-    data.timestamp = filePath && getFileTimestamp(filePath) || 0;
+    data.timestamp = timestamp || 0;
     resolve(data);
   });
 
