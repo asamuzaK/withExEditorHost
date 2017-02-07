@@ -7,7 +7,7 @@
   const {Input, Output} = require("./modules/native-message");
   const {
     convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, isExecutable, removeDir, removeDirSync, readFile,
+    getFileTimestamp, isExecutable, isFile, removeDir, removeDirSync, readFile,
   } = require("./modules/file-util");
   const {execFile} = require("child_process");
   const os = require("os");
@@ -89,15 +89,13 @@
   /**
    * spawn child process
    * @param {string} app - application path
-   * @param {string} file - file path
-   * @param {Array|string} args - command arguments
-   * @param {boolean} pos - put command arguments before file path
    * @returns {Object} - Promise.<Object>, ?ChildProcess
    */
-  const spawnChildProcess = (app, file = "", args = [], pos = false) =>
-    new Promise(resolve => {
-      let proc;
-      if (isExecutable(app)) {
+  const spawnChildProcess = file => new Promise(resolve => {
+      const app = vars[EDITOR_PATH];
+      const pos = vars[CMD_BEFORE_FILE] || false;
+      let args = vars[CMD_ARGS] || [], proc;
+      if (isFile(file) && isExecutable(app)) {
         const argA = pos && args || [file.replace(/\\/g, "\\\\")];
         const argB = pos && [file.replace(/\\/g, "\\\\")] || args;
         const opt = {
@@ -190,6 +188,13 @@
     resolve(filePath && readFile(filePath, callback, data) || null);
   });
 
+  /**
+   * view local file
+   * @param {string} uri - local file uri
+   * @returns {Object} - Promise.<Object> ChildProcess
+   */
+  const viewLocalFile = uri => convUriToFilePath(uri).then(spawnChildProcess);
+
   /* native messaging */
   /**
    * write stdout
@@ -279,9 +284,7 @@
    * @returns {Object} - Promise.<Array.<*>>
    */
   const handleCreatedTmpFile = (filePath, data = {}) => Promise.all([
-    spawnChildProcess(
-      vars[EDITOR_PATH], filePath, vars[CMD_ARGS], vars[CMD_BEFORE_FILE]
-    ),
+    spawnChildProcess(filePath),
     portFileData(filePath, data),
   ]).catch(throwErr);
 
@@ -301,7 +304,7 @@
             func.push(readFile(obj, portEditorConfig));
             break;
           case LOCAL_FILE_VIEW:
-            func.push(convUriToFilePath(obj.uri).then(spawnChildProcess));
+            func.push(viewLocalFile(obj));
             break;
           case TMP_FILE_CREATE:
             func.push(createTmpFile(obj, handleCreatedTmpFile));
