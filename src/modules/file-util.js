@@ -201,7 +201,7 @@
    */
   const getFileTimestamp = file =>
     isString(file) && fs.existsSync(file) &&
-      (fs.statSync(file).mtime).getTime() || 0;
+    fs.statSync(file).mtime.getTime() || 0;
 
   module.exports = {
     convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
