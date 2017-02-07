@@ -16,16 +16,18 @@
 
   /* constants */
   const {
-    CMD_ARGS, CMD_BEFORE_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES,
-    EDITOR_PATH, LABEL, LABEL_HOST, LOCAL_FILE_VIEW, PORT_FILE_DATA,
-    PROCESS_CHILD, SYNC_TEXT, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
-    TMP_FILE_CREATE, TMP_FILE_GET,
+    EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, LABEL, LABEL_HOST, LOCAL_FILE_VIEW,
+    PORT_FILE_DATA, PROCESS_CHILD, SYNC_TEXT, TMP_FILES, TMP_FILES_PB,
+    TMP_FILES_PB_REMOVE, TMP_FILE_CREATE, TMP_FILE_GET,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
+  const CMD_ARGS = "cmdArgs";
+  const CMD_BEFORE_FILE = "cmdArgsBeforeFile";
   const DIR_TMP = [os.tmpdir(), LABEL, APP];
   const DIR_TMP_FILES = [...DIR_TMP, TMP_FILES];
   const DIR_TMP_FILES_PB = [...DIR_TMP, TMP_FILES_PB];
+  const EDITOR_PATH = "editorPath";
 
   /* variables */
   const vars = {
