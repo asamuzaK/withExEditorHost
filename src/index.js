@@ -7,7 +7,7 @@
   const {Input, Output} = require("./modules/native-message");
   const {
     convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, isExecutable, isFile, removeDir, removeDirSync, readFile,
+    getFileTimestamp, isExecutable, removeDir, removeDirSync, readFile,
   } = require("./modules/file-util");
   const {execFile} = require("child_process");
   const os = require("os");
@@ -17,15 +17,15 @@
   /* constants */
   const {
     CMD_ARGS, CMD_BEFORE_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES,
-    EDITOR_PATH, LABEL, LABEL_HOST, LOCAL_FILE_VIEW, PORT_FILE_DATA, SYNC_TEXT,
-    TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE, TMP_FILE_GET,
+    EDITOR_PATH, LABEL, LABEL_HOST, LOCAL_FILE_VIEW, PORT_FILE_DATA,
+    PROCESS_CHILD, SYNC_TEXT, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
+    TMP_FILE_CREATE, TMP_FILE_GET,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
   const DIR_TMP = [os.tmpdir(), LABEL, APP];
   const DIR_TMP_FILES = [...DIR_TMP, TMP_FILES];
   const DIR_TMP_FILES_PB = [...DIR_TMP, TMP_FILES_PB];
-  const PROCESS_CHILD = "childProcess";
 
   /* variables */
   const vars = {
@@ -86,47 +86,55 @@
   /* child process */
   /**
    * spawn child process
+   * @param {string} app - application path
    * @param {string} file - file path
+   * @param {Array|string} args - command arguments
+   * @param {boolean} pos - put command arguments before file path
    * @returns {Object} - Promise.<Object>, ?ChildProcess
    */
-  const spawnChildProcess = file => new Promise(resolve => {
-    const editor = vars.editorPath;
-    const cmdArgs = vars.cmdArgs || [];
-    const pos = !!vars.cmdArgsBeforeFile;
-    let proc;
-    if (isFile(file) && isExecutable(editor)) {
-      const argA = pos && cmdArgs || [file.replace(/\\/g, "\\\\")];
-      const argB = pos && [file.replace(/\\/g, "\\\\")] || cmdArgs;
-      const args = concatArgs(argA, argB);
-      const opt = {
-        cwd: null,
-        encoding: CHAR,
-        env: process.env,
-      };
-      proc = execFile(editor, args, opt, (e, stdout, stderr) => {
-        const output = new Output();
-        let msg;
-        if (e) {
-          msg = output.write(e);
-          msg && process.stderr.write(msg);
-        }
-        if (stderr) {
-          msg = output.write({
-            [LABEL_HOST]: {
-              message: stderr,
-              pid: APP,
-              status: `${PROCESS_CHILD}Stderr`,
-            },
-          });
-          msg && process.stdout.write(msg);
-        }
-        // TODO: implement stdout handling?
-        //if (stdout) {
-        //}
-      });
-    }
-    resolve(proc || null);
-  });
+  const spawnChildProcess = (app, file = "", args = [], pos = false) =>
+    new Promise(resolve => {
+      let proc;
+      if (isExecutable(app)) {
+        const argA = pos && args || [file.replace(/\\/g, "\\\\")];
+        const argB = pos && [file.replace(/\\/g, "\\\\")] || args;
+        const opt = {
+          cwd: null,
+          encoding: CHAR,
+          env: process.env,
+        };
+        args = concatArgs(argA, argB);
+        proc = execFile(app, args, opt, (e, stdout, stderr) => {
+          const output = new Output();
+          let msg;
+          if (e) {
+            msg = output.write(e);
+            msg && process.stderr.write(msg);
+          }
+          if (stderr) {
+            msg = output.write({
+              [LABEL_HOST]: {
+                message: stderr,
+                pid: APP,
+                status: `${PROCESS_CHILD}_stderr`,
+              },
+            });
+            msg && process.stdout.write(msg);
+          }
+          if (stdout) {
+            msg = output.write({
+              [LABEL_HOST]: {
+                message: stdout,
+                pid: APP,
+                status: `${PROCESS_CHILD}_stdout`,
+              },
+            });
+            msg && process.stdout.write(msg);
+          }
+        });
+      }
+      resolve(proc || null);
+    });
 
   /* temporary files */
   /**
@@ -164,6 +172,7 @@
    */
   const appendTimestamp = (data = {}) => new Promise(resolve => {
     const {filePath} = data;
+    const timestamp = filePath && getFileTimestamp(filePath);
     data.timestamp = filePath && getFileTimestamp(filePath) || 0;
     resolve(data);
   });
@@ -236,6 +245,7 @@
   const portFileData = (filePath, data = {}) => new Promise(resolve => {
     let msg;
     if (isString(filePath)) {
+      data.filePath = filePath;
       msg = {
         [PORT_FILE_DATA]: {filePath, data},
       };
@@ -267,7 +277,9 @@
    * @returns {Object} - Promise.<Array.<*>>
    */
   const handleCreatedTmpFile = (filePath, data = {}) => Promise.all([
-    spawnChildProcess(filePath),
+    spawnChildProcess(
+      vars[EDITOR_PATH], filePath, vars[CMD_ARGS], vars[CMD_BEFORE_FILE]
+    ),
     portFileData(filePath, data),
   ]).catch(throwErr);
 
