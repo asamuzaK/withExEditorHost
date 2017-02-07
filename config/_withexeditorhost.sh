@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-# node /path/to/withexeditorhost/index.js
+# set path to the index.js of the withExEditor host
+node /path/to/withexeditorhost/index.js
