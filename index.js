@@ -23,7 +23,7 @@
   const APP = `${process.pid}`;
   const CHAR = "utf8";
   const CMD_ARGS = "cmdArgs";
-  const CMD_BEFORE_FILE = "cmdArgsBeforeFile";
+  const FILE_AFTER_ARGS = "fileAfterCmdArgs";
   const DIR_TMP = [os.tmpdir(), LABEL, APP];
   const DIR_TMP_FILES = [...DIR_TMP, TMP_FILES];
   const DIR_TMP_FILES_PB = [...DIR_TMP, TMP_FILES_PB];
@@ -32,7 +32,7 @@
   /* variables */
   const vars = {
     [CMD_ARGS]: [],
-    [CMD_BEFORE_FILE]: false,
+    [FILE_AFTER_ARGS]: false,
     [EDITOR_PATH]: "",
   };
 
@@ -93,7 +93,7 @@
    */
   const spawnChildProcess = file => new Promise(resolve => {
       const app = vars[EDITOR_PATH];
-      const pos = vars[CMD_BEFORE_FILE] || false;
+      const pos = vars[FILE_AFTER_ARGS] || false;
       let args = vars[CMD_ARGS] || [], proc;
       if (isFile(file) && isExecutable(app)) {
         const argA = pos && args || [file.replace(/\\/g, "\\\\")];
