@@ -22,7 +22,6 @@
   const LABEL = "withExEditor";
   const LABEL_HOST = "withexeditorhost";
   const LOCAL_FILE_VIEW = "viewLocalFile";
-  const MASK_BIT = 0o111;
   const MODE_EDIT = "modeEditText";
   const MODE_MATHML = "modeViewMathML";
   const MODE_SELECTION = "modeViewSelection";
@@ -34,8 +33,6 @@
   const NS_URI = "nsURI";
   const ONLY_EDITABLE = "enableOnlyEditable";
   const OPEN_OPTIONS = "openOptions";
-  const PERM_FILE = 0o666;
-  const PERM_DIR = 0o777;
   const PORT_FILE_DATA = "portFileData";
   const PROCESS_CHILD = "childProcess";
   const SET_VARS = "setVars";
@@ -65,7 +62,6 @@
     LABEL,
     LABEL_HOST,
     LOCAL_FILE_VIEW,
-    MASK_BIT,
     MODE_EDIT,
     MODE_MATHML,
     MODE_SELECTION,
@@ -77,8 +73,6 @@
     NS_URI,
     ONLY_EDITABLE,
     OPEN_OPTIONS,
-    PERM_FILE,
-    PERM_DIR,
     PORT_FILE_DATA,
     PROCESS_CHILD,
     SET_VARS,

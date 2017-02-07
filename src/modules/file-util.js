@@ -10,9 +10,11 @@
   const url = require("url");
 
   /* constants */
-  const {MASK_BIT, PERM_FILE, PERM_DIR} = require("./constant");
   const CHAR = "utf8";
   const IS_WIN = os.platform() === "win32";
+  const MASK_BIT = 0o111;
+  const PERM_FILE = 0o666;
+  const PERM_DIR = 0o777;
   const SUBST = "index";
 
   /**
