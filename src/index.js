@@ -16,7 +16,7 @@
 
   /* constants */
   const {
-    EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, LABEL, LABEL_HOST, LOCAL_FILE_VIEW,
+    EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, HOST, LABEL, LOCAL_FILE_VIEW,
     PORT_FILE_DATA, PROCESS_CHILD, SYNC_TEXT, TMP_FILES, TMP_FILES_PB,
     TMP_FILES_PB_REMOVE, TMP_FILE_CREATE, TMP_FILE_GET,
   } = require("./modules/constant");
@@ -113,7 +113,7 @@
           }
           if (stderr) {
             msg = output.write({
-              [LABEL_HOST]: {
+              [HOST]: {
                 message: stderr,
                 pid: APP,
                 status: `${PROCESS_CHILD}_stderr`,
@@ -123,7 +123,7 @@
           }
           if (stdout) {
             msg = output.write({
-              [LABEL_HOST]: {
+              [HOST]: {
                 message: stdout,
                 pid: APP,
                 status: `${PROCESS_CHILD}_stdout`,
@@ -211,7 +211,7 @@
    * @returns {Object} - Promise.<?boolean>
    */
   const portAppStatus = () => writeStdout({
-    [LABEL_HOST]: {
+    [HOST]: {
       message: EDITOR_CONFIG_GET,
       pid: APP,
       status: "ready",
@@ -342,7 +342,7 @@
    */
   const handleExit = code => {
     const msg = (new Output()).write({
-      [LABEL_HOST]: {
+      [HOST]: {
         message: code || 0,
         pid: APP,
         status: "exit",

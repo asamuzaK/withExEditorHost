@@ -16,8 +16,8 @@
   const KEY_ACCESS = "accessKey";
   const KEY_EDITOR = "editorShortCut";
   const KEY_OPTIONS = "optionsShortCut";
+  const HOST = "withexeditorhost";
   const LABEL = "withExEditor";
-  const LABEL_HOST = "withexeditorhost";
   const LOCAL_FILE_VIEW = "viewLocalFile";
   const MODE_EDIT = "modeEditText";
   const MODE_MATHML = "modeViewMathML";
@@ -49,8 +49,8 @@
     KEY_ACCESS,
     KEY_EDITOR,
     KEY_OPTIONS,
+    HOST,
     LABEL,
-    LABEL_HOST,
     LOCAL_FILE_VIEW,
     MODE_EDIT,
     MODE_MATHML,
