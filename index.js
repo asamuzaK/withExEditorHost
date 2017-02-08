@@ -164,7 +164,7 @@
    * @param {string} data - editor config
    * @returns {Object} - Promise.<?boolean>
    */
-  const portEditorConfig = data => new Promise(resolve => {
+  const portEditorConfig = (data, editorConfig) => new Promise(resolve => {
     let msg;
     data = data && JSON.parse(data);
     if (data) {
@@ -178,7 +178,9 @@
         }
       }
       msg = {
-        [EDITOR_CONFIG_RES]: {editorName, editorPath, executable},
+        [EDITOR_CONFIG_RES]: {
+          editorConfig, editorName, editorPath, executable,
+        },
       };
     }
     resolve(msg || null);
@@ -276,7 +278,7 @@
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "config", "editorconfig.json"));
     resolve(filePath);
-  }).then(file => readFile(file, portEditorConfig));
+  }).then(file => readFile(file, portEditorConfig, file));
 
   /**
    * view local file
