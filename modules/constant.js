@@ -27,7 +27,6 @@
   const MODE_SVG = "modeViewSVG";
   const ONLY_EDITABLE = "enableOnlyEditable";
   const OPTIONS_OPEN = "openOptions";
-  const PORT_FILE_DATA = "portFileData";
   const PROCESS_CHILD = "childProcess";
   const STORAGE_SET = "setStorage";
   const TEXT_SYNC = "syncText";
@@ -35,6 +34,7 @@
   const TMP_FILES_PB = "tmpFilesPb";
   const TMP_FILES_PB_REMOVE = "removePrivateTmpFiles";
   const TMP_FILE_CREATE = "createTmpFile";
+  const TMP_FILE_DATA_PORT = "portTmpFileData";
   const TMP_FILE_GET = "getTmpFile";
   const TMP_FILE_RES = "resTmpFile";
   const VARS_SET = "setVars";
@@ -63,7 +63,6 @@
     MODE_SVG,
     ONLY_EDITABLE,
     OPTIONS_OPEN,
-    PORT_FILE_DATA,
     PROCESS_CHILD,
     STORAGE_SET,
     TEXT_SYNC,
@@ -71,6 +70,7 @@
     TMP_FILES_PB,
     TMP_FILES_PB_REMOVE,
     TMP_FILE_CREATE,
+    TMP_FILE_DATA_PORT,
     TMP_FILE_GET,
     TMP_FILE_RES,
     VARS_SET,

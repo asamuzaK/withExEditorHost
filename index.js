@@ -17,8 +17,8 @@
   /* constants */
   const {
     EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, HOST, LABEL, LOCAL_FILE_VIEW,
-    PORT_FILE_DATA, PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
-    TMP_FILE_CREATE, TMP_FILE_GET, TMP_FILE_RES,
+    PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
+    TMP_FILE_CREATE, TMP_FILE_DATA_PORT, TMP_FILE_GET, TMP_FILE_RES,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
@@ -197,7 +197,7 @@
     if (isString(filePath)) {
       data.filePath = filePath;
       msg = {
-        [PORT_FILE_DATA]: {filePath, data},
+        [TMP_FILE_DATA_PORT]: {filePath, data},
       };
     }
     resolve(msg || null);
