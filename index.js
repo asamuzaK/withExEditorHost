@@ -17,8 +17,8 @@
   /* constants */
   const {
     EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, HOST, LABEL, LOCAL_FILE_VIEW,
-    PORT_FILE_DATA, PROCESS_CHILD, SYNC_TEXT, TMP_FILES, TMP_FILES_PB,
-    TMP_FILES_PB_REMOVE, TMP_FILE_CREATE, TMP_FILE_GET,
+    PORT_FILE_DATA, PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
+    TMP_FILE_CREATE, TMP_FILE_GET, TMP_FILE_RES,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
@@ -88,114 +88,55 @@
   /* child process */
   /**
    * spawn child process
-   * @param {string} app - application path
+   * @param {string} file - file path
    * @returns {Object} - Promise.<Object>, ?ChildProcess
    */
   const spawnChildProcess = file => new Promise(resolve => {
-      const app = vars[EDITOR_PATH];
-      const pos = vars[FILE_AFTER_ARGS] || false;
-      let args = vars[CMD_ARGS] || [], proc;
-      if (isFile(file) && isExecutable(app)) {
-        const argA = pos && args || [file.replace(/\\/g, "\\\\")];
-        const argB = pos && [file.replace(/\\/g, "\\\\")] || args;
-        const opt = {
-          cwd: null,
-          encoding: CHAR,
-          env: process.env,
-        };
-        args = concatArgs(argA, argB);
-        proc = execFile(app, args, opt, (e, stdout, stderr) => {
-          const output = new Output();
-          let msg;
-          if (e) {
-            msg = output.write(e);
-            msg && process.stderr.write(msg);
-          }
-          if (stderr) {
-            msg = output.write({
-              [HOST]: {
-                message: stderr,
-                pid: APP,
-                status: `${PROCESS_CHILD}_stderr`,
-              },
-            });
-            msg && process.stdout.write(msg);
-          }
-          if (stdout) {
-            msg = output.write({
-              [HOST]: {
-                message: stdout,
-                pid: APP,
-                status: `${PROCESS_CHILD}_stdout`,
-              },
-            });
-            msg && process.stdout.write(msg);
-          }
-        });
-      }
-      resolve(proc || null);
-    });
-
-  /* temporary files */
-  /**
-   * remove private temporary files
-   * @param {boolean} bool - remove
-   * @returns {Object} - ?Promise.<void>
-   */
-  const removePrivateTmpFiles = bool =>
-    !!bool && removeDir(path.join(...DIR_TMP_FILES_PB)).then(() =>
-      createDir(DIR_TMP_FILES_PB)
-    );
-
-  /**
-   * create temporary file
-   * @param {Object} obj - temporary file data object
-   * @param {Function} callback - callback
-   * @returns {Object} - Promise.<Object>
-   */
-  const createTmpFile = (obj = {}, callback = null) => new Promise(resolve => {
-    const {data, value} = obj;
-    const {dir, fileName, host, tabId, windowId} = data;
-    const arr = dir && windowId && tabId && host &&
-                [...DIR_TMP, dir, windowId, tabId, host];
-    const func = arr && fileName && createDir(arr).then(dPath =>
-      dPath === path.join(...arr) &&
-      createFile(path.join(dPath, fileName), value, callback, data) || null
-    );
-    resolve(func || null);
+    const app = vars[EDITOR_PATH];
+    const pos = vars[FILE_AFTER_ARGS] || false;
+    let args = vars[CMD_ARGS] || [], proc;
+    if (isFile(file) && isExecutable(app)) {
+      const argA = pos && args || [file.replace(/\\/g, "\\\\")];
+      const argB = pos && [file.replace(/\\/g, "\\\\")] || args;
+      const opt = {
+        cwd: null,
+        encoding: CHAR,
+        env: process.env,
+      };
+      args = concatArgs(argA, argB);
+      proc = execFile(app, args, opt, (e, stdout, stderr) => {
+        const output = new Output();
+        let msg;
+        if (e) {
+          msg = output.write(e);
+          msg && process.stderr.write(msg);
+        }
+        if (stderr) {
+          msg = output.write({
+            [HOST]: {
+              message: stderr,
+              pid: APP,
+              status: `${PROCESS_CHILD}_stderr`,
+            },
+          });
+          msg && process.stdout.write(msg);
+        }
+        if (stdout) {
+          msg = output.write({
+            [HOST]: {
+              message: stdout,
+              pid: APP,
+              status: `${PROCESS_CHILD}_stdout`,
+            },
+          });
+          msg && process.stdout.write(msg);
+        }
+      });
+    }
+    resolve(proc || null);
   });
 
-  /**
-   * append file timestamp
-   * @param {Object} data - temporary file data
-   * @returns {Object} - Promise.<Object>, temporary file data
-   */
-  const appendTimestamp = (data = {}) => new Promise(resolve => {
-    const {filePath} = data;
-    const timestamp = filePath && getFileTimestamp(filePath);
-    data.timestamp = timestamp || 0;
-    resolve(data);
-  });
-
-  /**
-   * get temporary file
-   * @param {Object} data - temporary file data
-   * @param {Function} callback - callback
-   * @returns {Object} - Promise.<void>
-   */
-  const getTmpFile = (data = {}, callback = null) => new Promise(resolve => {
-    const {filePath} = data;
-    resolve(filePath && readFile(filePath, callback, data) || null);
-  });
-
-  /**
-   * view local file
-   * @param {string} uri - local file uri
-   * @returns {Object} - Promise.<Object> ChildProcess
-   */
-  const viewLocalFile = uri => convUriToFilePath(uri).then(spawnChildProcess);
-
-  /* native messaging */
+  /* output */
   /**
    * write stdout
    * @param {*} msg - message
@@ -261,22 +202,90 @@
   }).then(writeStdout);
 
   /**
-   * port sync text
+   * port temporary file
    * @param {Object} value - text
    * @param {Object} data - file data
    * @returns {Object} - Promise.<?boolean>
    */
-  const portSyncText = (value, data) => new Promise(resolve => {
-    let msg;
-    if (value && data) {
-      const {dataId, tabId} = data;
-      msg = {
-        [SYNC_TEXT]: {data, dataId, tabId, value},
-      };
-    }
+  const portTmpFile = (value, data) => new Promise(resolve => {
+    const msg = value && data && {
+      [TMP_FILE_RES]: {data, value},
+    };
     resolve(msg || null);
   }).then(writeStdout).catch(throwErr);
 
+  /* temporary files */
+  /**
+   * remove private temporary files
+   * @param {boolean} bool - remove
+   * @returns {Object} - ?Promise.<void>
+   */
+  const removePrivateTmpFiles = bool =>
+    !!bool && removeDir(path.join(...DIR_TMP_FILES_PB)).then(() =>
+      createDir(DIR_TMP_FILES_PB)
+    );
+
+  /**
+   * create temporary file
+   * @param {Object} obj - temporary file data object
+   * @param {Function} callback - callback
+   * @returns {Object} - Promise.<Object>
+   */
+  const createTmpFile = (obj = {}, callback = null) => new Promise(resolve => {
+    const {data, value} = obj;
+    const {dir, fileName, host, tabId, windowId} = data;
+    const arr = dir && windowId && tabId && host &&
+                [...DIR_TMP, dir, windowId, tabId, host];
+    const func = arr && fileName && createDir(arr).then(dPath =>
+      dPath === path.join(...arr) &&
+      createFile(path.join(dPath, fileName), value, callback, data) || null
+    );
+    resolve(func || null);
+  });
+
+  /**
+   * append file timestamp
+   * @param {Object} data - temporary file data
+   * @returns {Object} - Promise.<Object>, temporary file data
+   */
+  const appendTimestamp = (data = {}) => new Promise(resolve => {
+    const {filePath} = data;
+    const timestamp = filePath && getFileTimestamp(filePath);
+    data.timestamp = timestamp || 0;
+    resolve(data);
+  });
+
+  /**
+   * get temporary file
+   * @param {Object} data - temporary file data
+   * @param {Function} callback - callback
+   * @returns {Object} - Promise.<void>
+   */
+  const getTmpFile = (data = {}, callback = null) => new Promise(resolve => {
+    const {filePath} = data;
+    resolve(filePath && readFile(filePath, callback, data) || null);
+  });
+
+  /* local files */
+  /**
+   * get editor config
+   * @param {string} filePath - editor config file path
+   * @returns {Object} - Promise.<void>
+   */
+  const getEditorConfig = filePath => new Promise(resolve => {
+    filePath = isString(filePath) && filePath.length && filePath ||
+               path.resolve(path.join(".", "config", "editorconfig.json"));
+    resolve(filePath);
+  }).then(file => readFile(file, portEditorConfig));
+
+  /**
+   * view local file
+   * @param {string} uri - local file uri
+   * @returns {Object} - Promise.<Object> ChildProcess
+   */
+  const viewLocalFile = uri => convUriToFilePath(uri).then(spawnChildProcess);
+
+  /* handlers */
   /**
    * handle created temporary file
    * @param {string} filePath - file path
@@ -301,7 +310,7 @@
         const obj = msg[item];
         switch (item) {
           case EDITOR_CONFIG_GET:
-            func.push(readFile(obj, portEditorConfig));
+            func.push(getEditorConfig(obj));
             break;
           case LOCAL_FILE_VIEW:
             func.push(viewLocalFile(obj));
@@ -311,7 +320,7 @@
             break;
           case TMP_FILE_GET:
             func.push(appendTimestamp(obj).then(data =>
-              getTmpFile(data, portSyncText)
+              getTmpFile(data, portTmpFile)
             ));
             break;
           case TMP_FILES_PB_REMOVE:
