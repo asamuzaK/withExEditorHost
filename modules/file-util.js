@@ -186,7 +186,7 @@
    * @returns {void}
    */
   const readFile = (file, callback = null, opt = null, encoding = CHAR) => {
-    isString(file) && fs.readFile(file, encoding, (e, value) => {
+    isFile(file) && fs.readFile(file, encoding, (e, value) => {
       if (e) {
         throw e;
       }
