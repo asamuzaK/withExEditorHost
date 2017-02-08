@@ -10,6 +10,7 @@
   const EDITOR_CONFIG = "editorConfigPath";
   const EDITOR_CONFIG_GET = "getEditorConfig";
   const EDITOR_CONFIG_RES = "resEditorConfig";
+  const EDITOR_FILE_NAME = "editorFileName";
   const EDITOR_LABEL = "editorLabel";
   const FILE_EXT = "fileExt";
   const IS_ENABLED = "isEnabled";
@@ -45,6 +46,7 @@
     EDITOR_CONFIG,
     EDITOR_CONFIG_GET,
     EDITOR_CONFIG_RES,
+    EDITOR_FILE_NAME,
     EDITOR_LABEL,
     FILE_EXT,
     IS_ENABLED,
