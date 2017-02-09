@@ -13,18 +13,18 @@ Githubのアカウントがある場合は、レポジトリをクローンし�
 
 ## ホストの設定
 
-withExEditorHostの`_config`というフォルダの中に必要な設定ファイルのサンプルがあります。
+withExEditorHostの"_config"というフォルダの中に必要な設定ファイルのサンプルがあります。
 
-`_config`フォルダのコピーを作成して`config`にリネームしてください。
-なお、`_config`フォルダの中身は直接編集しないようにしてください。
+_configフォルダのコピーを作成して`config`にリネームしてください。
+なお、_configフォルダの中身は直接編集しないようにしてください。
 withExEditorHostをアップデートしたときに上書きされてしまう可能性があります。
 
-`config`フォルダは任意の場所に保存できますが、zipやtar.gzから展開して保存した場合は、そのまま`_config`フォルダと同じ場所に置けばOKです。
-一方、レポジトリをクローンしている場合は、`config`フォルダが意図せずGitHubにアップロードされることを防ぐため、レポジトリの中ではなく*外*にフォルダを保存することを強くおすすめします。
+configフォルダは任意の場所に保存できますが、zipやtar.gzから展開して保存した場合は、そのまま_configフォルダと同じ場所に置けばOKです。
+一方、レポジトリをクローンしている場合は、configフォルダが意図せずGitHubにアップロードされることを防ぐため、レポジトリの中ではなく*外*にフォルダを保存することを強くおすすめします。
 
 ### ホストを起動するシェルスクリプトの編集
 
-Windowsの場合は`withexeditorhost.cmd`を開いて、ホストのindex.jsファイルのパスを記入します。
+Windowsの場合は"withexeditorhost.cmd"を開いて、ホストのindex.jsファイルのパスを記入します。
 
 ```
 @echo off
@@ -32,7 +32,7 @@ Windowsの場合は`withexeditorhost.cmd`を開いて、ホストのindex.jsフ�
 node "C:\Users\XXX\withExEditorHost\index.js"
 ```
 
-Linux / Macの場合は`withexeditorhost.sh`を開いて、ホストのindex.jsファイルのパスを記入します。
+Linux / Macの場合は"withexeditorhost.sh"を開いて、ホストのindex.jsファイルのパスを記入します。
 
 ```
 #!/usr/bin/env bash
@@ -42,7 +42,7 @@ node /path/to/withexeditorhost/index.js
 
 ### アプリケーションマニフェストの編集
 
-`withexeditorhost.json`を開いて、その中の`path`フィールドにシェルスクリプトのパスを記入します。
+"withexeditorhost.json"を開いて、その中の`path`フィールドにシェルスクリプトのパスを記入します。
 Windowsの場合は、ディレクトリの区切りであるバックスラッシュ文字にはさらにバックスラッシュを加えてエスケープさせる必要があることに注意してください。
 
 ほかのフィールドはそのままでOKです。
@@ -57,8 +57,6 @@ Windowsの場合は、ディレクトリの区切りであるバックスラッ�
 }
 ```
 
-#### Windowsの場合
-
 Windowsではレジストリも設定する必要があります。
 cmd.exeで次のコマンドを実行するとレジストリキーを保存することができます。
 `"C:\Users\XXX\withExEditorHosts\withexeditorhost.json"`の部分は書き換えてください。
@@ -67,14 +65,12 @@ cmd.exeで次のコマンドを実行するとレジストリキーを保存す�
 REG ADD "HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost" /ve /d "C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json" /f
 ```
 
-#### Linux / Mac
-
 LinuxとMacでは、アプリケーションマニフェストを指定の場所に保存する必要があります。
 詳細は[App manifest location](https://developer.mozilla.org/ja/Add-ons/WebExtensions/Native_messaging#App_manifest_location)を参照してください。
 
 ### エディタ設定ファイルの編集
 
-`editorconfig.json`を開いて、使用するエディタの情報を記入します。
+"editorconfig.json"を開いて、使用するエディタの情報を記入します。
 
 ```
 {
@@ -84,7 +80,7 @@ LinuxとMacでは、アプリケーションマニフェストを指定の場所
 }
 ```
 
-* *editorPath* - 使用するエディタのパス。Windowsの場合は、バックスラッシュ文字はエスケープさせる必要があることに注意してください。
+* *editorPath* - 使用するエディタのパス。Windowsの場合は、バックスラッシュ文字はエスケープさせる必要があります。
 * *cmdArgs"* - コマンドラインオプション。[]括弧の中にカンマ区切りで各引数を記入してください。例：`"cmdArgs": ["-a", "-b", "-c"]`
 * *fileAfterCmdArgs* - 真偽値（`true` / `false`）。いくつかのエディタでは、ファイルを指定する場合はコマンドの最後に置くように求めているものがあります。そのような場合に有効化してください。
 
@@ -92,4 +88,4 @@ LinuxとMacでは、アプリケーションマニフェストを指定の場所
 
 以上の作業を終えたら、Firefoxを再起動してください。
 
-なお、configフォルダをホストの外に保存している場合は、withExEditor本体の設定ページで`editorconfig.json`のパスを入力してください。
+なお、configフォルダをホストの外に保存した場合は、withExEditor本体の設定ページで"editorconfig.json"のパスを入力してください。
