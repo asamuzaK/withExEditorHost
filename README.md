@@ -19,7 +19,6 @@ Please do not edit the contents of the `_config` folder directly.
 It may be overwritten when updating withExEditorHost.
 
 The `config` folder can be saved in an arbitrary place, but if you saved withExEditorHost from zip or tar.gz, just put it in the same place as the `_config`.
-
 If you've cloned a repository, to prevent unintentionally uploading the `config` folder to GitHub, it is strongly recommend that you should save the `config` folder *outside* the repository, not inside.
 
 ### Edit the shell script
@@ -29,7 +28,7 @@ On Windows, open `withexeditorhost.cmd` and enter the path of the index.js file 
 ```
 @ Echo off
 :: Fill in the path of the index.js file of the host.
-Node "C:\Users\XXX\withExEditorHost\index.js"
+node "C:\Users\XXX\withExEditorHost\index.js"
 ```
 
 On Linux / Mac, open `withexeditorhost.sh` and enter the path of the index.js file of the host.
@@ -85,8 +84,7 @@ Open `editorconfig.json` and fill in the information of the editor.
 ```
 
 * *editorPath* - The path of the editor to use. On Windows, please note that backslash characters must be escaped.
-* *cmdArgs* - Array of command line options. Enter each command inside brackets, separated by commas.
-```
+* *cmdArgs* - Array of command line options. Enter each command inside brackets, separated by commas.```
 "cmdArgs": ["-a", "-b", "-c"]
 ```
 * *fileAfterCmdArgs* - Boolean (`true` / `false`). Some editors requires to put the file path at the end of the command when specifying the file. Please activate in such case.
