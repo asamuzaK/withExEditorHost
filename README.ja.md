@@ -9,18 +9,18 @@ Firefoxのアドオン[withExEditor](https://addons.mozilla.org/addon/withexedit
 [Releases · asamuzaK/withExEditorHost](https://github.com/asamuzaK/withExEditorHost/releases)からソースコードのzipファイルかtar.gzファイルをダウンロードして、展開した上で任意の場所に保存してください（例えば、`C:\Users\XXX\withExEditorHost\`）。
 Githubのアカウントがある場合は、レポジトリをクローンして保存してもOKです。
 
-なお、withExEditor用のホストは[Node.js](https://nodejs.org/ja/)で実行しますので、Node.jsが入っていない場合はインストールしてください。
+なお、ホストは[Node.js](https://nodejs.org/ja/)で実行しますので、Node.jsが入っていない場合はインストールしてください。
 
 ## ホストの設定
 
 withExEditorHostの`_config`というフォルダの中に必要な設定ファイルのサンプルがあります。
 
-_configフォルダのコピーを作成して`config`にリネームしてください。
-なお、_configフォルダの中身は直接編集しないようにしてください。
+`_config`フォルダのコピーを作成して`config`にリネームしてください。
+なお、`_config`フォルダの中身は直接編集しないようにしてください。
 withExEditorHostをアップデートしたときに上書きされてしまう可能性があります。
 
-configフォルダは任意の場所に保存できますが、zipやtar.gzから展開して保存した場合は、そのまま`_config`フォルダと同じ場所に置けばOKです。
-一方、レポジトリをクローンしている場合は、configフォルダが意図せずGitHubにアップロードされることを防ぐため、レポジトリの中ではなく*外*にconfigフォルダを保存することを強くおすすめします。
+`config`フォルダは任意の場所に保存できますが、zipやtar.gzから展開して保存した場合は、そのまま`_config`フォルダと同じ場所に置けばOKです。
+一方、レポジトリをクローンしている場合は、`config`フォルダが意図せずGitHubにアップロードされることを防ぐため、レポジトリの中ではなく*外*にフォルダを保存することを強くおすすめします。
 
 ### ホストを起動するシェルスクリプトの編集
 
