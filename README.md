@@ -15,8 +15,7 @@ Note that the host for withExEditor runs with [Node.js] (https://nodejs.org/en/)
 There are configuration file samples in `_config` folder of withExEditorHost.
 
 Create a copy of the `_config` folder and rename it to `config`.
-
-Do not edit the contents of the `_config` folder directly.
+Please do not edit the contents of the `_config` folder directly.
 It may be overwritten when updating withExEditorHost.
 
 The `config` folder can be saved in an arbitrary place, but if you saved withExEditorHost from zip or tar.gz, just put it in the same place as the `_config`.
