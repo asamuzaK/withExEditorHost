@@ -84,7 +84,8 @@ Open `editorconfig.json` and fill in the information of the editor.
 ```
 
 * *editorPath* - The path of the editor to use. On Windows, please note that backslash characters must be escaped.
-* *cmdArgs* - Array of command line options. Enter each command inside brackets, separated by commas.```
+* *cmdArgs* - Array of command line options. Enter each command inside brackets, separated by commas.
+```
 "cmdArgs": ["-a", "-b", "-c"]
 ```
 * *fileAfterCmdArgs* - Boolean (`true` / `false`). Some editors requires to put the file path at the end of the command when specifying the file. Please activate in such case.
