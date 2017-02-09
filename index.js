@@ -276,10 +276,16 @@
    * @returns {Object} - Promise.<void>
    */
   const getEditorConfig = filePath => new Promise(resolve => {
+    let func;
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "config", "editorconfig.json"));
-    resolve(filePath);
-  }).then(file => readFile(file, portEditorConfig, file));
+    if (isFile(filePath)) {
+      func = readFile(filePath, portEditorConfig, filePath);
+    } else {
+      func = writeStdout({[EDITOR_CONFIG_RES]: null});
+    }
+    resolve(func || null);
+  });
 
   /**
    * view local file
