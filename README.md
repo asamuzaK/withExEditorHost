@@ -5,7 +5,7 @@ Native messaging host for Firefox add-on [withExEditor] (https://addons.mozilla.
 
 ## Download the host
 
-Download a zip file or tar.gz file of the source code from [Releases · asamuzaK/withExEditorHost] (https://github.com/asamuzaK/withExEditorHost/releases), save it in an arbitrary place after decompressing (for example, `C:\Users\XXX\withExEditorHost\`).
+Download a zip file or tar.gz file of the source code from [Releases] (https://github.com/asamuzaK/withExEditorHost/releases), save it in an arbitrary place after decompressing (for example, `C:\Users\XXX\withExEditorHost\`).
 If you have a Github account, you can also clone and save the repository.
 
 Note that the host runs with [Node.js] (https://nodejs.org/en/), so if you do not have Node.js, please install it.
