@@ -26,7 +26,7 @@ If you've cloned a repository, to prevent unintentionally uploading the `config`
 On Windows, open `withexeditorhost.cmd` and enter the path of the index.js file of the host.
 
 ```
-@ Echo off
+@echo off
 :: Fill in the path of the index.js file of the host.
 node "C:\Users\XXX\withExEditorHost\index.js"
 ```
