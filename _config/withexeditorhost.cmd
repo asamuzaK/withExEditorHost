@@ -1,3 +1,3 @@
 @echo off
-:: set path to index.js of the withExEditor host
+:: Fill in the path of the index.js file of the withExEditorHost.
 node "C:\Users\XXX\withExEditorHost\index.js"
