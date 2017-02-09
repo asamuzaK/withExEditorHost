@@ -84,14 +84,11 @@ Open `editorconfig.json` and fill in the information of the editor.
 ```
 
 * *editorPath* - The path of the editor to use. On Windows, please note that backslash characters must be escaped.
-* *cmdArgs* - Array of command line options. Enter each command inside brackets, separated by commas.
-```
-"cmdArgs": ["-a", "-b", "-c"]
-```
-* *fileAfterCmdArgs* - Boolean (`true` / `false`). Some editors requires to put the file path at the end of the command when specifying the file. Please activate in such case.
+* *cmdArgs* - Array of command line options. Enter each command inside brackets, separated by commas. For example, `"cmdArgs": ["-a", "-b", "-c"]`
+* *fileAfterCmdArgs* - Boolean (`true` / `false`). When specifying the file, some editor requires to put the file path at the end of the command. Set `true` in such case.
 
 ***
 
 After the above work, restart Firefox.
 
-If you saved the `config` folder outside the host, enter the path of `editorconfig.json` in the options page of withExEditor.
+If you saved the `config` folder outside the host, you need to enter the path of `editorconfig.json` in the options page of withExEditor.
