@@ -286,14 +286,14 @@
   /**
    * get editor config
    * @param {string} filePath - editor config file path
-   * @returns {Object} - Promise.<Array.<*>>
+   * @returns {Object} - Promise.<*>
    */
-  const getEditorConfig = filePath => {
-    const func = [];
+  const getEditorConfig = filePath => new Promise(resolve => {
+    let func;
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
     if (isFile(filePath)) {
-      func.push(readFile(filePath, portEditorConfig, filePath));
+      func = readFile(filePath, portEditorConfig, filePath);
     } else {
       const msg = {
         [HOST]: {
@@ -301,12 +301,12 @@
           pid: APP,
           status: "warn",
         },
+        [EDITOR_CONFIG_RES]: null,
       };
-      msg && func.push(writeStdout(msg));
-      func.push(writeStdout({[EDITOR_CONFIG_RES]: null}));
+      func = writeStdout(msg);
     }
-    return Promise.all(func);
-  };
+    resolve(func || null);
+  });
 
   /**
    * view local file
