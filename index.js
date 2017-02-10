@@ -167,20 +167,30 @@
    */
   const portEditorConfig = (data, editorConfig) => new Promise(resolve => {
     let msg;
-    data = data && JSON.parse(data);
-    if (data) {
-      const {editorPath} = data;
-      const editorName = getFileNameFromFilePath(editorPath);
-      const executable = isExecutable(editorPath);
-      const items = Object.keys(data);
-      if (items.length) {
-        for (const item of items) {
-          vars[item] = data[item];
+    try {
+      data = data && JSON.parse(data);
+      if (data) {
+        const {editorPath} = data;
+        const editorName = getFileNameFromFilePath(editorPath);
+        const executable = isExecutable(editorPath);
+        const items = Object.keys(data);
+        if (items.length) {
+          for (const item of items) {
+            vars[item] = data[item];
+          }
         }
+        msg = {
+          [EDITOR_CONFIG_RES]: {
+            editorConfig, editorName, editorPath, executable,
+          },
+        };
       }
+    } catch (e) {
       msg = {
-        [EDITOR_CONFIG_RES]: {
-          editorConfig, editorName, editorPath, executable,
+        [HOST]: {
+          message: `${e}: ${editorConfig}`,
+          pid: APP,
+          status: `${HOST}_warn`,
         },
       };
     }
@@ -276,19 +286,27 @@
   /**
    * get editor config
    * @param {string} filePath - editor config file path
-   * @returns {Object} - Promise.<void>
+   * @returns {Object} - Promise.<Array.<*>>
    */
-  const getEditorConfig = filePath => new Promise(resolve => {
-    let func;
+  const getEditorConfig = filePath => {
+    const func = [];
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
     if (isFile(filePath)) {
-      func = readFile(filePath, portEditorConfig, filePath);
+      func.push(readFile(filePath, portEditorConfig, filePath));
     } else {
-      func = writeStdout({[EDITOR_CONFIG_RES]: null});
+      const msg = {
+        [HOST]: {
+          message: `${filePath} is not a file.`,
+          pid: APP,
+          status: `${HOST}_warn`,
+        },
+      };
+      msg && func.push(writeStdout(msg));
+      func.push(writeStdout({[EDITOR_CONFIG_RES]: null}));
     }
-    resolve(func || null);
-  });
+    return Promise.all(func);
+  };
 
   /**
    * view local file
@@ -373,9 +391,26 @@
     msg && process.stdout.write(msg);
   };
 
+  /**
+   * handle unhandled rejection
+   * @param {!Error|*} e - Error
+   * @param {!Object} p - Promise
+   */
+  const unhandledReject = (e, p) => {
+    const msg = (new Output()).write({
+      [HOST]: {
+        message: `${HOST}: ${e}`,
+        pid: APP,
+        status: `${HOST}_warn`,
+      },
+    });
+    msg && process.stdout.write(msg);
+  };
+
   /* process */
   process.on("exit", handleExit);
   process.on("uncaughtException", throwErr);
+  process.on("unhandledRejection", unhandledReject);
   process.stdin.on("data", readStdin);
 
   /* startup */
