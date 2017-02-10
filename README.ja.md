@@ -84,8 +84,10 @@ LinuxとMacでは、アプリケーションマニフェストを指定の場所
 * *cmdArgs"* - コマンドラインオプション。[]括弧の中にカンマ区切りで各引数を記入してください。例：`"cmdArgs": ["-a", "-b", "-c"]`
 * *fileAfterCmdArgs* - 真偽値（`true` / `false`）。いくつかのエディタでは、ファイルを指定する場合はコマンドの最後に置くように求めているものがあります。そのような場合に有効化してください。
 
+エディタ設定ファイルは、Firefoxのプロファイル毎に切り替えることもできます。
+例えば、defaultのプロファイルでは"editorconfig.json"を使い、nightlyのプロファイルでは"editorconfig-nightly.json"といった別名のエディタ設定ファイルを用意するなど。
+なお、"editorconfig.json"以外の名前を使用する場合は、withExEditor本体の設定ページでエディタ設定ファイルのパスを入力してください。
+
 ***
 
 以上の作業を終えたら、Firefoxを再起動してください。
-
-なお、configフォルダをホストの外に保存した場合は、withExEditor本体の設定ページで"editorconfig.json"のパスを入力してください。
