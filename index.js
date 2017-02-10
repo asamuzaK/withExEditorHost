@@ -288,12 +288,12 @@
    * @param {string} filePath - editor config file path
    * @returns {Object} - Promise.<Array.<*>>
    */
-  const getEditorConfig = filePath => new Promise(resolve => {
-    let func;
+  const getEditorConfig = filePath => {
+    const func = [];
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
     if (isFile(filePath)) {
-      func = readFile(filePath, portEditorConfig, filePath);
+      func.push(readFile(filePath, portEditorConfig, filePath));
     } else {
       const msg = {
         [HOST]: {
@@ -303,10 +303,10 @@
         },
       };
       msg && func.push(writeStdout(msg));
-      func = writeStdout({[EDITOR_CONFIG_RES]: null});
+      func.push(writeStdout({[EDITOR_CONFIG_RES]: null}));
     }
-    resolve(func || null);
-  });
+    return Promise.all(func);
+  };
 
   /**
    * view local file
