@@ -394,6 +394,7 @@
   /**
    * handle unhandled rejection
    * @param {*} e - Error or any
+   * @returns {void}
    */
   const unhandledReject = e => {
     const msg = (new Output()).write({
