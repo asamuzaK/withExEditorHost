@@ -185,7 +185,7 @@
       };
     }
     resolve(msg || null);
-  }).then(writeStdout);
+  }).then(writeStdout).catch(throwErr);
 
   /**
    * port file data
@@ -342,7 +342,7 @@
         }
       }
     }
-    return Promise.all(func);
+    return Promise.all(func).catch(throwErr);
   };
 
   /* input */
