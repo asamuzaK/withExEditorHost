@@ -58,7 +58,7 @@ Leave other fields as is.
 
 On Windows, you also need to set the registry.
 You can save the registry key by executing the following command with cmd.exe.
-Edit the `"C:\Users\XXX\withExEditorHosts\withexeditorhost.json"` part.
+Edit the `"C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json"` part.
 
 ```
 REG ADD "HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost" /ve /d "C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json" /f

@@ -59,7 +59,7 @@ Windowsの場合は、ディレクトリの区切りであるバックスラッ�
 
 Windowsではレジストリも設定する必要があります。
 cmd.exeで次のコマンドを実行するとレジストリキーを保存することができます。
-`"C:\Users\XXX\withExEditorHosts\withexeditorhost.json"`の部分は書き換えてください。
+`"C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json"`の部分は書き換えてください。
 
 ```
 REG ADD "HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost" /ve /d "C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json" /f
