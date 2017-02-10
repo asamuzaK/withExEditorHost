@@ -281,7 +281,7 @@
   const getEditorConfig = filePath => new Promise(resolve => {
     let func;
     filePath = isString(filePath) && filePath.length && filePath ||
-               path.resolve(path.join(".", "config", "editorconfig.json"));
+               path.resolve(path.join(".", "editorconfig.json"));
     if (isFile(filePath)) {
       func = readFile(filePath, portEditorConfig, filePath);
     } else {
