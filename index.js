@@ -236,7 +236,7 @@
   const removePrivateTmpFiles = bool =>
     !!bool && removeDir(path.join(...DIR_TMP_FILES_PB)).then(() =>
       createDir(DIR_TMP_FILES_PB)
-    );
+    ) || null;
 
   /**
    * create temporary file
@@ -393,7 +393,7 @@
 
   /**
    * handle unhandled rejection
-   * @param {!(Error|*)} e - Error or any
+   * @param {*} e - Error or any
    */
   const unhandledReject = e => {
     const msg = (new Output()).write({
