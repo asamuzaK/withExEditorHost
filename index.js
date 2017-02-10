@@ -23,17 +23,17 @@
   const APP = `${process.pid}`;
   const CHAR = "utf8";
   const CMD_ARGS = "cmdArgs";
-  const FILE_AFTER_ARGS = "fileAfterCmdArgs";
   const DIR_TMP = [os.tmpdir(), LABEL, APP];
   const DIR_TMP_FILES = [...DIR_TMP, TMP_FILES];
   const DIR_TMP_FILES_PB = [...DIR_TMP, TMP_FILES_PB];
   const EDITOR_PATH = "editorPath";
+  const FILE_AFTER_ARGS = "fileAfterCmdArgs";
 
   /* variables */
   const vars = {
     [CMD_ARGS]: [],
-    [FILE_AFTER_ARGS]: false,
     [EDITOR_PATH]: "",
+    [FILE_AFTER_ARGS]: false,
   };
 
   /**
@@ -114,7 +114,7 @@
         if (stderr) {
           msg = output.write({
             [HOST]: {
-              message: stderr,
+              message: `${stderr}: ${app}`,
               pid: APP,
               status: `${PROCESS_CHILD}_stderr`,
             },
@@ -124,7 +124,7 @@
         if (stdout) {
           msg = output.write({
             [HOST]: {
-              message: stdout,
+              message: `${stdout}: ${app}`,
               pid: APP,
               status: `${PROCESS_CHILD}_stdout`,
             },
@@ -190,7 +190,7 @@
         [HOST]: {
           message: `${e}: ${editorConfig}`,
           pid: APP,
-          status: `${HOST}_warn`,
+          status: "error",
         },
       };
     }
@@ -288,25 +288,25 @@
    * @param {string} filePath - editor config file path
    * @returns {Object} - Promise.<Array.<*>>
    */
-  const getEditorConfig = filePath => {
-    const func = [];
+  const getEditorConfig = filePath => new Promise(resolve => {
+    let func;
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
     if (isFile(filePath)) {
-      func.push(readFile(filePath, portEditorConfig, filePath));
+      func = readFile(filePath, portEditorConfig, filePath);
     } else {
       const msg = {
         [HOST]: {
           message: `${filePath} is not a file.`,
           pid: APP,
-          status: `${HOST}_warn`,
+          status: "warn",
         },
       };
       msg && func.push(writeStdout(msg));
-      func.push(writeStdout({[EDITOR_CONFIG_RES]: null}));
+      func = writeStdout({[EDITOR_CONFIG_RES]: null});
     }
-    return Promise.all(func);
-  };
+    resolve(func || null);
+  });
 
   /**
    * view local file
@@ -382,7 +382,7 @@
   const handleExit = code => {
     const msg = (new Output()).write({
       [HOST]: {
-        message: code || 0,
+        message: `exit ${code || 0}`,
         pid: APP,
         status: "exit",
       },
@@ -393,15 +393,14 @@
 
   /**
    * handle unhandled rejection
-   * @param {!Error|*} e - Error
-   * @param {!Object} p - Promise
+   * @param {!(Error|*)} e - Error or any
    */
-  const unhandledReject = (e, p) => {
+  const unhandledReject = e => {
     const msg = (new Output()).write({
       [HOST]: {
-        message: `${HOST}: ${e}`,
+        message: e,
         pid: APP,
-        status: `${HOST}_warn`,
+        status: "error",
       },
     });
     msg && process.stdout.write(msg);
