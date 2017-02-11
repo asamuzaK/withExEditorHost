@@ -101,7 +101,7 @@
   /**
    * the directory belongs to a certain directory
    * @param {string} dir - directory path
-   * @@aram {string} baseDir - base directory path
+   * @param {string} baseDir - base directory path
    * @returns {boolean} - result
    */
   const isSubDir = (dir, baseDir = TMP_DIR) =>
@@ -110,7 +110,7 @@
   /**
    * remove the directory
    * @param {string} dir - directory path
-   * @@aram {string} baseDir - base directory path
+   * @param {string} baseDir - base directory path
    * @returns {Object} - Promise.<Array.<*>>
    */
   const removeDir = (dir, baseDir = TMP_DIR) => {
@@ -134,7 +134,7 @@
   /**
    * remove the directory sync
    * @param {string} dir - directory path
-   * @@aram {string} baseDir - base directory path
+   * @param {string} baseDir - base directory path
    * @returns {void}
    */
   const removeDirSync = (dir, baseDir = TMP_DIR) => {
