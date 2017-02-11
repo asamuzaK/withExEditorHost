@@ -16,6 +16,7 @@
   const PERM_FILE = 0o666;
   const PERM_DIR = 0o777;
   const SUBST = "index";
+  const TMP_DIR = os.tmpdir();
 
   /**
    * is string
@@ -90,14 +91,31 @@
     );
 
   /**
+   * the directory is a directory
+   * @param {string} dir - directory path
+   * @returns {boolean} - result
+   */
+  const isDir = dir =>
+    isString(dir) && fs.existsSync(dir) && fs.statSync(dir).isDirectory();
+
+  /**
+   * the directory belongs to a certain directory
+   * @param {string} dir - directory path
+   * @@aram {string} baseDir - base directory path
+   * @returns {boolean} - result
+   */
+  const isSubDir = (dir, baseDir = TMP_DIR) =>
+    isDir(dir) && isDir(baseDir) && dir.startsWith(baseDir);
+
+  /**
    * remove the directory
    * @param {string} dir - directory path
+   * @@aram {string} baseDir - base directory path
    * @returns {Object} - Promise.<Array.<*>>
    */
-  const removeDir = dir => {
-    const tmpDir = os.tmpdir();
+  const removeDir = (dir, baseDir = TMP_DIR) => {
     const arr = [];
-    if (isString(dir) && dir.startsWith(tmpDir) && fs.existsSync(dir)) {
+    if (isSubDir(dir, baseDir)) {
       const files = fs.readdirSync(dir);
       const func = [];
       files.length && files.forEach(file => {
@@ -116,11 +134,11 @@
   /**
    * remove the directory sync
    * @param {string} dir - directory path
+   * @@aram {string} baseDir - base directory path
    * @returns {void}
    */
-  const removeDirSync = dir => {
-    const tmpDir = os.tmpdir();
-    if (isString(dir) && dir.startsWith(tmpDir) && fs.existsSync(dir)) {
+  const removeDirSync = (dir, baseDir = TMP_DIR) => {
+    if (isSubDir(dir, baseDir)) {
       const files = fs.readdirSync(dir);
       files.length && files.forEach(file => {
         const cur = path.join(dir, file);
