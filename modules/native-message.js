@@ -36,10 +36,10 @@
     }
 
     /**
-     * decode message
+     * message from buffer
      * @returns {Array} - message array
      */
-    _decodeMessage() {
+    _decoder() {
       let arr = [];
       !this._length && this._input && this._input.length >= BYTE_LEN && (
         this._length = IS_BE && this._input.readUIntBE(0, BYTE_LEN) ||
@@ -53,7 +53,7 @@
                       this._input.slice(this._length) || null;
         this._length = null;
         if (this._input) {
-          const cur = this._decodeMessage();
+          const cur = this._decoder();
           cur.length && (arr = arr.concat(cur));
         }
       }
@@ -61,19 +61,19 @@
     }
 
     /**
-     * read input
+     * decode message
      * @param {string|Buffer} chunk - chunk
      * @param {Function} callback - callback
      * @returns {void}
      */
-    read(chunk, callback) {
+    decode(chunk, callback) {
       const buf = (isString(chunk) || Buffer.isBuffer(chunk)) &&
                     Buffer.from(chunk);
       buf &&
         (this._input = this._input && Buffer.concat([this._input, buf]) || buf);
       if (isFunction(callback)) {
-        const arr = this._decodeMessage();
-        arr.length && arr.forEach(a => a && callback(a));
+        const arr = this._decoder();
+        arr.length && arr.forEach(msg => msg && callback(msg));
       }
     }
   }
@@ -86,10 +86,10 @@
     }
 
     /**
-     * encode message
+     * message to buffer
      * @returns {?Buffer} - buffered message
      */
-    _encodeMessage() {
+    _encoder() {
       let msg = JSON.stringify(this._output);
       if (isString(msg)) {
         const buf = Buffer.from(msg);
@@ -103,13 +103,13 @@
     }
 
     /**
-     * write output
+     * encode message
      * @param {Object} msg - message
      * @returns {?Buffer} - buffered message
      */
-    write(msg) {
+    encode(msg) {
       this._output = msg;
-      msg = this._encodeMessage();
+      msg = this._encoder();
       return Buffer.isBuffer(msg) && msg || null;
     }
   }

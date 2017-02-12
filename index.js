@@ -106,30 +106,29 @@
       args = concatArgs(argA, argB);
       proc = execFile(app, args, opt, (e, stdout, stderr) => {
         const output = new Output();
-        let msg;
         if (e) {
-          msg = output.write(e);
-          msg && process.stderr.write(msg);
+          e = output.encode(e);
+          e && process.stderr.write(e);
         }
         if (stderr) {
-          msg = output.write({
+          stderr = output.encode({
             [HOST]: {
               message: `${stderr}: ${app}`,
               pid: APP,
               status: `${PROCESS_CHILD}_stderr`,
             },
           });
-          msg && process.stdout.write(msg);
+          stderr && process.stdout.write(stderr);
         }
         if (stdout) {
-          msg = output.write({
+          stdout = output.encode({
             [HOST]: {
               message: `${stdout}: ${app}`,
               pid: APP,
               status: `${PROCESS_CHILD}_stdout`,
             },
           });
-          msg && process.stdout.write(msg);
+          stdout && process.stdout.write(stdout);
         }
       });
     }
@@ -143,8 +142,8 @@
    * @returns {Object} - Promise.<?boolean>
    */
   const writeStdout = msg => new Promise(resolve => {
-    const outputMsg = (new Output()).write(msg);
-    resolve(outputMsg && process.stdout.write(outputMsg) || null);
+    msg = (new Output()).encode(msg);
+    resolve(msg && process.stdout.write(msg) || null);
   });
 
   /**
@@ -371,7 +370,7 @@
    * @param {string|Buffer} chunk - chunk
    * @returns {void}
    */
-  const readStdin = chunk => input.read(chunk, handleMsg);
+  const readStdin = chunk => input.decode(chunk, handleMsg);
 
   /* exit */
   /**
@@ -380,7 +379,7 @@
    * @returns {void}
    */
   const handleExit = code => {
-    const msg = (new Output()).write({
+    const msg = (new Output()).encode({
       [HOST]: {
         message: `exit ${code || 0}`,
         pid: APP,
@@ -397,14 +396,14 @@
    * @returns {void}
    */
   const unhandledReject = e => {
-    const msg = (new Output()).write({
+    e = (new Output()).encode({
       [HOST]: {
         message: e,
         pid: APP,
         status: "error",
       },
     });
-    msg && process.stdout.write(msg);
+    e && process.stdout.write(e);
   };
 
   /* process */
