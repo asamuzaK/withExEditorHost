@@ -143,7 +143,7 @@
       files.length && files.forEach(file => {
         const cur = path.join(dir, file);
         if (fs.lstatSync(cur).isDirectory()) {
-          removeDirSync(cur);
+          removeDirSync(cur, baseDir);
         } else {
           fs.unlinkSync(cur);
         }
