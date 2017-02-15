@@ -19,6 +19,13 @@
   const TMP_DIR = os.tmpdir();
 
   /**
+   * is function
+   * @param {*} o - object to check
+   * @returns {boolean} - result
+   */
+  const isFunction = o => typeof o === "function";
+
+  /**
    * is string
    * @param {*} o - object to check
    * @returns {boolean} - result
@@ -176,7 +183,7 @@
   });
 
   /**
-   * create a file
+   * create a file (callback in node style)
    * @param {string} file - file path
    * @param {string} value - value to write
    * @param {Function} callback - callback when write completes
@@ -186,31 +193,69 @@
    * @returns {void}
    */
   const createFile = (file, value = "", callback = null, opt = null,
-                      mode = PERM_FILE, encoding = CHAR) => {
-    isString(file) && fs.writeFile(file, value, {encoding, mode}, e => {
+                      mode = PERM_FILE, encoding = CHAR, flag = "w") => {
+    isString(file) && fs.writeFile(file, value, {encoding, flag, mode}, e => {
       if (e) {
         throw e;
       }
-      callback && callback(file, opt);
+      isFunction(callback) && callback(file, opt);
     });
   };
 
   /**
-   * read a file
+   * create a file (callback in promise chain)
+   * @param {string} file - file path
+   * @param {string} value - value to write
+   * @param {Function} callback - callback when write completes
+   * @param {Object} opt - callback option
+   * @param {number|string} mode - file permission
+   * @param {string} encoding - file encoding
+   * @returns {Object} - Promise.<?Function>
+   */
+  const createFile2 = (file, value = "", callback = null, opt = null,
+                       mode = PERM_FILE, encoding = CHAR, flag = "w") =>
+    new Promise((resolve, reject) => {
+      if (isString(file)) {
+        resolve(fs.writeFileSync(file, value, {encoding, flag, mode}));
+      } else {
+        reject(new TypeError(`Expected string but got ${typeof file}`));
+      }
+    }).then(() => isFunction(callback) && callback(file, opt) || null);
+
+  /**
+   * read a file (callback in node style)
    * @param {string} file - file path
    * @param {Function} callback - callback when read completes
    * @param {Object} opt - callback option
    * @param {string} encoding - file encoding
    * @returns {void}
    */
-  const readFile = (file, callback = null, opt = null, encoding = CHAR) => {
-    isFile(file) && fs.readFile(file, encoding, (e, value) => {
+  const readFile = (file, callback = null, opt = null, encoding = CHAR,
+                    flag = "r") => {
+    isFile(file) && fs.readFile(file, {encoding, flag}, (e, value) => {
       if (e) {
         throw e;
       }
-      callback && callback(value, opt);
+      isFunction(callback) && callback(value, opt);
     });
   };
+
+  /**
+   * read a file (callback in promise chain)
+   * @param {string} file - file path
+   * @param {Function} callback - callback when read completes
+   * @param {Object} opt - callback option
+   * @param {string} encoding - file encoding
+   * @returns {Object} - Promise.<Function|string>
+   */
+  const readFile2 = (file, callback = null, opt = null, encoding = CHAR,
+                     flag = "r") => new Promise((resolve, reject) => {
+    if (isFile(file)) {
+      resolve(fs.readFileSync(file, {encoding, flag}));
+    } else {
+      reject(new TypeError(`Expected string but got ${typeof file}`));
+    }
+  }).then(value => isFunction(callback) && callback(value, opt) || value);
 
   /**
    * get file timestamp
@@ -222,8 +267,8 @@
     fs.statSync(file).mtime.getTime() || 0;
 
   module.exports = {
-    convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, isDir, isExecutable, isFile, isSubDir, removeDir,
-    removeDirSync, readFile,
+    convUriToFilePath, createDir, createFile, createFile2,
+    getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
+    isSubDir, removeDir, removeDirSync, readFile, readFile2,
   };
 }
