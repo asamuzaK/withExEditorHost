@@ -219,9 +219,8 @@
    * @returns {Object} - Promise.<?boolean>
    */
   const portTmpFile = (obj = {}) => new Promise(resolve => {
-    const {data, value} = obj;
-    const msg = value && data && {
-      [TMP_FILE_RES]: {data, value},
+    const msg = Object.keys(obj).length && {
+      [TMP_FILE_RES]: obj,
     };
     resolve(msg || null);
   }).then(writeStdout);
@@ -276,12 +275,18 @@
    */
   const getTmpFile = (obj = {}) => {
     const {filePath} = obj;
-    return Promise.all([
-      appendTimestamp(obj),
-      readFile(filePath),
-    ]).then(arr => {
-      const [data, value] = arr;
-      return {data, value};
+    const arr = [];
+    if (filePath) {
+      arr.push(appendTimestamp(obj));
+      arr.push(readFile(filePath));
+    }
+    return Promise.all(arr).then(a => {
+      let o;
+      if (a.length) {
+        const [data, value] = a;
+        o = {data, value};
+      }
+      return o || null;
     });
   };
 
