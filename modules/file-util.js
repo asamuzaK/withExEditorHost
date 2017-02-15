@@ -183,28 +183,26 @@
   });
 
   /**
-   * create a file (callback in node style)
+   * create a file
    * @param {string} file - file path
    * @param {string} value - value to write
-   * @param {Function} callback - callback when write completes
-   * @param {Object} opt - callback option
    * @param {number|string} mode - file permission
    * @param {string} encoding - file encoding
    * @param {string} flag - flag
-   * @returns {void}
+   * @returns {Object} - Promise.<void>
    */
-  const createFile = (file, value = "", callback = null, opt = null,
-                      mode = PERM_FILE, encoding = CHAR, flag = "w") => {
-    isString(file) && fs.writeFile(file, value, {encoding, flag, mode}, e => {
-      if (e) {
-        throw e;
+  const createFile = (file, value = "", mode = PERM_FILE, encoding = CHAR,
+                      flag = "w") =>
+    new Promise((resolve, reject) => {
+      if (isString(file)) {
+        resolve(fs.writeFileSync(file, value, {encoding, flag, mode}));
+      } else {
+        reject(new TypeError(`Expected string but got ${typeof file}`));
       }
-      isFunction(callback) && callback(file, opt);
     });
-  };
 
   /**
-   * create a file (callback in promise chain)
+   * create a file and returns callback
    * @param {string} file - file path
    * @param {string} value - value to write
    * @param {Function} callback - callback when write completes
@@ -214,8 +212,9 @@
    * @param {string} flag - flag
    * @returns {Object} - Promise.<?Function>
    */
-  const createFile2 = (file, value = "", callback = null, opt = null,
-                       mode = PERM_FILE, encoding = CHAR, flag = "w") =>
+  const createFileWithCallback = (file, value = "", callback = null, opt = null,
+                                  mode = PERM_FILE, encoding = CHAR,
+                                  flag = "w") =>
     new Promise((resolve, reject) => {
       if (isString(file)) {
         resolve(fs.writeFileSync(file, value, {encoding, flag, mode}));
@@ -225,26 +224,23 @@
     }).then(() => isFunction(callback) && callback(file, opt) || null);
 
   /**
-   * read a file (callback in node style)
+   * read a file
    * @param {string} file - file path
-   * @param {Function} callback - callback when read completes
-   * @param {Object} opt - callback option
    * @param {string} encoding - file encoding
    * @param {string} flag - flag
-   * @returns {void}
+   * @returns {string} - file content
    */
-  const readFile = (file, callback = null, opt = null, encoding = CHAR,
-                    flag = "r") => {
-    isFile(file) && fs.readFile(file, {encoding, flag}, (e, value) => {
-      if (e) {
-        throw e;
+  const readFile = (file, encoding = CHAR, flag = "r") =>
+    new Promise((resolve, reject) => {
+      if (isFile(file)) {
+        resolve(fs.readFileSync(file, {encoding, flag}));
+      } else {
+        reject(new TypeError(`Expected string but got ${typeof file}`));
       }
-      isFunction(callback) && callback(value, opt);
     });
-  };
 
   /**
-   * read a file (callback in promise chain)
+   * read a file and returns callback
    * @param {string} file - file path
    * @param {Function} callback - callback when read completes
    * @param {Object} opt - callback option
@@ -252,8 +248,8 @@
    * @param {string} flag - flag
    * @returns {Object} - Promise.<Function|string>
    */
-  const readFile2 = (file, callback = null, opt = null, encoding = CHAR,
-                     flag = "r") =>
+  const readFileWithCallback = (file, callback = null, opt = null,
+                                encoding = CHAR, flag = "r") =>
     new Promise((resolve, reject) => {
       if (isFile(file)) {
         resolve(fs.readFileSync(file, {encoding, flag}));
@@ -272,8 +268,8 @@
     fs.statSync(file).mtime.getTime() || 0;
 
   module.exports = {
-    convUriToFilePath, createDir, createFile, createFile2,
+    convUriToFilePath, createDir, createFile, createFileWithCallback,
     getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
-    isSubDir, removeDir, removeDirSync, readFile, readFile2,
+    isSubDir, removeDir, removeDirSync, readFile, readFileWithCallback,
   };
 }
