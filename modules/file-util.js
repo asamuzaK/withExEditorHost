@@ -74,7 +74,7 @@
       }
       resolve(file || null);
     } else {
-      reject(new TypeError(`Expected string but got ${typeof uri}`));
+      reject(new TypeError(`Expected string but got ${typeof uri}.`));
     }
   });
 
@@ -181,7 +181,7 @@
       });
       resolve(dir || null);
     } else {
-      reject(new TypeError(`Expected array but got ${typeof arr}`));
+      reject(new TypeError(`Expected array but got ${typeof arr}.`));
     }
   });
 
@@ -200,7 +200,7 @@
       if (isString(file)) {
         resolve(fs.writeFileSync(file, value, {encoding, flag, mode}));
       } else {
-        reject(new TypeError(`Expected string but got ${typeof file}`));
+        reject(new TypeError(`Expected string but got ${typeof file}.`));
       }
     }).then(() => file);
 
@@ -222,7 +222,7 @@
       if (isString(file)) {
         resolve(fs.writeFileSync(file, value, {encoding, flag, mode}));
       } else {
-        reject(new TypeError(`Expected string but got ${typeof file}`));
+        reject(new TypeError(`Expected string but got ${typeof file}.`));
       }
     }).then(() => isFunction(callback) && callback(file, opt) || null);
 
@@ -235,11 +235,11 @@
    */
   const readFile = (file, encoding = CHAR, flag = "r") =>
     new Promise((resolve, reject) => {
-      try {
+      if (isFile(file)) {
         const value = fs.readFileSync(file, {encoding, flag});
         resolve(value);
-      } catch (e) {
-        reject(e);
+      } else {
+        reject(new Error(`${file} is not a file.`));
       }
     });
 
@@ -255,11 +255,11 @@
   const readFileWithCallback = (file, callback = null, opt = null,
                                 encoding = CHAR, flag = "r") =>
     new Promise((resolve, reject) => {
-      try {
+      if (isFile(file)) {
         const value = fs.readFileSync(file, {encoding, flag});
         resolve(isFunction(callback) && callback(value, opt) || value);
-      } catch (e) {
-        reject(e);
+      } else {
+        reject(new Error(`${file} is not a file.`));
       }
     });
 
