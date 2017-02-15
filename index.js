@@ -6,8 +6,8 @@
   /* api */
   const {Input, Output} = require("./modules/native-message");
   const {
-    convUriToFilePath, createDir, createFile2, getFileNameFromFilePath,
-    getFileTimestamp, isExecutable, isFile, removeDir, removeDirSync, readFile2,
+    convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
+    getFileTimestamp, isExecutable, isFile, removeDir, removeDirSync, readFile,
   } = require("./modules/file-util");
   const {execFile} = require("child_process");
   const os = require("os");
@@ -215,11 +215,11 @@
 
   /**
    * port temporary file
-   * @param {Object} value - text
-   * @param {Object} data - file data
+   * @param {Object} obj - temporary file data object
    * @returns {Object} - Promise.<?boolean>
    */
-  const portTmpFile = (value, data) => new Promise(resolve => {
+  const portTmpFile = (obj = {}) => new Promise(resolve => {
+    const {data, value} = obj;
     const msg = value && data && {
       [TMP_FILE_RES]: {data, value},
     };
@@ -240,10 +240,9 @@
   /**
    * create temporary file
    * @param {Object} obj - temporary file data object
-   * @param {Function} callback - callback
-   * @returns {Object} - Promise.<Function|string>
+   * @returns {Object} - ?Promise.<Object> temporary file data
    */
-  const createTmpFile = (obj = {}, callback = null) => new Promise(resolve => {
+  const createTmpFile = (obj = {}) => new Promise(resolve => {
     const {data, value} = obj;
     let func;
     if (data) {
@@ -252,8 +251,8 @@
                   [...DIR_TMP, dir, windowId, tabId, host];
       func = arr && fileName && createDir(arr).then(dPath =>
         dPath === path.join(...arr) &&
-        createFile2(path.join(dPath, fileName), value, callback, data) || null
-      );
+          createFile(path.join(dPath, fileName), value)
+      ).then(filePath => filePath && {filePath, data} || null);
     }
     resolve(func || null);
   });
@@ -272,14 +271,19 @@
 
   /**
    * get temporary file
-   * @param {Object} data - temporary file data
-   * @param {Function} callback - callback
-   * @returns {Object} - Promise.<void>
+   * @param {Object} obj - temporary file data
+   * @returns {Object} - Promise.<Object>
    */
-  const getTmpFile = (data = {}, callback = null) => new Promise(resolve => {
-    const {filePath} = data;
-    resolve(filePath && readFile2(filePath, callback, data) || null);
-  });
+  const getTmpFile = (obj = {}) => {
+    const {filePath} = obj;
+    return Promise.all([
+      appendTimestamp(obj),
+      readFile(filePath),
+    ]).then(arr => {
+      const [data, value] = arr;
+      return {data, value};
+    });
+  };
 
   /* local files */
   /**
@@ -292,7 +296,7 @@
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
     if (isFile(filePath)) {
-      func = readFile2(filePath, portEditorConfig, filePath);
+      func = readFile(filePath).then(data => portEditorConfig(data, filePath));
     } else {
       const msg = {
         [HOST]: {
@@ -317,18 +321,22 @@
   /* handlers */
   /**
    * handle created temporary file
-   * @param {string} filePath - file path
-   * @param {Object} data - file data
+   * @param {Object} obj - temporary file data
    * @returns {Object} - Promise.<Array.<*>>
    */
-  const handleCreatedTmpFile = (filePath, data = {}) => Promise.all([
-    spawnChildProcess(filePath),
-    portFileData(filePath, data),
-  ]);
+  const handleCreatedTmpFile = (obj = {}) => {
+    const {filePath, data} = obj;
+    const arr = [];
+    if (filePath) {
+      arr.push(spawnChildProcess(filePath));
+      arr.push(portFileData(filePath, data));
+    }
+    return Promise.all(arr);
+  };
 
   /**
    * handle message
-   * @param {Array} msg - message
+   * @param {*} msg - message
    * @returns {Object} - Promise.<Array<*>>
    */
   const handleMsg = msg => {
@@ -345,12 +353,10 @@
             func.push(viewLocalFile(obj));
             break;
           case TMP_FILE_CREATE:
-            func.push(createTmpFile(obj, handleCreatedTmpFile));
+            func.push(createTmpFile(obj).then(handleCreatedTmpFile));
             break;
           case TMP_FILE_GET:
-            func.push(appendTimestamp(obj).then(data =>
-              getTmpFile(data, portTmpFile)
-            ));
+            func.push(getTmpFile(obj).then(portTmpFile));
             break;
           case TMP_FILES_PB_REMOVE:
             func.push(removePrivateTmpFiles(obj));
