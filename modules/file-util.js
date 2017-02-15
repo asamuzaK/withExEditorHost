@@ -58,10 +58,10 @@
    * @param {string} uri - URI
    * @returns {Object} - Promise.<?string> file path
    */
-  const convUriToFilePath = uri => new Promise(resolve => {
-    let file;
+  const convUriToFilePath = uri => new Promise((resolve, reject) => {
     if (isString(uri)) {
       const {protocol, pathname} = url.parse(uri, false, true);
+      let file;
       if (protocol === "file:" && pathname) {
         if (IS_WIN) {
           const arr = pathname.split("/");
@@ -72,8 +72,10 @@
           file = decodeURIComponent(pathname);
         }
       }
+      resolve(file || null);
+    } else {
+      reject(new TypeError(`Expected string but got ${typeof uri}`));
     }
-    resolve(file || null);
   });
 
   /**
@@ -165,10 +167,9 @@
    * @param {string|number} mode - permission
    * @returns {Object} - Promise.<?string>, directory path
    */
-  const createDir = (arr, mode = PERM_DIR) => new Promise(resolve => {
-    let dir;
-    if (arr.length) {
-      dir = arr.reduce((p, c) => {
+  const createDir = (arr, mode = PERM_DIR) => new Promise((resolve, reject) => {
+    if (Array.isArray(arr)) {
+      const dir = arr.length && arr.reduce((p, c) => {
         let d;
         p = isString(p) && p || stringifyPositiveInt(p, true);
         if (p) {
@@ -178,8 +179,10 @@
         }
         return d;
       });
+      resolve(dir || null);
+    } else {
+      reject(new TypeError(`Expected array but got ${typeof arr}`));
     }
-    resolve(dir || null);
   });
 
   /**
@@ -189,7 +192,7 @@
    * @param {number|string} mode - file permission
    * @param {string} encoding - file encoding
    * @param {string} flag - flag
-   * @returns {Object} - Promise.<void>
+   * @returns {Object} - Promise.<string> file path
    */
   const createFile = (file, value = "", mode = PERM_FILE, encoding = CHAR,
                       flag = "w") =>
@@ -199,7 +202,7 @@
       } else {
         reject(new TypeError(`Expected string but got ${typeof file}`));
       }
-    });
+    }).then(() => file);
 
   /**
    * create a file and returns callback
@@ -228,14 +231,15 @@
    * @param {string} file - file path
    * @param {string} encoding - file encoding
    * @param {string} flag - flag
-   * @returns {string} - file content
+   * @returns {Object} - Promise.<string> file content
    */
   const readFile = (file, encoding = CHAR, flag = "r") =>
     new Promise((resolve, reject) => {
-      if (isFile(file)) {
-        resolve(fs.readFileSync(file, {encoding, flag}));
-      } else {
-        reject(new TypeError(`Expected string but got ${typeof file}`));
+      try {
+        const value = fs.readFileSync(file, {encoding, flag});
+        resolve(value);
+      } catch (e) {
+        reject(e);
       }
     });
 
@@ -251,12 +255,13 @@
   const readFileWithCallback = (file, callback = null, opt = null,
                                 encoding = CHAR, flag = "r") =>
     new Promise((resolve, reject) => {
-      if (isFile(file)) {
-        resolve(fs.readFileSync(file, {encoding, flag}));
-      } else {
-        reject(new TypeError(`Expected string but got ${typeof file}`));
+      try {
+        const value = fs.readFileSync(file, {encoding, flag});
+        resolve(isFunction(callback) && callback(value, opt) || value);
+      } catch (e) {
+        reject(e);
       }
-    }).then(value => isFunction(callback) && callback(value, opt) || value);
+    });
 
   /**
    * get file timestamp
