@@ -6,8 +6,8 @@
   /* api */
   const {Input, Output} = require("./modules/native-message");
   const {
-    convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, isExecutable, isFile, removeDir, removeDirSync, readFile,
+    convUriToFilePath, createDir, createFile2, getFileNameFromFilePath,
+    getFileTimestamp, isExecutable, isFile, removeDir, removeDirSync, readFile2,
   } = require("./modules/file-util");
   const {execFile} = require("child_process");
   const os = require("os");
@@ -194,7 +194,7 @@
       };
     }
     resolve(msg || null);
-  }).then(writeStdout).catch(throwErr);
+  }).then(writeStdout);
 
   /**
    * port file data
@@ -224,7 +224,7 @@
       [TMP_FILE_RES]: {data, value},
     };
     resolve(msg || null);
-  }).then(writeStdout).catch(throwErr);
+  }).then(writeStdout);
 
   /* temporary files */
   /**
@@ -241,7 +241,7 @@
    * create temporary file
    * @param {Object} obj - temporary file data object
    * @param {Function} callback - callback
-   * @returns {Object} - Promise.<Object>
+   * @returns {Object} - Promise.<Function|string>
    */
   const createTmpFile = (obj = {}, callback = null) => new Promise(resolve => {
     const {data, value} = obj;
@@ -252,7 +252,7 @@
                   [...DIR_TMP, dir, windowId, tabId, host];
       func = arr && fileName && createDir(arr).then(dPath =>
         dPath === path.join(...arr) &&
-        createFile(path.join(dPath, fileName), value, callback, data) || null
+        createFile2(path.join(dPath, fileName), value, callback, data) || null
       );
     }
     resolve(func || null);
@@ -278,7 +278,7 @@
    */
   const getTmpFile = (data = {}, callback = null) => new Promise(resolve => {
     const {filePath} = data;
-    resolve(filePath && readFile(filePath, callback, data) || null);
+    resolve(filePath && readFile2(filePath, callback, data) || null);
   });
 
   /* local files */
@@ -292,7 +292,7 @@
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
     if (isFile(filePath)) {
-      func = readFile(filePath, portEditorConfig, filePath);
+      func = readFile2(filePath, portEditorConfig, filePath);
     } else {
       const msg = {
         [HOST]: {
@@ -324,7 +324,7 @@
   const handleCreatedTmpFile = (filePath, data = {}) => Promise.all([
     spawnChildProcess(filePath),
     portFileData(filePath, data),
-  ]).catch(throwErr);
+  ]);
 
   /**
    * handle message
