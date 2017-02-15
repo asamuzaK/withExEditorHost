@@ -108,7 +108,7 @@
     isString(dir) && fs.existsSync(dir) && fs.statSync(dir).isDirectory();
 
   /**
-   * the directory belongs to a certain directory
+   * the directory is a subdirectory of a certain directory
    * @param {string} dir - directory path
    * @param {string} baseDir - base directory path
    * @returns {boolean} - result
