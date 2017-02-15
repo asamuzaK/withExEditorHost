@@ -190,6 +190,7 @@
    * @param {Object} opt - callback option
    * @param {number|string} mode - file permission
    * @param {string} encoding - file encoding
+   * @param {string} flag - flag
    * @returns {void}
    */
   const createFile = (file, value = "", callback = null, opt = null,
@@ -210,6 +211,7 @@
    * @param {Object} opt - callback option
    * @param {number|string} mode - file permission
    * @param {string} encoding - file encoding
+   * @param {string} flag - flag
    * @returns {Object} - Promise.<?Function>
    */
   const createFile2 = (file, value = "", callback = null, opt = null,
@@ -228,6 +230,7 @@
    * @param {Function} callback - callback when read completes
    * @param {Object} opt - callback option
    * @param {string} encoding - file encoding
+   * @param {string} flag - flag
    * @returns {void}
    */
   const readFile = (file, callback = null, opt = null, encoding = CHAR,
@@ -246,16 +249,18 @@
    * @param {Function} callback - callback when read completes
    * @param {Object} opt - callback option
    * @param {string} encoding - file encoding
+   * @param {string} flag - flag
    * @returns {Object} - Promise.<Function|string>
    */
   const readFile2 = (file, callback = null, opt = null, encoding = CHAR,
-                     flag = "r") => new Promise((resolve, reject) => {
-    if (isFile(file)) {
-      resolve(fs.readFileSync(file, {encoding, flag}));
-    } else {
-      reject(new TypeError(`Expected string but got ${typeof file}`));
-    }
-  }).then(value => isFunction(callback) && callback(value, opt) || value);
+                     flag = "r") =>
+    new Promise((resolve, reject) => {
+      if (isFile(file)) {
+        resolve(fs.readFileSync(file, {encoding, flag}));
+      } else {
+        reject(new TypeError(`Expected string but got ${typeof file}`));
+      }
+    }).then(value => isFunction(callback) && callback(value, opt) || value);
 
   /**
    * get file timestamp
