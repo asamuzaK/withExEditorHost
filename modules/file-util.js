@@ -122,23 +122,24 @@
    * @param {string} baseDir - base directory path
    * @returns {Object} - Promise.<Array.<*>>
    */
-  const removeDir = (dir, baseDir = TMP_DIR) => {
-    const arr = [];
-    if (isSubDir(dir, baseDir)) {
-      const files = fs.readdirSync(dir);
-      const func = [];
-      files.length && files.forEach(file => {
-        const cur = path.join(dir, file);
-        if (fs.lstatSync(cur).isDirectory()) {
-          func.push(removeDir(cur, baseDir));
-        } else {
-          func.push(fs.unlinkSync(cur));
-        }
-      });
-      arr.push(Promise.all(func).then(() => fs.rmdirSync(dir)));
-    }
-    return Promise.all(arr);
-  };
+  const removeDir = (dir, baseDir = TMP_DIR) =>
+    new Promise((resolve, reject) => {
+      if (isSubDir(dir, baseDir)) {
+        const files = fs.readdirSync(dir);
+        const func = [];
+        files.length && files.forEach(file => {
+          const cur = path.join(dir, file);
+          if (fs.lstatSync(cur).isDirectory()) {
+            func.push(removeDir(cur, baseDir));
+          } else {
+            func.push(fs.unlinkSync(cur));
+          }
+        });
+        resolve(Promise.all(func).then(() => fs.rmdirSync(dir)));
+      } else {
+        reject(new Error(`${dir} is not a subdirectory of ${baseDir}.`));
+      }
+    });
 
   /**
    * remove the directory sync
