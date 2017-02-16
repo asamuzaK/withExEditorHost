@@ -202,7 +202,7 @@
    * @param {string} file - file path
    * @param {string|Buffer|Uint8Array} value - value to write
    * @param {Object} opt - option
-   * @param {string} [opt.encoding] - file encoding
+   * @param {string} [opt.encoding] - encoding, note that default is not `null`
    * @param {string} [opt.flag] - flag
    * @param {number|string} opt.mode - file permission
    * @returns {Object} - Promise.<?string>, file path
@@ -231,7 +231,7 @@
    * @param {Function} callback - callback when write completes
    * @param {Object} cbOpt - callback option
    * @param {Object} opt - option
-   * @param {string} [opt.encoding] - file encoding
+   * @param {string} [opt.encoding] - encoding, note that default is not `null`
    * @param {string} [opt.flag] - flag
    * @param {number|string} [opt.mode] - file permission
    * @returns {Object} - Promise.<?Function>
@@ -261,7 +261,7 @@
    * read a file
    * @param {string} file - file path
    * @param {Object} opt - option
-   * @param {string} [opt.encoding] - file encoding
+   * @param {string} [opt.encoding] - encoding, note that default is not `null`
    * @param {string} [opt.flag] - flag
    * @returns {Object} - Promise.<string|Buffer>, file content
    */
@@ -281,7 +281,7 @@
    * @param {Function} callback - callback when read completes
    * @param {Object} cbOpt - callback option
    * @param {Object} opt - option
-   * @param {string} [opt.encoding] - file encoding
+   * @param {string} [opt.encoding] - encoding, note that default is not `null`
    * @param {string} [opt.flag] - flag
    * @returns {Object} - Promise.<?Function>
    */
