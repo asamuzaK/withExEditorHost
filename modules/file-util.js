@@ -17,13 +17,16 @@
   const PERM_DIR = 0o777;
   const SUBST = "index";
   const TMP_DIR = os.tmpdir();
+  const TYPE_FROM = 8;
+  const TYPE_TO = -1;
 
   /**
    * get type
    * @param {*} o - object to check
    * @returns {string} - type of object
    */
-  const getType = o => Object.prototype.toString.call(o).slice(8, -1);
+  const getType = o =>
+    Object.prototype.toString.call(o).slice(TYPE_FROM, TYPE_TO);
 
   /**
    * is function
