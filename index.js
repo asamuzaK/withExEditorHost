@@ -286,7 +286,7 @@
 
   /**
    * extract temporary file data
-   * @param {Array} arr - array
+   * @param {Array} arr - array containing temporary file data and value
    * @returns {Object} - temporary file data object
    */
   const extractTmpFileData = (arr = []) => new Promise(resolve => {
