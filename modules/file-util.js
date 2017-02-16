@@ -92,8 +92,9 @@
    * @param {number} mask - mask bit
    * @returns {boolean} - result
    */
-  // FIXME: on Windows, fs.statSync(file).mode returns 33206 for `.exe` file,
-  // which is 100666 in octal.
+  // FIXME: On Windows, `fs.statSync(file).mode` returns 33206, which is 100666
+  // in octal, for executable files like `.exe`.
+  // Currently, only `.exe` file returns `true` on Windows.
   const isExecutable = (file, mask = MASK_BIT) =>
     isFile(file) && (
       !!(fs.statSync(file).mode & mask) || IS_WIN && /\.exe$/.test(file)
@@ -190,54 +191,60 @@
    * create a file
    * @param {string} file - file path
    * @param {string} value - value to write
-   * @param {number|string} mode - file permission
-   * @param {string} encoding - file encoding
-   * @param {string} flag - flag
-   * @returns {Object} - Promise.<string> file path
+   * @param {Object} opt - option
+   * @param {string} [opt.encoding] - file encoding
+   * @param {string} [opt.flag] - flag
+   * @param {number|string} opt.mode - file permission
+   * @returns {Object} - Promise.<?string> file path
    */
-  const createFile = (file, value = "", mode = PERM_FILE, encoding = CHAR,
-                      flag = "w") =>
+  const createFile = (file, value = "",
+                      opt = {encoding: CHAR, flag: "w", mode: PERM_FILE}) =>
     new Promise((resolve, reject) => {
       if (isString(file)) {
-        resolve(fs.writeFileSync(file, value, {encoding, flag, mode}));
+        resolve(fs.writeFileSync(file, value, opt));
       } else {
         reject(new TypeError(`Expected string but got ${typeof file}.`));
       }
-    }).then(() => file);
+    }).then(() => isFile(file) && file || null);
 
   /**
-   * create a file and returns callback
+   * create a file then returns callback
    * @param {string} file - file path
    * @param {string} value - value to write
    * @param {Function} callback - callback when write completes
-   * @param {Object} opt - callback option
-   * @param {number|string} mode - file permission
-   * @param {string} encoding - file encoding
-   * @param {string} flag - flag
+   * @param {Object} cbOpt - callback option
+   * @param {Object} opt - option
+   * @param {string} [opt.encoding] - file encoding
+   * @param {string} [opt.flag] - flag
+   * @param {number|string} [opt.mode] - file permission
    * @returns {Object} - Promise.<?Function>
    */
-  const createFileWithCallback = (file, value = "", callback = null, opt = null,
-                                  mode = PERM_FILE, encoding = CHAR,
-                                  flag = "w") =>
+  const createFileWithCallback = (
+    file, value = "", callback = null, cbOpt = null,
+    opt = {encoding: CHAR, flag: "w", mode: PERM_FILE}
+  ) =>
     new Promise((resolve, reject) => {
       if (isString(file)) {
-        resolve(fs.writeFileSync(file, value, {encoding, flag, mode}));
+        resolve(fs.writeFileSync(file, value, opt));
       } else {
         reject(new TypeError(`Expected string but got ${typeof file}.`));
       }
-    }).then(() => isFunction(callback) && callback(file, opt) || null);
+    }).then(() =>
+      isFile(file) && isFunction(callback) && callback(file, cbOpt) || null
+    );
 
   /**
    * read a file
    * @param {string} file - file path
-   * @param {string} encoding - file encoding
-   * @param {string} flag - flag
+   * @param {Object} opt - option
+   * @param {string} [opt.encoding] - file encoding
+   * @param {string} [opt.flag] - flag
    * @returns {Object} - Promise.<string> file content
    */
-  const readFile = (file, encoding = CHAR, flag = "r") =>
+  const readFile = (file, opt = {encoding: CHAR, flag: "r"}) =>
     new Promise((resolve, reject) => {
       if (isFile(file)) {
-        const value = fs.readFileSync(file, {encoding, flag});
+        const value = fs.readFileSync(file, opt);
         resolve(value);
       } else {
         reject(new Error(`${file} is not a file.`));
@@ -248,17 +255,18 @@
    * read a file and returns callback
    * @param {string} file - file path
    * @param {Function} callback - callback when read completes
-   * @param {Object} opt - callback option
-   * @param {string} encoding - file encoding
-   * @param {string} flag - flag
+   * @param {Object} cbOpt - callback option
+   * @param {Object} opt - option
+   * @param {string} [opt.encoding] - file encoding
+   * @param {string} [opt.flag] - flag
    * @returns {Object} - Promise.<Function|string>
    */
-  const readFileWithCallback = (file, callback = null, opt = null,
-                                encoding = CHAR, flag = "r") =>
+  const readFileWithCallback = (file, callback = null, cbOpt = null,
+                                opt = {encoding: CHAR, flag: "r"}) =>
     new Promise((resolve, reject) => {
       if (isFile(file)) {
-        const value = fs.readFileSync(file, {encoding, flag});
-        resolve(isFunction(callback) && callback(value, opt) || value);
+        const value = fs.readFileSync(file, opt);
+        resolve(isFunction(callback) && callback(value, cbOpt) || value);
       } else {
         reject(new Error(`${file} is not a file.`));
       }
