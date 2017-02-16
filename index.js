@@ -46,6 +46,22 @@
   };
 
   /**
+   * handle rejection
+   * @param {*} e - Error or any
+   * @returns {void}
+   */
+  const handleReject = e => {
+    e = (new Output()).encode({
+      [HOST]: {
+        message: e,
+        pid: APP,
+        status: "error",
+      },
+    });
+    e && process.stdout.write(e);
+  };
+
+  /**
    * is string
    * @param {*} o - object to check
    * @returns {boolean} - result
@@ -370,7 +386,7 @@
         }
       }
     }
-    return Promise.all(func).catch(throwErr);
+    return Promise.all(func).catch(handleReject);
   };
 
   /* input */
@@ -401,31 +417,15 @@
     msg && process.stdout.write(msg);
   };
 
-  /**
-   * handle unhandled rejection
-   * @param {*} e - Error or any
-   * @returns {void}
-   */
-  const unhandledReject = e => {
-    e = (new Output()).encode({
-      [HOST]: {
-        message: e,
-        pid: APP,
-        status: "error",
-      },
-    });
-    e && process.stdout.write(e);
-  };
-
   /* process */
   process.on("exit", handleExit);
   process.on("uncaughtException", throwErr);
-  process.on("unhandledRejection", unhandledReject);
+  process.on("unhandleRejection", handleReject);
   process.stdin.on("data", readStdin);
 
   /* startup */
   Promise.all([
     createDir(DIR_TMP_FILES),
     createDir(DIR_TMP_FILES_PB),
-  ]).then(portAppStatus).catch(throwErr);
+  ]).then(portAppStatus).catch(handleReject);
 }
