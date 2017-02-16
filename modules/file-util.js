@@ -11,12 +11,12 @@
 
   /* constants */
   const CHAR = "utf8";
+  const DIR_TMP = os.tmpdir();
   const IS_WIN = os.platform() === "win32";
   const MASK_BIT = 0o111;
   const PERM_FILE = 0o666;
   const PERM_DIR = 0o777;
   const SUBST = "index";
-  const TMP_DIR = os.tmpdir();
   const TYPE_FROM = 8;
   const TYPE_TO = -1;
 
@@ -124,7 +124,7 @@
    * @param {string} baseDir - base directory path
    * @returns {boolean} - result
    */
-  const isSubDir = (dir, baseDir = TMP_DIR) =>
+  const isSubDir = (dir, baseDir = DIR_TMP) =>
     isDir(dir) && isDir(baseDir) && dir.startsWith(baseDir);
 
   /**
@@ -133,7 +133,7 @@
    * @param {string} baseDir - base directory path
    * @returns {Object} - Promise.<Array.<*>>
    */
-  const removeDir = (dir, baseDir = TMP_DIR) =>
+  const removeDir = (dir, baseDir = DIR_TMP) =>
     new Promise((resolve, reject) => {
       if (isSubDir(dir, baseDir)) {
         const files = fs.readdirSync(dir);
@@ -158,7 +158,7 @@
    * @param {string} baseDir - base directory path
    * @returns {void}
    */
-  const removeDirSync = (dir, baseDir = TMP_DIR) => {
+  const removeDirSync = (dir, baseDir = DIR_TMP) => {
     if (isSubDir(dir, baseDir)) {
       const files = fs.readdirSync(dir);
       files.length && files.forEach(file => {
