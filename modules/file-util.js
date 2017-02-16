@@ -88,12 +88,12 @@
 
   /**
    * the file is executable
+   * NOTE: On Windows, fs.statSync(file).mode returns 33206 for executable
+   * files like `.exe`, which is 100666 in octal.
    * @param {string} file - file path
    * @param {number} mask - mask bit
    * @returns {boolean} - result
    */
-  // NOTE: On Windows, fs.statSync(file).mode returns 33206 for executable
-  // files like `.exe`, which is 100666 in octal.
   const isExecutable = (file, mask = MASK_BIT) =>
     isFile(file) && (
       !!(fs.statSync(file).mode & mask) ||
