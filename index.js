@@ -291,12 +291,12 @@
    */
   const getTmpFile = (obj = {}) => {
     const {filePath} = obj;
-    const arr = [];
+    const func = [];
     if (filePath) {
-      arr.push(appendTimestamp(obj));
-      arr.push(readFile(filePath));
+      func.push(appendTimestamp(obj));
+      func.push(readFile(filePath));
     }
-    return Promise.all(arr).then(a => {
+    return Promise.all(func).then(a => {
       let o;
       if (a.length) {
         const [data, value] = a;
@@ -347,12 +347,12 @@
    */
   const handleCreatedTmpFile = (obj = {}) => {
     const {filePath, data} = obj;
-    const arr = [];
+    const func = [];
     if (filePath) {
-      arr.push(spawnChildProcess(filePath));
-      arr.push(portFileData(filePath, data));
+      func.push(spawnChildProcess(filePath));
+      func.push(portFileData(filePath, data));
     }
-    return Promise.all(arr);
+    return Promise.all(func);
   };
 
   /**
