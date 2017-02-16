@@ -92,12 +92,12 @@
    * @param {number} mask - mask bit
    * @returns {boolean} - result
    */
-  // FIXME: On Windows, `fs.statSync(file).mode` returns 33206, which is 100666
-  // in octal, for executable files like `.exe`.
-  // Currently, only `.exe` file returns `true` on Windows.
+  // NOTE: On Windows, fs.statSync(file).mode returns 33206 for executable
+  // files like `.exe`, which is 100666 in octal.
   const isExecutable = (file, mask = MASK_BIT) =>
     isFile(file) && (
-      !!(fs.statSync(file).mode & mask) || IS_WIN && /\.exe$/.test(file)
+      !!(fs.statSync(file).mode & mask) ||
+      IS_WIN && /\.(?:bat|cmd|exe|ps1|wsh)$/i.test(file)
     );
 
   /**
