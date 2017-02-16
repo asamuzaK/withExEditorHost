@@ -19,6 +19,13 @@
   const TMP_DIR = os.tmpdir();
 
   /**
+   * get type
+   * @param {*} o - object to check
+   * @returns {string} - type of object
+   */
+  const getType = o => Object.prototype.toString.call(o).slice(8, -1);
+
+  /**
    * is function
    * @param {*} o - object to check
    * @returns {boolean} - result
@@ -56,7 +63,7 @@
   /**
    * convert URI to native file path
    * @param {string} uri - URI
-   * @returns {Object} - Promise.<?string> file path
+   * @returns {Object} - Promise.<?string>, file path
    */
   const convUriToFilePath = uri => new Promise((resolve, reject) => {
     if (isString(uri)) {
@@ -74,7 +81,7 @@
       }
       resolve(file || null);
     } else {
-      reject(new TypeError(`Expected string but got ${typeof uri}.`));
+      reject(new TypeError(`Expected String but got ${getType(uri)}.`));
     }
   });
 
@@ -181,36 +188,43 @@
         }
         return d;
       });
-      resolve(dir || null);
+      resolve(dir);
     } else {
-      reject(new TypeError(`Expected array but got ${typeof arr}.`));
+      reject(new TypeError(`Expected Array but got ${getType(arr)}.`));
     }
-  });
+  }).then(dir => isDir(dir) && dir || null);
 
   /**
    * create a file
    * @param {string} file - file path
-   * @param {string} value - value to write
+   * @param {string|Buffer|Uint8Array} value - value to write
    * @param {Object} opt - option
    * @param {string} [opt.encoding] - file encoding
    * @param {string} [opt.flag] - flag
    * @param {number|string} opt.mode - file permission
-   * @returns {Object} - Promise.<?string> file path
+   * @returns {Object} - Promise.<?string>, file path
    */
-  const createFile = (file, value = "",
+  const createFile = (file, value,
                       opt = {encoding: CHAR, flag: "w", mode: PERM_FILE}) =>
     new Promise((resolve, reject) => {
       if (isString(file)) {
-        resolve(fs.writeFileSync(file, value, opt));
+        if (isString(value) || Buffer.isBuffer(value) ||
+            value instanceof Uint8Array) {
+          resolve(fs.writeFileSync(file, value, opt));
+        } else {
+          reject(new TypeError(
+            `Expected String, Buffer, Uint8Array but got ${getType(value)}.`
+          ));
+        }
       } else {
-        reject(new TypeError(`Expected string but got ${typeof file}.`));
+        reject(new TypeError(`Expected String but got ${getType(file)}.`));
       }
     }).then(() => isFile(file) && file || null);
 
   /**
    * create a file then returns callback
    * @param {string} file - file path
-   * @param {string} value - value to write
+   * @param {string|Buffer|Uint8Array} value - value to write
    * @param {Function} callback - callback when write completes
    * @param {Object} cbOpt - callback option
    * @param {Object} opt - option
@@ -220,14 +234,21 @@
    * @returns {Object} - Promise.<?Function>
    */
   const createFileWithCallback = (
-    file, value = "", callback = null, cbOpt = null,
+    file, value, callback, cbOpt = null,
     opt = {encoding: CHAR, flag: "w", mode: PERM_FILE}
   ) =>
     new Promise((resolve, reject) => {
       if (isString(file)) {
-        resolve(fs.writeFileSync(file, value, opt));
+        if (isString(value) || Buffer.isBuffer(value) ||
+            value instanceof Uint8Array) {
+          resolve(fs.writeFileSync(file, value, opt));
+        } else {
+          reject(new TypeError(
+            `Expected String, Buffer, Uint8Array but got ${getType(value)}.`
+          ));
+        }
       } else {
-        reject(new TypeError(`Expected string but got ${typeof file}.`));
+        reject(new TypeError(`Expected String but got ${getType(file)}.`));
       }
     }).then(() =>
       isFile(file) && isFunction(callback) && callback(file, cbOpt) || null
@@ -239,7 +260,7 @@
    * @param {Object} opt - option
    * @param {string} [opt.encoding] - file encoding
    * @param {string} [opt.flag] - flag
-   * @returns {Object} - Promise.<string> file content
+   * @returns {Object} - Promise.<string|Buffer>, file content
    */
   const readFile = (file, opt = {encoding: CHAR, flag: "r"}) =>
     new Promise((resolve, reject) => {
@@ -259,14 +280,14 @@
    * @param {Object} opt - option
    * @param {string} [opt.encoding] - file encoding
    * @param {string} [opt.flag] - flag
-   * @returns {Object} - Promise.<Function|string>
+   * @returns {Object} - Promise.<?Function>
    */
-  const readFileWithCallback = (file, callback = null, cbOpt = null,
+  const readFileWithCallback = (file, callback, cbOpt = null,
                                 opt = {encoding: CHAR, flag: "r"}) =>
     new Promise((resolve, reject) => {
       if (isFile(file)) {
         const value = fs.readFileSync(file, opt);
-        resolve(isFunction(callback) && callback(value, cbOpt) || value);
+        resolve(isFunction(callback) && callback(value, cbOpt) || null);
       } else {
         reject(new Error(`${file} is not a file.`));
       }
