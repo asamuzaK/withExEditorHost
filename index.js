@@ -285,6 +285,20 @@
   });
 
   /**
+   * extract temporary file data
+   * @param {Array} arr - array
+   * @returns {Object} - temporary file data object
+   */
+  const extractTmpFileData = (arr = []) => new Promise(resolve => {
+    let obj;
+    if (Array.isArray(arr) && arr.length) {
+      const [data, value] = arr;
+      obj = {data, value};
+    }
+    resolve(obj || null);
+  });
+
+  /**
    * get temporary file
    * @param {Object} obj - temporary file data
    * @returns {Object} - Promise.<Object>
@@ -296,14 +310,7 @@
       func.push(appendTimestamp(obj));
       func.push(readFile(filePath));
     }
-    return Promise.all(func).then(a => {
-      let o;
-      if (a.length) {
-        const [data, value] = a;
-        o = {data, value};
-      }
-      return o || null;
-    });
+    return Promise.all(func).then(extractTmpFileData);
   };
 
   /* local files */
