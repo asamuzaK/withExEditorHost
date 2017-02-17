@@ -28,7 +28,7 @@
 
   /**
    * log warn
-   * @param {Object} msg - message
+   * @param {*} msg - message
    * @returns {boolean} - false
    */
   const logWarn = msg => {
@@ -38,8 +38,8 @@
 
   /**
    * log message
-   * @param {Object} msg - message
-   * @returns {Object} - message
+   * @param {*} msg - message
+   * @returns {*} - message
    */
   const logMsg = msg => {
     msg && console.log(msg);
