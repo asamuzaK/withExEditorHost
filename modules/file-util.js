@@ -4,6 +4,9 @@
 "use strict";
 {
   /* api */
+  const {
+    getType, isFunction, isString, stringifyPositiveInt,
+  } = require("./common");
   const fs = require("fs");
   const os = require("os");
   const path = require("path");
@@ -17,39 +20,6 @@
   const PERM_FILE = 0o666;
   const PERM_DIR = 0o777;
   const SUBST = "index";
-  const TYPE_FROM = 8;
-  const TYPE_TO = -1;
-
-  /**
-   * get type
-   * @param {*} o - object to check
-   * @returns {string} - type of object
-   */
-  const getType = o =>
-    Object.prototype.toString.call(o).slice(TYPE_FROM, TYPE_TO);
-
-  /**
-   * is function
-   * @param {*} o - object to check
-   * @returns {boolean} - result
-   */
-  const isFunction = o => typeof o === "function";
-
-  /**
-   * is string
-   * @param {*} o - object to check
-   * @returns {boolean} - result
-   */
-  const isString = o => typeof o === "string" || o instanceof String;
-
-  /**
-   * stringify positive integer
-   * @param {number} i - integer
-   * @param {boolean} zero - treat 0 as a positive integer
-   * @returns {?string} - stringified integer
-   */
-  const stringifyPositiveInt = (i, zero = false) =>
-    Number.isSafeInteger(i) && (zero && i >= 0 || i > 0) && `${i}` || null;
 
   /**
    * get file name from native file path

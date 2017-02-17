@@ -5,6 +5,7 @@
 {
   /* api */
   const {Input, Output} = require("./modules/native-message");
+  const {concatArgs, isString, throwErr} = require("./modules/common");
   const {
     convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
     getFileTimestamp, isExecutable, isFile, removeDir, removeDirSync, readFile,
@@ -37,15 +38,6 @@
   };
 
   /**
-   * throw error
-   * @param {!Object} e - Error
-   * @throws - Error
-   */
-  const throwErr = e => {
-    throw e;
-  };
-
-  /**
    * handle rejection
    * @param {*} e - Error or any
    * @returns {void}
@@ -59,46 +51,6 @@
       },
     });
     e && process.stdout.write(e);
-  };
-
-  /**
-   * is string
-   * @param {*} o - object to check
-   * @returns {boolean} - result
-   */
-  const isString = o => typeof o === "string" || o instanceof String;
-
-  /**
-   * correct the argument
-   * @param {string} arg - argument
-   * @returns {string} - argument
-   */
-  const correctArg = arg => {
-    if (/^\s*(?:".*"|'.*')\s*$/.test(arg)) {
-      arg = arg.trim();
-      /^".*\\["\\].*"$/.test(arg) &&
-        (arg = arg.replace(/\\"/g, "\"").replace(/\\\\/g, "\\"));
-      arg = arg.replace(/^['"]/, "").replace(/["']$/, "");
-    } else {
-      /^.*\\.*$/.test(arg) && (arg = arg.replace(/\\(?!\\)/g, ""));
-      /".*"|'.*'/.test(arg) &&
-        (arg = arg.replace(/"([^"]+)*"|'([^']+)*'/g, (m, c1, c2) => c1 || c2));
-    }
-    return arg;
-  };
-
-  /**
-   * concat arguments array
-   * @param {...(string|Array)} args - arguments
-   * @returns {Array} - arguments array
-   */
-  const concatArgs = (...args) => {
-    const reCmd = /(?:^|\s)(?:"(?:[^"\\]|\\[^"]|\\")*"|'(?:[^'\\]|\\[^']|\\')*')(?=\s|$)|(?:\\ |[^\s])+(?:"(?:[^"\\]|\\[^"]|\\")*"|'(?:[^'\\]|\\[^']|\\')*')(?:(?:\\ |[^\s])+(?:"(?:[^"\\]|\\[^"]|\\")*"|'(?:[^'\\]|\\[^']|\\')*'))*(?:\\ |[^\s])*|(?:[^"'\s\\]|\\[^\s]|\\ )+/g;
-    const arr = args.map(arg => {
-      isString(arg) && (arg = arg.match(reCmd));
-      return Array.isArray(arg) && arg.map(correctArg) || [];
-    });
-    return arr.length && arr.reduce((a, b) => a.concat(b)) || [];
   };
 
   /* child process */

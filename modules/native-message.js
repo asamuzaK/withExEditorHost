@@ -4,26 +4,13 @@
 "use strict";
 {
   /* api */
+  const {isFunction, isString} = require("./common");
   const os = require("os");
 
   /* constants */
   const BYTE_LEN = 4;
   const CHAR = "utf8";
   const IS_BE = os.endianness() === "BE";
-
-  /**
-   * is function
-   * @param {*} o - object to check
-   * @returns {boolean} - result
-   */
-  const isFunction = o => typeof o === "function";
-
-  /**
-   * is string
-   * @param {*} o - object to check
-   * @returns {boolean} - result
-   */
-  const isString = o => typeof o === "string" || o instanceof String;
 
   /* Input */
   class Input {
