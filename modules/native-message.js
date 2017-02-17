@@ -23,7 +23,7 @@
     }
 
     /**
-     * message from buffer
+     * buffer to message
      * @returns {Array} - message array
      */
     _decoder() {
