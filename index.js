@@ -298,7 +298,7 @@
 
   /**
    * handle message
-   * @param {Object} msg - message
+   * @param {*} msg - message
    * @returns {Object} - Promise.<Array<*>>
    */
   const handleMsg = msg => {
