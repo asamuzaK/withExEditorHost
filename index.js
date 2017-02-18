@@ -202,7 +202,7 @@
     if (data) {
       const {dir, fileName, host, tabId, windowId} = data;
       const arr = dir && windowId && tabId && host &&
-                  [...DIR_TMP, dir, windowId, tabId, host];
+                    [...DIR_TMP, dir, windowId, tabId, host];
       func = arr && fileName && createDir(arr).then(dPath =>
         dPath === path.join(...arr) &&
           createFile(path.join(dPath, fileName), value)
