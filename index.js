@@ -38,18 +38,25 @@
   };
 
   /**
+   * host message
+   * @param {*} message - message
+   * @param {string} status - status
+   * @returns {Object} - host message object
+   */
+  const hostMsg = (message, status) => ({
+    [HOST]: {
+      message, status,
+      pid: APP,
+    },
+  });
+
+  /**
    * handle rejection
    * @param {*} e - Error or any
    * @returns {void}
    */
   const handleReject = e => {
-    e = (new Output()).encode({
-      [HOST]: {
-        message: e,
-        pid: APP,
-        status: "error",
-      },
-    });
+    e = (new Output()).encode(hostMsg(e, "error"));
     e && process.stdout.write(e);
   };
 
@@ -79,23 +86,15 @@
           e && process.stderr.write(e);
         }
         if (stderr) {
-          stderr = output.encode({
-            [HOST]: {
-              message: `${stderr}: ${app}`,
-              pid: APP,
-              status: `${PROCESS_CHILD}_stderr`,
-            },
-          });
+          stderr = output.encode(
+            hostMsg(`${stderr}: ${app}`, `${PROCESS_CHILD}_stderr`)
+          );
           stderr && process.stdout.write(stderr);
         }
         if (stdout) {
-          stdout = output.encode({
-            [HOST]: {
-              message: `${stdout}: ${app}`,
-              pid: APP,
-              status: `${PROCESS_CHILD}_stdout`,
-            },
-          });
+          stdout = output.encode(
+            hostMsg(`${stdout}: ${app}`, `${PROCESS_CHILD}_stdout`)
+          );
           stdout && process.stdout.write(stdout);
         }
       });
@@ -118,13 +117,7 @@
    * port app status
    * @returns {Object} - Promise.<?boolean>
    */
-  const portAppStatus = () => writeStdout({
-    [HOST]: {
-      message: EDITOR_CONFIG_GET,
-      pid: APP,
-      status: "ready",
-    },
-  });
+  const portAppStatus = () => writeStdout(hostMsg(EDITOR_CONFIG_GET, "ready"));
 
   /**
    * port editor config
@@ -153,13 +146,7 @@
         };
       }
     } catch (e) {
-      msg = {
-        [HOST]: {
-          message: `${e}: ${editorConfig}`,
-          pid: APP,
-          status: "error",
-        },
-      };
+      msg = hostMsg(`${e}: ${editorConfig}`, "error");
     }
     resolve(msg || null);
   }).then(writeStdout);
@@ -269,27 +256,22 @@
   /**
    * get editor config
    * @param {string} filePath - editor config file path
-   * @returns {Object} - Promise.<*>
+   * @returns {Object} - Promise.<Array.<*>>
    */
-  const getEditorConfig = filePath => new Promise(resolve => {
-    let func;
+  const getEditorConfig = filePath => {
+    const func = [];
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
     if (isFile(filePath)) {
-      func = readFile(filePath).then(data => portEditorConfig(data, filePath));
+      func.push(
+        readFile(filePath).then(data => portEditorConfig(data, filePath))
+      );
     } else {
-      const msg = {
-        [HOST]: {
-          message: `${filePath} is not a file.`,
-          pid: APP,
-          status: "warn",
-        },
-        [EDITOR_CONFIG_RES]: null,
-      };
-      func = writeStdout(msg);
+      func.push(writeStdout(hostMsg(`${filePath} is not a file.`, "warn")));
+      func.push(writeStdout({[EDITOR_CONFIG_RES]: null}));
     }
-    resolve(func || null);
-  });
+    return Promise.all(func);
+  };
 
   /**
    * view local file
@@ -316,7 +298,7 @@
 
   /**
    * handle message
-   * @param {*} msg - message
+   * @param {Object} msg - message
    * @returns {Object} - Promise.<Array<*>>
    */
   const handleMsg = msg => {
@@ -342,8 +324,13 @@
             func.push(removePrivateTmpFiles(obj));
             break;
           default:
+            func.push(
+              writeStdout(hostMsg(`No handler found for ${item}.`, "warn"))
+            );
         }
       }
+    } else {
+      func.push(writeStdout(hostMsg(`No handler found for ${msg}.`, "warn")));
     }
     return Promise.all(func).catch(handleReject);
   };
@@ -365,13 +352,7 @@
    * @returns {void}
    */
   const handleExit = code => {
-    const msg = (new Output()).encode({
-      [HOST]: {
-        message: `exit ${code || 0}`,
-        pid: APP,
-        status: "exit",
-      },
-    });
+    const msg = (new Output()).encode(hostMsg(`exit ${code || 0}`, "exit"));
     removeDirSync(path.join(...DIR_TMP));
     msg && process.stdout.write(msg);
   };
