@@ -332,7 +332,7 @@
     } else {
       func.push(writeStdout(hostMsg(`No handler found for ${msg}.`, "warn")));
     }
-    return Promise.all(func).catch(handleReject);
+    return Promise.all(func);
   };
 
   /* input */
@@ -341,9 +341,16 @@
   /**
    * read stdin
    * @param {string|Buffer} chunk - chunk
-   * @returns {void}
+   * @returns {Object} - ?Promise.<Array.<*>>
    */
-  const readStdin = chunk => input.decode(chunk, handleMsg);
+  const readStdin = chunk => {
+    const arr = input.decode(chunk);
+    const func = [];
+    Array.isArray(arr) && arr.length && arr.forEach(msg => {
+      msg && func.push(handleMsg(msg));
+    });
+    return func.length && Promise.all(func).catch(handleReject) || null;
+  };
 
   /* exit */
   /**
