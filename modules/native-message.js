@@ -28,20 +28,22 @@
      */
     _decoder() {
       let arr = [];
-      !this._length && this._input && this._input.length >= BYTE_LEN && (
-        this._length = IS_BE && this._input.readUIntBE(0, BYTE_LEN) ||
-                       this._input.readUIntLE(0, BYTE_LEN),
-        this._input = this._input.slice(BYTE_LEN)
-      );
-      if (this._length && this._input && this._input.length >= this._length) {
-        const buf = this._input.slice(0, this._length);
-        arr.push(JSON.parse(buf.toString(CHAR)));
-        this._input = this._input.length > this._length &&
-                      this._input.slice(this._length) || null;
-        this._length = null;
-        if (this._input) {
-          const cur = this._decoder();
-          cur.length && (arr = arr.concat(cur));
+      if (Buffer.isBuffer(this._input)) {
+        !this._length && this._input.length >= BYTE_LEN && (
+          this._length = IS_BE && this._input.readUIntBE(0, BYTE_LEN) ||
+                         this._input.readUIntLE(0, BYTE_LEN),
+          this._input = this._input.slice(BYTE_LEN)
+        );
+        if (this._length && this._input.length >= this._length) {
+          const buf = this._input.slice(0, this._length);
+          arr.push(JSON.parse(buf.toString(CHAR)));
+          this._input = this._input.length > this._length &&
+                        this._input.slice(this._length) || null;
+          this._length = null;
+          if (this._input) {
+            const cur = this._decoder();
+            cur.length && (arr = arr.concat(cur));
+          }
         }
       }
       return arr;
@@ -58,7 +60,8 @@
       let msg = [];
       buf &&
         (this._input = this._input && Buffer.concat([this._input, buf]) || buf);
-      this._input && this._input.length >= BYTE_LEN && (msg = this._decoder());
+      Buffer.isBuffer(this._input) && this._input.length >= BYTE_LEN &&
+        (msg = this._decoder());
       return msg.length && msg || null;
     }
   }
