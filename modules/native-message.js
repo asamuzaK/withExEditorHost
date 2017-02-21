@@ -58,8 +58,10 @@
       const buf = (isString(chunk) || Buffer.isBuffer(chunk)) &&
                     Buffer.from(chunk);
       let msg = [];
-      buf &&
-        (this._input = this._input && Buffer.concat([this._input, buf]) || buf);
+      buf && (
+        this._input = Buffer.isBuffer(this._input) &&
+                      Buffer.concat([this._input, buf]) || buf
+      );
       Buffer.isBuffer(this._input) && this._input.length >= BYTE_LEN &&
         (msg = this._decoder());
       return msg.length && msg || null;
