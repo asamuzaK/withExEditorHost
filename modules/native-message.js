@@ -4,7 +4,7 @@
 "use strict";
 {
   /* api */
-  const {isFunction, isString} = require("./common");
+  const {isString} = require("./common");
   const os = require("os");
 
   /* constants */
@@ -50,18 +50,16 @@
     /**
      * decode message
      * @param {string|Buffer} chunk - chunk
-     * @param {Function} callback - callback
-     * @returns {void}
+     * @returns {?Array} - message array
      */
-    decode(chunk, callback) {
+    decode(chunk) {
       const buf = (isString(chunk) || Buffer.isBuffer(chunk)) &&
                     Buffer.from(chunk);
+      let msg = [];
       buf &&
         (this._input = this._input && Buffer.concat([this._input, buf]) || buf);
-      if (isFunction(callback)) {
-        const arr = this._decoder();
-        arr.length && arr.forEach(msg => msg && callback(msg));
-      }
+      this._input && this._input.length >= BYTE_LEN && (msg = this._decoder());
+      return msg.length && msg || null;
     }
   }
 
