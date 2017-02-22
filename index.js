@@ -194,7 +194,7 @@
   /**
    * create temporary file
    * @param {Object} obj - temporary file data object
-   * @returns {Object} - ?Promise.<Object> temporary file data
+   * @returns {Object} - Promise.<Object>, temporary file data
    */
   const createTmpFile = (obj = {}) => new Promise(resolve => {
     const {data, value} = obj;
@@ -226,7 +226,7 @@
   /**
    * extract temporary file data
    * @param {Array} arr - array containing temporary file data and value
-   * @returns {Object} - temporary file data object
+   * @returns {Object} - Promise.<Object>, temporary file data object
    */
   const extractTmpFileData = (arr = []) => new Promise(resolve => {
     let obj;
@@ -276,7 +276,7 @@
   /**
    * view local file
    * @param {string} uri - local file uri
-   * @returns {Object} - Promise.<Object> ChildProcess
+   * @returns {Object} - Promise.<Object>, ChildProcess
    */
   const viewLocalFile = uri => convUriToFilePath(uri).then(spawnChildProcess);
 
