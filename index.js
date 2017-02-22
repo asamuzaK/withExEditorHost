@@ -53,18 +53,19 @@
   /**
    * handle rejection
    * @param {*} e - Error or any
-   * @returns {void}
+   * @returns {boolean} - false
    */
   const handleReject = e => {
     e = (new Output()).encode(hostMsg(e, "error"));
     e && process.stdout.write(e);
+    return false;
   };
 
   /* child process */
   /**
    * spawn child process
    * @param {string} file - file path
-   * @returns {Object} - Promise.<Object>, ?ChildProcess
+   * @returns {Object} - Promise.<?ChildProcess>
    */
   const spawnChildProcess = file => new Promise(resolve => {
     const app = vars[EDITOR_PATH];
@@ -115,7 +116,7 @@
 
   /**
    * port app status
-   * @returns {Object} - Promise.<?boolean>
+   * @returns {Object} - Promise.<AsyncFunction>
    */
   const portAppStatus = () => writeStdout(hostMsg(EDITOR_CONFIG_GET, "ready"));
 
@@ -155,7 +156,7 @@
    * port file data
    * @param {string} filePath - file path
    * @param {Object} data - file data
-   * @returns {Object} - Promise.<?boolean>
+   * @returns {Object} - Promise.<AsyncFunction>
    */
   const portFileData = (filePath, data = {}) => new Promise(resolve => {
     let msg;
@@ -171,7 +172,7 @@
   /**
    * port temporary file
    * @param {Object} obj - temporary file data object
-   * @returns {Object} - Promise.<?boolean>
+   * @returns {Object} - Promise.<AsyncFunction>
    */
   const portTmpFile = (obj = {}) => new Promise(resolve => {
     const msg = Object.keys(obj).length && {
@@ -184,7 +185,7 @@
   /**
    * remove private temporary files
    * @param {boolean} bool - remove
-   * @returns {Object} - ?Promise.<void>
+   * @returns {Object} - ?Promise.<AsyncFunction>
    */
   const removePrivateTmpFiles = bool =>
     !!bool && removeDir(path.join(...DIR_TMP_FILES_PB)).then(() =>
@@ -240,7 +241,7 @@
   /**
    * get temporary file
    * @param {Object} obj - temporary file data
-   * @returns {Object} - Promise.<Object>
+   * @returns {Object} - Promise.<AsyncFunction>
    */
   const getTmpFile = (obj = {}) => {
     const {filePath} = obj;
@@ -256,7 +257,7 @@
   /**
    * get editor config
    * @param {string} filePath - editor config file path
-   * @returns {Object} - Promise.<Array.<*>>
+   * @returns {Object} - Promise.<Array>
    */
   const getEditorConfig = filePath => {
     const func = [];
@@ -276,7 +277,7 @@
   /**
    * view local file
    * @param {string} uri - local file uri
-   * @returns {Object} - Promise.<Object>, ChildProcess
+   * @returns {Object} - Promise.<AsyncFunction>
    */
   const viewLocalFile = uri => convUriToFilePath(uri).then(spawnChildProcess);
 
@@ -284,7 +285,7 @@
   /**
    * handle created temporary file
    * @param {Object} obj - temporary file data
-   * @returns {Object} - Promise.<Array.<*>>
+   * @returns {Object} - Promise.<Array>
    */
   const handleCreatedTmpFile = (obj = {}) => {
     const {filePath, data} = obj;
@@ -299,7 +300,7 @@
   /**
    * handle message
    * @param {*} msg - message
-   * @returns {Object} - Promise.<Array<*>>
+   * @returns {Object} - Promise.<Array>
    */
   const handleMsg = msg => {
     const func = [];
@@ -341,7 +342,7 @@
   /**
    * read stdin
    * @param {string|Buffer} chunk - chunk
-   * @returns {Object} - ?Promise.<Array.<*>>
+   * @returns {Object} - ?Promise.<Array>
    */
   const readStdin = chunk => {
     const arr = input.decode(chunk);
