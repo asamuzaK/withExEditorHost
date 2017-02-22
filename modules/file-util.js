@@ -174,7 +174,7 @@
    * @param {Object} opt - option
    * @param {string} [opt.encoding] - encoding, note that default is not `null`
    * @param {string} [opt.flag] - flag
-   * @param {number|string} opt.mode - file permission
+   * @param {number|string} [opt.mode] - file permission
    * @returns {Object} - Promise.<?string>, file path
    */
   const createFile = (file, value,
