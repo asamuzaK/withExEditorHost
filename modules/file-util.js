@@ -101,7 +101,7 @@
    * remove the directory
    * @param {string} dir - directory path
    * @param {string} baseDir - base directory path
-   * @returns {Object} - Promise.<Array>
+   * @returns {Object} - Promise.<Function>
    */
   const removeDir = (dir, baseDir = DIR_TMP) =>
     new Promise((resolve, reject) => {
