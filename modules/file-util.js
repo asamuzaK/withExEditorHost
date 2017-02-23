@@ -4,9 +4,7 @@
 "use strict";
 {
   /* api */
-  const {
-    getType, isFunction, isString, stringifyPositiveInt,
-  } = require("./common");
+  const {getType, isString, stringifyPositiveInt} = require("./common");
   const fs = require("fs");
   const os = require("os");
   const path = require("path");
@@ -67,6 +65,25 @@
     isString(file) && fs.existsSync(file) && fs.statSync(file) || null;
 
   /**
+   * the directory is a directory
+   * @param {string} dir - directory path
+   * @returns {boolean} - result
+   */
+  const isDir = dir => {
+    const stat = getStat(dir);
+    return stat && stat.isDirectory() || false;
+  };
+
+  /**
+   * the directory is a subdirectory of a certain directory
+   * @param {string} dir - directory path
+   * @param {string} baseDir - base directory path
+   * @returns {boolean} - result
+   */
+  const isSubDir = (dir, baseDir = DIR_TMP) =>
+    isDir(dir) && isDir(baseDir) && dir.startsWith(baseDir);
+
+  /**
    * the file is a file
    * @param {string} file - file path
    * @returns {boolean} - result
@@ -92,23 +109,14 @@
   };
 
   /**
-   * the directory is a directory
-   * @param {string} dir - directory path
-   * @returns {boolean} - result
+   * get file timestamp
+   * @param {string} file - file path
+   * @returns {number} - timestamp
    */
-  const isDir = dir => {
-    const stat = getStat(dir);
-    return stat && stat.isDirectory() || false;
+  const getFileTimestamp = file => {
+    const stat = getStat(file);
+    return stat && stat.mtime.getTime() || 0;
   };
-
-  /**
-   * the directory is a subdirectory of a certain directory
-   * @param {string} dir - directory path
-   * @param {string} baseDir - base directory path
-   * @returns {boolean} - result
-   */
-  const isSubDir = (dir, baseDir = DIR_TMP) =>
-    isDir(dir) && isDir(baseDir) && dir.startsWith(baseDir);
 
   /**
    * remove the directory
@@ -208,39 +216,6 @@
     }).then(() => isFile(file) && file || null);
 
   /**
-   * create a file then returns callback
-   * @param {string} file - file path
-   * @param {string|Buffer|Uint8Array} value - value to write
-   * @param {Function} callback - callback when write completes
-   * @param {Object} cbOpt - callback option
-   * @param {Object} opt - option
-   * @param {string} [opt.encoding] - encoding, note that default is not `null`
-   * @param {string} [opt.flag] - flag
-   * @param {number|string} [opt.mode] - file permission
-   * @returns {Object} - Promise.<?Function>
-   */
-  const createFileWithCallback = (
-    file, value, callback, cbOpt = null,
-    opt = {encoding: CHAR, flag: "w", mode: PERM_FILE}
-  ) =>
-    new Promise((resolve, reject) => {
-      if (isString(file)) {
-        if (isString(value) || Buffer.isBuffer(value) ||
-            value instanceof Uint8Array) {
-          resolve(fs.writeFileSync(file, value, opt));
-        } else {
-          reject(new TypeError(
-            `Expected String, Buffer, Uint8Array but got ${getType(value)}.`
-          ));
-        }
-      } else {
-        reject(new TypeError(`Expected String but got ${getType(file)}.`));
-      }
-    }).then(() =>
-      isFile(file) && isFunction(callback) && callback(file, cbOpt) || null
-    );
-
-  /**
    * read a file
    * @param {string} file - file path
    * @param {Object} opt - option
@@ -258,40 +233,9 @@
       }
     });
 
-  /**
-   * read a file and returns callback
-   * @param {string} file - file path
-   * @param {Function} callback - callback when read completes
-   * @param {Object} cbOpt - callback option
-   * @param {Object} opt - option
-   * @param {string} [opt.encoding] - encoding, note that default is not `null`
-   * @param {string} [opt.flag] - flag
-   * @returns {Object} - Promise.<?Function>
-   */
-  const readFileWithCallback = (file, callback, cbOpt = null,
-                                opt = {encoding: CHAR, flag: "r"}) =>
-    new Promise((resolve, reject) => {
-      if (isFile(file)) {
-        const value = fs.readFileSync(file, opt);
-        resolve(isFunction(callback) && callback(value, cbOpt) || null);
-      } else {
-        reject(new Error(`${file} is not a file.`));
-      }
-    });
-
-  /**
-   * get file timestamp
-   * @param {string} file - file path
-   * @returns {number} - timestamp
-   */
-  const getFileTimestamp = file => {
-    const stat = getStat(file);
-    return stat && stat.mtime.getTime() || 0;
-  };
-
   module.exports = {
-    convUriToFilePath, createDir, createFile, createFileWithCallback,
-    getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
-    isSubDir, removeDir, removeDirSync, readFile, readFileWithCallback,
+    convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
+    getFileTimestamp, isDir, isExecutable, isFile, isSubDir, removeDir,
+    removeDirSync, readFile,
   };
 }
