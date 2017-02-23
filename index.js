@@ -107,7 +107,7 @@
   /**
    * write stdout
    * @param {*} msg - message
-   * @returns {Object} - Promise.<?boolean>
+   * @returns {Object} - Promise.<?Function>
    */
   const writeStdout = msg => new Promise(resolve => {
     msg = (new Output()).encode(msg);
