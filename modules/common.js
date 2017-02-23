@@ -55,13 +55,6 @@
     Object.prototype.toString.call(o).slice(TYPE_FROM, TYPE_TO);
 
   /**
-   * is function
-   * @param {*} o - object to check
-   * @returns {boolean} - result
-   */
-  const isFunction = o => typeof o === "function";
-
-  /**
    * is string
    * @param {*} o - object to check
    * @returns {boolean} - result
@@ -125,7 +118,7 @@
   };
 
   module.exports = {
-    concatArgs, correctArg, getType, isFunction, isString, logError, logMsg,
-    logWarn, stringifyPositiveInt, stripHtmlTags, throwErr,
+    concatArgs, correctArg, getType, isString, logError, logMsg, logWarn,
+    stringifyPositiveInt, stripHtmlTags, throwErr,
   };
 }
