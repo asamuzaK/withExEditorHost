@@ -59,12 +59,22 @@
   });
 
   /**
+   * get stat
+   * @param {string} file - file path
+   * @returns {Object} - file stat
+   */
+  const getStat = file =>
+    isString(file) && fs.existsSync(file) && fs.statSync(file) || null;
+
+  /**
    * the file is a file
    * @param {string} file - file path
    * @returns {boolean} - result
    */
-  const isFile = file =>
-    isString(file) && fs.existsSync(file) && fs.statSync(file).isFile();
+  const isFile = file => {
+    const stat = getStat(file);
+    return stat && stat.isFile() || false;
+  };
 
   /**
    * the file is executable
@@ -74,19 +84,22 @@
    * @param {number} mask - mask bit
    * @returns {boolean} - result
    */
-  const isExecutable = (file, mask = MASK_BIT) =>
-    isFile(file) && (
-      !!(fs.statSync(file).mode & mask) ||
-      IS_WIN && /\.(?:bat|cmd|exe|ps1|wsh)$/i.test(file)
-    );
+  const isExecutable = (file, mask = MASK_BIT) => {
+    const stat = getStat(file);
+    return stat && (
+      !!(stat.mode & mask) || IS_WIN && /\.(?:bat|cmd|exe|ps1|wsh)$/i.test(file)
+    ) || false;
+  };
 
   /**
    * the directory is a directory
    * @param {string} dir - directory path
    * @returns {boolean} - result
    */
-  const isDir = dir =>
-    isString(dir) && fs.existsSync(dir) && fs.statSync(dir).isDirectory();
+  const isDir = dir => {
+    const stat = getStat(dir);
+    return stat && stat.isDirectory() || false;
+  };
 
   /**
    * the directory is a subdirectory of a certain directory
@@ -271,9 +284,10 @@
    * @param {string} file - file path
    * @returns {number} - timestamp
    */
-  const getFileTimestamp = file =>
-    isString(file) && fs.existsSync(file) &&
-    fs.statSync(file).mtime.getTime() || 0;
+  const getFileTimestamp = file => {
+    const stat = getStat(file);
+    return stat && stat.mtime.getTime() || 0;
+  };
 
   module.exports = {
     convUriToFilePath, createDir, createFile, createFileWithCallback,
