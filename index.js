@@ -124,7 +124,7 @@
    * port editor config
    * @param {string} data - editor config
    * @param {string} editorConfig - editor config file path
-   * @returns {Object} - Promise.<?boolean>
+   * @returns {Object} - Promise.<AsyncFunction>
    */
   const portEditorConfig = (data, editorConfig) => new Promise(resolve => {
     let msg;
