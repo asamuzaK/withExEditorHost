@@ -4,11 +4,11 @@
 "use strict";
 {
   /* api */
+  const {URL} = require("url");
   const {getType, isString, stringifyPositiveInt} = require("./common");
   const fs = require("fs");
   const os = require("os");
   const path = require("path");
-  const url = require("url");
 
   /* constants */
   const CHAR = "utf8";
@@ -40,7 +40,7 @@
     if (!isString(uri)) {
       throw new TypeError(`Expected String but got ${getType(uri)}.`);
     }
-    const {protocol, pathname} = url.parse(uri, false, true);
+    const {protocol, pathname} = new URL(uri);
     let file;
     if (protocol === "file:" && pathname) {
       if (IS_WIN) {
