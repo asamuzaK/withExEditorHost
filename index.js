@@ -67,7 +67,7 @@
    * @param {string} file - file path
    * @returns {Object} - Promise.<?ChildProcess>
    */
-  const spawnChildProcess = file => new Promise(resolve => {
+  const spawnChildProcess = async file => {
     const app = vars[EDITOR_PATH];
     const pos = vars[FILE_AFTER_ARGS] || false;
     let args = vars[CMD_ARGS] || [], proc;
@@ -100,8 +100,8 @@
         }
       });
     }
-    resolve(proc || null);
-  });
+    return proc || null;
+  };
 
   /* output */
   /**
@@ -109,24 +109,25 @@
    * @param {*} msg - message
    * @returns {Object} - Promise.<?Function>
    */
-  const writeStdout = msg => new Promise(resolve => {
+  const writeStdout = async msg => {
     msg = (new Output()).encode(msg);
-    resolve(msg && process.stdout.write(msg) || null);
-  });
+    return msg && process.stdout.write(msg) || null;
+  };
 
   /**
    * port app status
    * @returns {Object} - Promise.<AsyncFunction>
    */
-  const portAppStatus = () => writeStdout(hostMsg(EDITOR_CONFIG_GET, "ready"));
+  const portAppStatus = async () =>
+    writeStdout(hostMsg(EDITOR_CONFIG_GET, "ready"));
 
   /**
    * port editor config
    * @param {string} data - editor config
    * @param {string} editorConfig - editor config file path
-   * @returns {Object} - Promise.<AsyncFunction>
+   * @returns {Object} - Promise.<?AsyncFunction>
    */
-  const portEditorConfig = (data, editorConfig) => new Promise(resolve => {
+  const portEditorConfig = async (data, editorConfig) => {
     let msg;
     try {
       data = data && JSON.parse(data);
@@ -149,16 +150,16 @@
     } catch (e) {
       msg = hostMsg(`${e}: ${editorConfig}`, "error");
     }
-    resolve(msg || null);
-  }).then(writeStdout);
+    return msg && writeStdout(msg) || null;
+  };
 
   /**
    * port file data
    * @param {string} filePath - file path
    * @param {Object} data - file data
-   * @returns {Object} - Promise.<AsyncFunction>
+   * @returns {Object} - Promise.<?AsyncFunction>
    */
-  const portFileData = (filePath, data = {}) => new Promise(resolve => {
+  const portFileData = async (filePath, data = {}) => {
     let msg;
     if (isString(filePath)) {
       data.filePath = filePath;
@@ -166,28 +167,28 @@
         [TMP_FILE_DATA_PORT]: {filePath, data},
       };
     }
-    resolve(msg || null);
-  }).then(writeStdout);
+    return msg && writeStdout(msg) || null;
+  };
 
   /**
    * port temporary file
    * @param {Object} obj - temporary file data object
-   * @returns {Object} - Promise.<AsyncFunction>
+   * @returns {Object} - Promise.<?AsyncFunction>
    */
-  const portTmpFile = (obj = {}) => new Promise(resolve => {
+  const portTmpFile = async (obj = {}) => {
     const msg = Object.keys(obj).length && {
       [TMP_FILE_RES]: obj,
     };
-    resolve(msg || null);
-  }).then(writeStdout);
+    return msg && writeStdout(msg) || null;
+  };
 
   /* temporary files */
   /**
    * remove private temporary files
    * @param {boolean} bool - remove
-   * @returns {Object} - ?Promise.<AsyncFunction>
+   * @returns {Object} - Promise.<?AsyncFunction>
    */
-  const removePrivateTmpFiles = bool =>
+  const removePrivateTmpFiles = async bool =>
     !!bool && removeDir(path.join(...DIR_TMP_FILES_PB)).then(() =>
       createDir(DIR_TMP_FILES_PB)
     ) || null;
@@ -197,7 +198,7 @@
    * @param {Object} obj - temporary file data object
    * @returns {Object} - Promise.<Object>, temporary file data
    */
-  const createTmpFile = (obj = {}) => new Promise(resolve => {
+  const createTmpFile = async (obj = {}) => {
     const {data, value} = obj;
     let func;
     if (data) {
@@ -209,41 +210,41 @@
           createFile(path.join(dPath, fileName), value)
       ).then(filePath => filePath && {filePath, data} || null);
     }
-    resolve(func || null);
-  });
+    return func || null;
+  };
 
   /**
    * append file timestamp
    * @param {Object} data - temporary file data
    * @returns {Object} - Promise.<Object>, temporary file data
    */
-  const appendTimestamp = (data = {}) => new Promise(resolve => {
+  const appendTimestamp = async (data = {}) => {
     const {filePath} = data;
     const timestamp = filePath && getFileTimestamp(filePath);
     data.timestamp = timestamp || 0;
-    resolve(data);
-  });
+    return data;
+  };
 
   /**
    * extract temporary file data
    * @param {Array} arr - array containing temporary file data and value
    * @returns {Object} - Promise.<Object>, temporary file data object
    */
-  const extractTmpFileData = (arr = []) => new Promise(resolve => {
+  const extractTmpFileData = async (arr = []) => {
     let obj;
     if (Array.isArray(arr) && arr.length) {
       const [data, value] = arr;
       obj = {data, value};
     }
-    resolve(obj || null);
-  });
+    return obj || null;
+  };
 
   /**
    * get temporary file
    * @param {Object} obj - temporary file data
    * @returns {Object} - Promise.<AsyncFunction>
    */
-  const getTmpFile = (obj = {}) => {
+  const getTmpFile = async (obj = {}) => {
     const {filePath} = obj;
     const func = [];
     if (filePath) {
@@ -259,7 +260,7 @@
    * @param {string} filePath - editor config file path
    * @returns {Object} - Promise.<Array>
    */
-  const getEditorConfig = filePath => {
+  const getEditorConfig = async filePath => {
     const func = [];
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
@@ -279,7 +280,8 @@
    * @param {string} uri - local file uri
    * @returns {Object} - Promise.<AsyncFunction>
    */
-  const viewLocalFile = uri => convUriToFilePath(uri).then(spawnChildProcess);
+  const viewLocalFile = async uri =>
+    convUriToFilePath(uri).then(spawnChildProcess);
 
   /* handlers */
   /**
@@ -287,7 +289,7 @@
    * @param {Object} obj - temporary file data
    * @returns {Object} - Promise.<Array>
    */
-  const handleCreatedTmpFile = (obj = {}) => {
+  const handleCreatedTmpFile = async (obj = {}) => {
     const {filePath, data} = obj;
     const func = [];
     if (filePath) {
@@ -302,7 +304,7 @@
    * @param {*} msg - message
    * @returns {Object} - Promise.<Array>
    */
-  const handleMsg = msg => {
+  const handleMsg = async msg => {
     const func = [];
     const items = msg && Object.keys(msg);
     if (items && items.length) {
