@@ -201,7 +201,7 @@
         func.push(fs.unlinkSync(cur));
       }
     });
-    Promise.all(func).then(() => fs.rmdirSync(dir)).catch(throwErr);
+    await Promise.all(func).then(() => fs.rmdirSync(dir)).catch(throwErr);
   };
 
   /**
