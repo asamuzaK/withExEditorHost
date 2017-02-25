@@ -79,7 +79,7 @@
         encoding: CHAR,
         env: process.env,
       };
-      args = concatArgs(argA, argB);
+      args = await concatArgs(argA, argB);
       proc = execFile(app, args, opt, (e, stdout, stderr) => {
         const output = new Output();
         if (e) {
@@ -200,17 +200,16 @@
    */
   const createTmpFile = async (obj = {}) => {
     const {data, value} = obj;
-    let func;
+    let filePath;
     if (data) {
       const {dir, fileName, host, tabId, windowId} = data;
       const arr = dir && windowId && tabId && host &&
                     [...DIR_TMP, dir, windowId, tabId, host];
-      func = arr && fileName && createDir(arr).then(dPath =>
-        dPath === path.join(...arr) &&
-          createFile(path.join(dPath, fileName), value)
-      ).then(filePath => filePath && {filePath, data} || null);
+      const dPath = arr && await createDir(arr);
+      filePath = dPath === path.join(...arr) && fileName &&
+                   await createFile(path.join(dPath, fileName), value);
     }
-    return func || null;
+    return data && filePath && {data, filePath} || null;
   };
 
   /**
@@ -220,8 +219,7 @@
    */
   const appendTimestamp = async (data = {}) => {
     const {filePath} = data;
-    const timestamp = filePath && getFileTimestamp(filePath);
-    data.timestamp = timestamp || 0;
+    data.timestamp = filePath && getFileTimestamp(filePath) || 0;
     return data;
   };
 
@@ -265,9 +263,8 @@
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
     if (isFile(filePath)) {
-      func.push(
-        readFile(filePath).then(data => portEditorConfig(data, filePath))
-      );
+      const data = await readFile(filePath);
+      func.push(portEditorConfig(data, filePath));
     } else {
       func.push(writeStdout(hostMsg(`${filePath} is not a file.`, "warn")));
       func.push(writeStdout({[EDITOR_CONFIG_RES]: null}));
@@ -290,7 +287,7 @@
    * @returns {Object} - Promise.<Array>
    */
   const handleCreatedTmpFile = async (obj = {}) => {
-    const {filePath, data} = obj;
+    const {data, filePath} = obj;
     const func = [];
     if (filePath) {
       func.push(spawnChildProcess(filePath));
