@@ -266,9 +266,8 @@
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
     if (isFile(filePath)) {
-      func.push(
-        readFile(filePath).then(data => portEditorConfig(data, filePath))
-      );
+      const data = readFile(filePath);
+      func.push(portEditorConfig(data, filePath));
     } else {
       func.push(writeStdout(hostMsg(`${filePath} is not a file.`, "warn")));
       func.push(writeStdout({[EDITOR_CONFIG_RES]: null}));
@@ -279,9 +278,12 @@
   /**
    * view local file
    * @param {string} uri - local file uri
-   * @returns {Object} - Promise.<AsyncFunction>
+   * @returns {Object} - Promise.<?AsyncFunction>
    */
-  const viewLocalFile = uri => convUriToFilePath(uri).then(spawnChildProcess);
+  const viewLocalFile = uri => new Promise(resolve => {
+    const file = convUriToFilePath(uri);
+    resolve(file && spawnChildProcess(file) || null);
+  });
 
   /* handlers */
   /**
