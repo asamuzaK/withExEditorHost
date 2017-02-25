@@ -81,19 +81,18 @@
       };
       args = concatArgs(argA, argB);
       proc = execFile(app, args, opt, (e, stdout, stderr) => {
-        const output = new Output();
         if (e) {
-          e = output.encode(e);
+          e = (new Output()).encode(e);
           e && process.stderr.write(e);
         }
         if (stderr) {
-          stderr = output.encode(
+          stderr = (new Output()).encode(
             hostMsg(`${stderr}: ${app}`, `${PROCESS_CHILD}_stderr`)
           );
           stderr && process.stdout.write(stderr);
         }
         if (stdout) {
-          stdout = output.encode(
+          stdout = (new Output()).encode(
             hostMsg(`${stdout}: ${app}`, `${PROCESS_CHILD}_stdout`)
           );
           stdout && process.stdout.write(stdout);
@@ -155,11 +154,11 @@
 
   /**
    * port file data
-   * @param {string} filePath - file path
-   * @param {Object} data - file data
+   * @param {Object} obj - file data
    * @returns {Object} - Promise.<?AsyncFunction>
    */
-  const portFileData = async (filePath, data = {}) => {
+  const portFileData = async (obj = {}) => {
+    const {data, filePath} = obj;
     let msg;
     if (isString(filePath)) {
       data.filePath = filePath;
@@ -292,11 +291,11 @@
    * @returns {Object} - Promise.<Array>
    */
   const handleCreatedTmpFile = async (obj = {}) => {
-    const {data, filePath} = obj;
+    const {filePath} = obj;
     const func = [];
     if (filePath) {
       func.push(spawnChildProcess(filePath));
-      func.push(portFileData(filePath, data));
+      func.push(portFileData(obj));
     }
     return Promise.all(func);
   };
