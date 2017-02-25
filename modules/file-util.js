@@ -244,7 +244,7 @@
       }
       return d;
     });
-    return isDir(dir) && dir || null;
+    return isDirSync(dir) && dir || null;
   };
 
   /**
@@ -260,7 +260,6 @@
   const createFile = async (
     file, value, opt = {encoding: CHAR, flag: "w", mode: PERM_FILE}
   ) => {
-    let res;
     if (!isString(file)) {
       throw new TypeError(`Expected String but got ${getType(file)}.`);
     }
@@ -271,8 +270,7 @@
       );
     }
     await fs.writeFileSync(file, value, opt);
-    await isFile(file) && (res = file);
-    return res || null;
+    return isFileSync(file) && file || null;
   };
 
   /**
