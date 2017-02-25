@@ -164,7 +164,7 @@
     if (isString(filePath)) {
       data.filePath = filePath;
       msg = {
-        [TMP_FILE_DATA_PORT]: {filePath, data},
+        [TMP_FILE_DATA_PORT]: {data, filePath},
       };
     }
     return msg && writeStdout(msg) || null;
