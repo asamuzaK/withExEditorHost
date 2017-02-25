@@ -5,7 +5,9 @@
 {
   /* api */
   const {URL} = require("url");
-  const {getType, isString, stringifyPositiveInt} = require("./common");
+  const {
+    getType, isString, stringifyPositiveInt, throwErr,
+  } = require("./common");
   const fs = require("fs");
   const os = require("os");
   const path = require("path");
@@ -99,7 +101,7 @@
     const arr = await Promise.all([
       isDir(dir),
       isDir(baseDir),
-    ]);
+    ]).catch(throwErr);
     return arr.every(i => !!i) && dir.startsWith(baseDir);
   };
 
@@ -183,7 +185,7 @@
    * remove the directory
    * @param {string} dir - directory path
    * @param {string} baseDir - base directory path
-   * @returns {Object} - Promise.<Function>
+   * @returns {void} - Promise.<void>
    */
   const removeDir = async (dir, baseDir = DIR_TMP) => {
     if (await !isSubDir(dir, baseDir)) {
@@ -199,8 +201,7 @@
         func.push(fs.unlinkSync(cur));
       }
     });
-    await Promise.all(func);
-    return fs.rmdirSync(dir);
+    Promise.all(func).then(() => fs.rmdirSync(dir)).catch(throwErr);
   };
 
   /**
