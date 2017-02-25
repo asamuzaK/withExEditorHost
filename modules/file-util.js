@@ -260,6 +260,7 @@
   const createFile = async (
     file, value, opt = {encoding: CHAR, flag: "w", mode: PERM_FILE}
   ) => {
+    let res;
     if (!isString(file)) {
       throw new TypeError(`Expected String but got ${getType(file)}.`);
     }
@@ -270,7 +271,8 @@
       );
     }
     await fs.writeFileSync(file, value, opt);
-    return isFile(file) && file || null;
+    await isFile(file) && (res = file);
+    return res || null;
   };
 
   /**
