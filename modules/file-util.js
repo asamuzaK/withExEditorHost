@@ -34,27 +34,26 @@
   /**
    * convert URI to native file path
    * @param {string} uri - URI
-   * @returns {Object} - Promise.<?string>, file path
+   * @returns {?string} - file path
    */
-  const convUriToFilePath = uri => new Promise((resolve, reject) => {
-    if (isString(uri)) {
-      const {protocol, pathname} = url.parse(uri, false, true);
-      let file;
-      if (protocol === "file:" && pathname) {
-        if (IS_WIN) {
-          const arr = pathname.split("/");
-          file = arr.reduce((p, c) =>
-            p && path.join(p, decodeURIComponent(c)) || decodeURIComponent(c)
-          );
-        } else {
-          file = decodeURIComponent(pathname);
-        }
-      }
-      resolve(file || null);
-    } else {
-      reject(new TypeError(`Expected String but got ${getType(uri)}.`));
+  const convUriToFilePath = uri => {
+    if (!isString(uri)) {
+      throw new TypeError(`Expected String but got ${getType(uri)}.`);
     }
-  });
+    const {protocol, pathname} = url.parse(uri, false, true);
+    let file;
+    if (protocol === "file:" && pathname) {
+      if (IS_WIN) {
+        const arr = pathname.split("/");
+        file = arr.reduce((p, c) =>
+          p && path.join(p, decodeURIComponent(c)) || decodeURIComponent(c)
+        );
+      } else {
+        file = decodeURIComponent(pathname);
+      }
+    }
+    return file || null;
+  };
 
   /**
    * get stat
@@ -122,71 +121,46 @@
    * remove the directory
    * @param {string} dir - directory path
    * @param {string} baseDir - base directory path
-   * @returns {Object} - Promise.<Function>
-   */
-  const removeDir = (dir, baseDir = DIR_TMP) =>
-    new Promise((resolve, reject) => {
-      if (isSubDir(dir, baseDir)) {
-        const files = fs.readdirSync(dir);
-        const func = [];
-        files.length && files.forEach(file => {
-          const cur = path.join(dir, file);
-          if (fs.lstatSync(cur).isDirectory()) {
-            func.push(removeDir(cur, baseDir));
-          } else {
-            func.push(fs.unlinkSync(cur));
-          }
-        });
-        resolve(Promise.all(func).then(() => fs.rmdirSync(dir)));
-      } else {
-        reject(new Error(`${dir} is not a subdirectory of ${baseDir}.`));
-      }
-    });
-
-  /**
-   * remove the directory sync
-   * @param {string} dir - directory path
-   * @param {string} baseDir - base directory path
    * @returns {void}
    */
-  const removeDirSync = (dir, baseDir = DIR_TMP) => {
-    if (isSubDir(dir, baseDir)) {
-      const files = fs.readdirSync(dir);
-      files.length && files.forEach(file => {
-        const cur = path.join(dir, file);
-        if (fs.lstatSync(cur).isDirectory()) {
-          removeDirSync(cur, baseDir);
-        } else {
-          fs.unlinkSync(cur);
-        }
-      });
-      fs.rmdirSync(dir);
+  const removeDir = (dir, baseDir = DIR_TMP) => {
+    if (!isSubDir(dir, baseDir)) {
+      throw new Error(`${dir} is not a subdirectory of ${baseDir}.`);
     }
+    const files = fs.readdirSync(dir);
+    files.length && files.forEach(file => {
+      const cur = path.join(dir, file);
+      if (fs.lstatSync(cur).isDirectory()) {
+        removeDir(cur, baseDir);
+      } else {
+        fs.unlinkSync(cur);
+      }
+    });
+    fs.rmdirSync(dir);
   };
 
   /**
    * create a directory
    * @param {Array} arr - directory array
    * @param {string|number} mode - permission
-   * @returns {Object} - Promise.<?string>, directory path
+   * @returns {?string} - directory path
    */
-  const createDir = (arr, mode = PERM_DIR) => new Promise((resolve, reject) => {
-    if (Array.isArray(arr)) {
-      const dir = arr.length && arr.reduce((p, c) => {
-        let d;
-        p = isString(p) && p || stringifyPositiveInt(p, true);
-        if (p) {
-          const v = isString(c) && c || stringifyPositiveInt(c, true);
-          d = v && path.join(p, v) || p;
-          !fs.existsSync(d) && fs.mkdirSync(d, mode);
-        }
-        return d;
-      });
-      resolve(dir);
-    } else {
-      reject(new TypeError(`Expected Array but got ${getType(arr)}.`));
+  const createDir = (arr, mode = PERM_DIR) => {
+    if (!Array.isArray(arr)) {
+      throw new TypeError(`Expected Array but got ${getType(arr)}.`);
     }
-  }).then(dir => isDir(dir) && dir || null);
+    const dir = arr.length && arr.reduce((p, c) => {
+      let d;
+      p = isString(p) && p || stringifyPositiveInt(p, true);
+      if (p) {
+        const v = isString(c) && c || stringifyPositiveInt(c, true);
+        d = v && path.join(p, v) || p;
+        !fs.existsSync(d) && fs.mkdirSync(d, mode);
+      }
+      return d;
+    });
+    return isDir(dir) && dir || null;
+  };
 
   /**
    * create a file
@@ -196,24 +170,22 @@
    * @param {string} [opt.encoding] - encoding, note that default is not `null`
    * @param {string} [opt.flag] - flag
    * @param {number|string} [opt.mode] - file permission
-   * @returns {Object} - Promise.<?string>, file path
+   * @returns {?string} - file path
    */
   const createFile = (file, value,
-                      opt = {encoding: CHAR, flag: "w", mode: PERM_FILE}) =>
-    new Promise((resolve, reject) => {
-      if (isString(file)) {
-        if (isString(value) || Buffer.isBuffer(value) ||
-            value instanceof Uint8Array) {
-          resolve(fs.writeFileSync(file, value, opt));
-        } else {
-          reject(new TypeError(
-            `Expected String, Buffer, Uint8Array but got ${getType(value)}.`
-          ));
-        }
-      } else {
-        reject(new TypeError(`Expected String but got ${getType(file)}.`));
-      }
-    }).then(() => isFile(file) && file || null);
+                      opt = {encoding: CHAR, flag: "w", mode: PERM_FILE}) => {
+    if (!isString(file)) {
+      throw new TypeError(`Expected String but got ${getType(file)}.`);
+    }
+    if (!isString(value) && !Buffer.isBuffer(value) &&
+        !(value instanceof Uint8Array)) {
+      throw new TypeError(
+        `Expected String, Buffer, Uint8Array but got ${getType(value)}.`
+      );
+    }
+    fs.writeFileSync(file, value, opt);
+    return isFile(file) && file || null;
+  };
 
   /**
    * read a file
@@ -221,21 +193,19 @@
    * @param {Object} opt - option
    * @param {string} [opt.encoding] - encoding, note that default is not `null`
    * @param {string} [opt.flag] - flag
-   * @returns {Object} - Promise.<string|Buffer>, file content
+   * @returns {string|Buffer} - file content
    */
-  const readFile = (file, opt = {encoding: CHAR, flag: "r"}) =>
-    new Promise((resolve, reject) => {
-      if (isFile(file)) {
-        const value = fs.readFileSync(file, opt);
-        resolve(value);
-      } else {
-        reject(new Error(`${file} is not a file.`));
-      }
-    });
+  const readFile = (file, opt = {encoding: CHAR, flag: "r"}) => {
+    if (!isFile(file)) {
+      throw new Error(`${file} is not a file.`);
+    }
+    const value = fs.readFileSync(file, opt);
+    return value;
+  };
 
   module.exports = {
     convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, getStat, isDir, isExecutable, isFile, isSubDir, removeDir,
-    removeDirSync, readFile,
+    getFileTimestamp, getStat, isDir, isExecutable, isFile, isSubDir,
+    removeDir, readFile,
   };
 }
