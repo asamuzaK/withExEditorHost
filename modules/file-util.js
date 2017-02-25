@@ -5,9 +5,7 @@
 {
   /* api */
   const {URL} = require("url");
-  const {
-    getType, isString, stringifyPositiveInt, throwErr,
-  } = require("./common");
+  const {getType, isString, stringifyPositiveInt} = require("./common");
   const fs = require("fs");
   const os = require("os");
   const path = require("path");
@@ -36,9 +34,9 @@
   /**
    * convert URI to native file path
    * @param {string} uri - URI
-   * @returns {Object} - Promise.<?string>, file path
+   * @returns {?string} - file path
    */
-  const convUriToFilePath = async uri => {
+  const convUriToFilePath = uri => {
     if (!isString(uri)) {
       throw new TypeError(`Expected String but got ${getType(uri)}.`);
     }
@@ -60,34 +58,18 @@
   /**
    * get stat
    * @param {string} file - file path
-   * @returns {Object} - Promise.<Object>, file stat
-   */
-  const getStat = async file =>
-    isString(file) && fs.existsSync(file) && fs.statSync(file) || null;
-
-  /**
-   * get stat, sync
-   * @param {string} file - file path
    * @returns {Object} - file stat
    */
-  const getStatSync = file =>
+  const getStat = file =>
     isString(file) && fs.existsSync(file) && fs.statSync(file) || null;
 
   /**
    * the directory is a directory
    * @param {string} dir - directory path
-   * @returns {Object} - Promise.<boolean>, result
-   */
-  const isDir = async dir =>
-    getStat(dir).then(stat => stat && stat.isDirectory() || false);
-
-  /**
-   * the directory is a directory, sync
-   * @param {string} dir - directory path
    * @returns {boolean} - result
    */
-  const isDirSync = dir => {
-    const stat = getStatSync(dir);
+  const isDir = dir => {
+    const stat = getStat(dir);
     return stat && stat.isDirectory() || false;
   };
 
@@ -95,40 +77,18 @@
    * the directory is a subdirectory of a certain directory
    * @param {string} dir - directory path
    * @param {string} baseDir - base directory path
-   * @returns {Object} - Promose.<boolean>, result
-   */
-  const isSubDir = async (dir, baseDir = DIR_TMP) => {
-    const arr = await Promise.all([
-      isDir(dir),
-      isDir(baseDir),
-    ]).catch(throwErr);
-    return arr.every(i => !!i) && dir.startsWith(baseDir);
-  };
-
-  /**
-   * the directory is a subdirectory of a certain directory, sync
-   * @param {string} dir - directory path
-   * @param {string} baseDir - base directory path
    * @returns {boolean} - result
    */
-  const isSubDirSync = (dir, baseDir = DIR_TMP) =>
-    isDirSync(dir) && isDirSync(baseDir) && dir.startsWith(baseDir);
+  const isSubDir = (dir, baseDir = DIR_TMP) =>
+    isDir(dir) && isDir(baseDir) && dir.startsWith(baseDir);
 
   /**
    * the file is a file
    * @param {string} file - file path
-   * @returns {Object} - Promise.<boolean>, result
-   */
-  const isFile = async file =>
-    getStat(file).then(stat => stat && stat.isFile() || false);
-
-  /**
-   * the file is a file, sync
-   * @param {string} file - file path
    * @returns {boolean} - result
    */
-  const isFileSync = file => {
-    const stat = getStatSync(file);
+  const isFile = file => {
+    const stat = getStat(file);
     return stat && stat.isFile() || false;
   };
 
@@ -138,26 +98,10 @@
    * files like `.exe`, which is 100666 in octal.
    * @param {string} file - file path
    * @param {number} mask - mask bit
-   * @returns {Object} - Promise.<boolean>, result
-   */
-  const isExecutable = async (file, mask = MASK_BIT) =>
-    getStat(file).then(stat =>
-      stat && (
-        !!(stat.mode & mask) ||
-        IS_WIN && /\.(?:bat|cmd|exe|ps1|wsh)$/i.test(file)
-      ) || false
-    );
-
-  /**
-   * the file is executable, sync
-   * NOTE: On Windows, fs.statSync(file).mode returns 33206 for executable
-   * files like `.exe`, which is 100666 in octal.
-   * @param {string} file - file path
-   * @param {number} mask - mask bit
    * @returns {boolean} - result
    */
-  const isExecutableSync = (file, mask = MASK_BIT) => {
-    const stat = getStatSync(file);
+  const isExecutable = (file, mask = MASK_BIT) => {
+    const stat = getStat(file);
     return stat && (
       !!(stat.mode & mask) || IS_WIN && /\.(?:bat|cmd|exe|ps1|wsh)$/i.test(file)
     ) || false;
@@ -166,18 +110,10 @@
   /**
    * get file timestamp
    * @param {string} file - file path
-   * @returns {Object} - Promise.<number>, timestamp
-   */
-  const getFileTimestamp = async file =>
-    getStat(file).then(stat => stat && stat.mtime.getTime() || 0);
-
-  /**
-   * get file timestamp, sync
-   * @param {string} file - file path
    * @returns {number} - timestamp
    */
-  const getFileTimestampSync = file => {
-    const stat = getStatSync(file);
+  const getFileTimestamp = file => {
+    const stat = getStat(file);
     return stat && stat.mtime.getTime() || 0;
   };
 
@@ -185,10 +121,10 @@
    * remove the directory
    * @param {string} dir - directory path
    * @param {string} baseDir - base directory path
-   * @returns {void} - Promise.<void>
+   * @returns {void}
    */
-  const removeDir = async (dir, baseDir = DIR_TMP) => {
-    if (await !isSubDir(dir, baseDir)) {
+  const removeDir = (dir, baseDir = DIR_TMP) => {
+    if (!isSubDir(dir, baseDir)) {
       throw new Error(`${dir} is not a subdirectory of ${baseDir}.`);
     }
     const files = fs.readdirSync(dir);
@@ -201,37 +137,16 @@
         func.push(fs.unlinkSync(cur));
       }
     });
-    await Promise.all(func).then(() => fs.rmdirSync(dir)).catch(throwErr);
-  };
-
-  /**
-   * remove the directory sync
-   * @param {string} dir - directory path
-   * @param {string} baseDir - base directory path
-   * @returns {void}
-   */
-  const removeDirSync = (dir, baseDir = DIR_TMP) => {
-    if (isSubDirSync(dir, baseDir)) {
-      const files = fs.readdirSync(dir);
-      files.length && files.forEach(file => {
-        const cur = path.join(dir, file);
-        if (fs.lstatSync(cur).isDirectory()) {
-          removeDirSync(cur, baseDir);
-        } else {
-          fs.unlinkSync(cur);
-        }
-      });
-      fs.rmdirSync(dir);
-    }
+    fs.rmdirSync(dir);
   };
 
   /**
    * create a directory
    * @param {Array} arr - directory array
    * @param {string|number} mode - permission
-   * @returns {Object} - Promise.<?string>, directory path
+   * @returns {?string} - directory path
    */
-  const createDir = async (arr, mode = PERM_DIR) => {
+  const createDir = (arr, mode = PERM_DIR) => {
     if (!Array.isArray(arr)) {
       throw new TypeError(`Expected Array but got ${getType(arr)}.`);
     }
@@ -245,7 +160,7 @@
       }
       return d;
     });
-    return isDirSync(dir) && dir || null;
+    return isDir(dir) && dir || null;
   };
 
   /**
@@ -256,9 +171,9 @@
    * @param {string} [opt.encoding] - encoding, note that default is not `null`
    * @param {string} [opt.flag] - flag
    * @param {number|string} [opt.mode] - file permission
-   * @returns {Object} - Promise.<?string>, file path
+   * @returns {?string} - file path
    */
-  const createFile = async (
+  const createFile = (
     file, value, opt = {encoding: CHAR, flag: "w", mode: PERM_FILE}
   ) => {
     if (!isString(file)) {
@@ -270,8 +185,8 @@
         `Expected String, Buffer, Uint8Array but got ${getType(value)}.`
       );
     }
-    await fs.writeFileSync(file, value, opt);
-    return isFileSync(file) && file || null;
+    fs.writeFileSync(file, value, opt);
+    return isFile(file) && file || null;
   };
 
   /**
@@ -280,20 +195,19 @@
    * @param {Object} opt - option
    * @param {string} [opt.encoding] - encoding, note that default is not `null`
    * @param {string} [opt.flag] - flag
-   * @returns {Object} - Promise.<string|Buffer>, file content
+   * @returns {string|Buffer} - file content
    */
-  const readFile = async (file, opt = {encoding: CHAR, flag: "r"}) => {
-    if (await !isFile(file)) {
+  const readFile = (file, opt = {encoding: CHAR, flag: "r"}) => {
+    if (!isFile(file)) {
       throw new Error(`${file} is not a file.`);
     }
-    const value = await fs.readFileSync(file, opt);
+    const value = fs.readFileSync(file, opt);
     return value;
   };
 
   module.exports = {
     convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, getFileTimestampSync, getStat, getStatSync,
-    isDir, isDirSync, isExecutable, isExecutableSync, isFile, isFileSync,
-    isSubDir, isSubDirSync, removeDir, removeDirSync, readFile,
+    getFileTimestamp, getStat, isDir, isExecutable, isFile, isSubDir,
+    removeDir, readFile,
   };
 }
