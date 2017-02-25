@@ -8,7 +8,7 @@
   const {concatArgs, isString, throwErr} = require("./modules/common");
   const {
     convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, isExecutable, isFile, removeDir, removeDirSync, readFile,
+    getFileTimestamp, isDir, isExecutable, isFile, removeDir, readFile,
   } = require("./modules/file-util");
   const {execFile} = require("child_process");
   const os = require("os");
