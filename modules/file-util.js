@@ -292,7 +292,8 @@
 
   module.exports = {
     convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, getStat, isDir, isExecutable, isFile, isSubDir, removeDir,
-    removeDirSync, readFile,
+    getFileTimestamp, getFileTimestampSync, getStat, getStatSync,
+    isDir, isDirSync, isExecutable, isExecutableSync, isFile, isFileSync,
+    isSubDir, isSubDirSync, removeDir, removeDirSync, readFile,
   };
 }
