@@ -189,7 +189,7 @@
    * @returns {void} - Promise.<void>
    */
   const removePrivateTmpFiles = async bool => {
-    if (!!bool) {
+    if (bool) {
       const dir = path.join(...DIR_TMP_FILES_PB);
       removeDir(dir);
       !isDir(dir) && createDir(DIR_TMP_FILES_PB);
