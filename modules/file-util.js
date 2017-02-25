@@ -128,13 +128,12 @@
       throw new Error(`${dir} is not a subdirectory of ${baseDir}.`);
     }
     const files = fs.readdirSync(dir);
-    const func = [];
     files.length && files.forEach(file => {
       const cur = path.join(dir, file);
       if (fs.lstatSync(cur).isDirectory()) {
-        func.push(removeDir(cur, baseDir));
+        removeDir(cur, baseDir);
       } else {
-        func.push(fs.unlinkSync(cur));
+        fs.unlinkSync(cur);
       }
     });
     fs.rmdirSync(dir);
