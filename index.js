@@ -185,12 +185,16 @@
   /**
    * remove private temporary files
    * @param {boolean} bool - remove
-   * @returns {Object} - ?Promise.<AsyncFunction>
+   * @returns {void} - Promise.<void>
    */
-  const removePrivateTmpFiles = bool =>
-    !!bool && removeDir(path.join(...DIR_TMP_FILES_PB)).then(() =>
-      createDir(DIR_TMP_FILES_PB)
-    ) || null;
+  const removePrivateTmpFiles = bool => new Promise(resolve => {
+    if (bool) {
+      const dir = path.join(...DIR_TMP_FILES_PB);
+      removeDir(dir);
+      !isDir(dir) && createDir(DIR_TMP_FILES_PB);
+    }
+    resolve();
+  });
 
   /**
    * create temporary file
@@ -199,17 +203,16 @@
    */
   const createTmpFile = (obj = {}) => new Promise(resolve => {
     const {data, value} = obj;
-    let func;
+    let filePath;
     if (data) {
       const {dir, fileName, host, tabId, windowId} = data;
       const arr = dir && windowId && tabId && host &&
                     [...DIR_TMP, dir, windowId, tabId, host];
-      func = arr && fileName && createDir(arr).then(dPath =>
-        dPath === path.join(...arr) &&
-          createFile(path.join(dPath, fileName), value)
-      ).then(filePath => filePath && {filePath, data} || null);
+      const dPath = arr && createDir(arr);
+      filePath = dPath === path.join(...arr) &&
+                   createFile(path.join(dPath, fileName), value);
     }
-    resolve(func || null);
+    resolve(data && filePath && {data, filePath} || null);
   });
 
   /**
@@ -219,8 +222,7 @@
    */
   const appendTimestamp = (data = {}) => new Promise(resolve => {
     const {filePath} = data;
-    const timestamp = filePath && getFileTimestamp(filePath);
-    data.timestamp = timestamp || 0;
+    data.timestamp = filePath && getFileTimestamp(filePath) || 0;
     resolve(data);
   });
 
@@ -361,7 +363,7 @@
    */
   const handleExit = code => {
     const msg = (new Output()).encode(hostMsg(`exit ${code || 0}`, "exit"));
-    removeDirSync(path.join(...DIR_TMP));
+    removeDir(path.join(...DIR_TMP));
     msg && process.stdout.write(msg);
   };
 
