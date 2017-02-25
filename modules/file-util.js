@@ -58,18 +58,34 @@
   /**
    * get stat
    * @param {string} file - file path
+   * @returns {Object} - Promise.<Object>, file stat
+   */
+  const getStat = async file =>
+    isString(file) && fs.existsSync(file) && fs.statSync(file) || null;
+
+  /**
+   * get stat, sync
+   * @param {string} file - file path
    * @returns {Object} - file stat
    */
-  const getStat = file =>
+  const getStatSync = file =>
     isString(file) && fs.existsSync(file) && fs.statSync(file) || null;
 
   /**
    * the directory is a directory
    * @param {string} dir - directory path
+   * @returns {Object} - Promise.<boolean>, result
+   */
+  const isDir = async dir =>
+    getStat(dir).then(stat => stat && stat.isDirectory() || false);
+
+  /**
+   * the directory is a directory, sync
+   * @param {string} dir - directory path
    * @returns {boolean} - result
    */
-  const isDir = dir => {
-    const stat = getStat(dir);
+  const isDirSync = dir => {
+    const stat = getStatSync(dir);
     return stat && stat.isDirectory() || false;
   };
 
@@ -77,18 +93,40 @@
    * the directory is a subdirectory of a certain directory
    * @param {string} dir - directory path
    * @param {string} baseDir - base directory path
+   * @returns {Object} - Promose.<boolean>, result
+   */
+  const isSubDir = async (dir, baseDir = DIR_TMP) => {
+    const arr = await Promise.all([
+      isDir(dir),
+      isDir(baseDir),
+    ]);
+    return arr.every(i => !!i) && dir.startsWith(baseDir);
+  };
+
+  /**
+   * the directory is a subdirectory of a certain directory, sync
+   * @param {string} dir - directory path
+   * @param {string} baseDir - base directory path
    * @returns {boolean} - result
    */
-  const isSubDir = (dir, baseDir = DIR_TMP) =>
-    isDir(dir) && isDir(baseDir) && dir.startsWith(baseDir);
+  const isSubDirSync = (dir, baseDir = DIR_TMP) =>
+    isDirSync(dir) && isDirSync(baseDir) && dir.startsWith(baseDir);
 
   /**
    * the file is a file
    * @param {string} file - file path
+   * @returns {Object} - Promise.<boolean>, result
+   */
+  const isFile = async file =>
+    getStat(file).then(stat => stat && stat.isFile() || false);
+
+  /**
+   * the file is a file, sync
+   * @param {string} file - file path
    * @returns {boolean} - result
    */
-  const isFile = file => {
-    const stat = getStat(file);
+  const isFileSync = file => {
+    const stat = getStatSync(file);
     return stat && stat.isFile() || false;
   };
 
@@ -98,10 +136,26 @@
    * files like `.exe`, which is 100666 in octal.
    * @param {string} file - file path
    * @param {number} mask - mask bit
+   * @returns {Object} - Promise.<boolean>, result
+   */
+  const isExecutable = async (file, mask = MASK_BIT) =>
+    getStat(file).then(stat =>
+      stat && (
+        !!(stat.mode & mask) ||
+        IS_WIN && /\.(?:bat|cmd|exe|ps1|wsh)$/i.test(file)
+      ) || false
+    );
+
+  /**
+   * the file is executable, sync
+   * NOTE: On Windows, fs.statSync(file).mode returns 33206 for executable
+   * files like `.exe`, which is 100666 in octal.
+   * @param {string} file - file path
+   * @param {number} mask - mask bit
    * @returns {boolean} - result
    */
-  const isExecutable = (file, mask = MASK_BIT) => {
-    const stat = getStat(file);
+  const isExecutableSync = (file, mask = MASK_BIT) => {
+    const stat = getStatSync(file);
     return stat && (
       !!(stat.mode & mask) || IS_WIN && /\.(?:bat|cmd|exe|ps1|wsh)$/i.test(file)
     ) || false;
@@ -110,10 +164,18 @@
   /**
    * get file timestamp
    * @param {string} file - file path
+   * @returns {Object} - Promise.<number>, timestamp
+   */
+  const getFileTimestamp = async file =>
+    getStat(file).then(stat => stat && stat.mtime.getTime() || 0);
+
+  /**
+   * get file timestamp, sync
+   * @param {string} file - file path
    * @returns {number} - timestamp
    */
-  const getFileTimestamp = file => {
-    const stat = getStat(file);
+  const getFileTimestampSync = file => {
+    const stat = getStatSync(file);
     return stat && stat.mtime.getTime() || 0;
   };
 
@@ -124,7 +186,7 @@
    * @returns {Object} - Promise.<Function>
    */
   const removeDir = async (dir, baseDir = DIR_TMP) => {
-    if (!isSubDir(dir, baseDir)) {
+    if (await !isSubDir(dir, baseDir)) {
       throw new Error(`${dir} is not a subdirectory of ${baseDir}.`);
     }
     const files = fs.readdirSync(dir);
@@ -137,7 +199,8 @@
         func.push(fs.unlinkSync(cur));
       }
     });
-    return Promise.all(func).then(() => fs.rmdirSync(dir));
+    await Promise.all(func);
+    return fs.rmdirSync(dir);
   };
 
   /**
@@ -147,7 +210,7 @@
    * @returns {void}
    */
   const removeDirSync = (dir, baseDir = DIR_TMP) => {
-    if (isSubDir(dir, baseDir)) {
+    if (isSubDirSync(dir, baseDir)) {
       const files = fs.readdirSync(dir);
       files.length && files.forEach(file => {
         const cur = path.join(dir, file);
@@ -219,7 +282,7 @@
    * @returns {Object} - Promise.<string|Buffer>, file content
    */
   const readFile = async (file, opt = {encoding: CHAR, flag: "r"}) => {
-    if (!isFile(file)) {
+    if (await !isFile(file)) {
       throw new Error(`${file} is not a file.`);
     }
     const value = await fs.readFileSync(file, opt);

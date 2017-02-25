@@ -71,7 +71,7 @@
     const app = vars[EDITOR_PATH];
     const pos = vars[FILE_AFTER_ARGS] || false;
     let args = vars[CMD_ARGS] || [], proc;
-    if (isFile(file) && isExecutable(app)) {
+    if (await isFile(file) && await isExecutable(app)) {
       const argA = pos && args || [file.replace(/\\/g, "\\\\")];
       const argB = pos && [file.replace(/\\/g, "\\\\")] || args;
       const opt = {
@@ -134,7 +134,7 @@
       if (data) {
         const {editorPath} = data;
         const editorName = getFileNameFromFilePath(editorPath);
-        const executable = isExecutable(editorPath);
+        const executable = await isExecutable(editorPath);
         const items = Object.keys(data);
         if (items.length) {
           for (const item of items) {
@@ -219,7 +219,7 @@
    */
   const appendTimestamp = async (data = {}) => {
     const {filePath} = data;
-    data.timestamp = filePath && getFileTimestamp(filePath) || 0;
+    data.timestamp = filePath && await getFileTimestamp(filePath) || 0;
     return data;
   };
 
@@ -262,7 +262,7 @@
     const func = [];
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
-    if (isFile(filePath)) {
+    if (await isFile(filePath)) {
       const data = await readFile(filePath);
       func.push(portEditorConfig(data, filePath));
     } else {
