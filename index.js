@@ -163,7 +163,7 @@
     if (isString(filePath)) {
       data.filePath = filePath;
       msg = {
-        [TMP_FILE_DATA_PORT]: {filePath, data},
+        [TMP_FILE_DATA_PORT]: {data, filePath},
       };
     }
     resolve(msg || null);
@@ -209,7 +209,7 @@
       const arr = dir && windowId && tabId && host &&
                     [...DIR_TMP, dir, windowId, tabId, host];
       const dPath = arr && createDir(arr);
-      filePath = dPath === path.join(...arr) &&
+      filePath = dPath === path.join(...arr) && fileName &&
                    createFile(path.join(dPath, fileName), value);
     }
     resolve(data && filePath && {data, filePath} || null);
@@ -292,7 +292,7 @@
    * @returns {Object} - Promise.<Array>
    */
   const handleCreatedTmpFile = (obj = {}) => {
-    const {filePath, data} = obj;
+    const {data, filePath} = obj;
     const func = [];
     if (filePath) {
       func.push(spawnChildProcess(filePath));
