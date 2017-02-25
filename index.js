@@ -8,7 +8,7 @@
   const {concatArgs, isString, throwErr} = require("./modules/common");
   const {
     convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, isExecutable, isFile, removeDir, removeDirSync, readFile,
+    getFileTimestamp, isDir, isExecutable, isFile, removeDir, readFile,
   } = require("./modules/file-util");
   const {execFile} = require("child_process");
   const os = require("os");
@@ -71,7 +71,7 @@
     const app = vars[EDITOR_PATH];
     const pos = vars[FILE_AFTER_ARGS] || false;
     let args = vars[CMD_ARGS] || [], proc;
-    if (await isFile(file) && await isExecutable(app)) {
+    if (isFile(file) && isExecutable(app)) {
       const argA = pos && args || [file.replace(/\\/g, "\\\\")];
       const argB = pos && [file.replace(/\\/g, "\\\\")] || args;
       const opt = {
@@ -79,7 +79,7 @@
         encoding: CHAR,
         env: process.env,
       };
-      args = await concatArgs(argA, argB);
+      args = concatArgs(argA, argB);
       proc = execFile(app, args, opt, (e, stdout, stderr) => {
         const output = new Output();
         if (e) {
@@ -134,7 +134,7 @@
       if (data) {
         const {editorPath} = data;
         const editorName = getFileNameFromFilePath(editorPath);
-        const executable = await isExecutable(editorPath);
+        const executable = isExecutable(editorPath);
         const items = Object.keys(data);
         if (items.length) {
           for (const item of items) {
@@ -186,12 +186,15 @@
   /**
    * remove private temporary files
    * @param {boolean} bool - remove
-   * @returns {Object} - Promise.<?AsyncFunction>
+   * @returns {void} - Promise.<void>
    */
-  const removePrivateTmpFiles = async bool =>
-    !!bool && removeDir(path.join(...DIR_TMP_FILES_PB)).then(() =>
-      createDir(DIR_TMP_FILES_PB)
-    ) || null;
+  const removePrivateTmpFiles = async bool => {
+    if (!!bool) {
+      const dir = path.join(...DIR_TMP_FILES_PB);
+      removeDir(dir);
+      !isDir(dir) && createDir(DIR_TMP_FILES_PB);
+    }
+  };
 
   /**
    * create temporary file
@@ -205,9 +208,9 @@
       const {dir, fileName, host, tabId, windowId} = data;
       const arr = dir && windowId && tabId && host &&
                     [...DIR_TMP, dir, windowId, tabId, host];
-      const dPath = arr && await createDir(arr);
+      const dPath = arr && createDir(arr);
       filePath = dPath === path.join(...arr) && fileName &&
-                   await createFile(path.join(dPath, fileName), value);
+                   createFile(path.join(dPath, fileName), value);
     }
     return data && filePath && {data, filePath} || null;
   };
@@ -219,7 +222,7 @@
    */
   const appendTimestamp = async (data = {}) => {
     const {filePath} = data;
-    data.timestamp = filePath && await getFileTimestamp(filePath) || 0;
+    data.timestamp = filePath && getFileTimestamp(filePath) || 0;
     return data;
   };
 
@@ -262,8 +265,8 @@
     const func = [];
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
-    if (await isFile(filePath)) {
-      const data = await readFile(filePath);
+    if (isFile(filePath)) {
+      const data = readFile(filePath);
       func.push(portEditorConfig(data, filePath));
     } else {
       func.push(writeStdout(hostMsg(`${filePath} is not a file.`, "warn")));
@@ -275,10 +278,12 @@
   /**
    * view local file
    * @param {string} uri - local file uri
-   * @returns {Object} - Promise.<AsyncFunction>
+   * @returns {Object} - Promise.<?AsyncFunction>
    */
-  const viewLocalFile = async uri =>
-    convUriToFilePath(uri).then(spawnChildProcess);
+  const viewLocalFile = async uri => {
+    const file = convUriToFilePath(uri);
+    return file && spawnChildProcess(file) || null;
+  };
 
   /* handlers */
   /**
@@ -360,7 +365,7 @@
    */
   const handleExit = code => {
     const msg = (new Output()).encode(hostMsg(`exit ${code || 0}`, "exit"));
-    removeDirSync(path.join(...DIR_TMP));
+    removeDir(path.join(...DIR_TMP));
     msg && process.stdout.write(msg);
   };
 
