@@ -160,7 +160,7 @@
    */
   const portFileData = (filePath, data = {}) => new Promise(resolve => {
     let msg;
-    if (isString(filePath)) {
+    if (data && isString(filePath)) {
       data.filePath = filePath;
       msg = {
         [TMP_FILE_DATA_PORT]: {data, filePath},
