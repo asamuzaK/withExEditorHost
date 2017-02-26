@@ -65,41 +65,44 @@
   /**
    * spawn child process
    * @param {string} file - file path
-   * @returns {Object} - Promise.<?ChildProcess>
+   * @param {string} app - app path
+   * @returns {Object} - Promise.<ChildProcess>
    */
-  const spawnChildProcess = async file => {
-    const app = vars[EDITOR_PATH];
-    const pos = vars[FILE_AFTER_ARGS] || false;
-    let args = vars[CMD_ARGS] || [], proc;
-    if (isFile(file) && isExecutable(app)) {
-      const argA = pos && args || [file.replace(/\\/g, "\\\\")];
-      const argB = pos && [file.replace(/\\/g, "\\\\")] || args;
-      const opt = {
-        cwd: null,
-        encoding: CHAR,
-        env: process.env,
-      };
-      args = concatArgs(argA, argB);
-      proc = execFile(app, args, opt, (e, stdout, stderr) => {
-        if (e) {
-          e = (new Output()).encode(e);
-          e && process.stderr.write(e);
-        }
-        if (stderr) {
-          stderr = (new Output()).encode(
-            hostMsg(`${stderr}: ${app}`, `${PROCESS_CHILD}_stderr`)
-          );
-          stderr && process.stdout.write(stderr);
-        }
-        if (stdout) {
-          stdout = (new Output()).encode(
-            hostMsg(`${stdout}: ${app}`, `${PROCESS_CHILD}_stdout`)
-          );
-          stdout && process.stdout.write(stdout);
-        }
-      });
+  const spawnChildProcess = async (file, app = vars[EDITOR_PATH]) => {
+    if (!isFile(file)) {
+      return writeStdout(hostMsg(`${file} is not a file.`, "warn"));
     }
-    return proc || null;
+    if (!isExecutable(app)) {
+      return writeStdout(hostMsg(`${app} is not executable.`, "warn"));
+    }
+    let args = vars[CMD_ARGS] || [];
+    const pos = vars[FILE_AFTER_ARGS] || false;
+    const argA = pos && args || [file.replace(/\\/g, "\\\\")];
+    const argB = pos && [file.replace(/\\/g, "\\\\")] || args;
+    const opt = {
+      cwd: null,
+      encoding: CHAR,
+      env: process.env,
+    };
+    args = await concatArgs(argA, argB);
+    return execFile(app, args, opt, (e, stdout, stderr) => {
+      if (e) {
+        e = (new Output()).encode(e);
+        e && process.stderr.write(e);
+      }
+      if (stderr) {
+        stderr = (new Output()).encode(
+          hostMsg(`${stderr}: ${app}`, `${PROCESS_CHILD}_stderr`)
+        );
+        stderr && process.stdout.write(stderr);
+      }
+      if (stdout) {
+        stdout = (new Output()).encode(
+          hostMsg(`${stdout}: ${app}`, `${PROCESS_CHILD}_stdout`)
+        );
+        stdout && process.stdout.write(stdout);
+      }
+    });
   };
 
   /* output */
@@ -160,7 +163,7 @@
   const portFileData = async (obj = {}) => {
     const {data, filePath} = obj;
     let msg;
-    if (isString(filePath)) {
+    if (data && isString(filePath)) {
       data.filePath = filePath;
       msg = {
         [TMP_FILE_DATA_PORT]: {data, filePath},
