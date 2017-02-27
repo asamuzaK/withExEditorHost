@@ -61,50 +61,6 @@
     return false;
   };
 
-  /* child process */
-  /**
-   * spawn child process
-   * @param {string} file - file path
-   * @param {string} app - app path
-   * @returns {Object} - Promise.<ChildProcess>
-   */
-  const spawnChildProcess = async (file, app = vars[EDITOR_PATH]) => {
-    if (await !isFile(file)) {
-      return writeStdout(hostMsg(`${file} is not a file.`, "warn"));
-    }
-    if (await !isExecutable(app)) {
-      return writeStdout(hostMsg(`${app} is not executable.`, "warn"));
-    }
-    let args = vars[CMD_ARGS] || [];
-    const pos = vars[FILE_AFTER_ARGS] || false;
-    const argA = pos && args || [file.replace(/\\/g, "\\\\")];
-    const argB = pos && [file.replace(/\\/g, "\\\\")] || args;
-    const opt = {
-      cwd: null,
-      encoding: CHAR,
-      env: process.env,
-    };
-    args = await concatArgs(argA, argB);
-    return execFile(app, args, opt, (e, stdout, stderr) => {
-      if (e) {
-        e = (new Output()).encode(e);
-        e && process.stderr.write(e);
-      }
-      if (stderr) {
-        stderr = (new Output()).encode(
-          hostMsg(`${stderr}: ${app}`, `${PROCESS_CHILD}_stderr`)
-        );
-        stderr && process.stdout.write(stderr);
-      }
-      if (stdout) {
-        stdout = (new Output()).encode(
-          hostMsg(`${stdout}: ${app}`, `${PROCESS_CHILD}_stdout`)
-        );
-        stdout && process.stdout.write(stdout);
-      }
-    });
-  };
-
   /* output */
   /**
    * write stdout
@@ -182,6 +138,50 @@
       [TMP_FILE_RES]: obj,
     };
     return msg && writeStdout(msg) || null;
+  };
+
+  /* child process */
+  /**
+   * spawn child process
+   * @param {string} file - file path
+   * @param {string} app - app path
+   * @returns {Object} - Promise.<ChildProcess>
+   */
+  const spawnChildProcess = async (file, app = vars[EDITOR_PATH]) => {
+    if (await !isFile(file)) {
+      return writeStdout(hostMsg(`${file} is not a file.`, "warn"));
+    }
+    if (await !isExecutable(app)) {
+      return writeStdout(hostMsg(`${app} is not executable.`, "warn"));
+    }
+    let args = vars[CMD_ARGS] || [];
+    const pos = vars[FILE_AFTER_ARGS] || false;
+    const argA = pos && args || [file.replace(/\\/g, "\\\\")];
+    const argB = pos && [file.replace(/\\/g, "\\\\")] || args;
+    const opt = {
+      cwd: null,
+      encoding: CHAR,
+      env: process.env,
+    };
+    args = await concatArgs(argA, argB);
+    return execFile(app, args, opt, (e, stdout, stderr) => {
+      if (e) {
+        e = (new Output()).encode(e);
+        e && process.stderr.write(e);
+      }
+      if (stderr) {
+        stderr = (new Output()).encode(
+          hostMsg(`${stderr}: ${app}`, `${PROCESS_CHILD}_stderr`)
+        );
+        stderr && process.stdout.write(stderr);
+      }
+      if (stdout) {
+        stdout = (new Output()).encode(
+          hostMsg(`${stdout}: ${app}`, `${PROCESS_CHILD}_stdout`)
+        );
+        stdout && process.stdout.write(stdout);
+      }
+    });
   };
 
   /* temporary files */
