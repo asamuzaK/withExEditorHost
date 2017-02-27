@@ -69,10 +69,10 @@
    * @returns {Object} - Promise.<ChildProcess>
    */
   const spawnChildProcess = async (file, app = vars[EDITOR_PATH]) => {
-    if (!isFile(file)) {
+    if (await !isFile(file)) {
       return writeStdout(hostMsg(`${file} is not a file.`, "warn"));
     }
-    if (!isExecutable(app)) {
+    if (await !isExecutable(app)) {
       return writeStdout(hostMsg(`${app} is not executable.`, "warn"));
     }
     let args = vars[CMD_ARGS] || [];
@@ -112,7 +112,7 @@
    * @returns {Object} - Promise.<?Function>
    */
   const writeStdout = async msg => {
-    msg = (new Output()).encode(msg);
+    msg = await (new Output()).encode(msg);
     return msg && process.stdout.write(msg) || null;
   };
 
@@ -135,8 +135,8 @@
       data = data && JSON.parse(data);
       if (data) {
         const {editorPath} = data;
-        const editorName = getFileNameFromFilePath(editorPath);
-        const executable = isExecutable(editorPath);
+        const editorName = await getFileNameFromFilePath(editorPath);
+        const executable = await isExecutable(editorPath);
         const items = Object.keys(data);
         if (items.length) {
           for (const item of items) {
@@ -163,7 +163,7 @@
   const portFileData = async (obj = {}) => {
     const {data, filePath} = obj;
     let msg;
-    if (data && isString(filePath)) {
+    if (data && await isString(filePath)) {
       data.filePath = filePath;
       msg = {
         [TMP_FILE_DATA_PORT]: {data, filePath},
@@ -193,8 +193,8 @@
   const removePrivateTmpFiles = async bool => {
     if (bool) {
       const dir = path.join(...DIR_TMP_FILES_PB);
-      removeDir(dir);
-      !isDir(dir) && createDir(DIR_TMP_FILES_PB);
+      await removeDir(dir);
+      await !isDir(dir) && await createDir(DIR_TMP_FILES_PB);
     }
   };
 
@@ -210,9 +210,9 @@
       const {dir, fileName, host, tabId, windowId} = data;
       const arr = dir && windowId && tabId && host &&
                     [...DIR_TMP, dir, windowId, tabId, host];
-      const dPath = arr && createDir(arr);
+      const dPath = arr && await createDir(arr);
       filePath = dPath === path.join(...arr) && fileName &&
-                   createFile(path.join(dPath, fileName), value);
+                   await createFile(path.join(dPath, fileName), value);
     }
     return data && filePath && {data, filePath} || null;
   };
@@ -224,7 +224,7 @@
    */
   const appendTimestamp = async (data = {}) => {
     const {filePath} = data;
-    data.timestamp = filePath && getFileTimestamp(filePath) || 0;
+    data.timestamp = filePath && await getFileTimestamp(filePath) || 0;
     return data;
   };
 
@@ -265,10 +265,10 @@
    */
   const getEditorConfig = async filePath => {
     const func = [];
-    filePath = isString(filePath) && filePath.length && filePath ||
+    filePath = await isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
-    if (isFile(filePath)) {
-      const data = readFile(filePath);
+    if (await isFile(filePath)) {
+      const data = await readFile(filePath);
       func.push(portEditorConfig(data, filePath));
     } else {
       func.push(writeStdout(hostMsg(`${filePath} is not a file.`, "warn")));
@@ -283,7 +283,7 @@
    * @returns {Object} - Promise.<?AsyncFunction>
    */
   const viewLocalFile = async uri => {
-    const file = convUriToFilePath(uri);
+    const file = await convUriToFilePath(uri);
     return file && spawnChildProcess(file) || null;
   };
 
