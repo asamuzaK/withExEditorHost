@@ -239,43 +239,18 @@
   };
 
   /**
-   * append file timestamp
+   * get temporary file
    * @param {Object} data - temporary file data
-   * @returns {Object} - Promise.<Object>, temporary file data
-   */
-  const appendTimestamp = async (data = {}) => {
-    const {filePath} = data;
-    data.timestamp = filePath && await getFileTimestamp(filePath) || 0;
-    return data;
-  };
-
-  /**
-   * extract temporary file data
-   * @param {Array} arr - array containing temporary file data and value
    * @returns {Object} - Promise.<Object>, temporary file data object
    */
-  const extractTmpFileData = async (arr = []) => {
-    let obj;
-    if (Array.isArray(arr) && arr.length) {
-      const [data, value] = arr;
-      obj = {data, value};
-    }
-    return obj || null;
-  };
-
-  /**
-   * get temporary file
-   * @param {Object} obj - temporary file data
-   * @returns {Object} - Promise.<AsyncFunction>
-   */
-  const getTmpFile = async (obj = {}) => {
-    const {filePath} = obj;
-    const func = [];
+  const getTmpFile = async (data = {}) => {
+    const {filePath} = data;
+    let value = "";
     if (filePath) {
-      func.push(appendTimestamp(obj));
-      func.push(readFile(filePath));
+      data.timestamp = await getFileTimestamp(filePath) || 0;
+      value = await readFile(filePath);
     }
-    return Promise.all(func).then(extractTmpFileData);
+    return {data, value};
   };
 
   /* local files */
