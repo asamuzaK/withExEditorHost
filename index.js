@@ -142,7 +142,7 @@
    * spawn child process
    * @param {string} file - file path
    * @param {string} app - app path
-   * @returns {Object} - Promise.<ChildProcess>
+   * @returns {Object} - Promise.<ChildProcess|AsyncFunction>
    */
   const spawnChildProcess = async (file, app = vars[EDITOR_PATH]) => {
     if (await !isFile(file)) {
