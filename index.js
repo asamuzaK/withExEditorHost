@@ -195,10 +195,16 @@
     if (bool) {
       const dir = path.join(...DIR_TMP_FILES_PB);
       await removeDir(dir);
-      bool = await !isDir(dir) && await !!createDir(DIR_TMP_FILES_PB);
-      !bool && (msg = (new Output()).encode(
-        hostMsg(`Failed to initialize ${dir}.`, "warn")
-      ));
+      if (await isDir(dir)) {
+        msg = (new Output()).encode(
+          hostMsg(`Failed to initialize ${dir}.`, "warn")
+        );
+      } else {
+        const dPath = await createDir(DIR_TMP_FILES_PB);
+        (dir !== dPath) && (msg = (new Output()).encode(
+          hostMsg(`Failed to initialize ${dir}.`, "warn")
+        ));
+      }
     }
     return msg && writeStdout(msg) || null;
   };
