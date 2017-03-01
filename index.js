@@ -137,18 +137,6 @@
     return msg && writeStdout(msg) || null;
   };
 
-  /**
-   * port temporary file
-   * @param {Object} obj - temporary file data object
-   * @returns {Object} - Promise.<?AsyncFunction>
-   */
-  const portTmpFile = async (obj = {}) => {
-    const msg = Object.keys(obj).length && {
-      [TMP_FILE_RES]: obj,
-    };
-    return msg && writeStdout(msg) || null;
-  };
-
   /* child process */
   /**
    * spawn child process
@@ -229,6 +217,7 @@
       const dPath = arr && await createDir(arr);
       filePath = dPath === path.join(...arr) && fileName &&
                    await createFile(path.join(dPath, fileName), value);
+      filePath && (data.filePath = filePath);
     }
     return data && filePath && {data, filePath} || null;
   };
@@ -236,17 +225,21 @@
   /**
    * get temporary file
    * @param {Object} data - temporary file data
-   * @returns {Object} - Promise.<Object>, temporary file data object
+   * @returns {Object} - Promise.<?AsyncFunction>
    */
   const getTmpFile = async (data = {}) => {
     const {filePath} = data;
-    let value = "";
+    let msg;
     if (await isFile(filePath)) {
-      data.filePath = filePath;
+      const value = await readFile(filePath) || "";
       data.timestamp = await getFileTimestamp(filePath) || 0;
-      value = await readFile(filePath);
+      msg = {
+        [TMP_FILE_RES]: {data, value},
+      };
+    } else {
+      msg = hostMsg(`${filePath} is not a file.`, "warn");
     }
-    return {data, value};
+    return msg && writeStdout(msg) || null;
   };
 
   /* local files */
@@ -317,7 +310,7 @@
             func.push(createTmpFile(obj).then(handleCreatedTmpFile));
             break;
           case TMP_FILE_GET:
-            func.push(getTmpFile(obj).then(portTmpFile));
+            func.push(getTmpFile(obj));
             break;
           case TMP_FILES_PB_REMOVE:
             func.push(initPrivateTmpDir(obj));
