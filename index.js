@@ -186,16 +186,21 @@
 
   /* temporary files */
   /**
-   * remove private temporary files
+   * initialize private temporary directory
    * @param {boolean} bool - remove
-   * @returns {void} - Promise.<void>
+   * @returns {Object} - Promise.<?AsyncFunction>
    */
-  const removePrivateTmpFiles = async bool => {
+  const initPrivateTmpDir = async bool => {
+    let msg;
     if (bool) {
       const dir = path.join(...DIR_TMP_FILES_PB);
       await removeDir(dir);
-      await !isDir(dir) && await createDir(DIR_TMP_FILES_PB);
+      bool = await !isDir(dir) && await !!createDir(DIR_TMP_FILES_PB);
+      !bool && (msg = (new Output()).encode(
+        hostMsg(`Failed to initialize ${dir}.`, "warn")
+      ));
     }
+    return msg && writeStdout(msg) || null;
   };
 
   /**
@@ -328,7 +333,7 @@
             func.push(getTmpFile(obj).then(portTmpFile));
             break;
           case TMP_FILES_PB_REMOVE:
-            func.push(removePrivateTmpFiles(obj));
+            func.push(initPrivateTmpDir(obj));
             break;
           default:
             func.push(
