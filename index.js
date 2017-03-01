@@ -74,10 +74,24 @@
 
   /**
    * port app status
-   * @returns {Object} - Promise.<AsyncFunction>
+   * @param {Array} arr - array of temporary directories
+   * @returns {Object} - Promise.<Array>
    */
-  const portAppStatus = async () =>
-    writeStdout(hostMsg(EDITOR_CONFIG_GET, "ready"));
+  const portAppStatus = async (arr = []) => {
+    const [tmpDir, tmpDirPb] = arr;
+    const func = [];
+    if (tmpDir && tmpDirPb) {
+      func.push(hostMsg(EDITOR_CONFIG_GET, "ready"));
+    } else {
+      !tmpDir && func.push(
+        hostMsg(`Failed to create ${path.join(DIR_TMP_FILES)}.`, "warn")
+      );
+      !tmpDirPb && func.push(
+        hostMsg(`Failed to create ${path.join(DIR_TMP_FILES_PB)}.`, "warn")
+      );
+    }
+    return Promise.all(func);
+  };
 
   /**
    * port editor config
@@ -196,14 +210,10 @@
       const dir = path.join(...DIR_TMP_FILES_PB);
       await removeDir(dir);
       if (await isDir(dir)) {
-        msg = (new Output()).encode(
-          hostMsg(`Failed to remove ${dir}.`, "warn")
-        );
+        msg = hostMsg(`Failed to remove ${dir}.`, "warn");
       } else {
         const dPath = await createDir(DIR_TMP_FILES_PB);
-        (dir !== dPath) && (msg = (new Output()).encode(
-          hostMsg(`Failed to make ${dir}.`, "warn")
-        ));
+        dir !== dPath && (msg = hostMsg(`Failed to create ${dir}.`, "warn"));
       }
     }
     return msg && writeStdout(msg) || null;
