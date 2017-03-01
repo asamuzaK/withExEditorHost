@@ -131,14 +131,9 @@
    * @returns {Object} - Promise.<?AsyncFunction>
    */
   const portFileData = async (obj = {}) => {
-    const {data, filePath} = obj;
-    let msg;
-    if (data && await isString(filePath)) {
-      data.filePath = filePath;
-      msg = {
-        [TMP_FILE_DATA_PORT]: {data, filePath},
-      };
-    }
+    const msg = Object.keys(obj).length && {
+      [TMP_FILE_DATA_PORT]: obj,
+    };
     return msg && writeStdout(msg) || null;
   };
 
@@ -246,7 +241,8 @@
   const getTmpFile = async (data = {}) => {
     const {filePath} = data;
     let value = "";
-    if (filePath) {
+    if (await isFile(filePath)) {
+      data.filePath = filePath;
       data.timestamp = await getFileTimestamp(filePath) || 0;
       value = await readFile(filePath);
     }
@@ -292,7 +288,7 @@
   const handleCreatedTmpFile = async (obj = {}) => {
     const {filePath} = obj;
     const func = [];
-    if (filePath) {
+    if (await isFile(filePath)) {
       func.push(spawnChildProcess(filePath));
       func.push(portFileData(obj));
     }
