@@ -81,14 +81,14 @@
     const [tmpDir, tmpDirPb] = arr;
     const func = [];
     if (tmpDir && tmpDirPb) {
-      func.push(hostMsg(EDITOR_CONFIG_GET, "ready"));
+      func.push(writeStdout(hostMsg(EDITOR_CONFIG_GET, "ready")));
     } else {
-      !tmpDir && func.push(
+      !tmpDir && func.push(writeStdout(
         hostMsg(`Failed to create ${path.join(DIR_TMP_FILES)}.`, "warn")
-      );
-      !tmpDirPb && func.push(
+      ));
+      !tmpDirPb && func.push(writeStdout(
         hostMsg(`Failed to create ${path.join(DIR_TMP_FILES_PB)}.`, "warn")
-      );
+      ));
     }
     return Promise.all(func);
   };
