@@ -197,12 +197,12 @@
       await removeDir(dir);
       if (await isDir(dir)) {
         msg = (new Output()).encode(
-          hostMsg(`Failed to initialize ${dir}.`, "warn")
+          hostMsg(`Failed to remove ${dir}.`, "warn")
         );
       } else {
         const dPath = await createDir(DIR_TMP_FILES_PB);
         (dir !== dPath) && (msg = (new Output()).encode(
-          hostMsg(`Failed to initialize ${dir}.`, "warn")
+          hostMsg(`Failed to make ${dir}.`, "warn")
         ));
       }
     }
