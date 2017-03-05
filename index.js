@@ -24,7 +24,9 @@
   const APP = `${process.pid}`;
   const CHAR = "utf8";
   const CMD_ARGS = "cmdArgs";
-  const DIR_TMP = [os.tmpdir(), LABEL, APP];
+  const DIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
+              os.tmpdir();
+  const DIR_TMP = [DIR, LABEL, APP];
   const DIR_TMP_FILES = [...DIR_TMP, TMP_FILES];
   const DIR_TMP_FILES_PB = [...DIR_TMP, TMP_FILES_PB];
   const EDITOR_PATH = "editorPath";
