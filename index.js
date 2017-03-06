@@ -24,13 +24,13 @@
   const APP = `${process.pid}`;
   const CHAR = "utf8";
   const CMD_ARGS = "cmdArgs";
-  const DIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
-              os.tmpdir();
-  const DIR_TMP = [DIR, LABEL, APP];
-  const DIR_TMP_FILES = [...DIR_TMP, TMP_FILES];
-  const DIR_TMP_FILES_PB = [...DIR_TMP, TMP_FILES_PB];
   const EDITOR_PATH = "editorPath";
   const FILE_AFTER_ARGS = "fileAfterCmdArgs";
+  const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
+                 os.tmpdir();
+  const TMPDIR_APP = [TMPDIR, LABEL, APP];
+  const TMPDIR_FILES = [...TMPDIR_APP, TMP_FILES];
+  const TMPDIR_FILES_PB = [...TMPDIR_APP, TMP_FILES_PB];
 
   /* variables */
   const vars = {
@@ -86,10 +86,10 @@
       func.push(writeStdout(hostMsg(EDITOR_CONFIG_GET, "ready")));
     } else {
       !tmpDir && func.push(writeStdout(
-        hostMsg(`Failed to create ${path.join(DIR_TMP_FILES)}.`, "warn")
+        hostMsg(`Failed to create ${path.join(TMPDIR_FILES)}.`, "warn")
       ));
       !tmpDirPb && func.push(writeStdout(
-        hostMsg(`Failed to create ${path.join(DIR_TMP_FILES_PB)}.`, "warn")
+        hostMsg(`Failed to create ${path.join(TMPDIR_FILES_PB)}.`, "warn")
       ));
     }
     return Promise.all(func);
@@ -192,12 +192,12 @@
   const initPrivateTmpDir = async bool => {
     let msg;
     if (bool) {
-      const dir = path.join(...DIR_TMP_FILES_PB);
+      const dir = path.join(...TMPDIR_FILES_PB);
       await removeDir(dir);
       if (await isDir(dir)) {
         msg = hostMsg(`Failed to remove ${dir}.`, "warn");
       } else {
-        const dPath = await createDir(DIR_TMP_FILES_PB);
+        const dPath = await createDir(TMPDIR_FILES_PB);
         dir !== dPath && (msg = hostMsg(`Failed to create ${dir}.`, "warn"));
       }
     }
@@ -215,7 +215,7 @@
     if (data) {
       const {dir, fileName, host, tabId, windowId} = data;
       const arr = dir && windowId && tabId && host &&
-                    [...DIR_TMP, dir, windowId, tabId, host];
+                    [...TMPDIR_APP, dir, windowId, tabId, host];
       const dPath = arr && await createDir(arr);
       filePath = dPath === path.join(...arr) && fileName &&
                    await createFile(path.join(dPath, fileName), value);
@@ -354,7 +354,7 @@
    */
   const handleExit = code => {
     const msg = (new Output()).encode(hostMsg(`exit ${code || 0}`, "exit"));
-    removeDir(path.join(...DIR_TMP));
+    removeDir(path.join(...TMPDIR_APP));
     msg && process.stdout.write(msg);
   };
 
@@ -366,7 +366,7 @@
 
   /* startup */
   Promise.all([
-    createDir(DIR_TMP_FILES),
-    createDir(DIR_TMP_FILES_PB),
+    createDir(TMPDIR_FILES),
+    createDir(TMPDIR_FILES_PB),
   ]).then(portAppStatus).catch(handleReject);
 }
