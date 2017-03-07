@@ -81,7 +81,7 @@
    * @param {string} baseDir - base directory path
    * @returns {boolean} - result
    */
-  const isSubDir = (dir, baseDir = TMPDIR) =>
+  const isSubDir = (dir, baseDir) =>
     isDir(dir) && isDir(baseDir) && dir.startsWith(baseDir);
 
   /**
