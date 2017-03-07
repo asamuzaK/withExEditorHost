@@ -31,6 +31,8 @@
   const DIR_TMP_FILES_PB = [...DIR_TMP, TMP_FILES_PB];
   const EDITOR_PATH = "editorPath";
   const FILE_AFTER_ARGS = "fileAfterCmdArgs";
+  const PERM_FILE = 0o600;
+  const PERM_DIR = 0o700;
 
   /* variables */
   const vars = {
@@ -193,7 +195,7 @@
     if (bool) {
       const dir = path.join(...DIR_TMP_FILES_PB);
       removeDir(dir);
-      !isDir(dir) && createDir(DIR_TMP_FILES_PB);
+      !isDir(dir) && createDir(DIR_TMP_FILES_PB, PERM_DIR);
     }
     resolve();
   });
@@ -210,9 +212,12 @@
       const {dir, fileName, host, tabId, windowId} = data;
       const arr = dir && windowId && tabId && host &&
                     [...DIR_TMP, dir, windowId, tabId, host];
-      const dPath = arr && createDir(arr);
+      const dPath = arr && createDir(arr, PERM_DIR);
       filePath = dPath === path.join(...arr) && fileName &&
-                   createFile(path.join(dPath, fileName), value);
+                   createFile(
+                     path.join(dPath, fileName), value,
+                     {encoding: CHAR, flag: "w", mode: PERM_FILE}
+                   );
     }
     resolve(data && filePath && {data, filePath} || null);
   });
@@ -379,7 +384,7 @@
 
   /* startup */
   Promise.all([
-    createDir(DIR_TMP_FILES),
-    createDir(DIR_TMP_FILES_PB),
+    createDir(DIR_TMP_FILES, PERM_DIR),
+    createDir(DIR_TMP_FILES_PB, PERM_DIR),
   ]).then(portAppStatus).catch(handleReject);
 }
