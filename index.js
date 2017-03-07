@@ -195,7 +195,7 @@
     let msg;
     if (bool) {
       const dir = path.join(...TMPDIR_FILES_PB);
-      await removeDir(dir);
+      await removeDir(dir, TMPDIR);
       if (await isDir(dir)) {
         msg = hostMsg(`Failed to remove ${dir}.`, "warn");
       } else {
@@ -359,7 +359,7 @@
    */
   const handleExit = code => {
     const msg = (new Output()).encode(hostMsg(`exit ${code || 0}`, "exit"));
-    removeDir(path.join(...TMPDIR_APP));
+    removeDir(path.join(...TMPDIR_APP), TMPDIR);
     msg && process.stdout.write(msg);
   };
 

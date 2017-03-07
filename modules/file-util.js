@@ -9,7 +9,6 @@
   const fs = require("fs");
   const os = require("os");
   const path = require("path");
-  const process = require("process");
 
   /* constants */
   const CHAR = "utf8";
@@ -18,8 +17,6 @@
   const PERM_FILE = 0o666;
   const PERM_DIR = 0o777;
   const SUBST = "index";
-  const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
-                 os.tmpdir();
 
   /**
    * get file name from native file path
@@ -125,7 +122,7 @@
    * @param {string} baseDir - base directory path
    * @returns {void}
    */
-  const removeDir = (dir, baseDir = TMPDIR) => {
+  const removeDir = (dir, baseDir) => {
     if (!isSubDir(dir, baseDir)) {
       throw new Error(`${dir} is not a subdirectory of ${baseDir}.`);
     }
