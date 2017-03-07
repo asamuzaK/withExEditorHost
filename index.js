@@ -26,6 +26,8 @@
   const CMD_ARGS = "cmdArgs";
   const EDITOR_PATH = "editorPath";
   const FILE_AFTER_ARGS = "fileAfterCmdArgs";
+  const PERM_FILE = 0o600;
+  const PERM_DIR = 0o700;
   const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
                  os.tmpdir();
   const TMPDIR_APP = [TMPDIR, LABEL, APP];
@@ -197,7 +199,7 @@
       if (await isDir(dir)) {
         msg = hostMsg(`Failed to remove ${dir}.`, "warn");
       } else {
-        const dPath = await createDir(TMPDIR_FILES_PB);
+        const dPath = await createDir(TMPDIR_FILES_PB, PERM_DIR);
         dir !== dPath && (msg = hostMsg(`Failed to create ${dir}.`, "warn"));
       }
     }
@@ -216,9 +218,12 @@
       const {dir, fileName, host, tabId, windowId} = data;
       const arr = dir && windowId && tabId && host &&
                     [...TMPDIR_APP, dir, windowId, tabId, host];
-      const dPath = arr && await createDir(arr);
+      const dPath = arr && await createDir(arr, PERM_DIR);
       filePath = dPath === path.join(...arr) && fileName &&
-                   await createFile(path.join(dPath, fileName), value);
+                   await createFile(
+                     path.join(dPath, fileName), value,
+                     {encoding: CHAR, flag: "w", mode: PERM_FILE}
+                   );
       filePath && (data.filePath = filePath);
     }
     return data && filePath && {data, filePath} || null;
@@ -366,7 +371,7 @@
 
   /* startup */
   Promise.all([
-    createDir(TMPDIR_FILES),
-    createDir(TMPDIR_FILES_PB),
+    createDir(TMPDIR_FILES, PERM_DIR),
+    createDir(TMPDIR_FILES_PB, PERM_DIR),
   ]).then(portAppStatus).catch(handleReject);
 }
