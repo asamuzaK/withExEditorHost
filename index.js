@@ -194,7 +194,7 @@
   const removePrivateTmpFiles = bool => new Promise(resolve => {
     if (bool) {
       const dir = path.join(...TMPDIR_FILES_PB);
-      removeDir(dir);
+      removeDir(dir, TMPDIR);
       !isDir(dir) && createDir(TMPDIR_FILES_PB, PERM_DIR);
     }
     resolve();
@@ -372,7 +372,7 @@
    */
   const handleExit = code => {
     const msg = (new Output()).encode(hostMsg(`exit ${code || 0}`, "exit"));
-    removeDir(path.join(...TMPDIR_APP));
+    removeDir(path.join(...TMPDIR_APP), TMPDIR);
     msg && process.stdout.write(msg);
   };
 
