@@ -24,15 +24,15 @@
   const APP = `${process.pid}`;
   const CHAR = "utf8";
   const CMD_ARGS = "cmdArgs";
-  const DIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
-              os.tmpdir();
-  const DIR_TMP = [DIR, LABEL, APP];
-  const DIR_TMP_FILES = [...DIR_TMP, TMP_FILES];
-  const DIR_TMP_FILES_PB = [...DIR_TMP, TMP_FILES_PB];
   const EDITOR_PATH = "editorPath";
   const FILE_AFTER_ARGS = "fileAfterCmdArgs";
   const PERM_FILE = 0o600;
   const PERM_DIR = 0o700;
+  const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
+                 os.tmpdir();
+  const TMPDIR_APP = [TMPDIR, LABEL, APP];
+  const TMPDIR_FILES = [...TMPDIR_APP, TMP_FILES];
+  const TMPDIR_FILES_PB = [...TMPDIR_APP, TMP_FILES_PB];
 
   /* variables */
   const vars = {
@@ -193,9 +193,9 @@
    */
   const removePrivateTmpFiles = bool => new Promise(resolve => {
     if (bool) {
-      const dir = path.join(...DIR_TMP_FILES_PB);
+      const dir = path.join(...TMPDIR_FILES_PB);
       removeDir(dir);
-      !isDir(dir) && createDir(DIR_TMP_FILES_PB, PERM_DIR);
+      !isDir(dir) && createDir(TMPDIR_FILES_PB, PERM_DIR);
     }
     resolve();
   });
@@ -211,7 +211,7 @@
     if (data) {
       const {dir, fileName, host, tabId, windowId} = data;
       const arr = dir && windowId && tabId && host &&
-                    [...DIR_TMP, dir, windowId, tabId, host];
+                    [...TMPDIR_APP, dir, windowId, tabId, host];
       const dPath = arr && createDir(arr, PERM_DIR);
       filePath = dPath === path.join(...arr) && fileName &&
                    createFile(
@@ -372,7 +372,7 @@
    */
   const handleExit = code => {
     const msg = (new Output()).encode(hostMsg(`exit ${code || 0}`, "exit"));
-    removeDir(path.join(...DIR_TMP));
+    removeDir(path.join(...TMPDIR_APP));
     msg && process.stdout.write(msg);
   };
 
@@ -384,7 +384,7 @@
 
   /* startup */
   Promise.all([
-    createDir(DIR_TMP_FILES, PERM_DIR),
-    createDir(DIR_TMP_FILES_PB, PERM_DIR),
+    createDir(TMPDIR_FILES, PERM_DIR),
+    createDir(TMPDIR_FILES_PB, PERM_DIR),
   ]).then(portAppStatus).catch(handleReject);
 }
