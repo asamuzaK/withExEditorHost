@@ -26,8 +26,8 @@
   const CMD_ARGS = "cmdArgs";
   const EDITOR_PATH = "editorPath";
   const FILE_AFTER_ARGS = "fileAfterCmdArgs";
-  const PERM_FILE = 0o600;
   const PERM_DIR = 0o700;
+  const PERM_FILE = 0o600;
   const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
                  os.tmpdir();
   const TMPDIR_APP = [TMPDIR, LABEL, APP];
@@ -257,7 +257,7 @@
     const func = [];
     if (filePath) {
       func.push(appendTimestamp(obj));
-      func.push(readFile(filePath));
+      func.push(readFile(filePath, {encoding: CHAR, flag: "r"}));
     }
     return Promise.all(func).then(extractTmpFileData);
   };
@@ -273,7 +273,7 @@
     filePath = isString(filePath) && filePath.length && filePath ||
                path.resolve(path.join(".", "editorconfig.json"));
     if (isFile(filePath)) {
-      const data = readFile(filePath);
+      const data = readFile(filePath, {encoding: CHAR, flag: "r"});
       func.push(portEditorConfig(data, filePath));
     } else {
       func.push(writeStdout(hostMsg(`${filePath} is not a file.`, "warn")));
