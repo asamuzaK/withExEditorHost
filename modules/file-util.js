@@ -14,8 +14,8 @@
   const CHAR = "utf8";
   const IS_WIN = os.platform() === "win32";
   const MASK_BIT = 0o111;
-  const PERM_FILE = 0o666;
   const PERM_DIR = 0o777;
+  const PERM_FILE = 0o666;
   const SUBST = "index";
 
   /**
@@ -166,13 +166,13 @@
    * @param {string} file - file path
    * @param {string|Buffer|Uint8Array} value - value to write
    * @param {Object} opt - option
-   * @param {string} [opt.encoding] - encoding, note that default is not `null`
+   * @param {string} [opt.encoding] - encoding
    * @param {string} [opt.flag] - flag
    * @param {number|string} [opt.mode] - file permission
    * @returns {?string} - file path
    */
   const createFile = (file, value,
-                      opt = {encoding: CHAR, flag: "w", mode: PERM_FILE}) => {
+                      opt = {encoding: null, flag: "w", mode: PERM_FILE}) => {
     if (!isString(file)) {
       throw new TypeError(`Expected String but got ${getType(file)}.`);
     }
@@ -190,11 +190,11 @@
    * read a file
    * @param {string} file - file path
    * @param {Object} opt - option
-   * @param {string} [opt.encoding] - encoding, note that default is not `null`
+   * @param {string} [opt.encoding] - encoding
    * @param {string} [opt.flag] - flag
    * @returns {string|Buffer} - file content
    */
-  const readFile = (file, opt = {encoding: CHAR, flag: "r"}) => {
+  const readFile = (file, opt = {encoding: null, flag: "r"}) => {
     if (!isFile(file)) {
       throw new Error(`${file} is not a file.`);
     }
