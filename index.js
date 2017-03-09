@@ -263,8 +263,10 @@
       const data = await readFile(filePath, {encoding: CHAR, flag: "r"});
       func.push(portEditorConfig(data, filePath));
     } else {
-      func.push(writeStdout(hostMsg(`${filePath} is not a file.`, "warn")));
-      func.push(writeStdout({[EDITOR_CONFIG_RES]: null}));
+      func.push(
+        writeStdout(hostMsg(`${filePath} is not a file.`, "warn")),
+        writeStdout({[EDITOR_CONFIG_RES]: null}),
+      );
     }
     return Promise.all(func);
   };
@@ -289,8 +291,7 @@
     const {filePath} = obj;
     const func = [];
     if (await isFile(filePath)) {
-      func.push(spawnChildProcess(filePath));
-      func.push(portFileData(obj));
+      func.push(spawnChildProcess(filePath), portFileData(obj));
     }
     return Promise.all(func);
   };
