@@ -265,7 +265,7 @@
     } else {
       func.push(
         writeStdout(hostMsg(`${filePath} is not a file.`, "warn")),
-        writeStdout({[EDITOR_CONFIG_RES]: null}),
+        writeStdout({[EDITOR_CONFIG_RES]: null})
       );
     }
     return Promise.all(func);
