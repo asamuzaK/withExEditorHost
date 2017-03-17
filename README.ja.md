@@ -19,7 +19,7 @@ _configフォルダのコピーを作成して`config`にリネームしてく�
 なお、_configフォルダの中身は直接編集しないようにしてください。
 withExEditorHostをアップデートしたときに上書きされてしまう可能性があります。
 
-configフォルダは任意の場所に保存できますが、zipやtar.gzから展開して保存した場合は、そのまま_configフォルダと同じ場所に置けばOKです。
+configフォルダは任意の場所に保存できますが、zipやtar.gzから展開して保存した場合は、そのまま_configフォルダと同じ場所（`C:\Users\XXX\withExEditorHost\config\`）に置けばOKです。
 一方、レポジトリをクローンしている場合は、あなたの個人的な設定情報が意図せずGitHubにアップロードされるようなことを防ぐためにも、レポジトリの中ではなく*外*にフォルダを保存することを強くおすすめします。
 
 ### ホストを起動するシェルスクリプトの編集
@@ -65,8 +65,19 @@ cmd.exeで次のコマンドを実行するとレジストリキーを保存す�
 REG ADD "HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost" /ve /d "C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json" /f
 ```
 
-LinuxとMacでは、アプリケーションマニフェストを指定の場所に保存する必要があります。
-詳細は[App manifest location](https://developer.mozilla.org/ja/Add-ons/WebExtensions/Native_messaging#App_manifest_location)を参照してください。
+LinuxとMacでは、"withexeditorhost.json"を指定の場所に保存する必要があります。
+
+Linux:
+
+```
+~/.mozilla/native-messaging-hosts/withexeditorhost.json
+```
+
+Mac:
+
+```
+~/Library/Application Support/Mozilla/NativeMessagingHosts/withexeditorhost.json
+```
 
 ### エディタ設定ファイルの編集
 
