@@ -18,7 +18,7 @@ Create a copy of the _config folder and rename it to `config`.
 Please do not edit the contents of the `_config` folder directly.
 It may be overwritten when updating withExEditorHost.
 
-The config folder can be saved in an arbitrary place, but if you saved withExEditorHost from zip or tar.gz, just put it in the same place as the _config.
+The config folder can be saved in an arbitrary place, but if you saved withExEditorHost from zip or tar.gz, just put it in the same place as the _config (`C:\Users\XXX\withExEditorHost\config\`).
 If you are cloning the repository, to prevent your personal configuration information from being uploaded to GitHub unintentionally, it is strongly recommended to save the folder *outside* the repository, not inside.
 
 ### Edit the shell script which executes the host
