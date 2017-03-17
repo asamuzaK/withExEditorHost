@@ -65,8 +65,19 @@ cmd.exeで次のコマンドを実行するとレジストリキーを保存す�
 REG ADD "HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost" /ve /d "C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json" /f
 ```
 
-LinuxとMacでは、アプリケーションマニフェストを指定の場所に保存する必要があります。
-詳細は[App manifest location](https://developer.mozilla.org/ja/Add-ons/WebExtensions/Native_messaging#App_manifest_location)を参照してください。
+LinuxとMacでは、"withexeditorhost.json"を指定の場所に保存する必要があります。
+
+Linux:
+
+```
+~/.mozilla/native-messaging-hosts/withexeditorhost.json
+```
+
+Mac:
+
+```
+~/Library/Application Support/Mozilla/NativeMessagingHosts/withexeditorhost.json
+```
 
 ### エディタ設定ファイルの編集
 

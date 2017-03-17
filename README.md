@@ -64,8 +64,19 @@ Edit the `"C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json"` part.
 REG ADD "HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost" /ve /d "C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json" /f
 ```
 
-On Linux and Mac, you need to save the application manifest in the specified location.
-For details, please refer to [App manifest location] (https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging#App_manifest_location).
+On Linux and Mac, you need to save "withexeditorhost.json" in the specified location.
+
+Linux:
+
+```
+~/.mozilla/native-messaging-hosts/withexeditorhost.json
+```
+
+Mac:
+
+```
+~/Library/Application Support/Mozilla/NativeMessagingHosts/withexeditorhost.json
+```
 
 ### Edit the editor configuration
 
