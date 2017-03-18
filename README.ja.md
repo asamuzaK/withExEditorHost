@@ -10,6 +10,9 @@ Firefoxのアドオン[withExEditor](https://addons.mozilla.org/addon/withexedit
 Githubのアカウントがある場合は、レポジトリをクローンして保存してもOKです。
 
 なお、ホストは[Node.js](https://nodejs.org/ja/ "Node.js")で実行しますので、Node.jsが入っていない場合はインストールしてください。
+また、ホストはNode.jsのバージョンに依存することにも注意してください。
+* withExEditorHost v1.xでは、Node.js v6.9.5以上を必要とします。
+* withExEditorHost v2.xでは、Node.js v7.6.0以上（現時点）を必要とします。
 
 ## ホストの設定
 
