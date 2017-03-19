@@ -40,6 +40,7 @@ Linux / Macの場合は"withexeditorhost.sh"を開いて、ホストのindex.js�
 ```
 #!/usr/bin/env bash
 # Fill in the path of the index.js file of the host.
+# Replace "node" command to "nodejs" according to your environment.
 node /path/to/withexeditorhost/index.js
 ```
 
