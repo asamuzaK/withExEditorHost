@@ -69,7 +69,7 @@
   /**
    * write stdout
    * @param {*} msg - message
-   * @returns {Object} - Promise.<?Function>
+   * @returns {?Function} - write stdout
    */
   const writeStdout = async msg => {
     msg = await (new Output()).encode(msg);
@@ -101,7 +101,7 @@
    * port editor config
    * @param {string} data - editor config
    * @param {string} editorConfig - editor config file path
-   * @returns {Object} - Promise.<?AsyncFunction>
+   * @returns {Object} - ?Promise.<AsyncFunction>
    */
   const portEditorConfig = async (data, editorConfig) => {
     let msg;
@@ -132,7 +132,7 @@
   /**
    * port file data
    * @param {Object} obj - file data
-   * @returns {Object} - Promise.<?AsyncFunction>
+   * @returns {Object} - ?Promise.<AsyncFunction>
    */
   const portFileData = async (obj = {}) => {
     const msg = Object.keys(obj).length && {
@@ -189,7 +189,7 @@
   /**
    * initialize private temporary directory
    * @param {boolean} bool - remove
-   * @returns {Object} - Promise.<?AsyncFunction>
+   * @returns {Object} - ?Promise.<AsyncFunction>
    */
   const initPrivateTmpDir = async bool => {
     let msg;
@@ -209,7 +209,7 @@
   /**
    * create temporary file
    * @param {Object} obj - temporary file data object
-   * @returns {Object} - Promise.<Object>, temporary file data
+   * @returns {Object} - temporary file data
    */
   const createTmpFile = async (obj = {}) => {
     const {data, value} = obj;
@@ -232,7 +232,7 @@
   /**
    * get temporary file
    * @param {Object} data - temporary file data
-   * @returns {Object} - Promise.<?AsyncFunction>
+   * @returns {Object} - ?Promise.<AsyncFunction>
    */
   const getTmpFile = async (data = {}) => {
     const {filePath} = data;
@@ -274,7 +274,7 @@
   /**
    * view local file
    * @param {string} uri - local file uri
-   * @returns {Object} - Promise.<?AsyncFunction>
+   * @returns {Object} - ?Promise.<AsyncFunction>
    */
   const viewLocalFile = async uri => {
     const file = await convUriToFilePath(uri);
