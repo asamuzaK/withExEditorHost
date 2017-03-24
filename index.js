@@ -69,7 +69,7 @@
   /**
    * write stdout
    * @param {*} msg - message
-   * @returns {?Function} - write stdout
+   * @returns {?Function} - write message to the Writable stream
    */
   const writeStdout = async msg => {
     msg = await (new Output()).encode(msg);
@@ -79,7 +79,7 @@
   /**
    * port app status
    * @param {Array} arr - array of temporary directories
-   * @returns {Object} - Promise.<Array>
+   * @returns {Promise.<Array>} - results of each handler
    */
   const portAppStatus = async (arr = []) => {
     const [tmpDir, tmpDirPb] = arr;
@@ -101,7 +101,7 @@
    * port editor config
    * @param {string} data - editor config
    * @param {string} editorConfig - editor config file path
-   * @returns {Object} - ?Promise.<AsyncFunction>
+   * @returns {?AsyncFunction} - write stdout
    */
   const portEditorConfig = async (data, editorConfig) => {
     let msg;
@@ -132,7 +132,7 @@
   /**
    * port file data
    * @param {Object} obj - file data
-   * @returns {Object} - ?Promise.<AsyncFunction>
+   * @returns {?AsyncFunction} - write stdout
    */
   const portFileData = async (obj = {}) => {
     const msg = Object.keys(obj).length && {
@@ -146,7 +146,7 @@
    * spawn child process
    * @param {string} file - file path
    * @param {string} app - app path
-   * @returns {Object} - Promise.<ChildProcess|AsyncFunction>
+   * @returns {ChildProcess|AsyncFunction} - ChildProcess / write stdout
    */
   const spawnChildProcess = async (file, app = vars[EDITOR_PATH]) => {
     if (await !isFile(file)) {
@@ -189,7 +189,7 @@
   /**
    * initialize private temporary directory
    * @param {boolean} bool - remove
-   * @returns {Object} - ?Promise.<AsyncFunction>
+   * @returns {?AsyncFunction} - write stdout
    */
   const initPrivateTmpDir = async bool => {
     let msg;
@@ -232,7 +232,7 @@
   /**
    * get temporary file
    * @param {Object} data - temporary file data
-   * @returns {Object} - ?Promise.<AsyncFunction>
+   * @returns {?AsyncFunction} - write stdout
    */
   const getTmpFile = async (data = {}) => {
     const {filePath} = data;
@@ -253,7 +253,7 @@
   /**
    * get editor config
    * @param {string} filePath - editor config file path
-   * @returns {Object} - Promise.<Array>
+   * @returns {Promise.<Array>} - results of each handler
    */
   const getEditorConfig = async filePath => {
     const func = [];
@@ -274,7 +274,7 @@
   /**
    * view local file
    * @param {string} uri - local file uri
-   * @returns {Object} - ?Promise.<AsyncFunction>
+   * @returns {?AsyncFunction} - spawn child process
    */
   const viewLocalFile = async uri => {
     const file = await convUriToFilePath(uri);
@@ -285,7 +285,7 @@
   /**
    * handle created temporary file
    * @param {Object} obj - temporary file data
-   * @returns {Object} - Promise.<Array>
+   * @returns {Promise.<Array>} - results of each handler
    */
   const handleCreatedTmpFile = async (obj = {}) => {
     const {filePath} = obj;
@@ -299,7 +299,7 @@
   /**
    * handle message
    * @param {*} msg - message
-   * @returns {Object} - Promise.<Array>
+   * @returns {Promise.<Array>} - results of each handler
    */
   const handleMsg = async msg => {
     const func = [];
@@ -341,7 +341,7 @@
   /**
    * read stdin
    * @param {string|Buffer} chunk - chunk
-   * @returns {Object} - ?Promise.<Array>
+   * @returns {?Promise.<Array.<Promise>>} - composite a Promise chain
    */
   const readStdin = chunk => {
     const arr = input.decode(chunk);
