@@ -124,7 +124,7 @@ Error: Attempt to postMessage on disconnected port
     ```
     /path/to/node.js /path/to/withexeditorhost/index.js
     ```
-  * Also, make sure the execute bit is set on withexeditorhost.sh (Linux / Mac).
+  * Also, make sure the execute bit is set on "withexeditorhost.sh" (Linux / Mac).
 
 ```
 stderr output from native app withexeditorhost: SyntaxError: Unexpected token {
