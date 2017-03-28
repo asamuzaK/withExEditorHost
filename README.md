@@ -9,6 +9,9 @@ Download a zip file or tar.gz file of the source code from [Releases](https://gi
 If you have a Github account, you can also clone and save the repository.
 
 Note that the host runs with [Node.js](https://nodejs.org/en/ "Node.js"), so if you do not have Node.js, please install it.
+Also note that the host depends on the version of Node.js.
+* withExEditorHost v1.x requires Node.js v6.9.5 or higher.
+* withExEditorHost v2.x requires Node.js v7.6.0 (at this time) or higher.
 
 ## Setting up the host
 
@@ -36,6 +39,7 @@ On Linux / Mac, open "withexeditorhost.sh" and enter the path of the index.js fi
 ```
 #!/usr/bin/env bash
 # Fill in the path of the index.js file of the host.
+# Replace "node" command to "nodejs" according to your environment.
 node /path/to/withexeditorhost/index.js
 ```
 
@@ -101,3 +105,35 @@ When you choose a name other than "editorconfig.json", enter the path of the edi
 ***
 
 After the above work, restart Firefox.
+
+***
+
+## Troubleshooting
+
+If something goes wrong, check the browser console (Ctrl + Shift + J).
+
+```
+Error: Attempt to postMessage on disconnected port
+```
+
+* Windows: Is the registry saved correctly?
+* Linux / Mac: Is "withexeditorhost.json" saved in the right location?
+* When you start Firefox, is a Node.js process executed too?
+  * If not, make sure that Node.js's installation directory is listed in the $PATH environment variable.
+    Or change the shell script from "node" command to full path of Node.js.
+    ```
+    /path/to/node.js /path/to/withexeditorhost/index.js
+    ```
+  * Also, make sure the execute bit is set on "withexeditorhost.sh" (Linux / Mac).
+
+```
+stderr output from native app withexeditorhost: SyntaxError: Unexpected token {
+```
+
+* Upgrade Node.js
+
+```
+withexeditorhost: SyntaxError: Unexpected string in JSON at ...
+```
+
+* Check "editorconfig.json".
