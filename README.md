@@ -117,7 +117,7 @@ Error: Attempt to postMessage on disconnected port
 ```
 
 * Windows: Is the registory saved correctly?
-  Linux / Mac: Is "withexeditorhost.json" saved in the right location?
+* Linux / Mac: Is "withexeditorhost.json" saved in the right location?
 * When you start Firefox, is Node.js process executed too?
   * If not, make sure there is $PATH environment variable for Node.js.
     Or, change shell script from "node" command to full path of Node.js.

@@ -118,7 +118,7 @@ Error: Attempt to postMessage on disconnected port
 ```
 
 * Windows: レジストリは正しく保存されていますか？
-  Linux / Mac: "withexeditorhost.json"の保存先は間違っていませんか？
+* Linux / Mac: "withexeditorhost.json"の保存先は間違っていませんか？
 * Firefoxを起動したとき、Node.jsのプロセスも立ち上がっていますか？
   * もしNode.jsが立ち上がっていないならば、Node.jsの$PATH環境変数が設定されているかどうか確認してみてください。
     あるいは、シェルスクリプトで、nodeコマンドではなくNode.jsのパスに変更してみてください。
