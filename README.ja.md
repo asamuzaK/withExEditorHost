@@ -10,6 +10,9 @@ Firefoxのアドオン[withExEditor](https://addons.mozilla.org/addon/withexedit
 Githubのアカウントがある場合は、レポジトリをクローンして保存してもOKです。
 
 なお、ホストは[Node.js](https://nodejs.org/ja/ "Node.js")で実行しますので、Node.jsが入っていない場合はインストールしてください。
+また、ホストはNode.jsのバージョンに依存することにも注意してください。
+* withExEditorHost v1.xでは、Node.js v6.9.5以上を必要とします。
+* withExEditorHost v2.xでは、Node.js v7.6.0以上（現時点）を必要とします。
 
 ## ホストの設定
 
@@ -37,6 +40,7 @@ Linux / Macの場合は"withexeditorhost.sh"を開いて、ホストのindex.js�
 ```
 #!/usr/bin/env bash
 # Fill in the path of the index.js file of the host.
+# Replace "node" command to "nodejs" according to your environment.
 node /path/to/withexeditorhost/index.js
 ```
 
@@ -102,3 +106,35 @@ Mac:
 ***
 
 以上の作業を終えたら、Firefoxを再起動してください。
+
+***
+
+## トラブルシューティング
+
+何か問題が起きたら、ブラウザコンソールをチェックしてみてください（Ctrl + Shift + J）。
+
+```
+Error: Attempt to postMessage on disconnected port
+```
+
+* Windows: レジストリは正しく保存されていますか？
+* Linux / Mac: "withexeditorhost.json"の保存先は間違っていませんか？
+* Firefoxを起動したとき、Node.jsのプロセスも立ち上がっていますか？
+  * もしNode.jsが立ち上がっていないならば、Node.jsの$PATH環境変数が設定されているかどうか確認してみてください。
+    あるいは、シェルスクリプトで、nodeコマンドではなくNode.jsのパスに変更してみてください。
+    ```
+    /path/to/node.js /path/to/withexeditorhost/index.js
+    ```
+  * また、"withexeditorhost.sh"に実行ビットが付与されていることも確認してください（Linux / Mac）。
+
+```
+stderr output from native app withexeditorhost: SyntaxError: Unexpected token {
+```
+
+* Node.jsをアップグレードしてください。
+
+```
+withexeditorhost: SyntaxError: Unexpected string in JSON at ...
+```
+
+* "editorconfig.json"を確認してください。
