@@ -116,15 +116,15 @@ If something goes wrong, check the browser console (Ctrl + Shift + J).
 Error: Attempt to postMessage on disconnected port
 ```
 
-* Windows: Is the registory saved correctly?
+* Windows: Is the registry saved correctly?
 * Linux / Mac: Is "withexeditorhost.json" saved in the right location?
-* When you start Firefox, is Node.js process executed too?
-  * If not, make sure there is $PATH environment variable for Node.js.
-    Or, change shell script from "node" command to full path of Node.js.
+* When you start Firefox, is a Node.js process executed too?
+  * If not, make sure that Node.js's installation directory is listed in the $PATH environment variable.
+    Or change the shell script from "node" command to full path of Node.js.
     ```
     /path/to/node.js /path/to/withexeditorhost/index.js
     ```
-  * Also, make sure withexeditorhost.sh has executable bit (Linux / Mac).
+  * Also, make sure the execute bit is set on withexeditorhost.sh (Linux / Mac).
 
 ```
 stderr output from native app withexeditorhost: SyntaxError: Unexpected token {
