@@ -105,3 +105,35 @@ When you choose a name other than "editorconfig.json", enter the path of the edi
 ***
 
 After the above work, restart Firefox.
+
+***
+
+## Troubleshooting
+
+If something goes wrong, check the browser console (Ctrl + Shift + J).
+
+```
+Error: Attempt to postMessage on disconnected port
+```
+
+* Windows: Is the registry saved correctly?
+* Linux / Mac: Is "withexeditorhost.json" saved in the right location?
+* When you start Firefox, is a Node.js process executed too?
+  * If not, make sure that Node.js's installation directory is listed in the $PATH environment variable.
+    Or change the shell script from "node" command to full path of Node.js.
+    ```
+    /path/to/node.js /path/to/withexeditorhost/index.js
+    ```
+  * Also, make sure the execute bit is set on "withexeditorhost.sh" (Linux / Mac).
+
+```
+stderr output from native app withexeditorhost: SyntaxError: Unexpected token {
+```
+
+* Upgrade Node.js
+
+```
+withexeditorhost: SyntaxError: Unexpected string in JSON at ...
+```
+
+* Check "editorconfig.json".

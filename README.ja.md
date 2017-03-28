@@ -106,3 +106,35 @@ Mac:
 ***
 
 以上の作業を終えたら、Firefoxを再起動してください。
+
+***
+
+## トラブルシューティング
+
+何か問題が起きたら、ブラウザコンソールをチェックしてみてください（Ctrl + Shift + J）。
+
+```
+Error: Attempt to postMessage on disconnected port
+```
+
+* Windows: レジストリは正しく保存されていますか？
+* Linux / Mac: "withexeditorhost.json"の保存先は間違っていませんか？
+* Firefoxを起動したとき、Node.jsのプロセスも立ち上がっていますか？
+  * もしNode.jsが立ち上がっていないならば、Node.jsの$PATH環境変数が設定されているかどうか確認してみてください。
+    あるいは、シェルスクリプトで、nodeコマンドではなくNode.jsのパスに変更してみてください。
+    ```
+    /path/to/node.js /path/to/withexeditorhost/index.js
+    ```
+  * また、"withexeditorhost.sh"に実行ビットが付与されていることも確認してください（Linux / Mac）。
+
+```
+stderr output from native app withexeditorhost: SyntaxError: Unexpected token {
+```
+
+* Node.jsをアップグレードしてください。
+
+```
+withexeditorhost: SyntaxError: Unexpected string in JSON at ...
+```
+
+* "editorconfig.json"を確認してください。
