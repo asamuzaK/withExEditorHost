@@ -177,7 +177,7 @@
         }
       }
     }
-    return configPath && [configPath.split(path.sep)] || [DIR_CWD, "config"];
+    return configPath && configPath.split(path.sep) || [DIR_CWD, "config"];
   };
 
   /**
