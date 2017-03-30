@@ -13,7 +13,46 @@ Also note that the host depends on the version of Node.js.
 * withExEditorHost v1.x requires Node.js v6.9.5 or higher.
 * withExEditorHost v2.x requires Node.js v7.6.0 (at this time) or higher.
 
+***
+
 ## Setting up the host
+
+Open "cmd.exe" on Windows, "terminal" on Linux / Mac, and run setup script.
+Depending on the Windows environment, you may need to run "cmd.exe" as admin.
+
+Windows:
+```
+> cd path\to\withExEditorHost
+> node setup.js
+```
+
+Linux / Mac:
+```
+$ cd path/to/withexeditorhost
+$ sudo node setup.js
+```
+
+By default, the setup script creates a "config" folder under the location of withExEditorHost.
+If you want to save setting files in different location, use `--config-path` argument.
+
+```
+> node setup.js --config-path="C:\Users\XXX\path\to\another\location"
+```
+
+You will be prompted for the following, please input as appropriate.
+
+* Enter editor path
+* Enter command line options
+* Put file path after command arguments?
+
+You can leave them empty and set them later too.
+For details, refer to the section "Edit the editor configuration" below.
+
+If config files are created successfully, restart Firefox.
+
+***
+
+## Manual setup
 
 There are sample configuration files in "_config" folder of withExEditorHost.
 
@@ -101,8 +140,6 @@ Open "editorconfig.json" and fill in the information of the editor.
 Editor configuration files can also be switched for each Firefox profile.
 For example, use "editorconfig.json" for the default profile, and prepare another configuration file such as "editorconfig-nightly.json" for nightly's profile.
 When you choose a name other than "editorconfig.json", enter the path of the editor configuration file in the Options page of withExEditor.
-
-***
 
 After the above work, restart Firefox.
 

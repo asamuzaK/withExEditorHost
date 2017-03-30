@@ -14,7 +14,46 @@ Githubのアカウントがある場合は、レポジトリをクローンし�
 * withExEditorHost v1.xでは、Node.js v6.9.5以上を必要とします。
 * withExEditorHost v2.xでは、Node.js v7.6.0以上（現時点）を必要とします。
 
+***
+
 ## ホストの設定
+
+Windowsでは"cmd.exe"、Linux / Macでは「端末」（ターミナル）を開き、セットアップスクリプトを実行します。
+なお、Windowsの環境によっては、管理者権限で"cmd.exe"を実行する必要があるかもしれません。
+
+Windows:
+```
+> cd path\to\withExEditorHost
+> node setup.js
+```
+
+Linux / Mac:
+```
+$ cd path/to/withexeditorhost
+$ sudo node setup.js
+```
+
+セットアップスクリプトは、デフォルトでwithExEditorHostの保存先の直下に"config"フォルダを作成し各設定ファイルを保持します。
+設定ファイルの保存先を変更したい場合は、`--config-path`引数で指定してください。
+
+```
+> node setup.js --config-path="C:\Users\XXX\path\to\another\location"
+```
+
+スクリプトを実行すると以下の入力を求められますので適宜入力してください。
+
+* エディタのパス
+* コマンドラインオプション
+* 一時ファイルをコマンドラインオプションの後に置くか
+
+その場では何も入力せず、後で設定することもできます。
+詳しくは、下記「エディタ設定ファイルの編集」のセクションを参照してください。
+
+設定ファイルが正常に作成されたら、Firefoxを再起動してください。
+
+***
+
+## 手動設定
 
 withExEditorHostの"_config"というフォルダの中に必要な設定ファイルのサンプルがあります。
 
@@ -102,8 +141,6 @@ Mac:
 エディタ設定ファイルは、Firefoxのプロファイル毎に切り替えることもできます。
 例えば、defaultのプロファイルでは"editorconfig.json"を使い、nightlyのプロファイルでは"editorconfig-nightly.json"といった別名のエディタ設定ファイルを用意するなど。
 なお、"editorconfig.json"以外の名前を使用する場合は、withExEditor本体の設定ページでエディタ設定ファイルのパスを入力してください。
-
-***
 
 以上の作業を終えたら、Firefoxを再起動してください。
 
