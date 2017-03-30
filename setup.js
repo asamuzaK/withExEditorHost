@@ -6,7 +6,7 @@
   /* api */
   const {concatArgs, isString, logError} = require("./modules/common");
   const {
-    createDir, createFile, isDir, isExecutable, isFile, isSubDir,
+    createDir, createFile, isDir, isExecutable, isFile,
   } = require("./modules/file-util");
   const {execFile} = require("child_process");
   const os = require("os");
@@ -32,11 +32,11 @@
    * @param {string} shellPath - shell script path
    * @returns {string} - app manifest path
    */
-  const createAppManifest = (configPath, shellPath) => {
-    if (!isDir(configPath)) {
+  const createAppManifest = async (configPath, shellPath) => {
+    if (await !isDir(configPath)) {
       throw new Error(`No such directory: ${configPath}.`);
     }
-    if (!isFile(shellPath)) {
+    if (await !isFile(shellPath)) {
       throw new Error(`No such file: ${shellPath}.`);
     }
     const allowed = "allowed_extensions";
@@ -89,11 +89,11 @@
         }
       });
     }
-    createFile(
+    await createFile(
       filePath, manifest,
       {encoding: CHAR, flag: "w", mode: PERM_FILE}
     );
-    if (!isFile(filePath)) {
+    if (await !isFile(filePath)) {
       throw new Error(`Failed to create ${filePath}.`);
     }
     console.info(`Created: ${filePath}`);
@@ -105,24 +105,24 @@
    * @param {string} configPath - config directory path
    * @returns {string} - shell script path
    */
-  const createShellScript = configPath => {
-    if (!isDir(configPath)) {
+  const createShellScript = async configPath => {
+    if (await !isDir(configPath)) {
       throw new Error(`No such directory: ${configPath}.`);
     }
     const shellExt = IS_WIN && "cmd" || "sh";
     const shellPath = path.join(configPath, `${HOST_NAME}.${shellExt}`);
     const indexPath = path.resolve(path.join(DIR_CWD, "index.js"));
-    if (isFile(indexPath)) {
+    if (await isFile(indexPath)) {
       const node = process.argv0;
       const cmd = `${node} ${indexPath}`;
       const file = IS_WIN && `@echo off\n${cmd}\n` ||
                    `#!/usr/bin/env bash\n${cmd}\n`;
-      createFile(
+      await createFile(
         shellPath, file,
         {encoding: CHAR, flag: "w", mode: PERM_EXEC}
       );
     }
-    if (!isFile(shellPath)) {
+    if (await !isFile(shellPath)) {
       throw new Error(`Failed to create ${shellPath}.`);
     }
     console.info(`Created: ${shellPath}`);
@@ -141,16 +141,16 @@
    * @param {string} configPath - config directory path
    * @returns {string} - editor config path
    */
-  const createEditorConfig = configPath => {
-    if (!isDir(configPath)) {
+  const createEditorConfig = async configPath => {
+    if (await !isDir(configPath)) {
       throw new Error(`No such directory: ${configPath}.`);
     }
     const editorConfigPath = path.join(configPath, "editorconfig.json");
-    createFile(
+    await createFile(
       editorConfigPath, JSON.stringify(editorConfig, null, "  "),
       {encoding: CHAR, flag: "w", mode: PERM_FILE}
     );
-    if (!isFile(editorConfigPath)) {
+    if (await !isFile(editorConfigPath)) {
       throw new Error(`Failed to create ${editorConfigPath}.`);
     }
     console.info(`Created: ${editorConfigPath}`);
@@ -161,7 +161,7 @@
    * get config directory path in array
    * @returns {Array} - config directory array
    */
-  const getConfigPath = () => {
+  const getConfigPath = async () => {
     const [, , ...args] = process.argv;
     let configPath;
     if (Array.isArray(args) && args.length) {
@@ -171,11 +171,13 @@
         (/^".+"$/.test(argConf) || /^'.+'$/.test(argConf)) &&
           (argConf = argConf.replace(/^["']/, "").replace(/['"]$/, "").trim());
         argConf && (argConf = path.resolve(argConf));
-        if (argConf && isSubDir(argConf, path.resolve(DIR_HOME))) {
+        if (argConf && argConf.startsWith(path.resolve(DIR_HOME))) {
           configPath = argConf;
           break;
         }
       }
+      configPath && await !isDir(configPath) &&
+        (configPath = await createDir(configPath.split(path.sep), PERM_DIR));
     }
     return configPath && [configPath] || [DIR_CWD, "config"];
   };
@@ -184,10 +186,10 @@
    * create config directory
    * @returns {string} - config directory path
    */
-  const createConfig = () => {
-    const configDir = getConfigPath();
-    const configPath = createDir(configDir, PERM_DIR);
-    if (!isDir(configPath)) {
+  const createConfig = async () => {
+    const configDir = await getConfigPath();
+    const configPath = await createDir(configDir, PERM_DIR);
+    if (await !isDir(configPath)) {
       throw new Error(`Failed to create ${path.join(...configDir)}.`);
     }
     console.info(`Created: ${configPath}`);
@@ -198,15 +200,14 @@
    * setup
    * @returns {Promise.<Array>} - results of each handler
    */
-  const setup = () => new Promise(resolve => {
-    resolve(createConfig());
-  }).then(configPath => {
-    const shellPath = createShellScript(configPath);
+  const setup = async () => {
+    const configPath = await createConfig();
+    const shellPath = await createShellScript(configPath);
     return Promise.all([
       createAppManifest(configPath, shellPath),
       createEditorConfig(configPath),
     ]);
-  }).catch(logError);
+  };
 
   /* readline */
   const rl = readline.createInterface({
@@ -225,7 +226,7 @@
       /^y(?:es)?$/i.test(ans) && (editorConfig.fileAfterCmdArgs = true);
     }
     rl.close();
-    return setup();
+    return setup().catch(logError);
   };
 
   /**
