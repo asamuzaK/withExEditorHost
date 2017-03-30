@@ -176,10 +176,8 @@
           break;
         }
       }
-      configPath && await !isDir(configPath) &&
-        (configPath = await createDir(configPath.split(path.sep), PERM_DIR));
     }
-    return configPath && [configPath] || [DIR_CWD, "config"];
+    return configPath && [configPath.split(path.sep)] || [DIR_CWD, "config"];
   };
 
   /**
