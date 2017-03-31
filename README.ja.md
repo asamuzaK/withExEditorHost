@@ -18,7 +18,7 @@ Githubのアカウントがある場合は、レポジトリをクローンし�
 
 ## ホストの設定
 
-Windowsでは"cmd.exe"、Linux / Macでは「端末」（ターミナル）を開き、セットアップスクリプトを実行します。
+Windowsでは"cmd.exe"、Linux / Macでは「端末」（ターミナル）を開き、withExEditorHostを保存したディレクトリに移動してセットアップスクリプトを実行します。
 なお、Windowsの環境によっては、管理者権限で"cmd.exe"を実行する必要があるかもしれません。
 
 Windows:

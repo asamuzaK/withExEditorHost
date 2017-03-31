@@ -17,7 +17,7 @@ Also note that the host depends on the version of Node.js.
 
 ## Setting up the host
 
-Open "cmd.exe" on Windows, "terminal" on Linux / Mac, and run setup script.
+Open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost and run setup script.
 Depending on the Windows environment, you may need to run "cmd.exe" as admin.
 
 Windows:
