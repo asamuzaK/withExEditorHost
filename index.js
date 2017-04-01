@@ -4,13 +4,13 @@
 "use strict";
 {
   /* api */
+  const {ChildProcess} = require("./modules/child-process");
   const {Input, Output} = require("./modules/native-message");
-  const {concatArgs, isString, throwErr} = require("./modules/common");
+  const {isString, throwErr} = require("./modules/common");
   const {
     convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
     getFileTimestamp, isDir, isExecutable, isFile, removeDir, readFile,
   } = require("./modules/file-util");
-  const {execFile} = require("child_process");
   const os = require("os");
   const path = require("path");
   const process = require("process");
@@ -146,7 +146,7 @@
    * spawn child process
    * @param {string} file - file path
    * @param {string} app - app path
-   * @returns {ChildProcess|AsyncFunction} - ChildProcess / write stdout
+   * @returns {ChildProcess|AsyncFunction} - child process / write stdout
    */
   const spawnChildProcess = async (file, app = vars[EDITOR_PATH]) => {
     if (await !isFile(file)) {
@@ -155,34 +155,35 @@
     if (await !isExecutable(app)) {
       return writeStdout(hostMsg(`${app} is not executable.`, "warn"));
     }
-    let args = vars[CMD_ARGS] || [];
+    const args = vars[CMD_ARGS] || [];
     const pos = vars[FILE_AFTER_ARGS] || false;
-    const argA = pos && args || [file.replace(/\\/g, "\\\\")];
-    const argB = pos && [file.replace(/\\/g, "\\\\")] || args;
     const opt = {
       cwd: null,
       encoding: CHAR,
       env: process.env,
     };
-    args = await concatArgs(argA, argB);
-    return execFile(app, args, opt, (e, stdout, stderr) => {
-      if (e) {
-        e = (new Output()).encode(e);
-        e && process.stderr.write(e);
-      }
-      if (stderr) {
-        stderr = (new Output()).encode(
-          hostMsg(`${stderr}: ${app}`, `${PROCESS_CHILD}_stderr`)
+    const proc = (new ChildProcess(app, args, opt)).spawn(file, pos);
+    proc.on("error", e => {
+      e = (new Output()).encode(e);
+      e && process.stderr.write(e);
+    });
+    proc.stderr.on("data", data => {
+      if (data) {
+        data = (new Output()).encode(
+          hostMsg(`${data}: ${app}`, `${PROCESS_CHILD}_stderr`)
         );
-        stderr && process.stdout.write(stderr);
-      }
-      if (stdout) {
-        stdout = (new Output()).encode(
-          hostMsg(`${stdout}: ${app}`, `${PROCESS_CHILD}_stdout`)
-        );
-        stdout && process.stdout.write(stdout);
+        data && process.stdout.write(data);
       }
     });
+    proc.stdout.on("data", data => {
+      if (data) {
+        data = (new Output()).encode(
+          hostMsg(`${data}: ${app}`, `${PROCESS_CHILD}_stdout`)
+        );
+        data && process.stdout.write(data);
+      }
+    });
+    return proc;
   };
 
   /* temporary files */
