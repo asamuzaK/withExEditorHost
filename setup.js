@@ -62,7 +62,7 @@
       const reg = path.join(process.env.WINDIR, "system32", "reg.exe");
       const key = path.join(
         "HKEY_CURRENT_USER", "SOFTWARE", "Mozilla", "NativeMessagingHosts",
-        `${HOST_NAME}_TEST`
+        HOST_NAME
       );
       const args = ["add", key, "/ve", "/d", filePath, "/f"];
       const opt = {
