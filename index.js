@@ -4,13 +4,13 @@
 "use strict";
 {
   /* api */
+  const {ChildProcess} = require("./modules/child-process");
   const {Input, Output} = require("./modules/native-message");
-  const {concatArgs, isString, throwErr} = require("./modules/common");
+  const {isString, throwErr} = require("./modules/common");
   const {
     convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
     getFileTimestamp, isDir, isExecutable, isFile, removeDir, readFile,
   } = require("./modules/file-util");
-  const {execFile} = require("child_process");
   const os = require("os");
   const path = require("path");
   const process = require("process");
@@ -73,34 +73,34 @@
    */
   const spawnChildProcess = file => new Promise(resolve => {
     const app = vars[EDITOR_PATH];
-    const pos = vars[FILE_AFTER_ARGS] || false;
-    let args = vars[CMD_ARGS] || [], proc;
+    let proc;
     if (isFile(file) && isExecutable(app)) {
-      const argA = pos && args || [file.replace(/\\/g, "\\\\")];
-      const argB = pos && [file.replace(/\\/g, "\\\\")] || args;
+      const args = vars[CMD_ARGS] || [];
+      const pos = vars[FILE_AFTER_ARGS] || false;
       const opt = {
         cwd: null,
         encoding: CHAR,
         env: process.env,
       };
-      args = concatArgs(argA, argB);
-      proc = execFile(app, args, opt, (e, stdout, stderr) => {
-        const output = new Output();
-        if (e) {
-          e = output.encode(e);
-          e && process.stderr.write(e);
-        }
-        if (stderr) {
-          stderr = output.encode(
-            hostMsg(`${stderr}: ${app}`, `${PROCESS_CHILD}_stderr`)
+      proc = (new ChildProcess(app, args, opt)).spawn(file, pos);
+      proc.on("error", e => {
+        e = (new Output()).encode(e);
+        e && process.stderr.write(e);
+      });
+      proc.stderr.on("data", data => {
+        if (data) {
+          data = (new Output()).encode(
+            hostMsg(`${data}: ${app}`, `${PROCESS_CHILD}_stderr`)
           );
-          stderr && process.stdout.write(stderr);
+          data && process.stdout.write(data);
         }
-        if (stdout) {
-          stdout = output.encode(
-            hostMsg(`${stdout}: ${app}`, `${PROCESS_CHILD}_stdout`)
+      });
+      proc.stdout.on("data", data => {
+        if (data) {
+          data = (new Output()).encode(
+            hostMsg(`${data}: ${app}`, `${PROCESS_CHILD}_stdout`)
           );
-          stdout && process.stdout.write(stdout);
+          data && process.stdout.write(data);
         }
       });
     }

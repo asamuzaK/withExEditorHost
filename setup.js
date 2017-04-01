@@ -4,11 +4,11 @@
 "use strict";
 {
   /* api */
+  const {ChildProcess} = require("./modules/child-process");
   const {concatArgs, isString, logError} = require("./modules/common");
   const {
     createDir, createFile, isDir, isExecutable, isFile,
   } = require("./modules/file-util");
-  const {execFile} = require("child_process");
   const os = require("os");
   const path = require("path");
   const process = require("process");
@@ -70,16 +70,12 @@
         encoding: CHAR,
         env: process.env,
       };
-      const proc = execFile(reg, args, opt, (e, stdout, stderr) => {
-        if (e) {
-          throw e;
-        }
-        if (stderr) {
-          console.error(stderr);
-        }
-        if (stdout) {
-          //console.log(stdout);
-        }
+      const proc = (new ChildProcess(reg, args, opt)).spawn();
+      proc.on("error", e => {
+        throw e;
+      });
+      proc.stderr.on("data", data => {
+        data && console.error(`stderr: ${reg}: ${data}`);
       });
       proc.on("close", code => {
         if (code === 0) {
