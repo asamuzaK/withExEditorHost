@@ -108,7 +108,7 @@
     try {
       data = data && JSON.parse(data);
       if (data) {
-        const {editorPath} = data;
+        const {editorPath, cmdArgs, fileAfterCmdArgs} = data;
         const editorName = await getFileNameFromFilePath(editorPath);
         const executable = await isExecutable(editorPath);
         const items = Object.keys(data);
@@ -120,6 +120,7 @@
         msg = {
           [EDITOR_CONFIG_RES]: {
             editorConfig, editorName, editorPath, executable,
+            cmdArgs, fileAfterCmdArgs,
           },
         };
       }

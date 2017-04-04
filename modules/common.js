@@ -71,39 +71,6 @@
     Number.isSafeInteger(i) && (zero && i >= 0 || i > 0) && `${i}` || null;
 
   /**
-   * correct the argument
-   * @param {string} arg - argument
-   * @returns {string} - argument
-   */
-  const correctArg = arg => {
-    if (/^\s*(?:".*"|'.*')\s*$/.test(arg)) {
-      arg = arg.trim();
-      /^".*\\["\\].*"$/.test(arg) &&
-        (arg = arg.replace(/\\"/g, "\"").replace(/\\\\/g, "\\"));
-      arg = arg.replace(/^['"]/, "").replace(/["']$/, "");
-    } else {
-      /^.*\\.*$/.test(arg) && (arg = arg.replace(/\\(?!\\)/g, ""));
-      /".*"|'.*'/.test(arg) &&
-        (arg = arg.replace(/"([^"]+)*"|'([^']+)*'/g, (m, c1, c2) => c1 || c2));
-    }
-    return arg;
-  };
-
-  /**
-   * concat arguments array
-   * @param {...(string|Array)} args - arguments
-   * @returns {Array} - arguments array
-   */
-  const concatArgs = (...args) => {
-    const reCmd = /(?:^|\s)(?:"(?:[^"\\]|\\[^"]|\\")*"|'(?:[^'\\]|\\[^']|\\')*')(?=\s|$)|(?:\\ |[^\s])+(?:"(?:[^"\\]|\\[^"]|\\")*"|'(?:[^'\\]|\\[^']|\\')*')(?:(?:\\ |[^\s])+(?:"(?:[^"\\]|\\[^"]|\\")*"|'(?:[^'\\]|\\[^']|\\')*'))*(?:\\ |[^\s])*|(?:[^"'\s\\]|\\[^\s]|\\ )+/g;
-    const arr = args.map(arg => {
-      isString(arg) && (arg = arg.match(reCmd));
-      return Array.isArray(arg) && arg.map(correctArg) || [];
-    });
-    return arr.length && arr.reduce((a, b) => a.concat(b)) || [];
-  };
-
-  /**
    * strip HTML tags and decode HTML escaped characters
    * @param {string} v - value
    * @returns {string} - converted value
@@ -118,7 +85,7 @@
   };
 
   module.exports = {
-    concatArgs, correctArg, getType, isString, logError, logMsg, logWarn,
+    getType, isString, logError, logMsg, logWarn,
     stringifyPositiveInt, stripHtmlTags, throwErr,
   };
 }
