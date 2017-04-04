@@ -4,8 +4,8 @@
 "use strict";
 {
   /* api */
-  const {ChildProcess} = require("./modules/child-process");
-  const {concatArgs, isString, logError} = require("./modules/common");
+  const {ChildProcess, CmdArgs} = require("./modules/child-process");
+  const {isString, logError} = require("./modules/common");
   const {
     createDir, createFile, isDir, isExecutable, isFile,
   } = require("./modules/file-util");
@@ -215,7 +215,7 @@
    * @param {string} ans - user input
    * @returns {AsyncFuncrtion} - setup
    */
-  const handleFilePos = ans => {
+  const handleFilePosInput = ans => {
     if (isString(ans)) {
       ans = ans.trim();
       /^y(?:es)?$/i.test(ans) && (editorConfig.fileAfterCmdArgs = true);
@@ -231,11 +231,10 @@
    */
   const handleCmdArgsInput = ans => {
     if (isString(ans)) {
-      ans = ans.trim();
-      ans.length && (editorConfig.cmdArgs = concatArgs(ans));
+      editorConfig.cmdArgs = (new CmdArgs(ans.trim())).toArray();
     }
     rl.question("Put file path after command arguments? [y/n]\n",
-                handleFilePos);
+                handleFilePosInput);
   };
 
   /**
