@@ -157,7 +157,7 @@
    * get config directory in array
    * @returns {Array} - config directory array
    */
-  const getConfigDir = async () => {
+  const getConfigDir = () => {
     const [, , ...args] = process.argv;
     let configDir;
     if (Array.isArray(args) && args.length) {
