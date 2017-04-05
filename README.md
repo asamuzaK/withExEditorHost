@@ -17,7 +17,7 @@ Also note that the host depends on the version of Node.js.
 
 ## Setting up the host
 
-Open "cmd.exe" on Windows, "terminal" on Linux / Mac, and run setup script.
+Open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost and run setup script.
 Depending on the Windows environment, you may need to run "cmd.exe" as admin.
 
 Windows:
@@ -43,6 +43,8 @@ You will be prompted for the following, please input as appropriate.
 
 * Enter editor path
 * Enter command line options
+  * NOTE: Quote the argument if it contains spaces or backslashes.
+    For example: `-a -b "C:\Program Files"`
 * Put file path after command arguments?
 
 You can leave them empty and set them later too.
@@ -128,13 +130,13 @@ Open "editorconfig.json" and fill in the information of the editor.
 ```
 {
   "editorPath": "C:\\Program Files\\Path\\To\\Your\\Editor.exe",
-  "cmdArgs": [],
+  "cmdArgs": ["-a", "-b", "--c=d\\e"],
   "fileAfterCmdArgs": false
 }
 ```
 
-* *editorPath* - The path of the editor to use. On Windows, backslashes must be escaped.
-* *cmdArgs* - Command line options. Enter each argument in array, separated by comma. For example, `"cmdArgs": ["-a", "-b", "-c"]`
+* *editorPath* - The path of the editor to use. Backslashes must be escaped.
+* *cmdArgs* - Command line options. Enter each argument in array, separated by comma. Backslashes must be escaped.
 * *fileAfterCmdArgs* - Boolean (`true` / `false`). When specifying the file, some editor requires to put the file path after command arguments. Set `true` in such case.
 
 Editor configuration files can also be switched for each Firefox profile.
