@@ -130,13 +130,13 @@ Open "editorconfig.json" and fill in the information of the editor.
 ```
 {
   "editorPath": "C:\\Program Files\\Path\\To\\Your\\Editor.exe",
-  "cmdArgs": [],
+  "cmdArgs": ["-a", "-b", "--c=d\\e"],
   "fileAfterCmdArgs": false
 }
 ```
 
 * *editorPath* - The path of the editor to use. Backslashes must be escaped.
-* *cmdArgs* - Command line options. Enter each argument in array, separated by comma. Backslashes must be escaped. For example, `"cmdArgs": ["-a", "-b", "--c=d\\e"]`
+* *cmdArgs* - Command line options. Enter each argument in array, separated by comma. Backslashes must be escaped.
 * *fileAfterCmdArgs* - Boolean (`true` / `false`). When specifying the file, some editor requires to put the file path after command arguments. Set `true` in such case.
 
 Editor configuration files can also be switched for each Firefox profile.
