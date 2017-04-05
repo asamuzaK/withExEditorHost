@@ -43,6 +43,8 @@ You will be prompted for the following, please input as appropriate.
 
 * Enter editor path
 * Enter command line options
+  * NOTE: Quote the argument if it contains spaces or backslashes.
+    For example: `-a -b "C:\Program Files"`
 * Put file path after command arguments?
 
 You can leave them empty and set them later too.
