@@ -154,26 +154,25 @@
   };
 
   /**
-   * get config directory path in array
+   * get config directory in array
    * @returns {Array} - config directory array
    */
-  const getConfigPath = async () => {
+  const getConfigDir = async () => {
     const [, , ...args] = process.argv;
-    let configPath;
+    let configDir;
     if (Array.isArray(args) && args.length) {
       for (const arg of args) {
         let argConf = /^--config-path=(.+)$/.exec(arg);
-        argConf && (argConf = argConf[1].trim());
-        (/^".+"$/.test(argConf) || /^'.+'$/.test(argConf)) &&
-          (argConf = argConf.replace(/^["']/, "").replace(/['"]$/, "").trim());
-        argConf && (argConf = path.resolve(argConf));
-        if (argConf && argConf.startsWith(path.resolve(DIR_HOME))) {
-          configPath = argConf;
-          break;
+        if (argConf) {
+          const confPath = path.resolve(argConf[1].trim()));
+          if (confPath && confPath.startsWith(path.resolve(DIR_HOME))) {
+            configDir = confPath.split(path.sep);
+            break;
+          }
         }
       }
     }
-    return configPath && configPath.split(path.sep) || [DIR_CWD, "config"];
+    return configDir || [DIR_CWD, "config"];
   };
 
   /**
@@ -181,7 +180,7 @@
    * @returns {string} - config directory path
    */
   const createConfig = async () => {
-    const configDir = await getConfigPath();
+    const configDir = await getConfigDir();
     const configPath = await createDir(configDir, PERM_DIR);
     if (await !isDir(configPath)) {
       throw new Error(`Failed to create ${path.join(...configDir)}.`);
