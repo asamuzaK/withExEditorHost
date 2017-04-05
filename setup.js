@@ -162,9 +162,9 @@
     let configDir;
     if (Array.isArray(args) && args.length) {
       for (const arg of args) {
-        let argConf = /^--config-path=(.+)$/.exec(arg);
+        const argConf = /^--config-path=(.+)$/.exec(arg);
         if (argConf) {
-          const confPath = path.resolve(argConf[1].trim()));
+          const confPath = path.resolve(argConf[1].trim());
           if (confPath && confPath.startsWith(path.resolve(DIR_HOME))) {
             configDir = confPath.split(path.sep);
             break;
