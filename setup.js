@@ -51,12 +51,13 @@
     const filePath = path.resolve(
       IS_WIN && path.join(configPath, fileName) ||
       IS_MAC && path.join(
-        "~/Library/Application Support",
+        DIR_HOME,
+        "Library/Application Support",
         "Mozilla",
         "NativeMessagingHosts",
         fileName
       ) ||
-      path.join("~", ".mozilla", "native-messaging-hosts", fileName)
+      path.join(DIR_HOME, ".mozilla", "native-messaging-hosts", fileName)
     );
     if (IS_WIN) {
       const reg = path.join(process.env.WINDIR, "system32", "reg.exe");
