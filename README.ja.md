@@ -19,18 +19,11 @@ Githubのアカウントがある場合は、レポジトリをクローンし�
 ## ホストの設定
 
 Windowsでは"cmd.exe"、Linux / Macでは「端末」（ターミナル）を開き、withExEditorHostを保存したディレクトリに移動してセットアップスクリプトを実行します。
-なお、Windowsの環境によっては、管理者権限で"cmd.exe"を実行する必要があるかもしれません。
+なお、環境によっては管理者権限で実行する必要があるかもしれません。
 
-Windows:
 ```
-> cd path\to\withExEditorHost
+> cd path/to/withExEditorHost
 > node setup.js
-```
-
-Linux / Mac:
-```
-$ cd path/to/withexeditorhost
-$ sudo node setup.js
 ```
 
 セットアップスクリプトは、デフォルトでwithExEditorHostの保存先の直下に"config"フォルダを作成し各設定ファイルを保持します。

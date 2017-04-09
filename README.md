@@ -18,18 +18,11 @@ Also note that the host depends on the version of Node.js.
 ## Setting up the host
 
 Open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost and run setup script.
-Depending on the Windows environment, you may need to run "cmd.exe" as admin.
+Depending on your environment, you may need to run as admin.
 
-Windows:
 ```
-> cd path\to\withExEditorHost
+> cd path/to/withExEditorHost
 > node setup.js
-```
-
-Linux / Mac:
-```
-$ cd path/to/withexeditorhost
-$ sudo node setup.js
 ```
 
 By default, the setup script creates a "config" folder under the location of withExEditorHost.
