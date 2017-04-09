@@ -30,7 +30,7 @@ Windows:
 Linux / Mac:
 ```
 $ cd path/to/withexeditorhost
-$ sudo node setup.js
+$ node setup.js
 ```
 
 セットアップスクリプトは、デフォルトでwithExEditorHostの保存先の直下に"config"フォルダを作成し各設定ファイルを保持します。

@@ -29,7 +29,7 @@ Windows:
 Linux / Mac:
 ```
 $ cd path/to/withexeditorhost
-$ sudo node setup.js
+$ node setup.js
 ```
 
 By default, the setup script creates a "config" folder under the location of withExEditorHost.
