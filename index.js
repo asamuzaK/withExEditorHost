@@ -138,7 +138,7 @@
         const {editorPath, cmdArgs, fileAfterCmdArgs} = data;
         const editorName = getFileNameFromFilePath(editorPath);
         const executable = isExecutable(editorPath);
-        const timestamp = getFileTimestamp(editorConfig) || 0;
+        const editorConfigTimestamp = getFileTimestamp(editorConfig) || 0;
         const items = Object.keys(data);
         if (items.length) {
           for (const item of items) {
@@ -147,8 +147,8 @@
         }
         msg = {
           [EDITOR_CONFIG_RES]: {
-            editorConfig, editorName, editorPath, executable,
-            cmdArgs, fileAfterCmdArgs, timestamp,
+            editorConfig, editorConfigTimestamp, editorName, editorPath,
+            executable, cmdArgs, fileAfterCmdArgs,
           },
         };
       }
