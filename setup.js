@@ -86,7 +86,7 @@
       });
     } else {
       const hostDir = IS_MAC && HOST_DIR_MAC || HOST_DIR_LINUX;
-      const hostDirPath = await createDir(...hostDir, PERM_DIR);
+      const hostDirPath = await createDir(hostDir, PERM_DIR);
       if (await !isDir(hostDirPath)) {
         throw new Error(`Failed to create ${path.join(...hostDir)}.`);
       }
