@@ -111,6 +111,7 @@
         const {editorPath, cmdArgs, fileAfterCmdArgs} = data;
         const editorName = await getFileNameFromFilePath(editorPath);
         const executable = await isExecutable(editorPath);
+        const timestamp = await getFileTimestamp(editorConfig) || 0;
         const items = Object.keys(data);
         if (items.length) {
           for (const item of items) {
@@ -120,7 +121,7 @@
         msg = {
           [EDITOR_CONFIG_RES]: {
             editorConfig, editorName, editorPath, executable,
-            cmdArgs, fileAfterCmdArgs,
+            cmdArgs, fileAfterCmdArgs, timestamp,
           },
         };
       }
