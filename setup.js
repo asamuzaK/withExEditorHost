@@ -19,6 +19,11 @@
   const CHAR = "utf8";
   const DIR_CWD = process.cwd();
   const DIR_HOME = os.homedir();
+  const HOST_DIR_LINUX = [DIR_HOME, ".mozilla", "native-messaging-hosts"];
+  const HOST_DIR_MAC = [
+    DIR_HOME, "Library", "Application Support", "Mozilla",
+    "NativeMessagingHosts",
+  ];
   const HOST_NAME = "withexeditorhost";
   const IS_MAC = os.platform() === "darwin";
   const IS_WIN = os.platform() === "win32";
@@ -50,14 +55,8 @@
     const fileName = `${HOST_NAME}.json`;
     const filePath = path.resolve(
       IS_WIN && path.join(configPath, fileName) ||
-      IS_MAC && path.join(
-        DIR_HOME,
-        "Library/Application Support",
-        "Mozilla",
-        "NativeMessagingHosts",
-        fileName
-      ) ||
-      path.join(DIR_HOME, ".mozilla", "native-messaging-hosts", fileName)
+      IS_MAC && path.join(...HOST_DIR_MAC, fileName) ||
+      path.join(...HOST_DIR_LINUX, fileName)
     );
     if (IS_WIN) {
       const reg = path.join(process.env.WINDIR, "system32", "reg.exe");
@@ -85,6 +84,12 @@
           console.warn(`${reg} exited with ${code}.`);
         }
       });
+    } else {
+      const hostDir = IS_MAC && HOST_DIR_MAC || HOST_DIR_LINUX;
+      const hostDirPath = createDir(...hostDir, PERM_DIR);
+      if (!isDir(hostDirPath)) {
+        throw new Error(`Failed to create ${path.join(...hostDir)}.`);
+      }
     }
     createFile(
       filePath, manifest,
