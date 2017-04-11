@@ -7,11 +7,16 @@
   const CONTENT_GET = "getContent";
   const CONTEXT_MENU = "contextMenu";
   const CONTEXT_MODE = "contextMode";
+  const EDITOR_CMD_ARGS = "cmdArgs";
   const EDITOR_CONFIG = "editorConfigPath";
   const EDITOR_CONFIG_GET = "getEditorConfig";
   const EDITOR_CONFIG_RES = "resEditorConfig";
+  const EDITOR_CONFIG_SET = "setEditorConfig";
+  const EDITOR_CONFIG_TS = "editorConfigTimestamp";
   const EDITOR_FILE_NAME = "editorFileName";
+  const EDITOR_FILE_POS = "fileAfterCmdArgs";
   const EDITOR_LABEL = "editorLabel";
+  const EDITOR_PATH = "editorPath";
   const FILE_EXT = "fileExt";
   const IS_ENABLED = "isEnabled";
   const KEY_ACCESS = "accessKey";
@@ -43,11 +48,16 @@
     CONTENT_GET,
     CONTEXT_MENU,
     CONTEXT_MODE,
+    EDITOR_CMD_ARGS,
     EDITOR_CONFIG,
     EDITOR_CONFIG_GET,
     EDITOR_CONFIG_RES,
+    EDITOR_CONFIG_SET,
+    EDITOR_CONFIG_TS,
     EDITOR_FILE_NAME,
+    EDITOR_FILE_POS,
     EDITOR_LABEL,
+    EDITOR_PATH,
     FILE_EXT,
     IS_ENABLED,
     KEY_ACCESS,
