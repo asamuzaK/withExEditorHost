@@ -4,7 +4,7 @@
 "use strict";
 {
   /* api */
-  const {ChildProcess} = require("./modules/child-process");
+  const {ChildProcess, CmdArgs} = require("./modules/child-process");
   const {Input, Output} = require("./modules/native-message");
   const {isString, throwErr} = require("./modules/common");
   const {
@@ -17,15 +17,14 @@
 
   /* constants */
   const {
-    EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, HOST, LABEL, LOCAL_FILE_VIEW,
-    PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
-    TMP_FILE_CREATE, TMP_FILE_DATA_PORT, TMP_FILE_GET, TMP_FILE_RES,
+    EDITOR_CMD_ARGS, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_SET,
+    EDITOR_CONFIG_TS, EDITOR_FILE_POS, EDITOR_PATH, HOST, LABEL,
+    LOCAL_FILE_VIEW, PROCESS_CHILD, TMP_FILES, TMP_FILES_PB,
+    TMP_FILES_PB_REMOVE, TMP_FILE_CREATE, TMP_FILE_DATA_PORT,
+    TMP_FILE_GET, TMP_FILE_RES,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
-  const CMD_ARGS = "cmdArgs";
-  const EDITOR_PATH = "editorPath";
-  const FILE_AFTER_ARGS = "fileAfterCmdArgs";
   const PERM_DIR = 0o700;
   const PERM_FILE = 0o600;
   const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
@@ -36,9 +35,33 @@
 
   /* variables */
   const vars = {
-    [CMD_ARGS]: [],
+    [EDITOR_CMD_ARGS]: [],
+    [EDITOR_FILE_POS]: false,
     [EDITOR_PATH]: "",
-    [FILE_AFTER_ARGS]: false,
+  };
+
+  /**
+   * set editor variables
+   * @param {Object} data - variable data
+   * @returns {void}
+   */
+  const setEditorVars = async (data = {}) => {
+    const items = Object.keys(vars);
+    for (const item of items) {
+      const obj = data[item];
+      switch (item) {
+        case EDITOR_CMD_ARGS:
+          vars[item] = (new CmdArgs(obj)).toArray();
+          break;
+        case EDITOR_FILE_POS:
+          vars[item] = !!obj;
+          break;
+        case EDITOR_PATH:
+          vars[item] = obj;
+          break;
+        default:
+      }
+    }
   };
 
   /**
@@ -108,20 +131,17 @@
     try {
       data = data && JSON.parse(data);
       if (data) {
-        const {editorPath, cmdArgs, fileAfterCmdArgs} = data;
+        const {editorPath} = data;
         const editorName = await getFileNameFromFilePath(editorPath);
         const executable = await isExecutable(editorPath);
-        const editorConfigTimestamp = await getFileTimestamp(editorConfig) || 0;
-        const items = Object.keys(data);
-        if (items.length) {
-          for (const item of items) {
-            vars[item] = data[item];
-          }
-        }
+        const timestamp = await getFileTimestamp(editorConfig) || 0;
+        await setEditorVars(data);
         msg = {
           [EDITOR_CONFIG_RES]: {
-            editorConfig, editorConfigTimestamp, editorName, editorPath,
-            executable, cmdArgs, fileAfterCmdArgs,
+            editorConfig, editorName, editorPath, executable,
+            [EDITOR_CMD_ARGS]: (new CmdArgs(vars[EDITOR_CMD_ARGS])).toString(),
+            [EDITOR_CONFIG_TS]: timestamp,
+            [EDITOR_FILE_POS]: vars[EDITOR_FILE_POS],
           },
         };
       }
@@ -157,8 +177,8 @@
     if (await !isExecutable(app)) {
       return writeStdout(hostMsg(`${app} is not executable.`, "warn"));
     }
-    const args = vars[CMD_ARGS] || [];
-    const pos = vars[FILE_AFTER_ARGS] || false;
+    const args = vars[EDITOR_CMD_ARGS] || [];
+    const pos = vars[EDITOR_FILE_POS] || false;
     const opt = {
       cwd: null,
       encoding: CHAR,
@@ -275,6 +295,41 @@
   };
 
   /**
+   * set editor config
+   * @param {Object} data - editor config data
+   * @returns {?AsyncFunction} - create file / write stdout
+   */
+  const setEditorConfig = async (data = {}) => {
+    const {editorConfig, editorPath} = data;
+    let func;
+    if (await isExecutable(editorPath)) {
+      await setEditorVars(data);
+      if (await isFile(editorConfig)) {
+        func = createFile(
+                 editorConfig, JSON.stringify(vars, null, "  "),
+                 {encoding: CHAR, flag: "w", mode: PERM_FILE}
+               );
+      } else {
+        const dir = (editorConfig.split(path.sep)).pop();
+        const configPath = await createDir(dir, PERM_DIR);
+        if (await isDir(configPath)) {
+          func = createFile(
+                   editorConfig, JSON.stringify(vars, null, "  "),
+                   {encoding: CHAR, flag: "w", mode: PERM_FILE}
+                 );
+        } else {
+          func = writeStdout(
+                   hostMsg(`Failed to create ${path.join(...dir)}.`, "warn")
+                 );
+        }
+      }
+    } else {
+      func = writeStdout(hostMsg(`${editorPath} is not executable.`, "warn"));
+    }
+    return func;
+  };
+
+  /**
    * view local file
    * @param {string} uri - local file uri
    * @returns {?AsyncFunction} - spawn child process
@@ -313,6 +368,9 @@
         switch (item) {
           case EDITOR_CONFIG_GET:
             func.push(getEditorConfig(obj));
+            break;
+          case EDITOR_CONFIG_SET:
+            func.push(setEditorConfig(obj));
             break;
           case LOCAL_FILE_VIEW:
             func.push(viewLocalFile(obj));
