@@ -15,6 +15,9 @@
   const readline = require("readline");
 
   /* constants */
+  const {
+    EDITOR_CMD_ARGS, EDITOR_FILE_POS, EDITOR_PATH, HOST,
+  } = require("./modules/constant");
   const ADDON_ID = "jid1-WiAigu4HIo0Tag@jetpack";
   const CHAR = "utf8";
   const DIR_CWD = process.cwd();
@@ -24,7 +27,6 @@
     DIR_HOME, "Library", "Application Support", "Mozilla",
     "NativeMessagingHosts",
   ];
-  const HOST_NAME = "withexeditorhost";
   const IS_MAC = os.platform() === "darwin";
   const IS_WIN = os.platform() === "win32";
   const PERM_DIR = 0o700;
@@ -48,11 +50,11 @@
     const manifest = JSON.stringify({
       [allowed]: [ADDON_ID],
       description: "Native messaging host for withExEditor",
-      name: HOST_NAME,
+      name: HOST,
       path: shellPath,
       type: "stdio",
     });
-    const fileName = `${HOST_NAME}.json`;
+    const fileName = `${HOST}.json`;
     const filePath = path.resolve(
       IS_WIN && path.join(configPath, fileName) ||
       IS_MAC && path.join(...HOST_DIR_MAC, fileName) ||
@@ -62,7 +64,7 @@
       const reg = path.join(process.env.WINDIR, "system32", "reg.exe");
       const key = path.join(
         "HKEY_CURRENT_USER", "SOFTWARE", "Mozilla", "NativeMessagingHosts",
-        HOST_NAME
+        HOST
       );
       const args = ["add", key, "/ve", "/d", filePath, "/f"];
       const opt = {
@@ -112,7 +114,7 @@
       throw new Error(`No such directory: ${configPath}.`);
     }
     const shellExt = IS_WIN && "cmd" || "sh";
-    const shellPath = path.join(configPath, `${HOST_NAME}.${shellExt}`);
+    const shellPath = path.join(configPath, `${HOST}.${shellExt}`);
     const indexPath = path.resolve(path.join(DIR_CWD, "index.js"));
     if (await isFile(indexPath)) {
       const node = process.argv0;
@@ -133,9 +135,9 @@
 
   /* editor config */
   const editorConfig = {
-    editorPath: "",
-    cmdArgs: [],
-    fileAfterCmdArgs: false,
+    [EDITOR_CMD_ARGS]: [],
+    [EDITOR_FILE_POS]: false,
+    [EDITOR_PATH]: "",
   };
 
   /**
@@ -222,7 +224,7 @@
   const handleFilePosInput = ans => {
     if (isString(ans)) {
       ans = ans.trim();
-      /^y(?:es)?$/i.test(ans) && (editorConfig.fileAfterCmdArgs = true);
+      /^y(?:es)?$/i.test(ans) && (editorConfig[EDITOR_FILE_POS] = true);
     }
     rl.close();
     return setup().catch(logError);
@@ -235,7 +237,7 @@
    */
   const handleCmdArgsInput = ans => {
     if (isString(ans)) {
-      editorConfig.cmdArgs = (new CmdArgs(ans.trim())).toArray();
+      editorConfig[EDITOR_CMD_ARGS] = (new CmdArgs(ans.trim())).toArray();
     }
     rl.question("Put file path after command arguments? [y/n]\n",
                 handleFilePosInput);
@@ -251,7 +253,7 @@
       ans = ans.trim();
       if (ans.length) {
         if (isExecutable(ans)) {
-          editorConfig.editorPath = ans;
+          editorConfig[EDITOR_PATH] = ans;
           rl.question("Enter command line options:\n", handleCmdArgsInput);
         } else {
           console.warn(`${ans} is not executable.`);
