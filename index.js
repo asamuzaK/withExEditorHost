@@ -310,7 +310,8 @@
                  {encoding: CHAR, flag: "w", mode: PERM_FILE}
                );
       } else {
-        const dir = (editorConfig.split(path.sep)).pop();
+        const arr = editorConfig.split(path.sep);
+        const dir = arr.slice(0, arr.length - 1);
         const configPath = await createDir(dir, PERM_DIR);
         if (await isDir(configPath)) {
           func = createFile(
