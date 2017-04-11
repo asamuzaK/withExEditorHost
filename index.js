@@ -232,9 +232,9 @@
   /**
    * create temporary file
    * @param {Object} obj - temporary file data object
-   * @returns {Object} - temporary file data
+   * @returns {Object} - Promise.<Object>, temporary file data
    */
-  const createTmpFile = (obj = {}) => {
+  const createTmpFile = (obj = {}) => new Promise(resolve => {
     const {data, value} = obj;
     let filePath;
     if (data) {
@@ -247,10 +247,9 @@
                      path.join(dPath, fileName), value,
                      {encoding: CHAR, flag: "w", mode: PERM_FILE}
                    );
-      filePath && (data.filePath = filePath);
     }
-    return data && filePath && {data, filePath} || null;
-  };
+    resolve(data && filePath && {data, filePath} || null);
+  });
 
   /**
    * get temporary file
