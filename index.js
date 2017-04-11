@@ -297,7 +297,7 @@
   /**
    * set editor config
    * @param {Object} data - editor config data
-   * @returns {?AsyncFunction} - create file / write stdout
+   * @returns {AsyncFunction} - create file / write stdout
    */
   const setEditorConfig = async (data = {}) => {
     const {editorConfig, editorPath} = data;
