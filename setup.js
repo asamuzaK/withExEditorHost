@@ -5,9 +5,9 @@
 {
   /* api */
   const {ChildProcess, CmdArgs} = require("./modules/child-process");
-  const {isString, logError} = require("./modules/common");
+  const {escapeChar, isString, logError} = require("./modules/common");
   const {
-    createDir, createFile, isDir, isExecutable, isFile,
+    createDir, createFile, getAbsPath, isDir, isExecutable, isFile,
   } = require("./modules/file-util");
   const os = require("os");
   const path = require("path");
@@ -161,6 +161,7 @@
     return editorConfigPath;
   };
 
+  // TODO: extract argv on startup
   /**
    * get config directory in array
    * @returns {Array} - config directory array
@@ -170,13 +171,18 @@
     let configDir;
     if (Array.isArray(args) && args.length) {
       for (const arg of args) {
-        const argConf = /^--config-path=(.+)$/.exec(arg);
-        if (argConf) {
-          const confPath = path.resolve(argConf[1].trim());
-          if (confPath && confPath.startsWith(path.resolve(DIR_HOME))) {
-            configDir = confPath.split(path.sep);
-            break;
-          }
+        let argConf = /^--config-path=(.+)$/.exec(arg);
+        if (argConf && (argConf = getAbsPath(argConf[1].trim()))) {
+          const {dir} = path.parse(argConf);
+          const re = /(\\)/g;
+          const dirHome = escapeChar(DIR_HOME, re);
+          const pathSep = escapeChar(path.sep, re);
+          const reHomeDir = new RegExp(`^(?:${dirHome}|~)${pathSep}`);
+          configDir = [
+            DIR_HOME,
+            ...(dir.replace(reHomeDir, "")).split(path.sep),
+          ];
+          break;
         }
       }
     }
