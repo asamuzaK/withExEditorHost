@@ -4,20 +4,10 @@
 "use strict";
 {
   /* api */
-  const {getType, isString} = require("./common");
+  const {escapeChar, getType, isString} = require("./common");
   const {isExecutable} = require("./file-util");
   const childProcess = require("child_process");
   const process = require("process");
-
-  /**
-   * escape matching char
-   * @param {string} str - argument
-   * @param {RegExp} re - RegExp
-   * @returns {?string} - string
-   */
-  const escapeChar = (str, re) =>
-    isString(str) && re && re.global &&
-    str.replace(re, (m, c) => `\\${c}`) || null;
 
   /**
    * correct argument string
