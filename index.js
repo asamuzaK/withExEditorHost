@@ -37,9 +37,9 @@
 
   /* variables */
   const vars = {
-    [EDITOR_PATH]: "",
-    [EDITOR_CMD_ARGS]: [],
-    [EDITOR_FILE_POS]: false,
+    editorPath: "",
+    cmdArgs: [],
+    fileAfterCmdArgs: false,
   };
 
   /**
@@ -52,14 +52,14 @@
     for (const item of items) {
       const obj = data[item];
       switch (item) {
-        case EDITOR_CMD_ARGS:
+        case "editorPath":
+          vars[item] = obj;
+          break;
+        case "cmdArgs":
           vars[item] = (new CmdArgs(obj)).toArray();
           break;
-        case EDITOR_FILE_POS:
+        case "fileAfterCmdArgs":
           vars[item] = !!obj;
-          break;
-        case EDITOR_PATH:
-          vars[item] = obj;
           break;
         default:
       }
@@ -141,9 +141,9 @@
         msg = {
           [EDITOR_CONFIG_RES]: {
             editorConfig, editorName, editorPath, executable,
-            [EDITOR_CMD_ARGS]: (new CmdArgs(vars[EDITOR_CMD_ARGS])).toString(),
+            [EDITOR_CMD_ARGS]: (new CmdArgs(vars.cmdArgs)).toString(),
             [EDITOR_CONFIG_TS]: timestamp,
-            [EDITOR_FILE_POS]: vars[EDITOR_FILE_POS],
+            [EDITOR_FILE_POS]: vars.fileAfterCmdArgs,
           },
         };
       }
@@ -172,15 +172,15 @@
    * @param {string} app - app path
    * @returns {ChildProcess|Function} - child process / write stdout
    */
-  const spawnChildProcess = (file, app = vars[EDITOR_PATH]) => {
+  const spawnChildProcess = (file, app = vars.editorPath) => {
     if (!isFile(file)) {
       return writeStdout(hostMsg(`${file} is not a file.`, "warn"));
     }
     if (!isExecutable(app)) {
       return writeStdout(hostMsg(`${app} is not executable.`, "warn"));
     }
-    const args = vars[EDITOR_CMD_ARGS] || [];
-    const pos = vars[EDITOR_FILE_POS] || false;
+    const args = vars.cmdArgs || [];
+    const pos = vars.fileAfterCmdArgs || false;
     const opt = {
       cwd: null,
       encoding: CHAR,
