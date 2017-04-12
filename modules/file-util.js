@@ -11,6 +11,7 @@
   const path = require("path");
 
   /* constants */
+  const DIR_HOME = os.homedir();
   const IS_WIN = os.platform() === "win32";
   const MASK_BIT = 0o111;
   const PERM_DIR = 0o777;
