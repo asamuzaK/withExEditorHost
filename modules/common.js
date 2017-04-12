@@ -71,6 +71,16 @@
     Number.isSafeInteger(i) && (zero && i >= 0 || i > 0) && `${i}` || null;
 
   /**
+   * escape matching char
+   * @param {string} str - argument
+   * @param {RegExp} re - RegExp
+   * @returns {?string} - string
+   */
+  const escapeChar = (str, re) =>
+    isString(str) && re && re.global &&
+    str.replace(re, (m, c) => `\\${c}`) || null;
+
+  /**
    * strip HTML tags and decode HTML escaped characters
    * @param {string} v - value
    * @returns {string} - converted value
@@ -85,7 +95,7 @@
   };
 
   module.exports = {
-    getType, isString, logError, logMsg, logWarn,
+    escapeChar, getType, isString, logError, logMsg, logWarn,
     stringifyPositiveInt, stripHtmlTags, throwErr,
   };
 }
