@@ -37,9 +37,9 @@
 
   /* variables */
   const vars = {
+    [EDITOR_PATH]: "",
     [EDITOR_CMD_ARGS]: [],
     [EDITOR_FILE_POS]: false,
-    [EDITOR_PATH]: "",
   };
 
   /**
@@ -299,54 +299,30 @@
   /**
    * set editor config
    * @param {Object} data - editor config data
-   * @returns {AsyncFunction} - create file / write stdout
+   * @returns {AsyncFunction} - port editor config
    */
   const setEditorConfig = async (data = {}) => {
-    const {editorConfig, editorPath} = data;
-    let func;
-    if (await isExecutable(editorPath)) {
-      const editorConfigPath = await getAbsPath(editorConfig);
-      if (editorConfigPath) {
-        const {dir} = path.parse(editorConfigPath);
-        const opt = {
-          encoding: CHAR,
-          flag: "w",
-          mode: PERM_FILE,
-        };
-        await setEditorVars(data);
-        if (await isDir(dir)) {
-          func = createFile(
-            editorConfigPath, JSON.stringify(vars, null, "  "), opt
-          );
-        } else {
-          const re = /(\\)/g;
-          const reHomeDir = new RegExp(
-            `^(?:${escapeChar(DIR_HOME, re)}|~)${escapeChar(path.sep, re)}`
-          );
-          const configDir = [
-            DIR_HOME,
-            ...(dir.replace(reHomeDir, "")).split(path.sep),
-          ];
-          const configDirPath = await createDir(configDir, PERM_DIR);
-          if (configDirPath) {
-            func = createFile(
-              editorConfigPath, JSON.stringify(vars, null, "  "), opt
-            );
-          } else {
-            func = writeStdout(hostMsg(
-              `Failed to create ${path.join(...configDir)}.`, "warn"
-            ));
-          }
-        }
-      } else {
-        func = writeStdout(hostMsg(
-          `Failed to normalize ${editorConfig} as a file path.`, "warn")
-        );
+    const {cmdArgs, editorConfig, editorPath, fileAfterCmdArgs} = data;
+    const file = JSON.stringify({
+      [EDITOR_PATH]: editorPath || "",
+      [EDITOR_CMD_ARGS]: (new CmdArgs(cmdArgs)).toArray(),
+      [EDITOR_FILE_POS]: !!fileAfterCmdArgs,
+    }, null, "  ");
+    const editorConfigPath = await getAbsPath(editorConfig);
+    if (editorConfigPath && editorConfigPath.startsWith(DIR_HOME)) {
+      const {dir} = path.parse(editorConfigPath);
+      if (await !isDir(dir)) {
+        const homeDir = await escapeChar(DIR_HOME, /(\\)/g);
+        const reHomeDir = new RegExp(`^(?:${homeDir}|~)`);
+        const subDir = (dir.replace(reHomeDir, "")).split(path.sep)
+                         .filter(i => i);
+        await createDir(subDir.length && [DIR_HOME, ...subDir] || [DIR_HOME],
+                        PERM_DIR);
       }
-    } else {
-      func = writeStdout(hostMsg(`${editorPath} is not executable.`, "warn"));
+      await createFile(editorConfigPath, file,
+                       {encoding: CHAR, flag: "w", mode: PERM_FILE});
     }
-    return func;
+    return portEditorConfig(file, editorConfig);
   };
 
   /**
