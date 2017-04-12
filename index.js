@@ -140,10 +140,11 @@
         setEditorVars(data);
         msg = {
           [EDITOR_CONFIG_RES]: {
-            editorConfig, editorName, editorPath, executable,
+            editorConfig, editorName, executable,
             [EDITOR_CMD_ARGS]: (new CmdArgs(vars.cmdArgs)).toString(),
             [EDITOR_CONFIG_TS]: timestamp,
             [EDITOR_FILE_POS]: vars.fileAfterCmdArgs,
+            [EDITOR_PATH]: editorPath,
           },
         };
       }
