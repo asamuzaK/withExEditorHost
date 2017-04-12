@@ -6,10 +6,11 @@
   /* api */
   const {ChildProcess, CmdArgs} = require("./modules/child-process");
   const {Input, Output} = require("./modules/native-message");
-  const {isString, throwErr} = require("./modules/common");
+  const {escapeChar, isString, throwErr} = require("./modules/common");
   const {
-    convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, isDir, isExecutable, isFile, removeDir, readFile,
+    convUriToFilePath, createDir, createFile, getAbsPath,
+    getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
+    removeDir, readFile,
   } = require("./modules/file-util");
   const os = require("os");
   const path = require("path");
@@ -25,6 +26,7 @@
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
+  const DIR_HOME = os.homedir();
   const PERM_DIR = 0o700;
   const PERM_FILE = 0o600;
   const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
@@ -302,26 +304,43 @@
     const {editorConfig, editorPath} = data;
     let func;
     if (isExecutable(editorPath)) {
-      setEditorVars(data);
-      if (isFile(editorConfig)) {
-        func = createFile(
-                 editorConfig, JSON.stringify(vars, null, "  "),
-                 {encoding: CHAR, flag: "w", mode: PERM_FILE}
-               );
-      } else {
-        const arr = editorConfig.split(path.sep);
-        const dir = arr.slice(0, arr.length - 1);
-        const configPath = createDir(dir, PERM_DIR);
-        if (isDir(configPath)) {
+      const editorConfigPath = getAbsPath(editorConfig);
+      if (editorConfigPath) {
+        const {dir} = path.parse(editorConfigPath);
+        const opt = {
+          encoding: CHAR,
+          flag: "w",
+          mode: PERM_FILE,
+        };
+        setEditorVars(data);
+        if (isDir(dir)) {
           func = createFile(
-                   editorConfig, JSON.stringify(vars, null, "  "),
-                   {encoding: CHAR, flag: "w", mode: PERM_FILE}
-                 );
+            editorConfigPath, JSON.stringify(vars, null, "  "), opt
+          );
         } else {
-          func = writeStdout(
-                   hostMsg(`Failed to create ${path.join(...dir)}.`, "warn")
-                 );
+          const re = /(\\)/g;
+          const reHomeDir = new RegExp(
+            `^(?:${escapeChar(DIR_HOME, re)}|~)${escapeChar(path.sep, re)}`
+          );
+          const configDir = [
+            DIR_HOME,
+            ...(dir.replace(reHomeDir, "")).split(path.sep),
+          ];
+          const configDirPath = createDir(configDir, PERM_DIR);
+          if (configDirPath) {
+            func = createFile(
+              editorConfigPath, JSON.stringify(vars, null, "  "), opt
+            );
+          } else {
+            func = writeStdout(hostMsg(
+              `Failed to create ${path.join(...configDir)}.`, "warn"
+            ));
+          }
         }
+      } else {
+        func = writeStdout(hostMsg(
+          `Failed to normalize ${editorConfig} as a file path.`, "warn")
+        );
       }
     } else {
       func = writeStdout(hostMsg(`${editorPath} is not executable.`, "warn"));
