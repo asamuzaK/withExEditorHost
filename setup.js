@@ -174,21 +174,22 @@
   const setConfigDir = arg => {
     if (isString(arg)) {
       arg = /^--config-path=(.+)$/.exec(arg);
-      if (arg) {
-        const configPath = getAbsPath(arg[1].trim());
-        if (configPath.startsWith(DIR_HOME)) {
-          const re = /(\\)/g;
-          const dirHome = escapeChar(DIR_HOME, re);
-          const reHomeDir = new RegExp(`^(?:${dirHome}|~)`);
-          const subDir = (configPath.replace(reHomeDir, "")).split(path.sep)
-                           .filter(i => i);
-          if (subDir.length) {
-            vars.configDir = [DIR_HOME, ...subDir];
-          } else {
-            vars.configDir = [DIR_HOME];
-          }
+      if (arg && (arg = arg[1].trim())) {
+        const configPath = getAbsPath(arg);
+        if (!configPath) {
+          throw new Error(`Failed to normalize ${arg}`);
+        }
+        if (!configPath.startsWith(DIR_HOME)) {
+          throw new Error(`Config path is not sub directory of ${DIR_HOME}.`);
+        }
+        const homeDir = escapeChar(DIR_HOME, /(\\)/g);
+        const reHomeDir = new RegExp(`^(?:${homeDir}|~)`);
+        const subDir = (configPath.replace(reHomeDir, "")).split(path.sep)
+                         .filter(i => i);
+        if (subDir.length) {
+          vars.configDir = [DIR_HOME, ...subDir];
         } else {
-          vars.configDir = configPath.split(path.sep);
+          vars.configDir = [DIR_HOME];
         }
       }
     }
