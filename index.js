@@ -37,9 +37,9 @@
 
   /* variables */
   const vars = {
-    [EDITOR_PATH]: "",
-    [EDITOR_CMD_ARGS]: [],
-    [EDITOR_FILE_POS]: false,
+    editorPath: "",
+    cmdArgs: [],
+    fileAfterCmdArgs: false,
   };
 
   /**
@@ -140,10 +140,12 @@
         await setEditorVars(data);
         msg = {
           [EDITOR_CONFIG_RES]: {
-            editorConfig, editorName, editorPath, executable,
-            [EDITOR_CMD_ARGS]: (new CmdArgs(vars[EDITOR_CMD_ARGS])).toString(),
+            editorName, executable,
+            [EDITOR_CMD_ARGS]: (new CmdArgs(vars.cmdArgs)).toString(),
+            [EDITOR_CONFIG]: editorConfig,
             [EDITOR_CONFIG_TS]: timestamp,
-            [EDITOR_FILE_POS]: vars[EDITOR_FILE_POS],
+            [EDITOR_FILE_POS]: vars.fileAfterCmdArgs,
+            [EDITOR_PATH]: editorPath,
           },
         };
       }
@@ -172,15 +174,15 @@
    * @param {string} app - app path
    * @returns {ChildProcess|AsyncFunction} - child process / write stdout
    */
-  const spawnChildProcess = async (file, app = vars[EDITOR_PATH]) => {
+  const spawnChildProcess = async (file, app = vars.editorPath) => {
     if (await !isFile(file)) {
       return writeStdout(hostMsg(`${file} is not a file.`, "warn"));
     }
     if (await !isExecutable(app)) {
       return writeStdout(hostMsg(`${app} is not executable.`, "warn"));
     }
-    const args = vars[EDITOR_CMD_ARGS] || [];
-    const pos = vars[EDITOR_FILE_POS] || false;
+    const args = vars.cmdArgs || [];
+    const pos = vars.fileAfterCmdArgs || false;
     const opt = {
       cwd: null,
       encoding: CHAR,
@@ -304,9 +306,9 @@
   const setEditorConfig = async (data = {}) => {
     const {cmdArgs, editorConfig, editorPath, fileAfterCmdArgs} = data;
     const file = JSON.stringify({
-      [EDITOR_PATH]: editorPath || "",
-      [EDITOR_CMD_ARGS]: (new CmdArgs(cmdArgs)).toArray(),
-      [EDITOR_FILE_POS]: !!fileAfterCmdArgs,
+      editorPath: editorPath || "",
+      cmdArgs: (new CmdArgs(cmdArgs)).toArray(),
+      fileAfterCmdArgs: !!fileAfterCmdArgs,
     }, null, "  ");
     const editorConfigPath = await getAbsPath(editorConfig);
     if (editorConfigPath && editorConfigPath.startsWith(DIR_HOME)) {

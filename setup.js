@@ -15,9 +15,7 @@
   const readline = require("readline");
 
   /* constants */
-  const {
-    EDITOR_CMD_ARGS, EDITOR_FILE_POS, EDITOR_PATH, HOST,
-  } = require("./modules/constant");
+  const {HOST} = require("./modules/constant");
   const ADDON_ID = "jid1-WiAigu4HIo0Tag@jetpack";
   const CHAR = "utf8";
   const DIR_CWD = process.cwd();
@@ -140,9 +138,9 @@
 
   /* editor config */
   const editorConfig = {
-    [EDITOR_PATH]: "",
-    [EDITOR_CMD_ARGS]: [],
-    [EDITOR_FILE_POS]: false,
+    editorPath: "",
+    cmdArgs: [],
+    fileAfterCmdArgs: false,
   };
 
   /**
@@ -235,7 +233,7 @@
   const handleFilePosInput = ans => {
     if (isString(ans)) {
       ans = ans.trim();
-      /^y(?:es)?$/i.test(ans) && (editorConfig[EDITOR_FILE_POS] = true);
+      /^y(?:es)?$/i.test(ans) && (editorConfig.fileAfterCmdArgs = true);
     }
     rl.close();
     return setup().catch(logError);
@@ -248,7 +246,7 @@
    */
   const handleCmdArgsInput = ans => {
     if (isString(ans)) {
-      editorConfig[EDITOR_CMD_ARGS] = (new CmdArgs(ans.trim())).toArray();
+      editorConfig.cmdArgs = (new CmdArgs(ans.trim())).toArray();
     }
     rl.question("Put file path after command arguments? [y/n]\n",
                 handleFilePosInput);
@@ -264,7 +262,7 @@
       ans = ans.trim();
       if (ans.length) {
         if (isExecutable(ans)) {
-          editorConfig[EDITOR_PATH] = ans;
+          editorConfig.editorPath = ans;
           rl.question("Enter command line options:\n", handleCmdArgsInput);
         } else {
           console.warn(`${ans} is not executable.`);

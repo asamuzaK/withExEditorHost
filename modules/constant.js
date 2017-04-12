@@ -7,14 +7,14 @@
   const CONTENT_GET = "getContent";
   const CONTEXT_MENU = "contextMenu";
   const CONTEXT_MODE = "contextMode";
-  const EDITOR_CMD_ARGS = "cmdArgs";
+  const EDITOR_CMD_ARGS = "editorCmdArgs";
   const EDITOR_CONFIG = "editorConfigPath";
   const EDITOR_CONFIG_GET = "getEditorConfig";
   const EDITOR_CONFIG_RES = "resEditorConfig";
   const EDITOR_CONFIG_SET = "setEditorConfig";
   const EDITOR_CONFIG_TS = "editorConfigTimestamp";
   const EDITOR_FILE_NAME = "editorFileName";
-  const EDITOR_FILE_POS = "fileAfterCmdArgs";
+  const EDITOR_FILE_POS = "editorFileAfterCmdArgs";
   const EDITOR_LABEL = "editorLabel";
   const EDITOR_PATH = "editorPath";
   const FILE_EXT = "fileExt";
