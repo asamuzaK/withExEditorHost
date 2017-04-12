@@ -11,6 +11,7 @@
   const url = require("url");
 
   /* constants */
+  const DIR_HOME = os.homedir();
   const IS_WIN = os.platform() === "win32";
   const MASK_BIT = 0o111;
   const PERM_DIR = 0o777;
@@ -51,6 +52,22 @@
       }
     }
     return file || null;
+  };
+
+  /**
+   * get absolute path
+   * @param {string} file - file path
+   * @returns {?string} - absolute file path
+   */
+  const getAbsPath = file => {
+    let abs;
+    if (isString(file)) {
+      file = path.normalize(file);
+      file.startsWith("~") && (file = file.replace(/^~/, DIR_HOME));
+      !path.isAbsolute(file) && (file = path.resolve(file));
+      abs = file;
+    }
+    return abs || null;
   };
 
   /**
@@ -202,8 +219,8 @@
   };
 
   module.exports = {
-    convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, getStat, isDir, isExecutable, isFile, isSubDir,
-    removeDir, readFile,
+    convUriToFilePath, createDir, createFile, getAbsPath,
+    getFileNameFromFilePath, getFileTimestamp, getStat, isDir,
+    isExecutable, isFile, isSubDir, removeDir, readFile,
   };
 }
