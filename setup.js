@@ -33,6 +33,11 @@
   const PERM_EXEC = 0o700;
   const PERM_FILE = 0o600;
 
+  /* variables */
+  const vars = {
+    configDir: [DIR_CWD, "config"],
+  };
+
   /**
    * create app manifest
    * @param {string} configPath - config direcory path
@@ -135,9 +140,9 @@
 
   /* editor config */
   const editorConfig = {
+    [EDITOR_PATH]: "",
     [EDITOR_CMD_ARGS]: [],
     [EDITOR_FILE_POS]: false,
-    [EDITOR_PATH]: "",
   };
 
   /**
@@ -161,32 +166,32 @@
     return editorConfigPath;
   };
 
-  // TODO: extract argv on startup
   /**
-   * get config directory in array
-   * @returns {Array} - config directory array
+   * set config directory
+   * @param {string} arg - argument
+   * @returns {void}
    */
-  const getConfigDir = async () => {
-    const [, , ...args] = process.argv;
-    let configDir;
-    if (Array.isArray(args) && args.length) {
-      for (const arg of args) {
-        let argConf = /^--config-path=(.+)$/.exec(arg);
-        if (argConf && (argConf = getAbsPath(argConf[1].trim()))) {
-          const {dir} = path.parse(argConf);
+  const setConfigDir = async arg => {
+    if (await isString(arg)) {
+      arg = /^--config-path=(.+)$/.exec(arg);
+      if (arg) {
+        const configPath = await getAbsPath(arg[1].trim());
+        if (configPath.startsWith(DIR_HOME)) {
           const re = /(\\)/g;
-          const dirHome = escapeChar(DIR_HOME, re);
-          const pathSep = escapeChar(path.sep, re);
-          const reHomeDir = new RegExp(`^(?:${dirHome}|~)${pathSep}`);
-          configDir = [
-            DIR_HOME,
-            ...(dir.replace(reHomeDir, "")).split(path.sep),
-          ];
-          break;
+          const dirHome = await escapeChar(DIR_HOME, re);
+          const reHomeDir = new RegExp(`^(?:${dirHome}|~)`);
+          const subDir = (configPath.replace(reHomeDir, "")).split(path.sep)
+                           .filter(i => i);
+          if (subDir.length) {
+            vars.configDir = [DIR_HOME, ...subDir];
+          } else {
+            vars.configDir = [DIR_HOME];
+          }
+        } else {
+          vars.configDir = configPath.split(path.sep);
         }
       }
     }
-    return configDir || [DIR_CWD, "config"];
   };
 
   /**
@@ -194,10 +199,9 @@
    * @returns {string} - config directory path
    */
   const createConfig = async () => {
-    const configDir = await getConfigDir();
-    const configPath = await createDir(configDir, PERM_DIR);
+    const configPath = await createDir(vars.configDir, PERM_DIR);
     if (await !isDir(configPath)) {
-      throw new Error(`Failed to create ${path.join(...configDir)}.`);
+      throw new Error(`Failed to create ${path.join(...vars.configDir)}.`);
     }
     console.info(`Created: ${configPath}`);
     return configPath;
@@ -273,5 +277,15 @@
     }
   };
 
-  rl.question("Enter editor path:\n", handleEditorPathInput);
+  {
+    const [, , ...args] = process.argv;
+    if (Array.isArray(args) && args.length) {
+      const func = [];
+      for (const arg of args) {
+        /^--config-path=/.test(arg) && func.push(setConfigDir(arg));
+      }
+      Promise.all(func).catch(logError);
+    }
+    rl.question("Enter editor path:\n", handleEditorPathInput);
+  }
 }
