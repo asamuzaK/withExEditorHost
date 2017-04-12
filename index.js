@@ -52,14 +52,14 @@
     for (const item of items) {
       const obj = data[item];
       switch (item) {
-        case EDITOR_CMD_ARGS:
+        case "editorPath":
+          vars[item] = obj;
+          break;
+        case "cmdArgs":
           vars[item] = (new CmdArgs(obj)).toArray();
           break;
-        case EDITOR_FILE_POS:
+        case "fileAfterCmdArgs":
           vars[item] = !!obj;
-          break;
-        case EDITOR_PATH:
-          vars[item] = obj;
           break;
         default:
       }
