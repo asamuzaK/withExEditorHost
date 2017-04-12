@@ -54,6 +54,22 @@
   };
 
   /**
+   * get absolute path
+   * @param {string} file - file path
+   * @returns {?string} - absolute file path
+   */
+  const getAbsPath = file => {
+    let abs;
+    if (isString(file)) {
+      file = path.normalize(file);
+      file.startsWith("~") && (file = file.replace(/^~/, DIR_HOME));
+      !path.isAbsolute(file) && (file = path.resolve(file));
+      abs = file;
+    }
+    return abs || null;
+  };
+
+  /**
    * get stat
    * @param {string} file - file path
    * @returns {Object} - file stat
@@ -202,8 +218,8 @@
   };
 
   module.exports = {
-    convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, getStat, isDir, isExecutable, isFile, isSubDir,
-    removeDir, readFile,
+    convUriToFilePath, createDir, createFile, getAbsPath,
+    getFileNameFromFilePath, getFileTimestamp, getStat, isDir,
+    isExecutable, isFile, isSubDir, removeDir, readFile,
   };
 }
