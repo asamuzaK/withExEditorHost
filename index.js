@@ -43,30 +43,6 @@
   };
 
   /**
-   * set editor variables
-   * @param {Object} data - variable data
-   * @returns {void}
-   */
-  const setEditorVars = async (data = {}) => {
-    const items = Object.keys(vars);
-    for (const item of items) {
-      const obj = data[item];
-      switch (item) {
-        case "editorPath":
-          vars[item] = obj;
-          break;
-        case "cmdArgs":
-          vars[item] = (new CmdArgs(obj)).toArray();
-          break;
-        case "fileAfterCmdArgs":
-          vars[item] = !!obj;
-          break;
-        default:
-      }
-    }
-  };
-
-  /**
    * host message
    * @param {*} message - message
    * @param {string} status - status
@@ -137,11 +113,26 @@
         const editorName = await getFileNameFromFilePath(editorPath);
         const executable = await isExecutable(editorPath);
         const timestamp = await getFileTimestamp(editorConfig) || 0;
-        await setEditorVars(data);
+        const items = Object.keys(vars);
+        for (const item of items) {
+          const obj = data[item];
+          switch (item) {
+            case "editorPath":
+              vars[item] = obj;
+              break;
+            case "cmdArgs":
+              vars[item] = (new CmdArgs(...obj)).toArray();
+              break;
+            case "fileAfterCmdArgs":
+              vars[item] = !!obj;
+              break;
+            default:
+          }
+        }
         msg = {
           [EDITOR_CONFIG_RES]: {
             editorConfig, editorName, executable,
-            [EDITOR_CMD_ARGS]: (new CmdArgs(vars.cmdArgs)).toString(),
+            [EDITOR_CMD_ARGS]: (new CmdArgs(...vars.cmdArgs)).toString(),
             [EDITOR_CONFIG_TS]: timestamp,
             [EDITOR_FILE_POS]: vars.fileAfterCmdArgs,
             [EDITOR_PATH]: editorPath,
