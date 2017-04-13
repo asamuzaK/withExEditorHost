@@ -295,9 +295,9 @@
   const setEditorConfig = (data = {}) => {
     const {cmdArgs, editorConfig, editorPath, fileAfterCmdArgs} = data;
     const file = JSON.stringify({
-      [EDITOR_PATH]: editorPath || "",
-      [EDITOR_CMD_ARGS]: (new CmdArgs(cmdArgs)).toArray(),
-      [EDITOR_FILE_POS]: !!fileAfterCmdArgs,
+      editorPath: editorPath || "",
+      cmdArgs: (new CmdArgs(cmdArgs)).toArray(),
+      fileAfterCmdArgs: !!fileAfterCmdArgs,
     }, null, "  ");
     const editorConfigPath = getAbsPath(editorConfig);
     if (editorConfigPath && editorConfigPath.startsWith(DIR_HOME)) {
