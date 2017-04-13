@@ -41,7 +41,7 @@ Windowsでは"cmd.exe"、Linux / Macでは「端末」（ターミナル）を�
     例：`-a -b "C:\Program Files"`
 * 一時ファイルをコマンドラインオプションの後に置くか
 
-その場では何も入力せず、後でwithExEditorのオプションページから設定することもできます。
+その場では何も入力せず、後でwithExEditorのオプションページから設定することもできます（withExEditor v2.3.0以上）。
 
 設定ファイルが正常に作成されたら、Firefoxを再起動してください。
 
