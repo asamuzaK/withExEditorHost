@@ -16,15 +16,21 @@
 
   /* constants */
   const {HOST} = require("./modules/constant");
-  const ADDON_ID = "jid1-WiAigu4HIo0Tag@jetpack";
+  const ALLOWED_BLINK = "allowed_origins";
+  const ALLOWED_GECKO = "allowed_extensions";
   const CHAR = "utf8";
   const DIR_CWD = process.cwd();
   const DIR_HOME = os.homedir();
+  const DIR_HOST_MAC = [DIR_HOME, "Library", "Application Support"];
+  const HKCU_SOFTWARE = ["HKEY_CURRENT_USER", "SOFTWARE"];
+  const HOST_DIR_LABEL = "NativeMessagingHosts";
   const HOST_DIR_LINUX = [DIR_HOME, ".mozilla", "native-messaging-hosts"];
   const HOST_DIR_MAC = [
     DIR_HOME, "Library", "Application Support", "Mozilla",
     "NativeMessagingHosts",
   ];
+  const ID_BLINK = "chrome-extension://jakgdeodohnbhngonaabiaklmhfahjbj/";
+  const ID_GECKO = "jid1-WiAigu4HIo0Tag@jetpack";
   const IS_MAC = os.platform() === "darwin";
   const IS_WIN = os.platform() === "win32";
   const PERM_DIR = 0o700;
@@ -33,7 +39,83 @@
 
   /* variables */
   const vars = {
+    browser: null,
     configDir: [DIR_CWD, "config"],
+  };
+
+  /* browser config data */
+  const browserConfig = {
+    firefox: {
+      alias: ["f", "firefox", "mozilla firefox"],
+      allowed: {
+        [ALLOWED_GECKO]: [ID_GECKO],
+      },
+      hostLinux: [DIR_HOME, ".mozilla", "native-messaging-hosts"],
+      hostMac: [...DIR_HOST_MAC, "Mozilla", HOST_DIR_LABEL],
+      regWin: [...HKCU_SOFTWARE, "Mozilla", HOST_DIR_LABEL, HOST],
+    },
+    chrome: {
+      alias: ["g", "chrome", "google chrome"],
+      allowed: {
+        [ALLOWED_BLINK]: [ID_BLINK],
+      },
+      hostLinux: [DIR_HOME, ".config", "google-chrome", HOST_DIR_LABEL],
+      hostMac: [...DIR_HOST_MAC, "Google", "Chrome", HOST_DIR_LABEL],
+      regWin: [...HKCU_SOFTWARE, "Google", "Chrome", HOST_DIR_LABEL, HOST],
+    },
+    chromium: {
+      alias: ["c", "chromium"],
+      allowed: {
+        [ALLOWED_BLINK]: [ID_BLINK],
+      },
+      hostLinux: [DIR_HOME, ".config", "chromium", HOST_DIR_LABEL],
+      hostMac: [...DIR_HOST_MAC, "Google", "Chrome", HOST_DIR_LABEL],
+    },
+    vivaldi: {
+      alias: ["v", "vivaldi"],
+      allowed: {
+        [ALLOWED_BLINK]: [ID_BLINK],
+      },
+      hostLinux: [DIR_HOME, ".config", "vivaldi", HOST_DIR_LABEL],
+      hostMac: [...DIR_HOST_MAC, "Vivaldi", HOST_DIR_LABEL],
+      regWin: [...HKCU_SOFTWARE, "Vivaldi", HOST_DIR_LABEL, HOST],
+    },
+  };
+
+  /**
+   * set browser
+   * @param {string} arg - argument
+   * @returns {void}
+   */
+  const setBrowser = async arg => {
+    if (await isString(arg)) {
+      arg = /^--browser=(.+)$/.exec(arg);
+      if (arg && (arg = arg[1].toLowerCase().trim())) {
+        let browser;
+        switch (arg) {
+          case "f":
+          case "firefox":
+          case "mozilla firefox":
+            browser = browserConfig.firefox;
+            break;
+          case "g":
+          case "chrome":
+          case "google chrome":
+            browser = browserConfig.chrome;
+            break;
+          case "c":
+          case "chromium":
+            browser = browserConfig.chromium;
+            break;
+          case "v":
+          case "vivaldi":
+            browser = browserConfig.vivaldi;
+            break;
+          default:
+        }
+        browser && vars.browser = browser;
+      }
+    }
   };
 
   /**
@@ -51,7 +133,7 @@
     }
     const allowed = "allowed_extensions";
     const manifest = JSON.stringify({
-      [allowed]: [ADDON_ID],
+      [allowed]: [ID_GECKO],
       description: "Native messaging host for withExEditor",
       name: HOST,
       path: shellPath,
@@ -281,6 +363,7 @@
     if (Array.isArray(args) && args.length) {
       const func = [];
       for (const arg of args) {
+        /^--browser=/.test(arg) && func.push(setBrowser(arg));
         /^--config-path=/.test(arg) && func.push(setConfigDir(arg));
       }
       Promise.all(func).catch(logError);
