@@ -16,12 +16,16 @@
 
   /* constants */
   const {HOST} = require("./modules/constant");
-  const ALLOWED_BLINK = "allowed_origins";
-  const ALLOWED_GECKO = "allowed_extensions";
   const CHAR = "utf8";
   const DIR_CWD = process.cwd();
   const DIR_HOME = os.homedir();
   const DIR_HOST_MAC = [DIR_HOME, "Library", "Application Support"];
+  const EXT_CHROME = "chromeExtension";
+  const EXT_CHROME_ALLOWED = "allowed_origins";
+  const EXT_CHROME_ID = "chrome-extension://jakgdeodohnbhngonaabiaklmhfahjbj/";
+  const EXT_WEB = "webExtension";
+  const EXT_WEB_ALLOWED = "allowed_extensions";
+  const EXT_WEB_ID = "jid1-WiAigu4HIo0Tag@jetpack";
   const HKCU_SOFTWARE = ["HKEY_CURRENT_USER", "SOFTWARE"];
   const HOST_DIR_LABEL = "NativeMessagingHosts";
   const HOST_DIR_LINUX = [DIR_HOME, ".mozilla", "native-messaging-hosts"];
@@ -29,8 +33,6 @@
     DIR_HOME, "Library", "Application Support", "Mozilla",
     "NativeMessagingHosts",
   ];
-  const ID_BLINK = "chrome-extension://jakgdeodohnbhngonaabiaklmhfahjbj/";
-  const ID_GECKO = "jid1-WiAigu4HIo0Tag@jetpack";
   const IS_MAC = os.platform() === "darwin";
   const IS_WIN = os.platform() === "win32";
   const PERM_DIR = 0o700;
@@ -43,79 +45,84 @@
     configDir: [DIR_CWD, "config"],
   };
 
+  /* allowed field */
+  const allowedField = {
+    [EXT_CHROME]: {
+      key: EXT_CHROME_ALLOWED,
+      value: [EXT_CHROME_ID],
+    },
+    [EXT_WEB]: {
+      key: EXT_WEB_ALLOWED,
+      value: [EXT_WEB_ID],
+    },
+  };
+
   /* browser config data */
   const browserConfig = {
-    firefox: {
-      alias: ["f", "firefox", "mozilla firefox"],
-      allowed: {
-        [ALLOWED_GECKO]: [ID_GECKO],
-      },
-      hostLinux: [DIR_HOME, ".mozilla", "native-messaging-hosts"],
-      hostMac: [...DIR_HOST_MAC, "Mozilla", HOST_DIR_LABEL],
-      regWin: [...HKCU_SOFTWARE, "Mozilla", HOST_DIR_LABEL, HOST],
-    },
     chrome: {
-      alias: ["g", "chrome", "google chrome"],
-      allowed: {
-        [ALLOWED_BLINK]: [ID_BLINK],
-      },
+      alias: "chrome",
       hostLinux: [DIR_HOME, ".config", "google-chrome", HOST_DIR_LABEL],
       hostMac: [...DIR_HOST_MAC, "Google", "Chrome", HOST_DIR_LABEL],
       regWin: [...HKCU_SOFTWARE, "Google", "Chrome", HOST_DIR_LABEL, HOST],
+      type: EXT_CHROME,
     },
     chromium: {
-      alias: ["c", "chromium"],
-      allowed: {
-        [ALLOWED_BLINK]: [ID_BLINK],
-      },
+      alias: "chromium",
       hostLinux: [DIR_HOME, ".config", "chromium", HOST_DIR_LABEL],
-      hostMac: [...DIR_HOST_MAC, "Google", "Chrome", HOST_DIR_LABEL],
+      hostMac: [...DIR_HOST_MAC, "Chromium", HOST_DIR_LABEL],
+      regWin: null,
+      type: EXT_CHROME,
+    },
+    firefox: {
+      alias: "firefox",
+      hostLinux: [DIR_HOME, ".mozilla", "native-messaging-hosts"],
+      hostMac: [...DIR_HOST_MAC, "Mozilla", HOST_DIR_LABEL],
+      regWin: [...HKCU_SOFTWARE, "Mozilla", HOST_DIR_LABEL, HOST],
+      type: EXT_WEB,
     },
     vivaldi: {
-      alias: ["v", "vivaldi"],
-      allowed: {
-        [ALLOWED_BLINK]: [ID_BLINK],
-      },
+      alias: "vivaldi",
       hostLinux: [DIR_HOME, ".config", "vivaldi", HOST_DIR_LABEL],
       hostMac: [...DIR_HOST_MAC, "Vivaldi", HOST_DIR_LABEL],
       regWin: [...HKCU_SOFTWARE, "Vivaldi", HOST_DIR_LABEL, HOST],
+      type: EXT_CHROME,
     },
   };
 
   /**
-   * set browser
-   * @param {string} arg - argument
-   * @returns {void}
+   * get browser config
+   * @param {string} key - key
+   * @returns {Object} - browser config
    */
-  const setBrowser = async arg => {
-    if (await isString(arg)) {
-      arg = /^--browser=(.+)$/.exec(arg);
-      if (arg && (arg = arg[1].toLowerCase().trim())) {
-        let browser;
-        switch (arg) {
-          case "f":
-          case "firefox":
-          case "mozilla firefox":
-            browser = browserConfig.firefox;
-            break;
-          case "g":
-          case "chrome":
-          case "google chrome":
-            browser = browserConfig.chrome;
-            break;
-          case "c":
-          case "chromium":
-            browser = browserConfig.chromium;
-            break;
-          case "v":
-          case "vivaldi":
-            browser = browserConfig.vivaldi;
-            break;
-          default:
+  const getBrowserConfig = key => {
+    let browser;
+    if (isString(key) && (key = key.toLowerCase().trim())) {
+      const items = Object.keys(browserConfig);
+      for (const item of items) {
+        if (item === key) {
+          browser = browserConfig[item];
+          break;
         }
-        browser && vars.browser = browser;
       }
     }
+    return browser || null;
+  };
+
+  /**
+   * get browser
+   * @param {string} arg - argument
+   * @returns {string} - browser label;
+   */
+  const getBrowser = arg => {
+    let browser;
+    if (isString(arg)) {
+      arg = /^--browser=(.+)$/.exec(arg);
+      if (arg) {
+        browser = getBrowserConfig(arg[1].trim());
+        browser && (vars.browser = browser);
+      }
+    }
+    return browser && browser.alias || null;
   };
 
   /**
@@ -133,7 +140,7 @@
     }
     const allowed = "allowed_extensions";
     const manifest = JSON.stringify({
-      [allowed]: [ID_GECKO],
+      [allowed]: [EXT_WEB_ID],
       description: "Native messaging host for withExEditor",
       name: HOST,
       path: shellPath,
@@ -307,6 +314,25 @@
     output: process.stdout,
   });
 
+  /* questions */
+  const ques = {
+    browser: "Enter which browser to set up the host:\n",
+    cmsArgs: "Enter command line options:\n",
+    editorPath: "Enter editor path:\n",
+    filePos: "Put file path after command arguments? [y/n]\n",
+  };
+
+  /**
+   * abort setup
+   * @param {string} msg - message
+   * @returns {void}
+   */
+  const abortSetup = msg => {
+    isString(msg) && msg.length && console.info(msg);
+    console.info("Setup aborted.");
+    process.exit(1);
+  };
+
   /**
    * handle editor temporary file position input
    * @param {string} ans - user input
@@ -330,8 +356,7 @@
     if (isString(ans)) {
       editorConfig.cmdArgs = (new CmdArgs(ans.trim())).toArray();
     }
-    rl.question("Put file path after command arguments? [y/n]\n",
-                handleFilePosInput);
+    rl.question(ques.filePos, handleFilePosInput);
   };
 
   /**
@@ -345,29 +370,70 @@
       if (ans.length) {
         if (isExecutable(ans)) {
           editorConfig.editorPath = ans;
-          rl.question("Enter command line options:\n", handleCmdArgsInput);
+          rl.question(ques.cmdArgs, handleCmdArgsInput);
         } else {
           console.warn(`${ans} is not executable.`);
-          rl.question("Enter editor path:\n", handleEditorPathInput);
+          rl.question(ques.editorPath, handleEditorPathInput);
         }
       } else {
-        rl.question("Enter command line options:\n", handleCmdArgsInput);
+        rl.question(ques.cmdArgs, handleCmdArgsInput);
       }
     } else {
-      rl.question("Enter command line options:\n", handleCmdArgsInput);
+      rl.question(ques.cmdArgs, handleCmdArgsInput);
+    }
+  };
+
+  /**
+   * handle browser input
+   * @param {string} ans - user input
+   * @returns {void}
+   */
+  const handleBrowserInput = ans => {
+    if (isString(ans)) {
+      ans = ans.trim();
+      if (ans.length) {
+        const browser = getBrowserConfig(ans);
+        if (browser) {
+          vars.browser = browser;
+          rl.question(ques.editorPath, handleEditorPathInput);
+        } else {
+          abortSetup(`${ans} not supported yet.`);
+          // TODO: impliment custom browser install
+          /*
+          const _custom = {
+            alias: null,
+            hostLinux: null,
+            hostMac: null,
+            regWin: null,
+            type: null,
+          };
+          browserConfig._custom = _custom;
+          */
+        }
+      } else {
+        abortSetup("You need to specify the browser");
+      }
+    } else {
+      abortSetup("You need to specify the browser");
     }
   };
 
   {
     const [, , ...args] = process.argv;
+    let browser;
     if (Array.isArray(args) && args.length) {
       const func = [];
       for (const arg of args) {
-        /^--browser=/.test(arg) && func.push(setBrowser(arg));
+        /^--browser=/.test(arg) && (browser = getBrowser(arg));
         /^--config-path=/.test(arg) && func.push(setConfigDir(arg));
       }
       Promise.all(func).catch(logError);
     }
-    rl.question("Enter editor path:\n", handleEditorPathInput);
+    if (browser) {
+      rl.question(ques.editorPath, handleEditorPathInput);
+    } else {
+      const items = Object.keys(browserConfig);
+      rl.question(`${ques.browser}[${items.join(" ")}]\n`, handleBrowserInput);
+    }
   }
 }
