@@ -5,7 +5,7 @@
 {
   /* api */
   const {ChildProcess, CmdArgs} = require("./modules/child-process");
-  const {escapeChar, isString, logError} = require("./modules/common");
+  const {escapeChar, getType, isString, logError} = require("./modules/common");
   const {
     createDir, createFile, getAbsPath, isDir, isExecutable, isFile,
   } = require("./modules/file-util");
@@ -28,34 +28,11 @@
   const EXT_WEB_ID = "jid1-WiAigu4HIo0Tag@jetpack";
   const HKCU_SOFTWARE = ["HKEY_CURRENT_USER", "SOFTWARE"];
   const HOST_DIR_LABEL = "NativeMessagingHosts";
-  const HOST_DIR_LINUX = [DIR_HOME, ".mozilla", "native-messaging-hosts"];
-  const HOST_DIR_MAC = [
-    DIR_HOME, "Library", "Application Support", "Mozilla",
-    "NativeMessagingHosts",
-  ];
   const IS_MAC = os.platform() === "darwin";
   const IS_WIN = os.platform() === "win32";
   const PERM_DIR = 0o700;
   const PERM_EXEC = 0o700;
   const PERM_FILE = 0o600;
-
-  /* variables */
-  const vars = {
-    browser: null,
-    configDir: [DIR_CWD, "config"],
-  };
-
-  /* allowed field */
-  const allowedField = {
-    [EXT_CHROME]: {
-      key: EXT_CHROME_ALLOWED,
-      value: [EXT_CHROME_ID],
-    },
-    [EXT_WEB]: {
-      key: EXT_WEB_ALLOWED,
-      value: [EXT_WEB_ID],
-    },
-  };
 
   /* browser config data */
   const browserConfig = {
@@ -84,45 +61,86 @@
       alias: "vivaldi",
       hostLinux: [DIR_HOME, ".config", "vivaldi", HOST_DIR_LABEL],
       hostMac: [...DIR_HOST_MAC, "Vivaldi", HOST_DIR_LABEL],
-      regWin: [...HKCU_SOFTWARE, "Vivaldi", HOST_DIR_LABEL, HOST],
+      regWin: [...HKCU_SOFTWARE, "Google", "Chrome", HOST_DIR_LABEL, HOST],
       type: EXT_CHROME,
     },
   };
 
-  /**
-   * get browser config
-   * @param {string} key - key
-   * @returns {Object} - browser config
-   */
-  const getBrowserConfig = key => {
-    let browser;
-    if (isString(key) && (key = key.toLowerCase().trim())) {
-      const items = Object.keys(browserConfig);
-      for (const item of items) {
-        if (item === key) {
-          browser = browserConfig[item];
-          break;
-        }
-      }
-    }
-    return browser || null;
+  /* allowed field */
+  const allowedField = {
+    [EXT_CHROME]: {
+      key: EXT_CHROME_ALLOWED,
+      value: [EXT_CHROME_ID],
+    },
+    [EXT_WEB]: {
+      key: EXT_WEB_ALLOWED,
+      value: [EXT_WEB_ID],
+    },
+  };
+
+  /* variables */
+  const vars = {
+    browser: null,
+    configDir: [DIR_CWD, "config"],
   };
 
   /**
-   * get browser
-   * @param {string} arg - argument
-   * @returns {string} - browser label;
+   * set browser
+   * @param {string} browser - browser config data
+   * @returns {void}
    */
-  const getBrowser = arg => {
-    let browser;
-    if (isString(arg)) {
-      arg = /^--browser=(.+)$/.exec(arg);
-      if (arg) {
-        browser = getBrowserConfig(arg[1].trim());
-        browser && (vars.browser = browser);
-      }
+  const setBrowser = async browser => {
+    browser && Object.keys(browser).length && browser.alias &&
+      (vars.browser = browser);
+  };
+
+  /**
+   * set config directory
+   * @param {string} dir - directory path
+   * @returns {void}
+   */
+  const setConfigDir = async dir => {
+    const configPath = await getAbsPath(dir);
+    if (!configPath) {
+      throw new Error(`Failed to normalize ${dir}`);
     }
-    return browser && browser.alias || null;
+    if (!configPath.startsWith(DIR_HOME)) {
+      throw new Error(`Config path is not sub directory of ${DIR_HOME}.`);
+    }
+    const homeDir = await escapeChar(DIR_HOME, /(\\)/g);
+    const reHomeDir = new RegExp(`^(?:${homeDir}|~)`);
+    const subDir = (configPath.replace(reHomeDir, "")).split(path.sep)
+                     .filter(i => i);
+    vars.configDir = subDir.length && [DIR_HOME, ...subDir] || [DIR_HOME];
+  };
+
+  /* files */
+  /* editor config */
+  const editorConfig = {
+    editorPath: "",
+    cmdArgs: [],
+    fileAfterCmdArgs: false,
+  };
+
+  /**
+   * create editor config
+   * @param {string} configPath - config directory path
+   * @returns {string} - editor config path
+   */
+  const createEditorConfig = async configPath => {
+    if (await !isDir(configPath)) {
+      throw new Error(`No such directory: ${configPath}.`);
+    }
+    const editorConfigPath = path.join(configPath, "editorconfig.json");
+    await createFile(
+      editorConfigPath, JSON.stringify(editorConfig, null, "  "),
+      {encoding: CHAR, flag: "w", mode: PERM_FILE}
+    );
+    if (await !isFile(editorConfigPath)) {
+      throw new Error(`Failed to create ${editorConfigPath}.`);
+    }
+    console.info(`Created: ${editorConfigPath}`);
+    return editorConfigPath;
   };
 
   /**
@@ -138,9 +156,14 @@
     if (await !isFile(shellPath)) {
       throw new Error(`No such file: ${shellPath}.`);
     }
-    const allowed = "allowed_extensions";
+    const {browser} = vars;
+    if (!browser) {
+      throw new Error(`Expected Object but got ${getType(browser)}.`);
+    }
+    const {hostLinux, hostMac, regWin, type} = browser;
+    const {key, value} = allowedField[type];
     const manifest = JSON.stringify({
-      [allowed]: [EXT_WEB_ID],
+      [key]: [...value],
       description: "Native messaging host for withExEditor",
       name: HOST,
       path: shellPath,
@@ -149,16 +172,13 @@
     const fileName = `${HOST}.json`;
     const filePath = path.resolve(
       IS_WIN && path.join(configPath, fileName) ||
-      IS_MAC && path.join(...HOST_DIR_MAC, fileName) ||
-      path.join(...HOST_DIR_LINUX, fileName)
+      IS_MAC && path.join(...hostMac, fileName) ||
+      path.join(...hostLinux, fileName)
     );
     if (IS_WIN) {
       const reg = path.join(process.env.WINDIR, "system32", "reg.exe");
-      const key = path.join(
-        "HKEY_CURRENT_USER", "SOFTWARE", "Mozilla", "NativeMessagingHosts",
-        HOST
-      );
-      const args = ["add", key, "/ve", "/d", filePath, "/f"];
+      const regKey = path.join(...regWin);
+      const args = ["add", regKey, "/ve", "/d", filePath, "/f"];
       const opt = {
         cwd: null,
         encoding: CHAR,
@@ -173,13 +193,13 @@
       });
       proc.on("close", code => {
         if (code === 0) {
-          console.info(`Created: ${key}`);
+          console.info(`Created: ${regKey}`);
         } else {
           console.warn(`${reg} exited with ${code}.`);
         }
       });
     } else {
-      const hostDir = IS_MAC && HOST_DIR_MAC || HOST_DIR_LINUX;
+      const hostDir = IS_MAC && hostMac || hostLinux;
       const hostDirPath = await createDir(hostDir, PERM_DIR);
       if (await !isDir(hostDirPath)) {
         throw new Error(`Failed to create ${path.join(...hostDir)}.`);
@@ -225,71 +245,17 @@
     return shellPath;
   };
 
-  /* editor config */
-  const editorConfig = {
-    editorPath: "",
-    cmdArgs: [],
-    fileAfterCmdArgs: false,
-  };
-
-  /**
-   * create editor config
-   * @param {string} configPath - config directory path
-   * @returns {string} - editor config path
-   */
-  const createEditorConfig = async configPath => {
-    if (await !isDir(configPath)) {
-      throw new Error(`No such directory: ${configPath}.`);
-    }
-    const editorConfigPath = path.join(configPath, "editorconfig.json");
-    await createFile(
-      editorConfigPath, JSON.stringify(editorConfig, null, "  "),
-      {encoding: CHAR, flag: "w", mode: PERM_FILE}
-    );
-    if (await !isFile(editorConfigPath)) {
-      throw new Error(`Failed to create ${editorConfigPath}.`);
-    }
-    console.info(`Created: ${editorConfigPath}`);
-    return editorConfigPath;
-  };
-
-  /**
-   * set config directory
-   * @param {string} arg - argument
-   * @returns {void}
-   */
-  const setConfigDir = async arg => {
-    if (await isString(arg)) {
-      arg = /^--config-path=(.+)$/.exec(arg);
-      if (arg && (arg = arg[1].trim())) {
-        const configPath = await getAbsPath(arg);
-        if (!configPath) {
-          throw new Error(`Failed to normalize ${arg}`);
-        }
-        if (!configPath.startsWith(DIR_HOME)) {
-          throw new Error(`Config path is not sub directory of ${DIR_HOME}.`);
-        }
-        const homeDir = await escapeChar(DIR_HOME, /(\\)/g);
-        const reHomeDir = new RegExp(`^(?:${homeDir}|~)`);
-        const subDir = (configPath.replace(reHomeDir, "")).split(path.sep)
-                         .filter(i => i);
-        if (subDir.length) {
-          vars.configDir = [DIR_HOME, ...subDir];
-        } else {
-          vars.configDir = [DIR_HOME];
-        }
-      }
-    }
-  };
-
   /**
    * create config directory
    * @returns {string} - config directory path
    */
   const createConfig = async () => {
-    const configPath = await createDir(vars.configDir, PERM_DIR);
+    const {browser, configDir} = vars;
+    const {alias} = browser;
+    const dir = [...configDir, alias];
+    const configPath = await createDir(dir, PERM_DIR);
     if (await !isDir(configPath)) {
-      throw new Error(`Failed to create ${path.join(...vars.configDir)}.`);
+      throw new Error(`Failed to create ${path.join(dir)}.`);
     }
     console.info(`Created: ${configPath}`);
     return configPath;
@@ -317,7 +283,7 @@
   /* questions */
   const ques = {
     browser: "Enter which browser to set up the host:\n",
-    cmsArgs: "Enter command line options:\n",
+    cmdArgs: "Enter command line options:\n",
     editorPath: "Enter editor path:\n",
     filePos: "Put file path after command arguments? [y/n]\n",
   };
@@ -328,9 +294,28 @@
    * @returns {void}
    */
   const abortSetup = msg => {
-    isString(msg) && msg.length && console.info(msg);
-    console.info("Setup aborted.");
+    console.info(`Setup aborted: ${msg}`);
     process.exit(1);
+  };
+
+  /**
+   * get browser config
+   * @param {string} key - key
+   * @returns {Object} - browser config
+   */
+  const getBrowserConfig = key => {
+    let browser;
+    key = isString(key) && key.toLowerCase().trim();
+    if (key) {
+      const items = Object.keys(browserConfig);
+      for (const item of items) {
+        if (item === key) {
+          browser = browserConfig[item];
+          break;
+        }
+      }
+    }
+    return browser || null;
   };
 
   /**
@@ -394,28 +379,33 @@
       if (ans.length) {
         const browser = getBrowserConfig(ans);
         if (browser) {
-          vars.browser = browser;
+          setBrowser(browser);
           rl.question(ques.editorPath, handleEditorPathInput);
         } else {
-          abortSetup(`${ans} not supported yet.`);
-          // TODO: impliment custom browser install
-          /*
-          const _custom = {
-            alias: null,
-            hostLinux: null,
-            hostMac: null,
-            regWin: null,
-            type: null,
-          };
-          browserConfig._custom = _custom;
-          */
+          // TODO: Add custom setup
+          abortSetup(`${ans} not supported.`);
         }
       } else {
-        abortSetup("You need to specify the browser");
+        abortSetup("Browser not specified.");
       }
     } else {
-      abortSetup("You need to specify the browser");
+      abortSetup("Browser not specified.");
     }
+  };
+
+  /**
+   * extract argument
+   * @param {string} arg - argument in key=value format
+   * @param {RegExp} re - RegExp
+   * @returns {string} - argument value
+   */
+  const extractArg = (arg, re) => {
+    let value;
+    if (isString(arg) && re && re.ignoreCase) {
+      arg = re.exec(arg.trim());
+      arg && ([, value] = arg);
+    }
+    return value || null;
   };
 
   {
@@ -424,16 +414,21 @@
     if (Array.isArray(args) && args.length) {
       const func = [];
       for (const arg of args) {
-        /^--browser=/.test(arg) && (browser = getBrowser(arg));
-        /^--config-path=/.test(arg) && func.push(setConfigDir(arg));
+        let value;
+        if (/^--browser=/i.test(arg)) {
+          value = extractArg(arg, /^--browser=(.+)$/i);
+          value && (browser = getBrowserConfig(value));
+          browser && func.push(setBrowser(browser));
+        } else if (/^--config-path=/i.test(arg)) {
+          value = extractArg(arg, /^--config-path=(.+)$/i);
+          value && func.push(setConfigDir(value));
+        }
       }
       Promise.all(func).catch(logError);
     }
-    if (browser) {
-      rl.question(ques.editorPath, handleEditorPathInput);
-    } else {
-      const items = Object.keys(browserConfig);
-      rl.question(`${ques.browser}[${items.join(" ")}]\n`, handleBrowserInput);
-    }
+    browser ?
+      rl.question(ques.editorPath, handleEditorPathInput) :
+      rl.question(`${ques.browser}[${Object.keys(browserConfig).join(" ")}]\n`,
+                  handleBrowserInput);
   }
 }
