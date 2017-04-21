@@ -286,9 +286,9 @@
 
   /* questions */
   const ques = {
-    browser: "Enter which browser to set up the host:\n",
-    cmdArgs: "Enter command line options:\n",
+    browser: "Enter which browser you would like to set up the host for:\n",
     editorPath: "Enter editor path:\n",
+    cmdArgs: "Enter command line options:\n",
     filePos: "Put file path after command arguments? [y/n]\n",
   };
 
