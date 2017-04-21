@@ -63,7 +63,7 @@ If you want to save setting files in different location, use `--config-path` arg
 
 ***
 
-## Manual setup
+## Manual setup (for Firefox)
 
 There are sample configuration files in "_config" folder of withExEditorHost.
 

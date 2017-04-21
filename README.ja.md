@@ -63,7 +63,7 @@ Windowsでは"cmd.exe"、Linux / Macでは「端末」（ターミナル）を�
 
 ***
 
-## 手動設定
+## 手動設定（Firefox向け）
 
 withExEditorHostの"_config"というフォルダの中に必要な設定ファイルのサンプルがあります。
 
