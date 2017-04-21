@@ -10,8 +10,8 @@ If you have a Github account, you can also clone and save the repository.
 
 Note that the host runs with [Node.js](https://nodejs.org/en/ "Node.js"), so if you do not have Node.js, please install it.
 Also note that the host depends on the version of Node.js.
-* withExEditorHost v1.x requires Node.js v6.9.5 or higher.
 * withExEditorHost v2.x requires Node.js v7.6.0 (at this time) or higher.
+* withExEditorHost v1.x (only supports Firefox) requires Node.js v6.9.5 or higher.
 
 ***
 
@@ -25,14 +25,10 @@ Depending on your environment, you may need to run as admin.
 > node setup.js
 ```
 
-By default, the setup script creates a "config" folder under the location of withExEditorHost.
-If you want to save setting files in different location, use `--config-path` argument.
+When you run the script, you will be asked which browser you want to setup the host for, so please enter the browser name from the list.
+NOTE: If your browser is not listed, file an [issue](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost") for browser support.
 
-```
-> node setup.js --config-path="C:\Users\XXX\path\to\another\location"
-```
-
-You will be prompted for the following, please input as appropriate.
+After that, you will be prompted for the following, please input as appropriate.
 
 * Enter editor path
 * Enter command line options
@@ -40,9 +36,30 @@ You will be prompted for the following, please input as appropriate.
     For example: `-a -b "C:\Program Files"`
 * Put file path after command arguments?
 
-You can leave them empty and set them later from the options page of withExEditor (withExEditor v2.3.0 and later).
+You can leave those editor related settings empty and set them later from the options page of withExEditor.
 
 If config files are created successfully, restart Firefox.
+
+### Options
+
+In the setup script you can specify some options.
+
+#### --browser option
+
+To specify the browser, please use the `--browser` option.
+
+```
+> node setup.js --browser=firefox
+```
+
+#### --editor-config option
+
+By default, the setup script creates a "config" folder under the location of withExEditorHost.
+If you want to save setting files in different location, use `--config-path` argument.
+
+```
+> node setup.js --config-path="C:\Users\XXX\path\to\another\location"
+```
 
 ***
 
