@@ -60,6 +60,7 @@
     },
     vivaldi: {
       alias: "vivaldi",
+      aliasWin: "chrome",
       hostLinux: [DIR_HOME, ".config", "vivaldi", HOST_DIR_LABEL],
       hostMac: [...DIR_HOST_MAC, "Vivaldi", HOST_DIR_LABEL],
       regWin: [...HKCU_SOFTWARE, "Google", "Chrome", HOST_DIR_LABEL, HOST],
@@ -252,8 +253,10 @@
    */
   const createConfig = async () => {
     const {browser, configDir} = vars;
-    const {alias} = browser;
-    const dir = [...configDir, alias];
+    const {alias, aliasLinux, aliasMac, aliasWin} = browser;
+    const dir = IS_WIN && [...configDir, aliasWin || alias] ||
+                IS_MAC && [...configDir, aliasMac || alias] ||
+                [...configDir, aliasLinux || alias];
     const configPath = await createDir(dir, PERM_DIR);
     if (await !isDir(configPath)) {
       throw new Error(`Failed to create ${path.join(dir)}.`);
