@@ -37,6 +37,31 @@
 
   /* browser config data */
   const browserConfig = {
+    /* gecko */
+    firefox: {
+      alias: "firefox",
+      hostLinux: [DIR_HOME, ".mozilla", "native-messaging-hosts"],
+      hostMac: [...DIR_HOST_MAC, "Mozilla", HOST_DIR_LABEL],
+      regWin: [...HKCU_SOFTWARE, "Mozilla", HOST_DIR_LABEL, HOST],
+      type: EXT_WEB,
+    },
+    cyberfox: {
+      alias: "cyberfox",
+      aliasWin: "firefox",
+      hostLinux: null,
+      hostMac: null,
+      regWin: [...HKCU_SOFTWARE, "Mozilla", HOST_DIR_LABEL, HOST],
+      type: EXT_WEB,
+    },
+    waterfox: {
+      alias: "waterfox",
+      aliasWin: "firefox",
+      hostLinux: null,
+      hostMac: null,
+      regWin: [...HKCU_SOFTWARE, "Mozilla", HOST_DIR_LABEL, HOST],
+      type: EXT_WEB,
+    },
+    /* blink */
     chrome: {
       alias: "chrome",
       hostLinux: [DIR_HOME, ".config", "google-chrome", HOST_DIR_LABEL],
@@ -50,13 +75,6 @@
       hostMac: [...DIR_HOST_MAC, "Chromium", HOST_DIR_LABEL],
       regWin: null,
       type: EXT_CHROME,
-    },
-    firefox: {
-      alias: "firefox",
-      hostLinux: [DIR_HOME, ".mozilla", "native-messaging-hosts"],
-      hostMac: [...DIR_HOST_MAC, "Mozilla", HOST_DIR_LABEL],
-      regWin: [...HKCU_SOFTWARE, "Mozilla", HOST_DIR_LABEL, HOST],
-      type: EXT_WEB,
     },
     vivaldi: {
       alias: "vivaldi",
@@ -314,7 +332,11 @@
       const items = Object.keys(browserConfig);
       for (const item of items) {
         if (item === key) {
-          browser = browserConfig[item];
+          const obj = browserConfig[item];
+          if (IS_WIN && obj.regWin || IS_MAC && obj.hostMac ||
+              !IS_WIN && !IS_MAC && obj.hostLinux) {
+            browser = browserConfig[item];
+          }
           break;
         }
       }
@@ -430,9 +452,18 @@
       }
       Promise.all(func).catch(logError);
     }
-    browser ?
-      rl.question(ques.editorPath, handleEditorPathInput) :
-      rl.question(`${ques.browser}[${Object.keys(browserConfig).join(" ")}]\n`,
-                  handleBrowserInput);
+    if (browser) {
+      rl.question(ques.editorPath, handleEditorPathInput);
+    } else {
+      const arr = [];
+      const items = Object.keys(browserConfig);
+      for (const item of items) {
+        const obj = browserConfig[item];
+        (IS_WIN && obj.regWin || IS_MAC && obj.hostMac ||
+         !IS_WIN && !IS_MAC && obj.hostLinux) &&
+          arr.push(item);
+      }
+      rl.question(`${ques.browser}[${arr.join(" ")}]\n`, handleBrowserInput);
+    }
   }
 }
