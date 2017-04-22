@@ -76,6 +76,15 @@
       regWin: null,
       type: EXT_CHROME,
     },
+    opera: {
+      alias: "opera",
+      aliasWin: "chrome",
+      aliasMac: "chrome",
+      hostLinux: null,
+      hostMac: [...DIR_HOST_MAC, "Google", "Chrome", HOST_DIR_LABEL],
+      regWin: [...HKCU_SOFTWARE, "Google", "Chrome", HOST_DIR_LABEL, HOST],
+      type: EXT_CHROME,
+    },
     vivaldi: {
       alias: "vivaldi",
       aliasWin: "chrome",
