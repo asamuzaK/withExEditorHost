@@ -1,7 +1,11 @@
 EN | [JA](./README.ja.md)
 
 # withExEditorHost
-Native messaging host for Firefox add-on [withExEditor](https://addons.mozilla.org/addon/withexeditor/ "withExEditor :: Add-ons for Firefox")
+
+Native messaging host for Firefox, Gecko based browsers, and Blink based browsers extension withExEditor.
+
+* [WithExEditor :: Add-ons for Firefox](https://addons.mozilla.org/addon/withexeditor/ "withExEditor :: Add-ons for Firefox")
+* [withExEditor - Chrome Web Store](https://chrome.google.com/webstore/detail/withexeditor/koghhpkkcndhhclklnnnhcpkkplfkgoi "withExEditor - Chrome Web Store")
 
 ## Download the host
 
