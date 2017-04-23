@@ -22,8 +22,7 @@
   const DIR_HOST_MAC = [DIR_HOME, "Library", "Application Support"];
   const EXT_CHROME = "chromeExtension";
   const EXT_CHROME_ALLOWED = "allowed_origins";
-  // NOTE: temporary ID for development
-  const EXT_CHROME_ID = "chrome-extension://jakgdeodohnbhngonaabiaklmhfahjbj/";
+  const EXT_CHROME_ID = "chrome-extension://koghhpkkcndhhclklnnnhcpkkplfkgoi/";
   const EXT_WEB = "webExtension";
   const EXT_WEB_ALLOWED = "allowed_extensions";
   const EXT_WEB_ID = "jid1-WiAigu4HIo0Tag@jetpack";
