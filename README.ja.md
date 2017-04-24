@@ -33,7 +33,7 @@ Windowsでは"cmd.exe"、Linux / Macでは「端末」（ターミナル）を�
 注：ブラウザがリストにない場合は、ブラウザのサポートを要望する[イシュー](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost")を登録してください。
 
 続いて、エディタ関連の以下の入力を求められますので適宜入力してください。
-エディタ関連の設定についてはその場では何も入力せず、後でwithExEditorのオプションページから設定することもできます（withExEditor v2.3.0以上）。
+エディタ関連の設定についてはその場では何も入力せず、後でwithExEditorのオプションページから設定することもできます。
 
 * エディタのパス
 * コマンドラインオプション
