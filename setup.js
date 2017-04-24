@@ -106,6 +106,13 @@
     },
   };
 
+  /* editor config */
+  const editorConfig = {
+    editorPath: "",
+    cmdArgs: [],
+    fileAfterCmdArgs: false,
+  };
+
   /* variables */
   const vars = {
     browser: null,
@@ -117,7 +124,7 @@
    * @param {string} browser - browser config data
    * @returns {void}
    */
-  const setBrowser = async browser => {
+  const setBrowser = browser => {
     browser && Object.keys(browser).length && browser.alias &&
       (vars.browser = browser);
   };
@@ -127,29 +134,62 @@
    * @param {string} dir - directory path
    * @returns {void}
    */
-  const setConfigDir = async dir => {
-    const configPath = await getAbsPath(dir);
+  const setConfigDir = dir => {
+    const configPath = getAbsPath(dir);
     if (!configPath) {
       throw new Error(`Failed to normalize ${dir}`);
     }
     if (!configPath.startsWith(DIR_HOME)) {
       throw new Error(`Config path is not sub directory of ${DIR_HOME}.`);
     }
-    const homeDir = await escapeChar(DIR_HOME, /(\\)/g);
+    const homeDir = escapeChar(DIR_HOME, /(\\)/g);
     const reHomeDir = new RegExp(`^(?:${homeDir}|~)`);
     const subDir = (configPath.replace(reHomeDir, "")).split(path.sep)
                      .filter(i => i);
     vars.configDir = subDir.length && [DIR_HOME, ...subDir] || [DIR_HOME];
   };
 
-  /* files */
-  /* editor config */
-  const editorConfig = {
-    editorPath: "",
-    cmdArgs: [],
-    fileAfterCmdArgs: false,
+  /**
+   * get browser config
+   * @param {string} key - key
+   * @returns {Object} - browser config
+   */
+  const getBrowserConfig = key => {
+    let browser;
+    key = isString(key) && key.toLowerCase().trim();
+    if (key) {
+      const items = Object.keys(browserConfig);
+      for (const item of items) {
+        if (item === key) {
+          const obj = browserConfig[item];
+          if (IS_WIN && obj.regWin || IS_MAC && obj.hostMac ||
+              !IS_WIN && !IS_MAC && obj.hostLinux) {
+            browser = browserConfig[item];
+          }
+          break;
+        }
+      }
+    }
+    return browser || null;
   };
 
+  /**
+   * get browser specific config directory
+   * @returns {?Array} - config directory array
+   */
+  const getBrowserConfigDir = () => {
+    const {browser, configDir} = vars;
+    let dir;
+    if (browser) {
+      const {alias, aliasLinux, aliasMac, aliasWin} = browser;
+      dir = IS_WIN && [...configDir, aliasWin || alias] ||
+            IS_MAC && [...configDir, aliasMac || alias] ||
+            [...configDir, aliasLinux || alias];
+    }
+    return dir || null;
+  };
+
+  /* file handlers */
   /**
    * create editor config
    * @param {string} configPath - config directory path
@@ -278,11 +318,10 @@
    * @returns {string} - config directory path
    */
   const createConfig = async () => {
-    const {browser, configDir} = vars;
-    const {alias, aliasLinux, aliasMac, aliasWin} = browser;
-    const dir = IS_WIN && [...configDir, aliasWin || alias] ||
-                IS_MAC && [...configDir, aliasMac || alias] ||
-                [...configDir, aliasLinux || alias];
+    const dir = await getBrowserConfigDir();
+    if (!Array.isArray(dir)) {
+      throw new TypeError(`Expected Array but got ${getType(dir)}.`);
+    }
     const configPath = await createDir(dir, PERM_DIR);
     if (await !isDir(configPath)) {
       throw new Error(`Failed to create ${path.join(dir)}.`);
@@ -326,30 +365,6 @@
   const abortSetup = msg => {
     console.info(`Setup aborted: ${msg}`);
     process.exit(1);
-  };
-
-  /**
-   * get browser config
-   * @param {string} key - key
-   * @returns {Object} - browser config
-   */
-  const getBrowserConfig = key => {
-    let browser;
-    key = isString(key) && key.toLowerCase().trim();
-    if (key) {
-      const items = Object.keys(browserConfig);
-      for (const item of items) {
-        if (item === key) {
-          const obj = browserConfig[item];
-          if (IS_WIN && obj.regWin || IS_MAC && obj.hostMac ||
-              !IS_WIN && !IS_MAC && obj.hostLinux) {
-            browser = browserConfig[item];
-          }
-          break;
-        }
-      }
-    }
-    return browser || null;
   };
 
   /**
@@ -403,27 +418,61 @@
   };
 
   /**
+   * handle browser config directory input
+   * @param {string} ans - user input
+   * @returns {void}
+   */
+  const handleBrowserConfigDir = ans => {
+    const dir = getBrowserConfigDir();
+    if (!Array.isArray(dir)) {
+      throw new TypeError(`Expected Array but got ${getType(dir)}.`);
+    }
+    const msg = `${path.join(...dir)} already exists.`;
+    if (isString(ans)) {
+      ans = ans.trim();
+      if (/^y(?:es)?$/i.test(ans)) {
+        rl.question(ques.editorPath, handleEditorPathInput);
+      } else {
+        abortSetup(msg);
+      }
+    } else {
+      abortSetup(msg);
+    }
+  };
+
+  /**
    * handle browser input
    * @param {string} ans - user input
    * @returns {void}
    */
   const handleBrowserInput = ans => {
+    const msg = "Browser not specified.";
     if (isString(ans)) {
       ans = ans.trim();
       if (ans.length) {
         const browser = getBrowserConfig(ans);
+        browser && setBrowser(browser);
         if (browser) {
-          setBrowser(browser);
-          rl.question(ques.editorPath, handleEditorPathInput);
+          const dir = getBrowserConfigDir();
+          if (!Array.isArray(dir)) {
+            throw new TypeError(`Expected Array but got ${getType(dir)}.`);
+          }
+          const dirPath = path.join(...dir);
+          if (isDir(dirPath)) {
+            rl.question(`${dirPath} already exists. Overwrite? [y/n]\n`,
+                        handleBrowserConfigDir);
+          } else {
+            rl.question(ques.editorPath, handleEditorPathInput);
+          }
         } else {
           // TODO: Add custom setup
           abortSetup(`${ans} not supported.`);
         }
       } else {
-        abortSetup("Browser not specified.");
+        abortSetup(msg);
       }
     } else {
-      abortSetup("Browser not specified.");
+      abortSetup(msg);
     }
   };
 
@@ -442,26 +491,35 @@
     return value || null;
   };
 
+  /* start up */
   {
     const [, , ...args] = process.argv;
     let browser;
     if (Array.isArray(args) && args.length) {
-      const func = [];
       for (const arg of args) {
         let value;
         if (/^--browser=/i.test(arg)) {
           value = extractArg(arg, /^--browser=(.+)$/i);
           value && (browser = getBrowserConfig(value));
-          browser && func.push(setBrowser(browser));
+          browser && setBrowser(browser);
         } else if (/^--config-path=/i.test(arg)) {
           value = extractArg(arg, /^--config-path=(.+)$/i);
-          value && func.push(setConfigDir(value));
+          value && setConfigDir(value);
         }
       }
-      Promise.all(func).catch(logError);
     }
     if (browser) {
-      rl.question(ques.editorPath, handleEditorPathInput);
+      const dir = getBrowserConfigDir();
+      if (!Array.isArray(dir)) {
+        throw new TypeError(`Expected Array but got ${getType(dir)}.`);
+      }
+      const dirPath = path.join(...dir);
+      if (isDir(dirPath)) {
+        rl.question(`${dirPath} already exists. Overwrite? [y/n]\n`,
+                    handleBrowserConfigDir);
+      } else {
+        rl.question(ques.editorPath, handleEditorPathInput);
+      }
     } else {
       const arr = [];
       const items = Object.keys(browserConfig);
