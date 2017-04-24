@@ -22,7 +22,6 @@ Githubのアカウントがある場合は、レポジトリをクローンし�
 ## ホストの設定
 
 Windowsでは"cmd.exe"、Linux / Macでは「端末」（ターミナル）を開き、withExEditorHostを保存したディレクトリに移動してセットアップスクリプトを実行します。
-なお、環境によっては管理者権限で実行する必要があるかもしれません。
 
 ```
 > cd path/to/withExEditorHost
@@ -33,7 +32,7 @@ Windowsでは"cmd.exe"、Linux / Macでは「端末」（ターミナル）を�
 注：ブラウザがリストにない場合は、ブラウザのサポートを要望する[イシュー](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost")を登録してください。
 
 続いて、エディタ関連の以下の入力を求められますので適宜入力してください。
-エディタ関連の設定についてはその場では何も入力せず、後でwithExEditorのオプションページから設定することもできます。
+その場では何も入力せず、後でwithExEditorのオプションページから設定することもできます。
 
 * エディタのパス
 * コマンドラインオプション
@@ -41,7 +40,7 @@ Windowsでは"cmd.exe"、Linux / Macでは「端末」（ターミナル）を�
     例：`-a -b "C:\Program Files"`
 * 一時ファイルをコマンドラインオプションの後に置くか
 
-設定ファイルが正常に作成されたら、Firefoxを再起動してください。
+設定ファイルが正常に作成されたら、ブラウザを再起動してください。
 
 ### オプション
 

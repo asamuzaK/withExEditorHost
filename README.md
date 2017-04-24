@@ -22,7 +22,6 @@ Also note that the host depends on the version of Node.js.
 ## Setting up the host
 
 Open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost and run setup script.
-Depending on your environment, you may need to run as admin.
 
 ```
 > cd path/to/withExEditorHost
@@ -40,15 +39,15 @@ After that, you will be prompted for the following, please input as appropriate.
     For example: `-a -b "C:\Program Files"`
 * Put file path after command arguments?
 
-You can leave those editor related settings empty and set them later from the options page of withExEditor.
+You can leave them empty and set them later from the options page of withExEditor.
 
-If config files are created successfully, restart Firefox.
+If config files are created successfully, restart the browser.
 
 ### Options
 
 In the setup script you can specify some options.
 
-#### --browser option
+#### --browser=*name* option
 
 To specify the browser, please use the `--browser` option.
 
@@ -56,10 +55,10 @@ To specify the browser, please use the `--browser` option.
 > node setup.js --browser=firefox
 ```
 
-#### --editor-config option
+#### --editor-config=*path* option
 
 By default, the setup script creates a "config" folder under the location of withExEditorHost.
-If you want to save setting files in different location, use `--config-path` argument.
+If you want to save setting files in different location, use `--config-path` option.
 
 ```
 > node setup.js --config-path="C:\Users\XXX\path\to\another\location"

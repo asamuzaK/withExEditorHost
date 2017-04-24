@@ -77,8 +77,8 @@
     },
     opera: {
       alias: "opera",
-      aliasWin: "chrome",
       aliasMac: "chrome",
+      aliasWin: "chrome",
       hostLinux: null,
       hostMac: [...DIR_HOST_MAC, "Google", "Chrome", HOST_DIR_LABEL],
       regWin: [...HKCU_SOFTWARE, "Google", "Chrome", HOST_DIR_LABEL, HOST],
