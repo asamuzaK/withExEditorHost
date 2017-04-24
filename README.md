@@ -2,7 +2,7 @@ EN | [JA](./README.ja.md)
 
 # withExEditorHost
 
-Native messaging host for Gecko based browsers and Blink based browsers extension withExEditor.
+Native messaging host for Firefox, Gecko based browsers and Blink based browsers extension withExEditor.
 
 * [WithExEditor :: Add-ons for Firefox](https://addons.mozilla.org/addon/withexeditor/ "withExEditor :: Add-ons for Firefox")
 * [withExEditor - Chrome Web Store](https://chrome.google.com/webstore/detail/withexeditor/koghhpkkcndhhclklnnnhcpkkplfkgoi "withExEditor - Chrome Web Store")
@@ -67,7 +67,7 @@ If you want to save setting files in different location, use `--config-path` arg
 
 ***
 
-## Manual setup (for Firefox)
+## Manual setup
 
 There are sample configuration files in "_config" folder of withExEditorHost.
 
@@ -102,8 +102,7 @@ node /path/to/withexeditorhost/index.js
 Open "withexeditorhost.json" and enter the path of the shell script in the `path` field in it.
 Note that on Windows, it is necessary to escape backslashes, which is a directory delimiter, by adding an extra backslash.
 
-Leave other fields as is.
-
+Firefox, Gecko:
 ```
 {
   "name": "withexeditorhost",
@@ -114,24 +113,34 @@ Leave other fields as is.
 }
 ```
 
+Blink:
+```
+{
+  "name": "withexeditorhost",
+  "description": "Native messaging host for withExEditor",
+  "path": "C:\\Users\\XXX\\withExEditorHost\\config\\withexeditorhost.cmd",
+  "type": "stdio",
+  "allowed_origins": ["chrome-extension://koghhpkkcndhhclklnnnhcpkkplfkgoi/"]
+}
+```
+
 On Windows, you also need to set the registry.
 You can save the registry key by executing the following command with cmd.exe.
-Edit the `"C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json"` part.
+Edit `"HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost"` and `"C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json"` part.
 
 ```
 REG ADD "HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost" /ve /d "C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json" /f
 ```
 
 On Linux and Mac, you need to save "withexeditorhost.json" in the specified location.
+The following is an example for Firefox. For other browsers, refer to the official documents etc.
 
 Linux:
-
 ```
 ~/.mozilla/native-messaging-hosts/withexeditorhost.json
 ```
 
 Mac:
-
 ```
 ~/Library/Application Support/Mozilla/NativeMessagingHosts/withexeditorhost.json
 ```
@@ -152,17 +161,17 @@ Open "editorconfig.json" and fill in the information of the editor.
 * *cmdArgs* - Command line options. Enter each argument in array, separated by comma. Backslashes must be escaped.
 * *fileAfterCmdArgs* - Boolean (`true` / `false`). When specifying the file, some editor requires to put the file path after command arguments. Set `true` in such case.
 
-Editor configuration files can also be switched for each Firefox profile.
-For example, use "editorconfig.json" for the default profile, and prepare another configuration file such as "editorconfig-nightly.json" for nightly's profile.
+Editor configuration files can also be switched for each Firefox profile, or each browser.
+For example, use "editorconfig.json" for the Firefox default profile, and prepare another configuration file such as "editorconfig-nightly.json" for nightly's profile.
 When you choose a name other than "editorconfig.json", enter the path of the editor configuration file in the Options page of withExEditor.
 
-After the above work, restart Firefox.
+After the above work, restart the browser.
 
 ***
 
 ## Troubleshooting
 
-If something goes wrong, check the browser console (Ctrl + Shift + J).
+If something goes wrong, check the browser console (Ctrl + Shift + J in Firefox).
 
 ```
 Error: Attempt to postMessage on disconnected port
@@ -170,7 +179,7 @@ Error: Attempt to postMessage on disconnected port
 
 * Windows: Is the registry saved correctly?
 * Linux / Mac: Is "withexeditorhost.json" saved in the right location?
-* When you start Firefox, is a Node.js process executed too?
+* When you start the browser, is a Node.js process executed too?
   * If not, make sure that Node.js's installation directory is listed in the $PATH environment variable.
     Or change the shell script from "node" command to full path of Node.js.
     ```
