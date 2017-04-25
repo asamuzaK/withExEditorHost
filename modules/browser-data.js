@@ -7,7 +7,7 @@
   const os = require("os");
 
   /* constants */
-  const {HOST} = require("./modules/constant");
+  const {HOST} = require("./constant");
   const DIR_HOME = os.homedir();
   const DIR_HOST_MAC = [DIR_HOME, "Library", "Application Support"];
   const EXT_CHROME = "chromeExtension";
