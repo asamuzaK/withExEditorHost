@@ -9,15 +9,15 @@ Native messaging host for Firefox, Gecko based browsers and Blink based browsers
 
 ## Supported browsers
 
-|Browser |Windows |Linux   |Mac     |
-|:-------|:------:|:------:|:------:|
-|Firefox |✓       |✓       |✓       |
-|Cyberfox|✓ *1    |        |        |
-|Waterfox|✓ *1    |        |        |
-|Chrome  |✓       |✓       |✓       |
-|Chromium|✓       |✓       |✓       |
-|Opera   |✓ *2    |        |✓ *2    |
-|Vivaldi |✓ *2    |✓       |✓       |
+|Browser |Windows|Linux  |Mac    |
+|:-------|:-----:|:-----:|:-----:|
+|Firefox |   ✓   |   ✓   |   ✓   |
+|Cyberfox|   ✓ *1|       |       |
+|Waterfox|   ✓ *1|       |       |
+|Chrome  |   ✓   |   ✓   |   ✓   |
+|Chromium|   ✓   |   ✓   |   ✓   |
+|Opera   |   ✓ *2|       |   ✓ *2|
+|Vivaldi |   ✓ *2|   ✓   |   ✓   |
 
 *1: Shares host with Firefox.
 *2: Shares host with Chrome.

@@ -7,6 +7,21 @@ FirefoxやGeckoベースのブラウザ、Blinkベースのブラウザ用の拡
 * [withExEditor :: Add-ons for Firefox](https://addons.mozilla.org/addon/withexeditor/ "withExEditor :: Add-ons for Firefox")
 * [withExEditor - Chrome ウェブストア](https://chrome.google.com/webstore/detail/withexeditor/koghhpkkcndhhclklnnnhcpkkplfkgoi "withExEditor - Chrome ウェブストア")
 
+## ブラウザサポート状況
+
+|ブラウザ  |Windows|Linux  |Mac    |
+|:-------|:-----:|:-----:|:-----:|
+|Firefox |   ✓   |   ✓   |   ✓   |
+|Cyberfox|   ✓ *1|       |       |
+|Waterfox|   ✓ *1|       |       |
+|Chrome  |   ✓   |   ✓   |   ✓   |
+|Chromium|   ✓   |   ✓   |   ✓   |
+|Opera   |   ✓ *2|       |   ✓ *2|
+|Vivaldi |   ✓ *2|   ✓   |   ✓   |
+
+*1: Firefoxとホストをシェア。
+*2: Chromeとホストをシェア。
+
 ## ホストのダウンロード
 
 [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost")からソースコードのzipファイルかtar.gzファイルをダウンロードして、展開した上で任意の場所に保存してください（例えば、`C:\Users\XXX\withExEditorHost\`）。
