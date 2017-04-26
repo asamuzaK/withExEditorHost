@@ -22,7 +22,7 @@ FirefoxやGeckoベースのブラウザ、Blinkベースのブラウザ用の拡
 *1: Firefoxとホストを共有。
 *2: Chromeとホストを共有。
 
-ブラウザが一覧にない場合は、ブラウザのサポートを要望する[イシュー](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost")を登録してください。
+ブラウザが一覧にない場合は、サポート要望の[イシュー](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost")を登録してください。
 
 ## ホストのダウンロード
 

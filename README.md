@@ -22,7 +22,7 @@ Native messaging host for Firefox, Gecko based browsers and Blink based browsers
 *1: Shares host with Firefox.
 *2: Shares host with Chrome.
 
-If your browser is not listed, file an [issue](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost") for browser support.
+If your browser is not listed, file an [issue](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost") for support.
 
 ## Download the host
 
