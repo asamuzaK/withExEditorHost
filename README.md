@@ -19,8 +19,8 @@ Native messaging host for Firefox, Gecko based browsers and Blink based browsers
 |Opera|✓[^2]| |✓[^2]|
 |Vivaldi|✓[^2]|✓|✓|
 
-^1 Shares host with Firefox.
-^2 Shares host with Chrome.
+[^1]: Shares host with Firefox.
+[^2]: Shares host with Chrome.
 
 ## Download the host
 
