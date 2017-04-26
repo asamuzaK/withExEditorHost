@@ -31,9 +31,8 @@ FirefoxやGeckoベースのブラウザ、Blinkベースのブラウザ用の拡
 Githubのアカウントがある場合は、レポジトリをクローンして保存してもOKです。
 
 なお、ホストは[Node.js](https://nodejs.org/ja/ "Node.js")で実行しますので、Node.jsが入っていない場合はインストールしてください。
-また、ホストはNode.jsのバージョンに依存することにも注意してください。
-* withExEditorHost v2.xは、Node.js v7.9.0以上（現時点）を必要とします。
-* withExEditorHost v1.x（Firefoxのみサポート）では、Node.js v6.9.5以上を必要とします。
+withExEditorHost v2.0.0-b.x（現時点ではプレリリース版）には、Node.js v7.9.0以降が必要です。
+必要なNode.jsのバージョンは今後変更される可能性があります。
 
 ***
 
