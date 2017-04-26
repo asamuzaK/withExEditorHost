@@ -19,8 +19,8 @@ FirefoxやGeckoベースのブラウザ、Blinkベースのブラウザ用の拡
 |Opera   |   ✓ *2|       |   ✓ *2|
 |Vivaldi |   ✓ *2|   ✓   |   ✓   |
 
-*1: Firefoxとホストをシェア。
-*2: Chromeとホストをシェア。
+*1: Firefoxとホストを共有。
+*2: Chromeとホストを共有。
 
 ## ホストのダウンロード
 
