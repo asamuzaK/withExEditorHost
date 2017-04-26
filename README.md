@@ -22,6 +22,8 @@ Native messaging host for Firefox, Gecko based browsers and Blink based browsers
 *1: Shares host with Firefox.
 *2: Shares host with Chrome.
 
+If your browser is not listed, file an [issue](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost") for browser support.
+
 ## Download the host
 
 Download a zip file or tar.gz file of the source code from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), save it in an arbitrary place after decompressing (for example, `C:\Users\XXX\withExEditorHost\`).
@@ -44,7 +46,6 @@ Open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where 
 ```
 
 When you run the script, you will be asked which browser you want to setup the host for, so please enter the browser name from the list.
-NOTE: If your browser is not listed, file an [issue](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost") for browser support.
 
 After that, you will be prompted for the following, please input as appropriate.
 

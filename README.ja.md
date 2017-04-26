@@ -22,6 +22,8 @@ FirefoxやGeckoベースのブラウザ、Blinkベースのブラウザ用の拡
 *1: Firefoxとホストを共有。
 *2: Chromeとホストを共有。
 
+ブラウザが一覧にない場合は、ブラウザのサポートを要望する[イシュー](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost")を登録してください。
+
 ## ホストのダウンロード
 
 [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost")からソースコードのzipファイルかtar.gzファイルをダウンロードして、展開した上で任意の場所に保存してください（例えば、`C:\Users\XXX\withExEditorHost\`）。
@@ -44,7 +46,6 @@ Windowsでは"cmd.exe"、Linux / Macでは「端末」（ターミナル）を�
 ```
 
 スクリプトを実行すると、どのブラウザ向けにホストを設定するのか尋ねられますので、リストに表示されたブラウザ名を入力してください。
-注：ブラウザがリストにない場合は、ブラウザのサポートを要望する[イシュー](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost")を登録してください。
 
 続いて、エディタ関連の以下の入力を求められますので適宜入力してください。
 その場では何も入力せず、後でwithExEditorのオプションページから設定することもできます。
