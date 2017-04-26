@@ -7,6 +7,21 @@ Native messaging host for Firefox, Gecko based browsers and Blink based browsers
 * [WithExEditor :: Add-ons for Firefox](https://addons.mozilla.org/addon/withexeditor/ "withExEditor :: Add-ons for Firefox")
 * [withExEditor - Chrome Web Store](https://chrome.google.com/webstore/detail/withexeditor/koghhpkkcndhhclklnnnhcpkkplfkgoi "withExEditor - Chrome Web Store")
 
+## Supported browsers
+
+|Browser  |Windows  |Linux     |Mac       |
+|:--------|:-------:|:--------:|:--------:|
+|Firefox|✓|✓|✓|
+|Cyberfox|✓[^1]| | |
+|Waterfox|✓[^1]| | |
+|Chrome|✓|✓|✓|
+|Chromium|✓|✓|✓|
+|Opera|✓[^2]| |✓[^2]|
+|Vivaldi|✓[^2]|✓|✓|
+
+^1 Shares host with Firefox.
+^2 Shares host with Chrome.
+
 ## Download the host
 
 Download a zip file or tar.gz file of the source code from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), save it in an arbitrary place after decompressing (for example, `C:\Users\XXX\withExEditorHost\`).
