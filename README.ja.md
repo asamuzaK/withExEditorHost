@@ -22,7 +22,8 @@ FirefoxやGeckoベースのブラウザ、Blinkベースのブラウザ用の拡
 *1: Firefoxとホストを共有。
 *2: Chromeとホストを共有。
 
-ブラウザが一覧にない場合は、サポート要望の[イシュー](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost")を登録してください。
+ブラウザが一覧にない場合やOSがサポート対象になっていない場合は、サポート要望の[イシュー](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost")を登録してください。
+イシューを登録する際、そのブラウザ用の[アプリケーションマニフェスト](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging#App_manifest_location "Native messaging - Mozilla | MDN")をどこに保存すべきかもしご存知でしたら、お知らせください。
 
 ## ホストのダウンロード
 
