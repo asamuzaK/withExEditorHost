@@ -23,7 +23,7 @@ Native messaging host for Firefox, Gecko based browsers and Blink based browsers
 *2: Shares host with Chrome.
 
 If your browser is not listed or OS for that browser is not supported, file an [issue](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost") for adding support.
-When registering an issue, if you know where to save [the application manifest](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging#App_manifest_location "Native messaging - Mozilla | MDN") for that browser, please let me know.
+When filing an issue, if you know where to save [the application manifest](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging#App_manifest_location "Native messaging - Mozilla | MDN") for that browser, please let me know.
 
 ## Download the host
 
