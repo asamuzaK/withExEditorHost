@@ -2,7 +2,7 @@
 
 # withExEditorHost
 
-FirefoxやGeckoベースのブラウザ、Blinkベースのブラウザ用の拡張機能withExEditorのネイティブメッセージングホスト
+ブラウザ拡張機能*withExEditor*用のネイティブメッセージングホスト
 
 * [withExEditor :: Add-ons for Firefox](https://addons.mozilla.org/addon/withexeditor/ "withExEditor :: Add-ons for Firefox")
 * [withExEditor - Chrome ウェブストア](https://chrome.google.com/webstore/detail/withexeditor/koghhpkkcndhhclklnnnhcpkkplfkgoi "withExEditor - Chrome ウェブストア")
