@@ -31,7 +31,7 @@ Download a zip file or tar.gz file of the source code from [Releases](https://gi
 If you have a Github account, you can also clone and save the repository.
 
 Note that the host runs with [Node.js](https://nodejs.org/en/ "Node.js"), so if you do not have Node.js, please install it.
-withExEditorHost v2.0.0-b.x (currently pre-release) requires Node.js v7.9.0 or higher.
+withExEditorHost requires Node.js v7.9.0 or later.
 Required Node.js version may change.
 
 ***
