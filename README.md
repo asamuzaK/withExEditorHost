@@ -22,7 +22,7 @@ Native messaging host for browser extension *withExEditor*.
 *1: Shares host with Firefox.
 *2: Shares host with Chrome.
 
-If your browser is not listed or OS for that browser is not supported, file an [issue](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost") for adding support.
+If your browser is not listed or OS for that browser is left blank, file an [issue](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost") for adding support.
 When filing an issue, if you know [where to save the application manifest](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging#App_manifest_location "Native messaging - Mozilla | MDN") in that browser, please let me know.
 
 ## Download the host
@@ -117,7 +117,7 @@ node /path/to/withexeditorhost/index.js
 Open "withexeditorhost.json" and enter the path of the shell script in the `path` field in it.
 Note that on Windows, it is necessary to escape backslashes, which is a directory delimiter, by adding an extra backslash.
 
-Firefox, Gecko:
+Gecko:
 ```
 {
   "name": "withexeditorhost",
@@ -176,7 +176,7 @@ Open "editorconfig.json" and fill in the information of the editor.
 * *cmdArgs* - Command line options. Enter each argument in array, separated by comma. Backslashes must be escaped.
 * *fileAfterCmdArgs* - Boolean (`true` / `false`). When specifying the file, some editor requires to put the file path after command arguments. Set `true` in such case.
 
-Editor configuration files can also be switched for each Firefox profile, or each browser.
+Editor configuration files can also be switched for each browser, or for each Firefox profile.
 For example, use "editorconfig.json" for the Firefox default profile, and prepare another configuration file such as "editorconfig-nightly.json" for nightly's profile.
 When you choose a name other than "editorconfig.json", enter the path of the editor configuration file in the Options page of withExEditor.
 

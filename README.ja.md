@@ -116,7 +116,7 @@ node /path/to/withexeditorhost/index.js
 "withexeditorhost.json"を開いて、その中の`path`フィールドにシェルスクリプトのパスを記入します。
 Windowsの場合は、ディレクトリの区切りであるバックスラッシュ文字にはさらにバックスラッシュを加えてエスケープさせる必要があることに注意してください。
 
-Firefox、Gecko：
+Gecko：
 ```
 {
   "name": "withexeditorhost",
@@ -175,7 +175,7 @@ Mac:
 * *cmdArgs"* - コマンドラインオプション。[]括弧の中にカンマ区切りで各引数を記入してください。バックスラッシュ文字はエスケープさせる必要があります。
 * *fileAfterCmdArgs* - 真偽値（`true` / `false`）。いくつかのエディタでは、ファイルを指定する場合はコマンドの最後に置くように求めているものがあります。そのような場合に有効化してください。
 
-エディタ設定ファイルは、Firefoxのプロファイル毎やブラウザ毎に切り替えることもできます。
+エディタ設定ファイルは、ブラウザ毎や、Firefoxのプロファイル毎に切り替えることもできます。
 例えば、Firefoxの場合、defaultのプロファイルでは"editorconfig.json"を使い、nightlyのプロファイルでは"editorconfig-nightly.json"といった別名のエディタ設定ファイルを用意するなど。
 なお、"editorconfig.json"以外の名前を使用する場合は、withExEditor本体の設定ページでエディタ設定ファイルのパスを入力してください。
 
