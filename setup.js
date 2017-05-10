@@ -5,7 +5,8 @@
 {
   /* api */
   const {ChildProcess, CmdArgs} = require("./modules/child-process");
-  const {escapeChar, isString, logError} = require("./modules/common");
+  const {allowedField, browserData} = require("./modules/browser-data");
+  const {escapeChar, getType, isString, logError} = require("./modules/common");
   const {
     createDir, createFile, getAbsPath, isDir, isExecutable, isFile,
   } = require("./modules/file-util");
@@ -16,24 +17,118 @@
 
   /* constants */
   const {HOST} = require("./modules/constant");
-  const ADDON_ID = "jid1-WiAigu4HIo0Tag@jetpack";
   const CHAR = "utf8";
   const DIR_CWD = process.cwd();
   const DIR_HOME = os.homedir();
-  const HOST_DIR_LINUX = [DIR_HOME, ".mozilla", "native-messaging-hosts"];
-  const HOST_DIR_MAC = [
-    DIR_HOME, "Library", "Application Support", "Mozilla",
-    "NativeMessagingHosts",
-  ];
   const IS_MAC = os.platform() === "darwin";
   const IS_WIN = os.platform() === "win32";
   const PERM_DIR = 0o700;
   const PERM_EXEC = 0o700;
   const PERM_FILE = 0o600;
 
+  /* editor config */
+  const editorConfig = {
+    editorPath: "",
+    cmdArgs: [],
+    fileAfterCmdArgs: false,
+  };
+
   /* variables */
   const vars = {
+    browser: null,
     configDir: [DIR_CWD, "config"],
+  };
+
+  /**
+   * set browser
+   * @param {string} browser - browser config data
+   * @returns {void}
+   */
+  const setBrowser = browser => {
+    browser && Object.keys(browser).length && browser.alias &&
+      (vars.browser = browser);
+  };
+
+  /**
+   * set config directory
+   * @param {string} dir - directory path
+   * @returns {void}
+   */
+  const setConfigDir = dir => {
+    const configPath = getAbsPath(dir);
+    if (!configPath) {
+      throw new Error(`Failed to normalize ${dir}`);
+    }
+    if (!configPath.startsWith(DIR_HOME)) {
+      throw new Error(`Config path is not sub directory of ${DIR_HOME}.`);
+    }
+    const homeDir = escapeChar(DIR_HOME, /(\\)/g);
+    const reHomeDir = new RegExp(`^(?:${homeDir}|~)`);
+    const subDir = (configPath.replace(reHomeDir, "")).split(path.sep)
+                     .filter(i => i);
+    vars.configDir = subDir.length && [DIR_HOME, ...subDir] || [DIR_HOME];
+  };
+
+  /**
+   * get browser data
+   * @param {string} key - key
+   * @returns {Object} - browser data
+   */
+  const getBrowserData = key => {
+    let browser;
+    key = isString(key) && key.toLowerCase().trim();
+    if (key) {
+      const items = Object.keys(browserData);
+      for (const item of items) {
+        if (item === key) {
+          const obj = browserData[item];
+          if (IS_WIN && obj.regWin || IS_MAC && obj.hostMac ||
+              !IS_WIN && !IS_MAC && obj.hostLinux) {
+            browser = browserData[item];
+          }
+          break;
+        }
+      }
+    }
+    return browser || null;
+  };
+
+  /**
+   * get browser specific config directory
+   * @returns {?Array} - config directory array
+   */
+  const getBrowserConfigDir = () => {
+    const {browser, configDir} = vars;
+    let dir;
+    if (browser) {
+      const {alias, aliasLinux, aliasMac, aliasWin} = browser;
+      dir = IS_WIN && [...configDir, aliasWin || alias] ||
+            IS_MAC && [...configDir, aliasMac || alias] ||
+            [...configDir, aliasLinux || alias];
+    }
+    return dir || null;
+  };
+
+  /* file handlers */
+  /**
+   * create editor config
+   * @param {string} configPath - config directory path
+   * @returns {string} - editor config path
+   */
+  const createEditorConfig = configPath => {
+    if (!isDir(configPath)) {
+      throw new Error(`No such directory: ${configPath}.`);
+    }
+    const editorConfigPath = path.join(configPath, "editorconfig.json");
+    createFile(
+      editorConfigPath, JSON.stringify(editorConfig, null, "  "),
+      {encoding: CHAR, flag: "w", mode: PERM_FILE}
+    );
+    if (!isFile(editorConfigPath)) {
+      throw new Error(`Failed to create ${editorConfigPath}.`);
+    }
+    console.info(`Created: ${editorConfigPath}`);
+    return editorConfigPath;
   };
 
   /**
@@ -49,9 +144,14 @@
     if (!isFile(shellPath)) {
       throw new Error(`No such file: ${shellPath}.`);
     }
-    const allowed = "allowed_extensions";
+    const {browser} = vars;
+    if (!browser) {
+      throw new Error(`Expected Object but got ${getType(browser)}.`);
+    }
+    const {hostLinux, hostMac, regWin, type} = browser;
+    const {key, value} = allowedField[type];
     const manifest = JSON.stringify({
-      [allowed]: [ADDON_ID],
+      [key]: [...value],
       description: "Native messaging host for withExEditor",
       name: HOST,
       path: shellPath,
@@ -60,16 +160,13 @@
     const fileName = `${HOST}.json`;
     const filePath = path.resolve(
       IS_WIN && path.join(configPath, fileName) ||
-      IS_MAC && path.join(...HOST_DIR_MAC, fileName) ||
-      path.join(...HOST_DIR_LINUX, fileName)
+      IS_MAC && path.join(...hostMac, fileName) ||
+      path.join(...hostLinux, fileName)
     );
     if (IS_WIN) {
       const reg = path.join(process.env.WINDIR, "system32", "reg.exe");
-      const key = path.join(
-        "HKEY_CURRENT_USER", "SOFTWARE", "Mozilla", "NativeMessagingHosts",
-        HOST
-      );
-      const args = ["add", key, "/ve", "/d", filePath, "/f"];
+      const regKey = path.join(...regWin);
+      const args = ["add", regKey, "/ve", "/d", filePath, "/f"];
       const opt = {
         cwd: null,
         encoding: CHAR,
@@ -84,13 +181,13 @@
       });
       proc.on("close", code => {
         if (code === 0) {
-          console.info(`Created: ${key}`);
+          console.info(`Created: ${regKey}`);
         } else {
           console.warn(`${reg} exited with ${code}.`);
         }
       });
     } else {
-      const hostDir = IS_MAC && HOST_DIR_MAC || HOST_DIR_LINUX;
+      const hostDir = IS_MAC && hostMac || hostLinux;
       const hostDirPath = createDir(hostDir, PERM_DIR);
       if (!isDir(hostDirPath)) {
         throw new Error(`Failed to create ${path.join(...hostDir)}.`);
@@ -136,71 +233,18 @@
     return shellPath;
   };
 
-  /* editor config */
-  const editorConfig = {
-    editorPath: "",
-    cmdArgs: [],
-    fileAfterCmdArgs: false,
-  };
-
-  /**
-   * create editor config
-   * @param {string} configPath - config directory path
-   * @returns {string} - editor config path
-   */
-  const createEditorConfig = configPath => {
-    if (!isDir(configPath)) {
-      throw new Error(`No such directory: ${configPath}.`);
-    }
-    const editorConfigPath = path.join(configPath, "editorconfig.json");
-    createFile(
-      editorConfigPath, JSON.stringify(editorConfig, null, "  "),
-      {encoding: CHAR, flag: "w", mode: PERM_FILE}
-    );
-    if (!isFile(editorConfigPath)) {
-      throw new Error(`Failed to create ${editorConfigPath}.`);
-    }
-    console.info(`Created: ${editorConfigPath}`);
-    return editorConfigPath;
-  };
-
-  /**
-   * set config directory
-   * @param {string} arg - argument
-   * @returns {void}
-   */
-  const setConfigDir = arg => {
-    if (isString(arg)) {
-      arg = /^--config-path=(.+)$/.exec(arg);
-      if (arg && (arg = arg[1].trim())) {
-        const configPath = getAbsPath(arg);
-        if (!configPath) {
-          throw new Error(`Failed to normalize ${arg}`);
-        }
-        if (!configPath.startsWith(DIR_HOME)) {
-          throw new Error(`Config path is not sub directory of ${DIR_HOME}.`);
-        }
-        const homeDir = escapeChar(DIR_HOME, /(\\)/g);
-        const reHomeDir = new RegExp(`^(?:${homeDir}|~)`);
-        const subDir = (configPath.replace(reHomeDir, "")).split(path.sep)
-                         .filter(i => i);
-        if (subDir.length) {
-          vars.configDir = [DIR_HOME, ...subDir];
-        } else {
-          vars.configDir = [DIR_HOME];
-        }
-      }
-    }
-  };
-
   /**
    * create config directory
    * @returns {string} - config directory path
    */
   const createConfig = () => {
-    const configPath = createDir(vars.configDir, PERM_DIR);
+    const dir = getBrowserConfigDir();
+    if (!Array.isArray(dir)) {
+      throw new TypeError(`Expected Array but got ${getType(dir)}.`);
+    }
+    const configPath = createDir(dir, PERM_DIR);
     if (!isDir(configPath)) {
-      throw new Error(`Failed to create ${path.join(...vars.configDir)}.`);
+      throw new Error(`Failed to create ${path.join(dir)}.`);
     }
     console.info(`Created: ${configPath}`);
     return configPath;
@@ -225,10 +269,28 @@
     output: process.stdout,
   });
 
+  /* questions */
+  const ques = {
+    browser: "Enter which browser you would like to set up the host for:\n",
+    editorPath: "Enter editor path:\n",
+    cmdArgs: "Enter command line options:\n",
+    filePos: "Put file path after command arguments? [y/n]\n",
+  };
+
+  /**
+   * abort setup
+   * @param {string} msg - message
+   * @returns {void}
+   */
+  const abortSetup = msg => {
+    console.info(`Setup aborted: ${msg}`);
+    process.exit(1);
+  };
+
   /**
    * handle editor temporary file position input
    * @param {string} ans - user input
-   * @returns {Funcrtion} - setup
+   * @returns {AsyncFuncrtion} - setup
    */
   const handleFilePosInput = ans => {
     if (isString(ans)) {
@@ -248,8 +310,7 @@
     if (isString(ans)) {
       editorConfig.cmdArgs = (new CmdArgs(ans.trim())).toArray();
     }
-    rl.question("Put file path after command arguments? [y/n]\n",
-                handleFilePosInput);
+    rl.question(ques.filePos, handleFilePosInput);
   };
 
   /**
@@ -263,28 +324,132 @@
       if (ans.length) {
         if (isExecutable(ans)) {
           editorConfig.editorPath = ans;
-          rl.question("Enter command line options:\n", handleCmdArgsInput);
+          rl.question(ques.cmdArgs, handleCmdArgsInput);
         } else {
           console.warn(`${ans} is not executable.`);
-          rl.question("Enter editor path:\n", handleEditorPathInput);
+          rl.question(ques.editorPath, handleEditorPathInput);
         }
       } else {
-        rl.question("Enter command line options:\n", handleCmdArgsInput);
+        rl.question(ques.cmdArgs, handleCmdArgsInput);
       }
     } else {
-      rl.question("Enter command line options:\n", handleCmdArgsInput);
+      rl.question(ques.cmdArgs, handleCmdArgsInput);
     }
   };
 
+  /**
+   * handle browser config directory input
+   * @param {string} ans - user input
+   * @returns {void}
+   */
+  const handleBrowserConfigDir = ans => {
+    const dir = getBrowserConfigDir();
+    if (!Array.isArray(dir)) {
+      throw new TypeError(`Expected Array but got ${getType(dir)}.`);
+    }
+    const msg = `${path.join(...dir)} already exists.`;
+    if (isString(ans)) {
+      ans = ans.trim();
+      if (/^y(?:es)?$/i.test(ans)) {
+        rl.question(ques.editorPath, handleEditorPathInput);
+      } else {
+        abortSetup(msg);
+      }
+    } else {
+      abortSetup(msg);
+    }
+  };
+
+  /**
+   * handle browser input
+   * @param {string} ans - user input
+   * @returns {void}
+   */
+  const handleBrowserInput = ans => {
+    const msg = "Browser not specified.";
+    if (isString(ans)) {
+      ans = ans.trim();
+      if (ans.length) {
+        const browser = getBrowserData(ans);
+        browser && setBrowser(browser);
+        if (browser) {
+          const dir = getBrowserConfigDir();
+          if (!Array.isArray(dir)) {
+            throw new TypeError(`Expected Array but got ${getType(dir)}.`);
+          }
+          const dirPath = path.join(...dir);
+          if (isDir(dirPath)) {
+            rl.question(`${dirPath} already exists. Overwrite? [y/n]\n`,
+                        handleBrowserConfigDir);
+          } else {
+            rl.question(ques.editorPath, handleEditorPathInput);
+          }
+        } else {
+          // TODO: Add custom setup
+          abortSetup(`${ans} not supported.`);
+        }
+      } else {
+        abortSetup(msg);
+      }
+    } else {
+      abortSetup(msg);
+    }
+  };
+
+  /**
+   * extract argument
+   * @param {string} arg - argument in key=value format
+   * @param {RegExp} re - RegExp
+   * @returns {string} - argument value
+   */
+  const extractArg = (arg, re) => {
+    let value;
+    if (isString(arg) && re && re.ignoreCase) {
+      arg = re.exec(arg.trim());
+      arg && ([, value] = arg);
+    }
+    return value || null;
+  };
+
+  /* start up */
   {
     const [, , ...args] = process.argv;
+    let browser;
     if (Array.isArray(args) && args.length) {
-      const func = [];
       for (const arg of args) {
-        /^--config-path=/.test(arg) && func.push(setConfigDir(arg));
+        let value;
+        if (/^--browser=/i.test(arg)) {
+          value = extractArg(arg, /^--browser=(.+)$/i);
+          value && (browser = getBrowserData(value));
+          browser && setBrowser(browser);
+        } else if (/^--config-path=/i.test(arg)) {
+          value = extractArg(arg, /^--config-path=(.+)$/i);
+          value && setConfigDir(value);
+        }
       }
-      Promise.all(func).catch(logError);
     }
-    rl.question("Enter editor path:\n", handleEditorPathInput);
+    if (browser) {
+      const dir = getBrowserConfigDir();
+      if (!Array.isArray(dir)) {
+        throw new TypeError(`Expected Array but got ${getType(dir)}.`);
+      }
+      const dirPath = path.join(...dir);
+      if (isDir(dirPath)) {
+        rl.question(`${dirPath} already exists. Overwrite? [y/n]\n`,
+                    handleBrowserConfigDir);
+      } else {
+        rl.question(ques.editorPath, handleEditorPathInput);
+      }
+    } else {
+      const arr = [];
+      const items = Object.keys(browserData);
+      for (const item of items) {
+        const obj = browserData[item];
+        (IS_WIN && obj.regWin || IS_MAC && obj.hostMac ||
+         !IS_WIN && !IS_MAC && obj.hostLinux) &&
+          arr.push(item);
+      }
+      rl.question(`${ques.browser}[${arr.join(" ")}]\n`, handleBrowserInput);
+    }
   }
 }
