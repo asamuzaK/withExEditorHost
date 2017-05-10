@@ -2,7 +2,28 @@
 
 # withExEditorHost
 
-Firefoxのアドオン[withExEditor](https://addons.mozilla.org/addon/withexeditor/ "withExEditor :: Add-ons for Firefox")用のネイティブメッセージングホスト
+ブラウザ拡張機能*withExEditor*用のネイティブメッセージングホスト
+
+* [withExEditor :: Add-ons for Firefox](https://addons.mozilla.org/addon/withexeditor/ "withExEditor :: Add-ons for Firefox")
+* [withExEditor - Chrome ウェブストア](https://chrome.google.com/webstore/detail/withexeditor/koghhpkkcndhhclklnnnhcpkkplfkgoi "withExEditor - Chrome ウェブストア")
+
+## ブラウザサポート状況
+
+|ブラウザ  |Windows|Linux  |Mac    |
+|:-------|:-----:|:-----:|:-----:|
+|Firefox |   ✓   |   ✓   |   ✓   |
+|Cyberfox|   ✓ *1|       |       |
+|Waterfox|   ✓ *1|       |       |
+|Chrome  |   ✓   |   ✓   |   ✓   |
+|Chromium|       |   ✓   |   ✓   |
+|Opera   |   ✓ *2|       |   ✓ *2|
+|Vivaldi |   ✓ *2|   ✓   |   ✓   |
+
+*1: Firefoxとホストを共有。
+*2: Chromeとホストを共有。
+
+ブラウザが一覧にない場合やOSがサポート対象になっていない場合は、サポート要望の[イシュー](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost")を登録してください。
+イシューを登録する際、そのブラウザでは[アプリケーションマニフェストをどこに保存すべきか](https://developer.mozilla.org/ja/Add-ons/WebExtensions/Native_messaging#App_manifest_%E3%81%AE%E5%A0%B4%E6%89%80 "Native messaging - Mozilla | MDN")もしご存知でしたら、お知らせください。
 
 ## ホストのダウンロード
 
@@ -10,30 +31,23 @@ Firefoxのアドオン[withExEditor](https://addons.mozilla.org/addon/withexedit
 Githubのアカウントがある場合は、レポジトリをクローンして保存してもOKです。
 
 なお、ホストは[Node.js](https://nodejs.org/ja/ "Node.js")で実行しますので、Node.jsが入っていない場合はインストールしてください。
-また、ホストはNode.jsのバージョンに依存することにも注意してください。
-* withExEditorHost v1.xでは、Node.js v6.9.5以上を必要とします。
-* withExEditorHost v2.xでは、Node.js v7.6.0以上（現時点）を必要とします。
+また、ホストのリリースノートで、必要なNode.jsのバージョンを確認してください。
 
 ***
 
 ## ホストの設定
 
 Windowsでは"cmd.exe"、Linux / Macでは「端末」（ターミナル）を開き、withExEditorHostを保存したディレクトリに移動してセットアップスクリプトを実行します。
-なお、環境によっては管理者権限で実行する必要があるかもしれません。
 
 ```
 > cd path/to/withExEditorHost
 > node setup.js
 ```
 
-セットアップスクリプトは、デフォルトでwithExEditorHostの保存先の直下に"config"フォルダを作成し各設定ファイルを保持します。
-設定ファイルの保存先を変更したい場合は、`--config-path`引数で指定してください。
+スクリプトを実行すると、どのブラウザ向けにホストを設定するのか尋ねられますので、リストに表示されたブラウザ名を入力してください。
 
-```
-> node setup.js --config-path="C:\Users\XXX\path\to\another\location"
-```
-
-スクリプトを実行すると以下の入力を求められますので適宜入力してください。
+続いて、エディタ関連の以下の入力を求められますので適宜入力してください。
+その場では何も入力せず、後でwithExEditorの設定ページから設定することもできます。
 
 * エディタのパス
 * コマンドラインオプション
@@ -41,9 +55,29 @@ Windowsでは"cmd.exe"、Linux / Macでは「端末」（ターミナル）を�
     例：`-a -b "C:\Program Files"`
 * 一時ファイルをコマンドラインオプションの後に置くか
 
-その場では何も入力せず、後でwithExEditorのオプションページから設定することもできます（withExEditor v2.3.0以上）。
+設定ファイルが正常に作成されたら、ブラウザを再起動してください。
 
-設定ファイルが正常に作成されたら、Firefoxを再起動してください。
+### オプション
+
+セットアップスクリプトではいくつかのオプションを指定することができます。
+
+#### --browserオプション
+
+ブラウザをあらかじめ指定する場合には、`--browser`オプションで指定してください。
+
+```
+> node setup.js --browser=firefox
+```
+
+#### --config-pathオプション
+
+セットアップスクリプトは、デフォルトでwithExEditorHostの保存先の直下に"config"フォルダを作成し各設定ファイルを保持します。
+設定ファイルの保存先を変更したい場合は、`--config-path`オプションで指定してください。
+パスに空白やバックスラッシュが含まれる場合は引用符で括ってください。
+
+```
+> node setup.js --config-path="C:\Users\XXX\path\to\another\location"
+```
 
 ***
 
@@ -82,8 +116,7 @@ node /path/to/withexeditorhost/index.js
 "withexeditorhost.json"を開いて、その中の`path`フィールドにシェルスクリプトのパスを記入します。
 Windowsの場合は、ディレクトリの区切りであるバックスラッシュ文字にはさらにバックスラッシュを加えてエスケープさせる必要があることに注意してください。
 
-ほかのフィールドはそのままでOKです。
-
+Gecko：
 ```
 {
   "name": "withexeditorhost",
@@ -94,24 +127,34 @@ Windowsの場合は、ディレクトリの区切りであるバックスラッ�
 }
 ```
 
+Blink：
+```
+{
+  "name": "withexeditorhost",
+  "description": "Native messaging host for withExEditor",
+  "path": "C:\\Users\\XXX\\withExEditorHost\\config\\withexeditorhost.cmd",
+  "type": "stdio",
+  "allowed_origins": ["chrome-extension://koghhpkkcndhhclklnnnhcpkkplfkgoi/"]
+}
+```
+
 Windowsではレジストリも設定する必要があります。
 cmd.exeで次のコマンドを実行するとレジストリキーを保存することができます。
-`"C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json"`の部分は書き換えてください。
+`"HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost"`と`"C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json"`の部分は、適宜書き換えてください。
 
 ```
 REG ADD "HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost" /ve /d "C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json" /f
 ```
 
 LinuxとMacでは、"withexeditorhost.json"を指定の場所に保存する必要があります。
+以下は、Firefoxでの例です。ほかのブラウザについては公式のドキュメントなどを参照してください。
 
 Linux:
-
 ```
 ~/.mozilla/native-messaging-hosts/withexeditorhost.json
 ```
 
 Mac:
-
 ```
 ~/Library/Application Support/Mozilla/NativeMessagingHosts/withexeditorhost.json
 ```
@@ -132,17 +175,17 @@ Mac:
 * *cmdArgs"* - コマンドラインオプション。[]括弧の中にカンマ区切りで各引数を記入してください。バックスラッシュ文字はエスケープさせる必要があります。
 * *fileAfterCmdArgs* - 真偽値（`true` / `false`）。いくつかのエディタでは、ファイルを指定する場合はコマンドの最後に置くように求めているものがあります。そのような場合に有効化してください。
 
-エディタ設定ファイルは、Firefoxのプロファイル毎に切り替えることもできます。
-例えば、defaultのプロファイルでは"editorconfig.json"を使い、nightlyのプロファイルでは"editorconfig-nightly.json"といった別名のエディタ設定ファイルを用意するなど。
+エディタ設定ファイルは、ブラウザ毎や、Firefoxのプロファイル毎に切り替えることもできます。
+例えば、Firefoxの場合、defaultのプロファイルでは"editorconfig.json"を使い、nightlyのプロファイルでは"editorconfig-nightly.json"といった別名のエディタ設定ファイルを用意するなど。
 なお、"editorconfig.json"以外の名前を使用する場合は、withExEditor本体の設定ページでエディタ設定ファイルのパスを入力してください。
 
-以上の作業を終えたら、Firefoxを再起動してください。
+以上の作業を終えたら、ブラウザを再起動してください。
 
 ***
 
 ## トラブルシューティング
 
-何か問題が起きたら、ブラウザコンソールをチェックしてみてください（Ctrl + Shift + J）。
+何か問題が起きたら、ブラウザコンソールをチェックしてみてください（Firefoxの場合、Ctrl + Shift + J）。
 
 ```
 Error: Attempt to postMessage on disconnected port
@@ -150,7 +193,7 @@ Error: Attempt to postMessage on disconnected port
 
 * Windows: レジストリは正しく保存されていますか？
 * Linux / Mac: "withexeditorhost.json"の保存先は間違っていませんか？
-* Firefoxを起動したとき、Node.jsのプロセスも立ち上がっていますか？
+* ブラウザを起動したとき、Node.jsのプロセスも立ち上がっていますか？
   * もしNode.jsが立ち上がっていないならば、Node.jsの$PATH環境変数が設定されているかどうか確認してみてください。
     あるいは、シェルスクリプトで、nodeコマンドではなくNode.jsのパスに変更してみてください。
     ```

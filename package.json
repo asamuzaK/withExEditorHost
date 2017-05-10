@@ -10,11 +10,11 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=7.6.0"
+    "node": ">=7.9.0"
   },
   "main": "./index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "version": "2.0.0-a.29"
+  "version": "2.0.0-b.3"
 }
