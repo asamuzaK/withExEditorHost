@@ -241,6 +241,7 @@
                      path.join(dPath, fileName), value,
                      {encoding: CHAR, flag: "w", mode: PERM_FILE}
                    );
+      filePath && (data.filePath = filePath);
     }
     resolve(data && filePath && {data, filePath} || null);
   });
