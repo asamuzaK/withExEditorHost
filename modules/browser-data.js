@@ -72,6 +72,14 @@
       regWin: null,
       type: EXT_CHROME,
     },
+    kinza: {
+      alias: "kinza",
+      aliasWin: "chrome",
+      hostLinux: null,
+      hostMac: null,
+      regWin: [...HKCU_SOFTWARE, "Google", "Chrome", HOST_DIR_LABEL, HOST],
+      type: EXT_CHROME,
+    },
     opera: {
       alias: "opera",
       aliasMac: "chrome",
