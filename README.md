@@ -16,6 +16,7 @@ Native messaging host for browser extension *withExEditor*.
 |Waterfox|   ✓ *1|       |       |
 |Chrome  |   ✓   |   ✓   |   ✓   |
 |Chromium|       |   ✓   |   ✓   |
+|Kinza   |   ✓ *2|       |       |
 |Opera   |   ✓ *2|       |   ✓ *2|
 |Vivaldi |   ✓ *2|   ✓   |   ✓   |
 
