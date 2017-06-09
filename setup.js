@@ -194,8 +194,7 @@
       }
     }
     const file = await createFile(
-      filePath, manifest,
-      {encoding: CHAR, flag: "w", mode: PERM_FILE}
+      filePath, manifest, {encoding: CHAR, flag: "w", mode: PERM_FILE}
     );
     if (!file) {
       throw new Error(`Failed to create ${filePath}.`);
@@ -223,8 +222,7 @@
       const content = IS_WIN && `@echo off\n${cmd}\n` ||
                         `#!/usr/bin/env bash\n${cmd}\n`;
       file = await createFile(
-        shellPath, content,
-        {encoding: CHAR, flag: "w", mode: PERM_EXEC}
+        shellPath, content, {encoding: CHAR, flag: "w", mode: PERM_EXEC}
       );
     }
     if (!file) {
