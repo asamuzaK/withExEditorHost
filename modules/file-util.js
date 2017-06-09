@@ -188,7 +188,8 @@
    * @param {number|string} [opt.mode] - file permission
    * @returns {?string} - file path
    */
-  const createFile = async (file, value, opt = {
+  const createFile = async (file, value,
+                            opt = {
                               encoding: null, flag: "w", mode: PERM_FILE,
                             }) => {
     if (!isString(file)) {
