@@ -116,7 +116,7 @@
      * @param {boolean} pos - file after cmd args
      * @returns {Object} - child process
      */
-    spawn(file, pos = false) {
+    async spawn(file, pos = false) {
       if (!isExecutable(this._cmd)) {
         throw new Error(`${this._cmd} is not executable.`);
       }

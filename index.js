@@ -178,7 +178,7 @@
       encoding: CHAR,
       env: process.env,
     };
-    const proc = (new ChildProcess(app, args, opt)).spawn(file, pos);
+    const proc = await (new ChildProcess(app, args, opt)).spawn(file, pos);
     proc.on("error", e => {
       e = (new Output()).encode(e);
       e && process.stderr.write(e);

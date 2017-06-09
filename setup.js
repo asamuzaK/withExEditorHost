@@ -172,7 +172,7 @@
         encoding: CHAR,
         env: process.env,
       };
-      const proc = (new ChildProcess(reg, args, opt)).spawn();
+      const proc = await (new ChildProcess(reg, args, opt)).spawn();
       proc.on("error", e => {
         throw e;
       });
