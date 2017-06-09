@@ -6,6 +6,7 @@
   /* api */
   const {URL} = require("url");
   const {getType, isString, stringifyPositiveInt} = require("./common");
+  const {promisify} = require("util");
   const fs = require("fs");
   const os = require("os");
   const path = require("path");
@@ -187,8 +188,9 @@
    * @param {number|string} [opt.mode] - file permission
    * @returns {?string} - file path
    */
-  const createFile = (file, value,
-                      opt = {encoding: null, flag: "w", mode: PERM_FILE}) => {
+  const createFile = async (file, value, opt = {
+                              encoding: null, flag: "w", mode: PERM_FILE,
+                            }) => {
     if (!isString(file)) {
       throw new TypeError(`Expected String but got ${getType(file)}.`);
     }
@@ -198,7 +200,8 @@
         `Expected String, Buffer, Uint8Array but got ${getType(value)}.`
       );
     }
-    fs.writeFileSync(file, value, opt);
+    const write = promisify(fs.writeFile);
+    await write(file, value, opt);
     return isFile(file) && file || null;
   };
 
@@ -210,11 +213,12 @@
    * @param {string} [opt.flag] - flag
    * @returns {string|Buffer} - file content
    */
-  const readFile = (file, opt = {encoding: null, flag: "r"}) => {
+  const readFile = async (file, opt = {encoding: null, flag: "r"}) => {
     if (!isFile(file)) {
       throw new Error(`${file} is not a file.`);
     }
-    const value = fs.readFileSync(file, opt);
+    const read = promisify(fs.readFile);
+    const value = await read(file, opt);
     return value;
   };
 
