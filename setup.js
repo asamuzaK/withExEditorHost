@@ -120,11 +120,11 @@
       throw new Error(`No such directory: ${configPath}.`);
     }
     const editorConfigPath = path.join(configPath, "editorconfig.json");
-    await createFile(
+    const file = await createFile(
       editorConfigPath, JSON.stringify(editorConfig, null, "  "),
       {encoding: CHAR, flag: "w", mode: PERM_FILE}
     );
-    if (await !isFile(editorConfigPath)) {
+    if (!file) {
       throw new Error(`Failed to create ${editorConfigPath}.`);
     }
     console.info(`Created: ${editorConfigPath}`);
@@ -193,11 +193,10 @@
         throw new Error(`Failed to create ${path.join(...hostDir)}.`);
       }
     }
-    await createFile(
-      filePath, manifest,
-      {encoding: CHAR, flag: "w", mode: PERM_FILE}
+    const file = await createFile(
+      filePath, manifest, {encoding: CHAR, flag: "w", mode: PERM_FILE}
     );
-    if (await !isFile(filePath)) {
+    if (!file) {
       throw new Error(`Failed to create ${filePath}.`);
     }
     console.info(`Created: ${filePath}`);
@@ -219,14 +218,13 @@
     if (await isFile(indexPath)) {
       const node = process.argv0;
       const cmd = `${node} ${indexPath}`;
-      const file = IS_WIN && `@echo off\n${cmd}\n` ||
-                   `#!/usr/bin/env bash\n${cmd}\n`;
-      await createFile(
-        shellPath, file,
-        {encoding: CHAR, flag: "w", mode: PERM_EXEC}
+      const content = IS_WIN && `@echo off\n${cmd}\n` ||
+                        `#!/usr/bin/env bash\n${cmd}\n`;
+      const file = await createFile(
+        shellPath, content, {encoding: CHAR, flag: "w", mode: PERM_EXEC}
       );
     }
-    if (await !isFile(shellPath)) {
+    if (!file) {
       throw new Error(`Failed to create ${shellPath}.`);
     }
     console.info(`Created: ${shellPath}`);
