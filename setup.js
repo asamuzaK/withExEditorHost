@@ -194,7 +194,8 @@
       }
     }
     const file = await createFile(
-      filePath, manifest, {encoding: CHAR, flag: "w", mode: PERM_FILE}
+      filePath, manifest,
+      {encoding: CHAR, flag: "w", mode: PERM_FILE}
     );
     if (!file) {
       throw new Error(`Failed to create ${filePath}.`);
@@ -215,13 +216,15 @@
     const shellExt = IS_WIN && "cmd" || "sh";
     const shellPath = path.join(configPath, `${HOST}.${shellExt}`);
     const indexPath = path.resolve(path.join(DIR_CWD, "index.js"));
+    let file;
     if (await isFile(indexPath)) {
       const node = process.argv0;
       const cmd = `${node} ${indexPath}`;
       const content = IS_WIN && `@echo off\n${cmd}\n` ||
                         `#!/usr/bin/env bash\n${cmd}\n`;
-      const file = await createFile(
-        shellPath, content, {encoding: CHAR, flag: "w", mode: PERM_EXEC}
+      file = await createFile(
+        shellPath, content,
+        {encoding: CHAR, flag: "w", mode: PERM_EXEC}
       );
     }
     if (!file) {
