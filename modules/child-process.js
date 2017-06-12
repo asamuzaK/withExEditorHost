@@ -123,9 +123,9 @@
       const cmd = this._cmd;
       const fileArg = (new CmdArgs(file)).toArray();
       const args = isString(file) && (
-                     pos && this._args.concat(fileArg) ||
+        pos && this._args.concat(fileArg) ||
                      fileArg.concat(this._args)
-                   ) || this._args;
+      ) || this._args;
       const opt = this._opt;
       return childProcess.spawn(cmd, args, opt);
     }

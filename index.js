@@ -307,7 +307,7 @@
         const homeDir = await escapeChar(DIR_HOME, /(\\)/g);
         const reHomeDir = new RegExp(`^(?:${homeDir}|~)`);
         const subDir = (dir.replace(reHomeDir, "")).split(path.sep)
-                         .filter(i => i);
+          .filter(i => i);
         await createDir(subDir.length && [DIR_HOME, ...subDir] || [DIR_HOME],
                         PERM_DIR);
       }

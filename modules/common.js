@@ -88,10 +88,10 @@
   const stripHtmlTags = v => {
     while (/^\n*<(?:[^>]+:)?[^>]+?>|<\/(?:[^>]+:)?[^>]+>\n*$/.test(v)) {
       v = v.replace(/^\n*<(?:[^>]+:)?[^>]+?>/, "")
-            .replace(/<\/(?:[^>]+:)?[^>]+>\n*$/, "\n");
+        .replace(/<\/(?:[^>]+:)?[^>]+>\n*$/, "\n");
     }
     return v.replace(/<\/(?:[^>]+:)?[^>]+>\n*<!--.*-->\n*<(?:[^>]+:)?[^>]+>/g, "\n\n")
-             .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+      .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
   };
 
   module.exports = {
