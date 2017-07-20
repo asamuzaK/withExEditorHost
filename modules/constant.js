@@ -9,6 +9,7 @@
   const CONTEXT_MODE = "contextMode";
   const EDITOR_CMD_ARGS = "editorCmdArgs";
   const EDITOR_CONFIG = "editorConfigPath";
+  const EDITOR_CONFIG_FILE = "editorconfig.json";
   const EDITOR_CONFIG_GET = "getEditorConfig";
   const EDITOR_CONFIG_RES = "resEditorConfig";
   const EDITOR_CONFIG_SET = "setEditorConfig";
@@ -17,12 +18,15 @@
   const EDITOR_FILE_POS = "editorFileAfterCmdArgs";
   const EDITOR_LABEL = "editorLabel";
   const EDITOR_PATH = "editorPath";
+  const EXT_CHROME_ID = "chrome-extension://koghhpkkcndhhclklnnnhcpkkplfkgoi/";
+  const EXT_WEB_ID = "jid1-WiAigu4HIo0Tag@jetpack";
   const FILE_EXT = "fileExt";
   const IS_ENABLED = "isEnabled";
   const KEY_ACCESS = "accessKey";
   const KEY_EDITOR = "editorShortCut";
   const KEY_OPTIONS = "optionsShortCut";
   const HOST = "withexeditorhost";
+  const HOST_DESC = "Native messaging host for withExEditor";
   const LABEL = "withExEditor";
   const LOCAL_FILE_VIEW = "viewLocalFile";
   const MODE_EDIT = "modeEditText";
@@ -50,6 +54,7 @@
     CONTEXT_MODE,
     EDITOR_CMD_ARGS,
     EDITOR_CONFIG,
+    EDITOR_CONFIG_FILE,
     EDITOR_CONFIG_GET,
     EDITOR_CONFIG_RES,
     EDITOR_CONFIG_SET,
@@ -58,12 +63,15 @@
     EDITOR_FILE_POS,
     EDITOR_LABEL,
     EDITOR_PATH,
+    EXT_CHROME_ID,
+    EXT_WEB_ID,
     FILE_EXT,
     IS_ENABLED,
     KEY_ACCESS,
     KEY_EDITOR,
     KEY_OPTIONS,
     HOST,
+    HOST_DESC,
     LABEL,
     LOCAL_FILE_VIEW,
     MODE_EDIT,

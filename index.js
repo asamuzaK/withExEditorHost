@@ -4,29 +4,29 @@
 "use strict";
 {
   /* api */
-  const {ChildProcess, CmdArgs} = require("./modules/child-process");
-  const {Input, Output} = require("./modules/native-message");
-  const {escapeChar, isString, throwErr} = require("./modules/common");
+  const {ChildProcess, CmdArgs, Input, Output} = require("webExtNativeMsg");
+  const {
+    escapeChar, isString, throwErr,
+  } = require("webExtNativeMsg/modules/common");
   const {
     convUriToFilePath, createDir, createFile, getAbsPath,
     getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
     removeDir, readFile,
-  } = require("./modules/file-util");
+  } = require("webExtNativeMsg/modules/file-util");
   const os = require("os");
   const path = require("path");
   const process = require("process");
 
   /* constants */
+  const {CHAR, DIR_HOME} = require("webExtNativeMsg/modules/constant");
   const {
-    EDITOR_CMD_ARGS, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_SET,
-    EDITOR_CONFIG_TS, EDITOR_FILE_POS, EDITOR_PATH, HOST, LABEL,
-    LOCAL_FILE_VIEW, PROCESS_CHILD, TMP_FILES, TMP_FILES_PB,
+    EDITOR_CMD_ARGS, EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES,
+    EDITOR_CONFIG_SET, EDITOR_CONFIG_TS, EDITOR_FILE_POS, EDITOR_PATH, HOST,
+    LABEL, LOCAL_FILE_VIEW, PROCESS_CHILD, TMP_FILES, TMP_FILES_PB,
     TMP_FILES_PB_REMOVE, TMP_FILE_CREATE, TMP_FILE_DATA_PORT,
     TMP_FILE_GET, TMP_FILE_RES,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
-  const CHAR = "utf8";
-  const DIR_HOME = os.homedir();
   const PERM_DIR = 0o700;
   const PERM_FILE = 0o600;
   const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
@@ -275,7 +275,7 @@
   const getEditorConfig = async filePath => {
     const func = [];
     filePath = await isString(filePath) && filePath.length && filePath ||
-               path.resolve(path.join(".", "editorconfig.json"));
+               path.resolve(path.join(".", EDITOR_CONFIG_FILE));
     if (await isFile(filePath)) {
       const data = await readFile(filePath, {encoding: CHAR, flag: "r"});
       func.push(portEditorConfig(data, filePath));
