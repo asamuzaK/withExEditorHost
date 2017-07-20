@@ -26,7 +26,7 @@ Native messaging host for browser extension *withExEditor*.
 If your browser is not listed or OS for that browser is left blank, file an [issue](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost") for adding support.
 When filing an issue, if you know [where to save the application manifest](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging#App_manifest_location "Native messaging - Mozilla | MDN") in that browser, please let me know.
 
-## Download the host
+## Install the host
 
 Download a zip file or tar.gz file of the source code from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), save it in an arbitrary place after decompressing (for example, `C:\Users\XXX\withExEditorHost\`).
 If you have a Github account, you can also clone and save the repository.
@@ -34,11 +34,13 @@ If you have a Github account, you can also clone and save the repository.
 Note that the host runs with [Node.js](https://nodejs.org/en/ "Node.js"), so if you do not have Node.js, please install it.
 Also check the required Node.js version in the host's release note.
 
+Next, open "cmd.exe" on Windows, "terminal" (terminal) on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command to complete the installation.
+
 ***
 
 ## Setting up the host
 
-Open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost and run setup script.
+Open "cmd.exe" / "terminal" and run setup script.
 
 ```
 > cd path/to/withExEditorHost
