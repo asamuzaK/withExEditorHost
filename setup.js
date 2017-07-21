@@ -42,7 +42,6 @@
 
   /**
    * create editor config
-   * @param {string} configPath - config directory path
    * @returns {string} - editor config path
    */
   const createEditorConfig = async () => {
@@ -89,8 +88,8 @@
     if (rl && isString(ans)) {
       editorConfig.cmdArgs = (new CmdArgs(ans.trim())).toArray();
       rl.question(ques.filePos, handleFilePosInput);
-    };
-  }
+    }
+  };
 
   /**
    * handle editor path input
