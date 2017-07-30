@@ -17,7 +17,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "webExtNativeMsg": "github:asamuzaK/webExtNativeMsg"
+    "web-ext-native-msg": "^0.5.1"
   },
   "version": "2.0.0-b.9"
 }
