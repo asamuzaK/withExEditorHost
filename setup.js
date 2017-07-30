@@ -4,17 +4,17 @@
 "use strict";
 {
   /* api */
-  const {CmdArgs, Setup} = require("webExtNativeMsg");
-  const {isString, logError} = require("webExtNativeMsg/modules/common");
+  const {CmdArgs, Setup} = require("web-ext-native-msg");
+  const {isString, logError} = require("web-ext-native-msg/modules/common");
   const {
     createFile, isDir, isExecutable,
-  } = require("webExtNativeMsg/modules/file-util");
+  } = require("web-ext-native-msg/modules/file-util");
   const path = require("path");
   const process = require("process");
   const readline = require("readline");
 
   /* constants */
-  const {CHAR, INDENT} = require("webExtNativeMsg/modules/constant");
+  const {CHAR, INDENT} = require("web-ext-native-msg/modules/constant");
   const {
     EDITOR_CONFIG_FILE, EXT_CHROME_ID, EXT_WEB_ID, HOST, HOST_DESC,
   } = require("./modules/constant");

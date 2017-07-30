@@ -4,21 +4,21 @@
 "use strict";
 {
   /* api */
-  const {ChildProcess, CmdArgs, Input, Output} = require("webExtNativeMsg");
+  const {ChildProcess, CmdArgs, Input, Output} = require("web-ext-native-msg");
   const {
     escapeChar, isString, throwErr,
-  } = require("webExtNativeMsg/modules/common");
+  } = require("web-ext-native-msg/modules/common");
   const {
     convUriToFilePath, createDir, createFile, getAbsPath,
     getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
     removeDir, readFile,
-  } = require("webExtNativeMsg/modules/file-util");
+  } = require("web-ext-native-msg/modules/file-util");
   const os = require("os");
   const path = require("path");
   const process = require("process");
 
   /* constants */
-  const {CHAR, DIR_HOME} = require("webExtNativeMsg/modules/constant");
+  const {CHAR, DIR_HOME} = require("web-ext-native-msg/modules/constant");
   const {
     EDITOR_CMD_ARGS, EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES,
     EDITOR_CONFIG_SET, EDITOR_CONFIG_TS, EDITOR_FILE_POS, EDITOR_PATH, HOST,
