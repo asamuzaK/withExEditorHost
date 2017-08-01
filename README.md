@@ -34,7 +34,7 @@ If you have a Github account, you can also clone and save the repository.
 Note that the host runs with [Node.js](https://nodejs.org/en/ "Node.js"), so if you do not have Node.js, please install it.
 Also check the required Node.js version in the host's release note.
 
-Next, open "cmd.exe" on Windows, "terminal" (terminal) on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command to complete the installation.
+Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command to complete the installation.
 
 ```
 > cd path/to/withExEditorHost
