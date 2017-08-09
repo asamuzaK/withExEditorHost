@@ -1,5 +1,8 @@
 [EN](./README.md) | JA
 
+[![Build Status](https://travis-ci.org/asamuzaK/withExEditorHost.svg?branch=master)](https://travis-ci.org/asamuzaK/withExEditorHost)
+[![devDependency Status](https://david-dm.org/asamuzaK/withExEditorHost/dev-status.svg)](https://david-dm.org/asamuzaK/withExEditorHost#info=devDependencies)
+
 # withExEditorHost
 
 ブラウザ拡張機能*withExEditor*用のネイティブメッセージングホスト
