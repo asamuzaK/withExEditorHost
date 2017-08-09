@@ -4,20 +4,21 @@
 "use strict";
 {
   /* api */
-  const {CmdArgs, Setup} = require("web-ext-native-msg");
-  const {isString, logError} = require("web-ext-native-msg/modules/common");
   const {
+    CmdArgs, Setup,
     createFile, isDir, isExecutable,
-  } = require("web-ext-native-msg/modules/file-util");
+  } = require("web-ext-native-msg");
+  const {isString, logErr} = require("./modules/common");
   const path = require("path");
   const process = require("process");
   const readline = require("readline");
 
   /* constants */
-  const {CHAR, INDENT} = require("web-ext-native-msg/modules/constant");
   const {
     EDITOR_CONFIG_FILE, EXT_CHROME_ID, EXT_WEB_ID, HOST, HOST_DESC,
   } = require("./modules/constant");
+  const CHAR = "utf8";
+  const INDENT = 2;
   const PERM_FILE = 0o600;
 
   /* variable */
@@ -73,7 +74,7 @@
       ans = ans.trim();
       /^y(?:es)?$/i.test(ans) && (editorConfig.fileAfterCmdArgs = true);
       rl.close();
-      func = createEditorConfig().catch(logError);
+      func = createEditorConfig().catch(logErr);
     }
     return func || null;
   };
