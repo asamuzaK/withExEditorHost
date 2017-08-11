@@ -1,5 +1,3 @@
-// FIXME
-/* eslint-disable no-unused-vars */
 "use strict";
 {
   /* api */
@@ -68,26 +66,26 @@
     });
   });
 
-  // FIXME
-  /*
   describe("logErr", () => {
-    it("should be type of function", () => {
-      assert.typeOf(logErr, "function");
+    it("should get false", () => {
+      const e = new Error("Log Error test");
+      assert.strictEqual(logErr(e), false);
     });
   });
 
   describe("logMsg", () => {
-    it("should be type of function", () => {
-      assert.typeOf(logMsg, "function");
+    it("should get string", () => {
+      const msg = "Log message test";
+      assert.strictEqual(logMsg(msg), msg);
     });
   });
 
   describe("logWarn", () => {
-    it("should be type of function", () => {
-      assert.typeOf(logWarn, "function");
+    it("should get false", () => {
+      const e = "Log warn test";
+      assert.strictEqual(logWarn(e), false);
     });
   });
-  */
 
   describe("stringifyPositiveInt", () => {
     it("should get string", () => {
