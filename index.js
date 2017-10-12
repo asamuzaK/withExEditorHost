@@ -6,11 +6,10 @@
   /* api */
   const {ChildProcess, CmdArgs} = require("./modules/child-process");
   const {Input, Output} = require("./modules/native-message");
-  const {escapeChar, isString, throwErr} = require("./modules/common");
+  const {isString, throwErr} = require("./modules/common");
   const {
-    convUriToFilePath, createDir, createFile, getAbsPath,
-    getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
-    removeDir, readFile,
+    convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
+    getFileTimestamp, isDir, isExecutable, isFile, removeDir, readFile,
   } = require("./modules/file-util");
   const os = require("os");
   const path = require("path");
@@ -18,15 +17,13 @@
 
   /* constants */
   const {
-    EDITOR_CMD_ARGS, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_SET,
-    EDITOR_CONFIG_TS, EDITOR_FILE_POS, EDITOR_PATH, HOST, LABEL,
-    LOCAL_FILE_VIEW, PROCESS_CHILD, TMP_FILES, TMP_FILES_PB,
-    TMP_FILES_PB_REMOVE, TMP_FILE_CREATE, TMP_FILE_DATA_PORT,
-    TMP_FILE_GET, TMP_FILE_RES,
+    EDITOR_CMD_ARGS, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
+    EDITOR_FILE_POS, EDITOR_PATH, HOST, LABEL, LOCAL_FILE_VIEW, PROCESS_CHILD,
+    TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
+    TMP_FILE_DATA_PORT, TMP_FILE_GET, TMP_FILE_RES,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
-  const DIR_HOME = os.homedir();
   const PERM_DIR = 0o700;
   const PERM_FILE = 0o600;
   const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
@@ -289,35 +286,6 @@
   };
 
   /**
-   * set editor config
-   * @param {Object} data - editor config data
-   * @returns {Function} - port editor config
-   */
-  const setEditorConfig = (data = {}) => {
-    const {cmdArgs, editorConfig, editorPath, fileAfterCmdArgs} = data;
-    const file = JSON.stringify({
-      editorPath: editorPath || "",
-      cmdArgs: (new CmdArgs(cmdArgs)).toArray(),
-      fileAfterCmdArgs: !!fileAfterCmdArgs,
-    }, null, "  ");
-    const editorConfigPath = getAbsPath(editorConfig);
-    if (editorConfigPath && editorConfigPath.startsWith(DIR_HOME)) {
-      const {dir} = path.parse(editorConfigPath);
-      if (!isDir(dir)) {
-        const homeDir = escapeChar(DIR_HOME, /(\\)/g);
-        const reHomeDir = new RegExp(`^(?:${homeDir}|~)`);
-        const subDir = (dir.replace(reHomeDir, "")).split(path.sep)
-          .filter(i => i);
-        createDir(subDir.length && [DIR_HOME, ...subDir] || [DIR_HOME],
-                  PERM_DIR);
-      }
-      createFile(editorConfigPath, file,
-                 {encoding: CHAR, flag: "w", mode: PERM_FILE});
-    }
-    return portEditorConfig(file, editorConfig);
-  };
-
-  /**
    * view local file
    * @param {string} uri - local file uri
    * @returns {?Function} - spawn child process
@@ -362,9 +330,6 @@
         switch (item) {
           case EDITOR_CONFIG_GET:
             func.push(getEditorConfig(obj));
-            break;
-          case EDITOR_CONFIG_SET:
-            func.push(setEditorConfig(obj));
             break;
           case LOCAL_FILE_VIEW:
             func.push(viewLocalFile(obj));
