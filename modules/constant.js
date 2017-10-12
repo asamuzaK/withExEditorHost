@@ -9,6 +9,7 @@
   const CONTEXT_MODE = "contextMode";
   const EDITOR_CMD_ARGS = "editorCmdArgs";
   const EDITOR_CONFIG = "editorConfigPath";
+  const EDITOR_CONFIG_FILE = "editorconfig.json";
   const EDITOR_CONFIG_GET = "getEditorConfig";
   const EDITOR_CONFIG_RES = "resEditorConfig";
   const EDITOR_CONFIG_SET = "setEditorConfig";
@@ -50,6 +51,7 @@
     CONTEXT_MODE,
     EDITOR_CMD_ARGS,
     EDITOR_CONFIG,
+    EDITOR_CONFIG_FILE,
     EDITOR_CONFIG_GET,
     EDITOR_CONFIG_RES,
     EDITOR_CONFIG_SET,
