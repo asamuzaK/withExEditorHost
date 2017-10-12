@@ -66,8 +66,6 @@ After that, you will be prompted for the following, please input as appropriate.
     For example: `-a -b "C:\Program Files"`
 * Put file path after command arguments?
 
-You can leave them empty and set them later from the options page of withExEditor.
-
 If config files are created successfully, restart the browser.
 
 ### Options
