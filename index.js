@@ -275,7 +275,7 @@
     const func = [];
     let editorConfigPath;
     if (await isString(filePath) && filePath.length) {
-      editorConfigPath = getAbsPath(filePath);
+      editorConfigPath = await getAbsPath(filePath);
     } else {
       editorConfigPath = path.resolve(path.join(".", EDITOR_CONFIG_FILE));
     }
@@ -287,7 +287,7 @@
       func.push(portEditorConfig(data, editorConfigPath));
     } else {
       func.push(
-        writeStdout(hostMsg(`${editorConfigPath} is not a file.`, "warn")),
+        writeStdout(hostMsg(`Failed to handle ${editorConfigPath}.`, "warn")),
         writeStdout({[EDITOR_CONFIG_RES]: null})
       );
     }
