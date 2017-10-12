@@ -6,8 +6,9 @@
   /* api */
   const {
     ChildProcess, CmdArgs, Input, Output,
-    convertUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, isDir, isExecutable, isFile, removeDir, readFile,
+    convertUriToFilePath, createDir, createFile, getAbsPath,
+    getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
+    removeDir, readFile,
   } = require("web-ext-native-msg");
   const {isString, throwErr} = require("./modules/common");
   const os = require("os");
@@ -24,6 +25,7 @@
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
+  const DIR_HOME = os.homedir();
   const PERM_DIR = 0o700;
   const PERM_FILE = 0o600;
   const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
@@ -95,7 +97,6 @@
     return Promise.all(func);
   };
 
-  // FIXME: #15
   /**
    * port editor config
    * @param {string} data - editor config
@@ -272,14 +273,21 @@
    */
   const getEditorConfig = async filePath => {
     const func = [];
-    filePath = await isString(filePath) && filePath.length && filePath ||
-               path.resolve(path.join(".", EDITOR_CONFIG_FILE));
-    if (await isFile(filePath)) {
-      const data = await readFile(filePath, {encoding: CHAR, flag: "r"});
-      func.push(portEditorConfig(data, filePath));
+    let editorConfigPath;
+    if (await isString(filePath) && filePath.length) {
+      editorConfigPath = getAbsPath(filePath);
+    } else {
+      editorConfigPath = path.resolve(path.join(".", EDITOR_CONFIG_FILE));
+    }
+    if (editorConfigPath && editorConfigPath.startsWith(DIR_HOME) &&
+        await isFile(editorConfigPath)) {
+      const data = await readFile(editorConfigPath, {
+        encoding: CHAR, flag: "r",
+      });
+      func.push(portEditorConfig(data, editorConfigPath));
     } else {
       func.push(
-        writeStdout(hostMsg(`${filePath} is not a file.`, "warn")),
+        writeStdout(hostMsg(`${editorConfigPath} is not a file.`, "warn")),
         writeStdout({[EDITOR_CONFIG_RES]: null})
       );
     }
