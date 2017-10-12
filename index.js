@@ -323,8 +323,14 @@
    * @returns {?Function} - spawn child process
    */
   const viewLocalFile = uri => {
-    const file = convUriToFilePath(uri);
-    return file && spawnChildProcess(file) || null;
+    let func;
+    if (isString(uri) && uri.startsWith("file:")) {
+      const file = convUriToFilePath(uri);
+      if (file && isFile(file)) {
+        func = spawnChildProcess(file);
+      }
+    }
+    return func || null;
   };
 
   /* handlers */
