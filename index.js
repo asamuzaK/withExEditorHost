@@ -324,7 +324,7 @@
    */
   const viewLocalFile = async uri => {
     let func;
-    if (isString(uri)) {
+    if (await isString(uri)) {
       const {protocol} = new URL(uri);
       if (protocol === "file:") {
         const file = await convertUriToFilePath(uri);
