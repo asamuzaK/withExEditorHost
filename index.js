@@ -271,11 +271,16 @@
    */
   const getEditorConfig = filePath => {
     const func = [];
-    filePath = isString(filePath) && filePath.length && filePath ||
-               path.resolve(path.join(".", "editorconfig.json"));
-    if (isFile(filePath)) {
-      const data = readFile(filePath, {encoding: CHAR, flag: "r"});
-      func.push(portEditorConfig(data, filePath));
+    let editorConfigPath;
+    if (isString(filePath) && filePath.length) {
+      editorConfigPath = getAbsPath(filePath);
+    } else {
+      editorConfigPath = path.resolve(path.join(".", EDITOR_CONFIG_FILE));
+    }
+    if (editorConfigPath && editorConfigPath.startsWith(DIR_HOME) &&
+        isFile(editorConfigPath)) {
+      const data = readFile(editorConfigPath, {encoding: CHAR, flag: "r"});
+      func.push(portEditorConfig(data, editorConfigPath));
     } else {
       func.push(
         writeStdout(hostMsg(`${filePath} is not a file.`, "warn")),
