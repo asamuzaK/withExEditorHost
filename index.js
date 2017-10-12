@@ -8,8 +8,9 @@
   const {Input, Output} = require("./modules/native-message");
   const {isString, throwErr} = require("./modules/common");
   const {
-    convUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-    getFileTimestamp, isDir, isExecutable, isFile, removeDir, readFile,
+    convUriToFilePath, createDir, createFile, getAbsPath,
+    getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
+    removeDir, readFile,
   } = require("./modules/file-util");
   const os = require("os");
   const path = require("path");
@@ -17,13 +18,15 @@
 
   /* constants */
   const {
-    EDITOR_CMD_ARGS, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
-    EDITOR_FILE_POS, EDITOR_PATH, HOST, LABEL, LOCAL_FILE_VIEW, PROCESS_CHILD,
-    TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
-    TMP_FILE_DATA_PORT, TMP_FILE_GET, TMP_FILE_RES,
+    EDITOR_CMD_ARGS, EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES,
+    EDITOR_CONFIG_TS, EDITOR_FILE_POS, EDITOR_PATH, HOST, LABEL,
+    LOCAL_FILE_VIEW, PROCESS_CHILD, TMP_FILES, TMP_FILES_PB,
+    TMP_FILES_PB_REMOVE, TMP_FILE_CREATE, TMP_FILE_DATA_PORT, TMP_FILE_GET,
+    TMP_FILE_RES,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
+  const DIR_HOME = os.homedir();
   const PERM_DIR = 0o700;
   const PERM_FILE = 0o600;
   const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
