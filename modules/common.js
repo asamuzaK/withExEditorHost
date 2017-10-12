@@ -64,7 +64,7 @@
   /**
    * stringify positive integer
    * @param {number} i - integer
-   * @param {boolean} zero - treat 0 as a positive integer
+   * @param {boolean} [zero] - treat 0 as a positive integer
    * @returns {?string} - stringified integer
    */
   const stringifyPositiveInt = (i, zero = false) =>
@@ -81,7 +81,19 @@
     str.replace(re, (m, c) => `\\${c}`) || null;
 
   /**
-   * strip HTML tags and decode HTML escaped characters
+   * quote arg
+   * @param {string} arg - argument
+   * @returns {string} - argument
+   */
+  const quoteArg = arg => {
+    if (isString(arg) && arg.includes(" ")) {
+      arg = `"${escapeChar(arg, /(")/g)}"`;
+    }
+    return arg;
+  };
+
+  /**
+   * strip HTML tags and decode HTML entities
    * @param {string} v - value
    * @returns {string} - converted value
    */
@@ -91,11 +103,12 @@
         .replace(/<\/(?:[^>]+:)?[^>]+>\n*$/, "\n");
     }
     return v.replace(/<\/(?:[^>]+:)?[^>]+>\n*<!--.*-->\n*<(?:[^>]+:)?[^>]+>/g, "\n\n")
-      .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+      .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"")
+      .replace(/&amp;/g, "&");
   };
 
   module.exports = {
-    escapeChar, getType, isString, logError, logMsg, logWarn,
+    escapeChar, getType, isString, logError, logMsg, logWarn, quoteArg,
     stringifyPositiveInt, stripHtmlTags, throwErr,
   };
 }

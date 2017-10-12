@@ -4,7 +4,7 @@
 "use strict";
 {
   /* api */
-  const {escapeChar, getType, isString} = require("./common");
+  const {escapeChar, getType, isString, quoteArg} = require("./common");
   const {isExecutable} = require("./file-util");
   const childProcess = require("child_process");
   const process = require("process");
@@ -70,7 +70,7 @@
      * argument input
      * @param {string|Array} input - input
      */
-    constructor(...input) {
+    constructor(input) {
       this._input = input;
     }
 
@@ -79,9 +79,14 @@
      * @returns {Array} - arguments array
      */
     toArray() {
-      const args = Array.isArray(this._input) &&
-                   this._input.map(extractArg) || [];
-      return args.length && args.reduce((a, b) => a.concat(b)) || [];
+      let arr;
+      if (Array.isArray(this._input)) {
+        arr = this._input;
+      } else if (isString(this._input)) {
+        const args = [this._input].map(extractArg);
+        arr = args.length && args.reduce((a, b) => a.concat(b)) || [];
+      }
+      return arr || [];
     }
 
     /**
@@ -99,8 +104,8 @@
     /**
      * command, arguments and option
      * @param {string} cmd - command
-     * @param {string|Array} args - command arguments
-     * @param {Object} opt - option
+     * @param {string|Array} [args] - command arguments
+     * @param {Object} [opt] - options
      */
     constructor(cmd, args, opt) {
       this._cmd = isString(cmd) && cmd || null;
@@ -112,8 +117,8 @@
 
     /**
      * spawn child process
-     * @param {string} file - file
-     * @param {boolean} pos - file after cmd args
+     * @param {string} [file] - file
+     * @param {boolean} [pos] - file after cmd args
      * @returns {Object} - child process
      */
     spawn(file, pos = false) {
@@ -121,11 +126,15 @@
         throw new Error(`${this._cmd} is not executable.`);
       }
       const cmd = this._cmd;
-      const fileArg = (new CmdArgs(file)).toArray();
-      const args = isString(file) && (
-        pos && this._args.concat(fileArg) || fileArg.concat(this._args)
-      ) || this._args;
       const opt = this._opt;
+      let args;
+      if (isString(file)) {
+        const filePath = quoteArg(file);
+        const fileArg = (new CmdArgs(filePath)).toArray();
+        args = pos && this._args.concat(fileArg) || fileArg.concat(this._args);
+      } else {
+        args = this._args;
+      }
       return childProcess.spawn(cmd, args, opt);
     }
   }
