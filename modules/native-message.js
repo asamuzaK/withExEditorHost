@@ -12,7 +12,10 @@
   const CHAR = "utf8";
   const IS_BE = os.endianness() === "BE";
 
-  /* Input */
+  /**
+   * Input
+   * @class
+   */
   class Input {
     /**
      * decode message from buffer
@@ -68,9 +71,14 @@
     }
   }
 
-  /* Output */
+  /**
+   * Output
+   * @class
+   */
   class Output {
-    /* encode message to buffer */
+    /**
+     * encode message to buffer
+     */
     constructor() {
       this._output;
     }

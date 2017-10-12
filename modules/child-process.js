@@ -64,7 +64,10 @@
     return isString(arg) && arg.trim() || "";
   };
 
-  /* CmdArgs */
+  /**
+   * CmdArgs
+   * @class
+   */
   class CmdArgs {
     /**
      * argument input
@@ -99,7 +102,10 @@
     }
   }
 
-  /* Child process */
+  /**
+   * Child process
+   * @class
+   */
   class ChildProcess {
     /**
      * command, arguments and option
