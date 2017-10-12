@@ -325,9 +325,12 @@
   const viewLocalFile = async uri => {
     let func;
     if (isString(uri)) {
-      const file = await convertUriToFilePath(uri);
-      if (file && isFile(file)) {
-        func = spawnChildProcess(file);
+      const {protocol} = new URL(uri);
+      if (protocol === "file:") {
+        const file = await convertUriToFilePath(uri);
+        if (file && isFile(file)) {
+          func = spawnChildProcess(file);
+        }
       }
     }
     return func || null;
