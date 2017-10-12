@@ -97,6 +97,7 @@
     return Promise.all(func);
   };
 
+  // FIXME: #15
   /**
    * port editor config
    * @param {string} data - editor config
@@ -322,8 +323,14 @@
    * @returns {?AsyncFunction} - spawn child process
    */
   const viewLocalFile = async uri => {
-    const file = await convertUriToFilePath(uri);
-    return file && spawnChildProcess(file) || null;
+    let func;
+    if (isString(uri)) {
+      const file = await convertUriToFilePath(uri);
+      if (file && isFile(file)) {
+        func = spawnChildProcess(file);
+      }
+    }
+    return func || null;
   };
 
   /* handlers */
