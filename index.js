@@ -135,6 +135,7 @@
         msg = {
           [EDITOR_CONFIG_RES]: {
             editorConfig, editorName, executable,
+            [EDITOR_CMD_ARGS]: (new CmdArgs(vars.cmdArgs)).toString(),
             [EDITOR_CONFIG_TS]: timestamp,
           },
         };
