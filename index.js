@@ -55,7 +55,6 @@
   const hostMsg = (message, status) => ({
     [HOST]: {
       message, status,
-      pid: APP,
     },
   });
 
