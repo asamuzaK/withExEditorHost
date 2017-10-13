@@ -124,7 +124,7 @@
               vars[item] = obj;
               break;
             case "cmdArgs":
-              vars[item] = (new CmdArgs(...obj)).toArray();
+              vars[item] = (new CmdArgs(obj)).toArray();
               break;
             case "fileAfterCmdArgs":
               vars[item] = !!obj;
