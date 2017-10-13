@@ -140,7 +140,7 @@
         };
       }
     } catch (e) {
-      msg = hostMsg(`${e.message}: ${editorConfig}`, "error");
+      msg = hostMsg(e.message, "error");
     }
     return msg && writeStdout(msg) || null;
   };
