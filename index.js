@@ -44,7 +44,11 @@
   const fileIds = {
     [TMP_FILES]: new Map(),
     [TMP_FILES_PB]: new Map(),
+<<<<<<< HEAD
   };
+=======
+  }
+>>>>>>> Add file IDs map
 
   /**
    * host message
@@ -140,7 +144,7 @@
         };
       }
     } catch (e) {
-      msg = hostMsg(e.message, "error");
+      msg = hostMsg(`${e.message}: ${editorConfig}`, "error");
     }
     return msg && writeStdout(msg) || null;
   };
@@ -237,6 +241,10 @@
         const arr = [...TMPDIR_APP, dir, windowId, tabId, host];
         const dPath = arr && await createDir(arr, PERM_DIR);
         const fileId = [windowId, tabId, host, dataId].join("_");
+<<<<<<< HEAD
+=======
+        // FIXME: add random value in file path
+>>>>>>> Add file IDs map
         filePath = dPath === path.join(...arr) && dataId && extType &&
                      await createFile(
                        path.join(dPath, dataId + extType), value,
