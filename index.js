@@ -120,7 +120,7 @@
               vars[item] = obj;
               break;
             case "cmdArgs":
-              vars[item] = (new CmdArgs(...obj)).toArray();
+              vars[item] = (new CmdArgs(obj)).toArray();
               break;
             case "fileAfterCmdArgs":
               vars[item] = !!obj;
@@ -131,7 +131,7 @@
         msg = {
           [EDITOR_CONFIG_RES]: {
             editorConfig, editorName, executable,
-            [EDITOR_CMD_ARGS]: (new CmdArgs(...vars.cmdArgs)).toString(),
+            [EDITOR_CMD_ARGS]: (new CmdArgs(vars.cmdArgs)).toString(),
             [EDITOR_CONFIG_TS]: timestamp,
             [EDITOR_FILE_POS]: vars.fileAfterCmdArgs,
             [EDITOR_PATH]: editorPath,
