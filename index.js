@@ -238,7 +238,6 @@
         const arr = [...TMPDIR_APP, dir, windowId, tabId, host];
         const dPath = arr && await createDir(arr, PERM_DIR);
         const fileId = [windowId, tabId, host, dataId].join("_");
-        // FIXME: add random value in file path
         filePath = dPath === path.join(...arr) && dataId && extType &&
                      await createFile(
                        path.join(dPath, dataId + extType), value,
