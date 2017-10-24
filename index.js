@@ -172,7 +172,7 @@
         msg = {
           [HOST_VERSION]: {
             result,
-          }
+          },
         };
       }
     }
