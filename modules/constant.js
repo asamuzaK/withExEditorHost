@@ -27,6 +27,8 @@
   const KEY_OPTIONS = "optionsShortCut";
   const HOST = "withexeditorhost";
   const HOST_DESC = "Native messaging host for withExEditor";
+  const HOST_VERSION = "hostVersion";
+  const HOST_VERSION_CHECK = "checkHostVersion";
   const LABEL = "withExEditor";
   const LOCAL_FILE_VIEW = "viewLocalFile";
   const MODE_EDIT = "modeEditText";
@@ -72,6 +74,8 @@
     KEY_OPTIONS,
     HOST,
     HOST_DESC,
+    HOST_VERSION,
+    HOST_VERSION_CHECK,
     LABEL,
     LOCAL_FILE_VIEW,
     MODE_EDIT,

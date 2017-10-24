@@ -10,7 +10,9 @@
     getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
     removeDir, readFile,
   } = require("web-ext-native-msg");
+  const {compareSemVer} = require("semver-parser");
   const {isString, throwErr} = require("./modules/common");
+  const {version: hostVersion} = require("./package.json");
   const os = require("os");
   const path = require("path");
   const process = require("process");
@@ -18,9 +20,9 @@
   /* constants */
   const {
     EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
-    HOST, LABEL, LOCAL_FILE_VIEW, PROCESS_CHILD, TMP_FILES, TMP_FILES_PB,
-    TMP_FILES_PB_REMOVE, TMP_FILE_CREATE, TMP_FILE_DATA_PORT,
-    TMP_FILE_GET, TMP_FILE_RES,
+    HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW,
+    PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
+    TMP_FILE_CREATE, TMP_FILE_DATA_PORT, TMP_FILE_GET, TMP_FILE_RES,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
@@ -155,6 +157,25 @@
     const msg = data && {
       [TMP_FILE_DATA_PORT]: {data},
     };
+    return msg && writeStdout(msg) || null;
+  };
+
+  /* port host version
+   * @param {string} minVer - required min version
+   * @returns {?AsyncFunction} - write stdout
+   */
+  const portHostVersion = async minVer => {
+    let msg;
+    if (isString(minVer)) {
+      const result = await compareSemVer(hostVersion, minVer);
+      if (Number.isInteger(result)) {
+        msg = {
+          [HOST_VERSION]: {
+            result,
+          }
+        };
+      }
+    }
     return msg && writeStdout(msg) || null;
   };
 
@@ -350,6 +371,9 @@
         switch (item) {
           case EDITOR_CONFIG_GET:
             func.push(getEditorConfig(obj));
+            break;
+          case HOST_VERSION_CHECK:
+            func.push(portHostVersion(obj));
             break;
           case LOCAL_FILE_VIEW:
             func.push(viewLocalFile(obj));
