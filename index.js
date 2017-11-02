@@ -6,22 +6,22 @@
   /* api */
   const {
     ChildProcess, CmdArgs, Input, Output,
-    convertUriToFilePath, createDir, createFile, getAbsPath,
-    getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
-    removeDir, readFile,
+    convertUriToFilePath, createDir, createFile, getFileNameFromFilePath,
+    getFileTimestamp, isDir, isExecutable, isFile, removeDir, readFile,
   } = require("web-ext-native-msg");
+  const {compareSemVer} = require("semver-parser");
   const {isString, throwErr} = require("./modules/common");
+  const {version: hostVersion} = require("./package.json");
   const os = require("os");
   const path = require("path");
   const process = require("process");
 
   /* constants */
   const {
-    EDITOR_CMD_ARGS, EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES,
-    EDITOR_CONFIG_TS, EDITOR_FILE_POS, EDITOR_PATH, HOST, LABEL,
-    LOCAL_FILE_VIEW, PROCESS_CHILD, TMP_FILES, TMP_FILES_PB,
-    TMP_FILES_PB_REMOVE, TMP_FILE_CREATE, TMP_FILE_DATA_PORT,
-    TMP_FILE_GET, TMP_FILE_RES,
+    EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
+    HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW,
+    PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
+    TMP_FILE_CREATE, TMP_FILE_DATA_PORT, TMP_FILE_GET, TMP_FILE_RES,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
@@ -41,6 +41,12 @@
     fileAfterCmdArgs: false,
   };
 
+  /* file IDs */
+  const fileIds = {
+    [TMP_FILES]: new Map(),
+    [TMP_FILES_PB]: new Map(),
+  };
+
   /**
    * host message
    * @param {*} message - message
@@ -50,7 +56,6 @@
   const hostMsg = (message, status) => ({
     [HOST]: {
       message, status,
-      pid: APP,
     },
   });
 
@@ -60,7 +65,7 @@
    * @returns {boolean} - false
    */
   const handleReject = e => {
-    e = (new Output()).encode(hostMsg(e, "error"));
+    e = (new Output()).encode(hostMsg(e.message, "error"));
     e && process.stdout.write(e);
     return false;
   };
@@ -88,10 +93,10 @@
       func.push(writeStdout(hostMsg(EDITOR_CONFIG_GET, "ready")));
     } else {
       !tmpDir && func.push(writeStdout(
-        hostMsg(`Failed to create ${path.join(TMPDIR_FILES)}.`, "warn")
+        hostMsg("Failed to create temporary directory.", "warn")
       ));
       !tmpDirPb && func.push(writeStdout(
-        hostMsg(`Failed to create ${path.join(TMPDIR_FILES_PB)}.`, "warn")
+        hostMsg("Failed to create private temporary directory.", "warn")
       ));
     }
     return Promise.all(func);
@@ -131,15 +136,12 @@
         msg = {
           [EDITOR_CONFIG_RES]: {
             editorConfig, editorName, executable,
-            [EDITOR_CMD_ARGS]: (new CmdArgs(vars.cmdArgs)).toString(),
             [EDITOR_CONFIG_TS]: timestamp,
-            [EDITOR_FILE_POS]: vars.fileAfterCmdArgs,
-            [EDITOR_PATH]: editorPath,
           },
         };
       }
     } catch (e) {
-      msg = hostMsg(`${e}: ${editorConfig}`, "error");
+      msg = hostMsg(e.message, "error");
     }
     return msg && writeStdout(msg) || null;
   };
@@ -150,9 +152,29 @@
    * @returns {?AsyncFunction} - write stdout
    */
   const portFileData = async (obj = {}) => {
-    const msg = Object.keys(obj).length && {
-      [TMP_FILE_DATA_PORT]: obj,
+    const {data} = obj;
+    const msg = data && {
+      [TMP_FILE_DATA_PORT]: {data},
     };
+    return msg && writeStdout(msg) || null;
+  };
+
+  /* port host version
+   * @param {string} minVer - required min version
+   * @returns {?AsyncFunction} - write stdout
+   */
+  const portHostVersion = async minVer => {
+    let msg;
+    if (isString(minVer)) {
+      const result = await compareSemVer(hostVersion, minVer);
+      if (Number.isInteger(result)) {
+        msg = {
+          [HOST_VERSION]: {
+            result,
+          },
+        };
+      }
+    }
     return msg && writeStdout(msg) || null;
   };
 
@@ -165,10 +187,10 @@
    */
   const spawnChildProcess = async (file, app = vars.editorPath) => {
     if (await !isFile(file)) {
-      return writeStdout(hostMsg(`${file} is not a file.`, "warn"));
+      return writeStdout(hostMsg("Given path is not a file.", "warn"));
     }
     if (await !isExecutable(app)) {
-      return writeStdout(hostMsg(`${app} is not executable.`, "warn"));
+      return writeStdout(hostMsg("Application is not executable.", "warn"));
     }
     const args = vars.cmdArgs || [];
     const pos = vars.fileAfterCmdArgs || false;
@@ -179,22 +201,18 @@
     };
     const proc = await (new ChildProcess(app, args, opt)).spawn(file, pos);
     proc.on("error", e => {
-      e = (new Output()).encode(e);
+      e = (new Output()).encode(e.message);
       e && process.stderr.write(e);
     });
     proc.stderr.on("data", data => {
       if (data) {
-        data = (new Output()).encode(
-          hostMsg(`${data}: ${app}`, `${PROCESS_CHILD}_stderr`)
-        );
+        data = (new Output()).encode(hostMsg(data, `${PROCESS_CHILD}_stderr`));
         data && process.stdout.write(data);
       }
     });
     proc.stdout.on("data", data => {
       if (data) {
-        data = (new Output()).encode(
-          hostMsg(`${data}: ${app}`, `${PROCESS_CHILD}_stdout`)
-        );
+        data = (new Output()).encode(hostMsg(data, `${PROCESS_CHILD}_stdout`));
         data && process.stdout.write(data);
       }
     });
@@ -213,10 +231,13 @@
       const dir = path.join(...TMPDIR_FILES_PB);
       await removeDir(dir, TMPDIR);
       if (await isDir(dir)) {
-        msg = hostMsg(`Failed to remove ${dir}.`, "warn");
+        msg = hostMsg("Failed to remove private temporary directory.", "warn");
       } else {
         const dPath = await createDir(TMPDIR_FILES_PB, PERM_DIR);
-        dir !== dPath && (msg = hostMsg(`Failed to create ${dir}.`, "warn"));
+        fileIds[TMP_FILES_PB].clear();
+        dir !== dPath && (
+          msg = hostMsg("Failed to create private temporary directory.", "warn")
+        );
       }
     }
     return msg && writeStdout(msg) || null;
@@ -231,16 +252,18 @@
     const {data, value} = obj;
     let filePath;
     if (data) {
-      const {dir, fileName, host, tabId, windowId} = data;
-      const arr = dir && windowId && tabId && host &&
-                    [...TMPDIR_APP, dir, windowId, tabId, host];
-      const dPath = arr && await createDir(arr, PERM_DIR);
-      filePath = dPath === path.join(...arr) && fileName &&
-                   await createFile(
-                     path.join(dPath, fileName), value,
-                     {encoding: CHAR, flag: "w", mode: PERM_FILE}
-                   );
-      filePath && (data.filePath = filePath);
+      const {dataId, dir, extType, host, tabId, windowId} = data;
+      if (dataId && dir && extType && host && tabId && windowId) {
+        const arr = [...TMPDIR_APP, dir, windowId, tabId, host];
+        const dPath = arr && await createDir(arr, PERM_DIR);
+        const fileId = [windowId, tabId, host, dataId].join("_");
+        filePath = dPath === path.join(...arr) && dataId && extType &&
+                     await createFile(
+                       path.join(dPath, dataId + extType), value,
+                       {encoding: CHAR, flag: "w", mode: PERM_FILE}
+                     );
+        filePath && dir && fileIds[dir] && fileIds[dir].set(fileId, filePath);
+      }
     }
     return data && filePath && {data, filePath} || null;
   };
@@ -251,16 +274,21 @@
    * @returns {?AsyncFunction} - write stdout
    */
   const getTmpFile = async (data = {}) => {
-    const {filePath} = data;
+    const {dataId, dir, host, tabId, windowId} = data;
     let msg;
-    if (await isFile(filePath)) {
-      const value = await readFile(filePath, {encoding: CHAR, flag: "r"}) || "";
-      data.timestamp = await getFileTimestamp(filePath) || 0;
-      msg = {
-        [TMP_FILE_RES]: {data, value},
-      };
-    } else {
-      msg = hostMsg(`${filePath} is not a file.`, "warn");
+    if (dataId && dir && host && tabId && windowId) {
+      const fileId = [windowId, tabId, host, dataId].join("_");
+      const filePath = dir && fileIds[dir] && fileIds[dir].get(fileId);
+      if (filePath && await isFile(filePath)) {
+        const value = await readFile(filePath, {encoding: CHAR, flag: "r"}) ||
+                      "";
+        data.timestamp = await getFileTimestamp(filePath) || 0;
+        msg = {
+          [TMP_FILE_RES]: {data, value},
+        };
+      } else {
+        msg = hostMsg("Failed to get temporary file.", "warn");
+      }
     }
     return msg && writeStdout(msg) || null;
   };
@@ -271,14 +299,9 @@
    * @param {string} filePath - editor config file path
    * @returns {Promise.<Array>} - results of each handler
    */
-  const getEditorConfig = async filePath => {
+  const getEditorConfig = async () => {
     const func = [];
-    let editorConfigPath;
-    if (await isString(filePath) && filePath.length) {
-      editorConfigPath = await getAbsPath(filePath);
-    } else {
-      editorConfigPath = path.resolve(path.join(".", EDITOR_CONFIG_FILE));
-    }
+    const editorConfigPath = path.resolve(path.join(".", EDITOR_CONFIG_FILE));
     if (editorConfigPath && editorConfigPath.startsWith(DIR_HOME) &&
         await isFile(editorConfigPath)) {
       const data = await readFile(editorConfigPath, {
@@ -342,6 +365,9 @@
         switch (item) {
           case EDITOR_CONFIG_GET:
             func.push(getEditorConfig(obj));
+            break;
+          case HOST_VERSION_CHECK:
+            func.push(portHostVersion(obj));
             break;
           case LOCAL_FILE_VIEW:
             func.push(viewLocalFile(obj));
