@@ -186,10 +186,6 @@ Open "editorconfig.json" and fill in the information of the editor.
 * *cmdArgs* - Command line options. Enter each argument in array, separated by comma. Backslashes must be escaped.
 * *fileAfterCmdArgs* - Boolean (`true` / `false`). When specifying the file, some editor requires to put the file path after command arguments. Set `true` in such case.
 
-Editor configuration files can also be switched for each browser, or for each Firefox profile.
-For example, use "editorconfig.json" for the Firefox default profile, and prepare another configuration file such as "editorconfig-nightly.json" for nightly's profile.
-When you choose a name other than "editorconfig.json", enter the path of the editor configuration file in the Options page of withExEditor.
-
 After the above work, restart the browser.
 
 ***
