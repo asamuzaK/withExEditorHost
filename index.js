@@ -6,9 +6,8 @@
   /* api */
   const {
     ChildProcess, CmdArgs, Input, Output,
-    convertUriToFilePath, createDir, createFile, getAbsPath,
-    getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
-    removeDir, readFile,
+    convertUriToFilePath, createDir, createFile, getFileNameFromFilePath,
+    getFileTimestamp, isDir, isExecutable, isFile, removeDir, readFile,
   } = require("web-ext-native-msg");
   const {compareSemVer} = require("semver-parser");
   const {isString, throwErr} = require("./modules/common");
