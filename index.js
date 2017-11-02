@@ -300,14 +300,9 @@
    * @param {string} filePath - editor config file path
    * @returns {Promise.<Array>} - results of each handler
    */
-  const getEditorConfig = async filePath => {
+  const getEditorConfig = async () => {
     const func = [];
-    let editorConfigPath;
-    if (await isString(filePath) && filePath.length) {
-      editorConfigPath = await getAbsPath(filePath);
-    } else {
-      editorConfigPath = path.resolve(path.join(".", EDITOR_CONFIG_FILE));
-    }
+    const editorConfigPath = path.resolve(path.join(".", EDITOR_CONFIG_FILE));
     if (editorConfigPath && editorConfigPath.startsWith(DIR_HOME) &&
         await isFile(editorConfigPath)) {
       const data = await readFile(editorConfigPath, {
