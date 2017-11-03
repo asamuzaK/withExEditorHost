@@ -18,8 +18,8 @@
     "test": "mocha test"
   },
   "dependencies": {
-    "semver-parser": "^1.0.6",
-    "web-ext-native-msg": "^1.0.11"
+    "semver-parser": "^1.0.8",
+    "web-ext-native-msg": "^1.0.12"
   },
   "devDependencies": {
     "chai": "^4.1.2",
