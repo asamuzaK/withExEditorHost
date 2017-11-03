@@ -135,7 +135,7 @@
         }
         msg = {
           [EDITOR_CONFIG_RES]: {
-            editorConfig, editorName, executable,
+            editorName, executable,
             [EDITOR_CONFIG_TS]: timestamp,
           },
         };
