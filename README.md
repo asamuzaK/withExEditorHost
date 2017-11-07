@@ -80,7 +80,7 @@ To specify the browser, please use the `--browser` option.
 > node setup.js --browser=firefox
 ```
 
-#### --editor-config=*path* option
+#### --config-path=*path* option
 
 By default, the setup script creates a "config" folder under the location of withExEditorHost.
 If you want to save setting files in different location, use `--config-path` option.
