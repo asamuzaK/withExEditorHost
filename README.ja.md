@@ -32,7 +32,7 @@
 
 ## ホストのインストール
 
-[Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost")からソースコードのzipファイルかtar.gzファイルをダウンロードして、展開した上で任意の場所に保存してください（例えば、`C:\Users\XXX\withExEditorHost\`）。
+[Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost")からソースコードのzipファイルかtar.gzファイルをダウンロードして、展開した上で、自分のホームディレクトリ内の任意の場所に保存してください（例えば、`C:\Users\XXX\withExEditorHost\`）。
 Githubのアカウントがある場合は、レポジトリをクローンして保存してもOKです。
 
 なお、ホストは[Node.js](https://nodejs.org/ja/ "Node.js")で実行しますので、Node.jsが入っていない場合はインストールしてください。

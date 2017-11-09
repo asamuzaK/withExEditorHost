@@ -32,7 +32,7 @@ When filing an issue, if you know [where to save the application manifest](https
 
 ## Install the host
 
-Download a zip file or tar.gz file of the source code from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), save it in an arbitrary place after decompressing (for example, `C:\Users\XXX\withExEditorHost\`).
+Download a zip file or tar.gz file of the source code from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), after decompressing, save it in an arbitrary place under your home directory (for example, `C:\Users\XXX\withExEditorHost\`).
 If you have a Github account, you can also clone and save the repository.
 
 Note that the host runs with [Node.js](https://nodejs.org/en/ "Node.js"), so if you do not have Node.js, please install it.
