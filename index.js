@@ -139,6 +139,8 @@
             [EDITOR_CONFIG_TS]: timestamp,
           },
         };
+        // debug
+        await writeStdout(hostMsg(`Debug: ${JSON.stringify(msg)}.`, "log"));
       }
     } catch (e) {
       msg = hostMsg(e.message, "error");
@@ -308,6 +310,8 @@
         encoding: CHAR, flag: "r",
       });
       func.push(portEditorConfig(data, editorConfigPath));
+      // debug
+      func.push(writeStdout(hostMsg(`Debug: Found ${editorConfigPath}.`, "log")));
     } else {
       func.push(
         writeStdout(hostMsg(`Failed to handle ${editorConfigPath}.`, "warn")),
