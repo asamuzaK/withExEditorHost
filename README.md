@@ -82,8 +82,12 @@ To specify the browser, please use the `--browser` option.
 
 #### --config-path=*path* option
 
-By default, the setup script creates a "config" folder under the location of withExEditorHost.
-If you want to save setting files in different location, use `--config-path` option.
+By default, configuration files are saved under user's home directory.
+* Windows: `C:\Users\[UserName]\AppData\Roaming\withexeditorhost\config\`
+* Mac: `~/Library/Application Support/withexeditorhost/config/`
+* Linux: `~/.config/withexeditorhost/config/`
+
+If you want to save configuration files in different location, use `--config-path` option.
 Quote path if it contains spaces or backslashes.
 
 ```

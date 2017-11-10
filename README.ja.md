@@ -82,7 +82,11 @@ Githubのアカウントがある場合は、レポジトリをクローンし�
 
 #### --config-pathオプション
 
-セットアップスクリプトは、デフォルトでwithExEditorHostの保存先の直下に"config"フォルダを作成し各設定ファイルを保持します。
+セットアップスクリプトは、デフォルトでユーザーのホームディレクトリ下に各設定ファイルを保持します。
+* Windowsの場合：`C:\Users\[UserName]\AppData\Roaming\withexeditorhost\config\`
+* Macの場合：`~/Library/Application Support/withexeditorhost/config/`
+* Linuxの場合：`~/.config/withexeditorhost/config/`
+
 設定ファイルの保存先を変更したい場合は、`--config-path`オプションで指定してください。
 パスに空白やバックスラッシュが含まれる場合は引用符で括ってください。
 
