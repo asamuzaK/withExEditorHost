@@ -25,7 +25,6 @@
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
-  const DIR_HOME = os.homedir();
   const PERM_DIR = 0o700;
   const PERM_FILE = 0o600;
   const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
@@ -302,8 +301,7 @@
   const getEditorConfig = async () => {
     const func = [];
     const editorConfigPath = path.resolve(path.join(".", EDITOR_CONFIG_FILE));
-    if (editorConfigPath && editorConfigPath.startsWith(DIR_HOME) &&
-        await isFile(editorConfigPath)) {
+    if (editorConfigPath && await isFile(editorConfigPath)) {
       const data = await readFile(editorConfigPath, {
         encoding: CHAR, flag: "r",
       });
