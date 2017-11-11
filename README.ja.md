@@ -104,9 +104,6 @@ _configフォルダのコピーを作成して`config`にリネームしてく�
 なお、_configフォルダの中身は直接編集しないようにしてください。
 withExEditorHostをアップデートしたときに上書きされてしまう可能性があります。
 
-configフォルダは任意の場所に保存できますが、zipやtar.gzから展開して保存した場合は、そのまま_configフォルダと同じ場所（`C:\Users\XXX\withExEditorHost\config\`）に置けばOKです。
-一方、レポジトリをクローンしている場合は、あなたの個人的な設定情報が意図せずGitHubにアップロードされるようなことを防ぐためにも、レポジトリの中ではなく*外*にフォルダを保存することを強くおすすめします。
-
 ### ホストを起動するシェルスクリプトの編集
 
 Windowsの場合は"withexeditorhost.cmd"を開いて、ホストのindex.jsファイルのパスを記入します。
@@ -136,7 +133,7 @@ Gecko：
 {
   "name": "withexeditorhost",
   "description": "Native messaging host for withExEditor",
-  "path": "C:\\Users\\XXX\\withExEditorHost\\config\\withexeditorhost.cmd",
+  "path": "C:\\Users\\XXX\\path\\to\\withExEditorHost\\config\\withexeditorhost.cmd",
   "type": "stdio",
   "allowed_extensions": ["jid1-WiAigu4HIo0Tag@jetpack"]
 }
@@ -147,7 +144,7 @@ Blink：
 {
   "name": "withexeditorhost",
   "description": "Native messaging host for withExEditor",
-  "path": "C:\\Users\\XXX\\withExEditorHost\\config\\withexeditorhost.cmd",
+  "path": "C:\\Users\\XXX\\path\\to\\withExEditorHost\\config\\withexeditorhost.cmd",
   "type": "stdio",
   "allowed_origins": ["chrome-extension://koghhpkkcndhhclklnnnhcpkkplfkgoi/"]
 }
@@ -155,10 +152,10 @@ Blink：
 
 Windowsではレジストリも設定する必要があります。
 cmd.exeで次のコマンドを実行するとレジストリキーを保存することができます。
-`"HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost"`と`"C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json"`の部分は、適宜書き換えてください。
+`"HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost"`と`"C:\Users\XXX\path\to\withExEditorHosts\config\withexeditorhost.json"`の部分は、適宜書き換えてください。
 
 ```
-REG ADD "HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost" /ve /d "C:\Users\XXX\withExEditorHosts\config\withexeditorhost.json" /f
+REG ADD "HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost" /ve /d "C:\Users\XXX\path\to\withExEditorHosts\config\withexeditorhost.json" /f
 ```
 
 LinuxとMacでは、"withexeditorhost.json"を指定の場所に保存する必要があります。
@@ -213,7 +210,7 @@ Error: Attempt to postMessage on disconnected port
   * また、"withexeditorhost.sh"に実行ビットが付与されていることも確認してください（Linux / Mac）。
 
 ```
-stderr output from native app withexeditorhost: SyntaxError: Unexpected token {
+withexeditorhost: SyntaxError: Unexpected token {
 ```
 
 * Node.jsをアップグレードしてください。
