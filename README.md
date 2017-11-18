@@ -38,6 +38,7 @@ If you have a Github account, you can also clone and save the repository.
 
 Note that the host runs with [Node.js](https://nodejs.org/en/ "Node.js"), so if you do not have Node.js, please install it.
 Also check the required Node.js version in the host's release note.
+Currently, Node.js v8.9.0 or higher is required.
 
 Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command to complete the installation.
 
@@ -68,6 +69,7 @@ After that, you will be prompted for the following, please input as appropriate.
 * Put file path after command arguments?
 
 If config files are created successfully, restart the browser.
+When you start the browser, the browser and the host get connected and the editor will be ready to use.
 
 ### Options
 
