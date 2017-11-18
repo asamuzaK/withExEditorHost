@@ -7,6 +7,7 @@ EN | [JA](./README.ja.md)
 # withExEditorHost
 
 Native messaging host for browser extension *withExEditor*.
+The browser interacts with the host via messages, and the editor is executed by this host.
 
 * [withExEditor :: Add-ons for Firefox](https://addons.mozilla.org/addon/withexeditor/ "withExEditor :: Add-ons for Firefox")
 * [withExEditor - Chrome Web Store](https://chrome.google.com/webstore/detail/withexeditor/koghhpkkcndhhclklnnnhcpkkplfkgoi "withExEditor - Chrome Web Store")

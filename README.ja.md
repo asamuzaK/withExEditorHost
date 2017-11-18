@@ -7,6 +7,7 @@
 # withExEditorHost
 
 ブラウザ拡張機能*withExEditor*用のネイティブメッセージングホスト
+ブラウザはメッセージを介してホストと対話し、エディタはこのホストによって実行されます。
 
 * [withExEditor :: Add-ons for Firefox](https://addons.mozilla.org/addon/withexeditor/ "withExEditor :: Add-ons for Firefox")
 * [withExEditor - Chrome ウェブストア](https://chrome.google.com/webstore/detail/withexeditor/koghhpkkcndhhclklnnnhcpkkplfkgoi "withExEditor - Chrome ウェブストア")
