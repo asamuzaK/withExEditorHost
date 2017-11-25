@@ -67,6 +67,7 @@ After that, you will be prompted for the following, please input as appropriate.
   * NOTE: Quote the argument if it contains spaces or backslashes.
     For example: `-a -b "C:\Program Files"`
 * Put file path after command arguments?
+  * NOTE: When specifying the file, some editor requires to put the file path after command arguments. Enter `y` in such case.
 
 If config files are created successfully, restart the browser.
 When you start the browser, the browser and the host get connected and the editor will be ready to use.
