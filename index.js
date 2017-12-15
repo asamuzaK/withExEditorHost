@@ -296,9 +296,9 @@
   const getFileIdFromFilePath = async filePath => {
     let fileId;
     if (await isString(filePath)) {
-      const tmpDir = path.join(...TMPDIR_APP);
       const {dir, name} = path.parse(filePath);
-      const [,,windowId, tabId, host] = dir.replace(tmpDir, "").split(path.sep);
+      const dirArr = dir.replace(path.join(...TMPDIR_APP), "").split(path.sep);
+      const [, , windowId, tabId, host] = dirArr;
       fileId = [windowId, tabId, host, name].join("_");
     }
     return fileId || null;
@@ -318,15 +318,18 @@
         if (evtType === "change" && await isFile(key)) {
           const fileId = await getFileIdFromFilePath(key);
           if (fileId) {
-            const {data} = fileIds[TMP_FILES].get(fileId);
-            if (data) {
-              const value =
-                await readFile(key, {encoding: CHAR, flag: "r"}) || "";
-              data.timestamp = await getFileTimestamp(key) || 0;
-              const msg = {
-                [TMP_FILE_RES]: {data, value},
-              };
-              func.push(writeStdout(msg));
+            const obj = fileIds[TMP_FILES].get(fileId);
+            if (obj) {
+              const {data} = obj;
+              if (data) {
+                const value =
+                  await readFile(key, {encoding: CHAR, flag: "r"}) || "";
+                data.timestamp = await getFileTimestamp(key) || 0;
+                const msg = {
+                  [TMP_FILE_RES]: {data, value},
+                };
+                func.push(writeStdout(msg));
+              }
             }
           }
         } else {
