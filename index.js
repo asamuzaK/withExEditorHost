@@ -20,8 +20,8 @@
   /* constants */
   const {
     EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
-    HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT,
-    PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
+    FILE_WATCH, HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW,
+    MODE_EDIT, PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
     TMP_FILE_CREATE, TMP_FILE_DATA_PORT, TMP_FILE_GET, TMP_FILE_RES,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
@@ -41,14 +41,12 @@
     fileAfterCmdArgs: false,
   };
 
-  /* file IDs */
-  const fileIds = {
+  /* file map */
+  const fileMap = {
+    [FILE_WATCH]: new Map(),
     [TMP_FILES]: new Map(),
     [TMP_FILES_PB]: new Map(),
   };
-
-  /* watch file paths */
-  const watchFiles = new Map();
 
   /**
    * stop watch files
@@ -58,10 +56,10 @@
    */
   const stopWatchFiles = async (key, fsWatcher) => {
     if (!fsWatcher) {
-      fsWatcher = watchFiles.get(key);
+      fsWatcher = fileMap[FILE_WATCH].get(key);
     }
     fsWatcher && fsWatcher.watcher.close();
-    watchFiles.delete(key);
+    fileMap[FILE_WATCH].delete(key);
   };
 
   /**
@@ -251,7 +249,7 @@
         msg = hostMsg("Failed to remove private temporary directory.", "warn");
       } else {
         const dPath = await createDir(TMPDIR_FILES_PB, PERM_DIR);
-        fileIds[TMP_FILES_PB].clear();
+        fileMap[TMP_FILES_PB].clear();
         dir !== dPath && (
           msg = hostMsg("Failed to create private temporary directory.", "warn")
         );
@@ -270,8 +268,8 @@
     let msg;
     if (dataId && dir && host && tabId && windowId) {
       const fileId = [windowId, tabId, host, dataId].join("_");
-      if (dir && fileIds[dir]) {
-        const {filePath} = fileIds[dir].get(fileId);
+      if (dir && fileMap[dir]) {
+        const {filePath} = fileMap[dir].get(fileId);
         if (filePath && await isFile(filePath)) {
           const value = await readFile(filePath, {encoding: CHAR, flag: "r"}) ||
                         "";
@@ -314,13 +312,13 @@
    */
   const watchTmpFile = async (evtType, fileName) => {
     const func = [];
-    watchFiles.forEach(async (fsWatcher, key) => {
+    fileMap[FILE_WATCH].forEach(async (fsWatcher, key) => {
       if (await isString(fileName) && await isString(key) &&
           key.endsWith(fileName)) {
         if (evtType === "change" && await isFile(key)) {
           const fileId = await getFileIdFromFilePath(key);
           if (fileId) {
-            const obj = fileIds[TMP_FILES].get(fileId);
+            const obj = fileMap[TMP_FILES].get(fileId);
             if (obj) {
               const {data} = obj;
               if (data) {
@@ -364,15 +362,15 @@
                        path.join(dPath, dataId + extType), value,
                        {encoding: CHAR, flag: "w", mode: PERM_FILE}
                      );
-        filePath && dir && fileIds[dir] &&
-          fileIds[dir].set(fileId, {data, filePath});
+        filePath && dir && fileMap[dir] &&
+          fileMap[dir].set(fileId, {data, filePath});
         if (!incognito && mode === MODE_EDIT && syncAuto) {
           const opt = {
             persistent: true,
             recursive: false,
             encoding: CHAR,
           };
-          watchFiles.set(filePath, watch(filePath, opt, watchTmpFile));
+          fileMap[FILE_WATCH].set(filePath, watch(filePath, opt, watchTmpFile));
         }
       }
     }
