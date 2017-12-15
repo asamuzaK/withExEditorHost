@@ -299,7 +299,9 @@
       const {dir, name} = path.parse(filePath);
       const dirArr = dir.replace(path.join(...TMPDIR_APP), "").split(path.sep);
       const [, , windowId, tabId, host] = dirArr;
-      fileId = [windowId, tabId, host, name].join("_");
+      if (windowId && tabId && host && name) {
+        fileId = [windowId, tabId, host, name].join("_");
+      }
     }
     return fileId || null;
   };
