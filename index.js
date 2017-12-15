@@ -49,12 +49,12 @@
   };
 
   /**
-   * stop watch files
+   * stop watch file
    * @param {string} key - key
    * @param {Object} [fsWatcher] - fs.FSWatcher
    * @returns {void}
    */
-  const stopWatchFiles = async (key, fsWatcher) => {
+  const stopWatchFile = async (key, fsWatcher) => {
     if (!fsWatcher) {
       fsWatcher = fileMap[FILE_WATCH].get(key);
     }
@@ -333,7 +333,7 @@
             }
           }
         } else {
-          func.push(stopWatchFiles(key, fsWatcher));
+          func.push(stopWatchFile(key, fsWatcher));
         }
       }
     });
