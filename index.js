@@ -12,6 +12,7 @@
   const {compareSemVer} = require("semver-parser");
   const {isString, throwErr} = require("./modules/common");
   const {version: hostVersion} = require("./package.json");
+  const {watch} = require("fs");
   const os = require("os");
   const path = require("path");
   const process = require("process");
@@ -19,8 +20,8 @@
   /* constants */
   const {
     EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
-    HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW,
-    PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
+    FILE_WATCH, HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW,
+    MODE_EDIT, PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
     TMP_FILE_CREATE, TMP_FILE_DATA_PORT, TMP_FILE_GET, TMP_FILE_RES,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
@@ -40,10 +41,25 @@
     fileAfterCmdArgs: false,
   };
 
-  /* file IDs */
-  const fileIds = {
+  /* file map */
+  const fileMap = {
+    [FILE_WATCH]: new Map(),
     [TMP_FILES]: new Map(),
     [TMP_FILES_PB]: new Map(),
+  };
+
+  /**
+   * stop watch file
+   * @param {string} key - key
+   * @param {Object} [fsWatcher] - fs.FSWatcher
+   * @returns {void}
+   */
+  const stopWatchFile = async (key, fsWatcher) => {
+    if (!fsWatcher) {
+      fsWatcher = fileMap[FILE_WATCH].get(key);
+    }
+    fsWatcher && fsWatcher.close();
+    fileMap[FILE_WATCH].delete(key);
   };
 
   /**
@@ -233,13 +249,109 @@
         msg = hostMsg("Failed to remove private temporary directory.", "warn");
       } else {
         const dPath = await createDir(TMPDIR_FILES_PB, PERM_DIR);
-        fileIds[TMP_FILES_PB].clear();
+        fileMap[TMP_FILES_PB].clear();
         dir !== dPath && (
           msg = hostMsg("Failed to create private temporary directory.", "warn")
         );
       }
     }
     return msg && writeStdout(msg) || null;
+  };
+
+  /**
+   * get temporary file from file data
+   * @param {Object} data - temporary file data
+   * @returns {AsyncFunction} - write stdout
+   */
+  const getTmpFileFromFileData = async (data = {}) => {
+    const {dataId, dir, host, tabId, windowId} = data;
+    let msg;
+    if (dataId && dir && host && tabId && windowId) {
+      const fileId = [windowId, tabId, host, dataId].join("_");
+      if (dir && fileMap[dir]) {
+        const {filePath} = fileMap[dir].get(fileId);
+        if (filePath && await isFile(filePath)) {
+          const value = await readFile(filePath, {encoding: CHAR, flag: "r"}) ||
+                        "";
+          data.timestamp = await getFileTimestamp(filePath) || 0;
+          msg = {
+            [TMP_FILE_RES]: {data, value},
+          };
+        }
+      }
+    }
+    if (!msg) {
+      msg = hostMsg("Failed to get temporary file.", "warn");
+    }
+    return writeStdout(msg);
+  };
+
+  /**
+   * get file ID from file path
+   * @param {string} filePath - file path
+   * @returns {?string} - file ID
+   */
+  const getFileIdFromFilePath = async filePath => {
+    let fileId;
+    if (await isString(filePath)) {
+      const {dir, name} = path.parse(filePath);
+      const dirArr = dir.replace(path.join(...TMPDIR_APP), "").split(path.sep);
+      const [, , windowId, tabId, host] = dirArr;
+      if (windowId && tabId && host && name) {
+        fileId = [windowId, tabId, host, name].join("_");
+      }
+    }
+    return fileId || null;
+  };
+
+  /**
+   * get temporary file from given file name
+   * @param {string} evtType - event type
+   * @param {string} fileName - file name
+   * @returns {Promise.<Array>} - result of each handler
+   */
+  const getTmpFileFromWatcherFileName = async (evtType, fileName) => {
+    const func = [];
+    fileMap[FILE_WATCH].forEach(async (fsWatcher, key) => {
+      if (await isString(fileName) && await isString(key) &&
+          key.endsWith(fileName)) {
+        if (evtType === "change" && await isFile(key)) {
+          const fileId = await getFileIdFromFilePath(key);
+          if (fileId) {
+            const obj = fileMap[TMP_FILES].get(fileId);
+            if (obj) {
+              const {data} = obj;
+              if (data) {
+                const value =
+                  await readFile(key, {encoding: CHAR, flag: "r"}) || "";
+                data.timestamp = await getFileTimestamp(key) || 0;
+                const msg = {
+                  [TMP_FILE_RES]: {data, value},
+                };
+                func.push(writeStdout(msg));
+              }
+            }
+          }
+        } else {
+          func.push(stopWatchFile(key, fsWatcher));
+        }
+      }
+    });
+    return Promise.all(func);
+  };
+
+  /**
+   * watch temporary file
+   * @param {string} evtType - event type
+   * @param {string} fileName - file name
+   * @returns {?AsyncFunction} - get temp file from file name
+   */
+  const watchTmpFile = (evtType, fileName) => {
+    let func;
+    if (isString(evtType) && isString(fileName)) {
+      func = getTmpFileFromWatcherFileName(evtType, fileName).catch(throwErr);
+    }
+    return func || null;
   };
 
   /**
@@ -251,7 +363,10 @@
     const {data, value} = obj;
     let filePath;
     if (data) {
-      const {dataId, dir, extType, host, tabId, windowId} = data;
+      const {
+        dataId, dir, extType, host, incognito, mode, syncAuto, tabId,
+        windowId,
+      } = data;
       if (dataId && dir && extType && host && tabId && windowId) {
         const arr = [...TMPDIR_APP, dir, windowId, tabId, host];
         const dPath = arr && await createDir(arr, PERM_DIR);
@@ -261,35 +376,25 @@
                        path.join(dPath, dataId + extType), value,
                        {encoding: CHAR, flag: "w", mode: PERM_FILE}
                      );
-        filePath && dir && fileIds[dir] && fileIds[dir].set(fileId, filePath);
+        filePath && dir && fileMap[dir] &&
+          fileMap[dir].set(fileId, {data, filePath});
+        if (!incognito && mode === MODE_EDIT && syncAuto) {
+          const opt = {
+            persistent: true,
+            recursive: false,
+            encoding: CHAR,
+          };
+          fileMap[FILE_WATCH].set(filePath, watch(filePath, opt, watchTmpFile));
+        } else {
+          try {
+            fileMap[FILE_WATCH].has(filePath) && await stopWatchFile(filePath);
+          } catch (e) {
+            await writeStdout(hostMsg(e.message, "error"));
+          }
+        }
       }
     }
     return data && filePath && {data, filePath} || null;
-  };
-
-  /**
-   * get temporary file
-   * @param {Object} data - temporary file data
-   * @returns {?AsyncFunction} - write stdout
-   */
-  const getTmpFile = async (data = {}) => {
-    const {dataId, dir, host, tabId, windowId} = data;
-    let msg;
-    if (dataId && dir && host && tabId && windowId) {
-      const fileId = [windowId, tabId, host, dataId].join("_");
-      const filePath = dir && fileIds[dir] && fileIds[dir].get(fileId);
-      if (filePath && await isFile(filePath)) {
-        const value = await readFile(filePath, {encoding: CHAR, flag: "r"}) ||
-                      "";
-        data.timestamp = await getFileTimestamp(filePath) || 0;
-        msg = {
-          [TMP_FILE_RES]: {data, value},
-        };
-      } else {
-        msg = hostMsg("Failed to get temporary file.", "warn");
-      }
-    }
-    return msg && writeStdout(msg) || null;
   };
 
   /* local files */
@@ -374,7 +479,7 @@
             func.push(createTmpFile(obj).then(handleCreatedTmpFile));
             break;
           case TMP_FILE_GET:
-            func.push(getTmpFile(obj));
+            func.push(getTmpFileFromFileData(obj));
             break;
           case TMP_FILES_PB_REMOVE:
             func.push(initPrivateTmpDir(obj));

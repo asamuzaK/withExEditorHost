@@ -21,6 +21,7 @@
   const EXT_CHROME_ID = "chrome-extension://koghhpkkcndhhclklnnnhcpkkplfkgoi/";
   const EXT_WEB_ID = "jid1-WiAigu4HIo0Tag@jetpack";
   const FILE_EXT = "fileExt";
+  const FILE_WATCH = "watchFile";
   const IS_ENABLED = "isEnabled";
   const KEY_ACCESS = "accessKey";
   const KEY_EDITOR = "editorShortCut";
@@ -68,6 +69,7 @@
     EXT_CHROME_ID,
     EXT_WEB_ID,
     FILE_EXT,
+    FILE_WATCH,
     IS_ENABLED,
     KEY_ACCESS,
     KEY_EDITOR,
