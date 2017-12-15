@@ -259,11 +259,11 @@
   };
 
   /**
-   * get temporary file
+   * get temporary file from file data
    * @param {Object} data - temporary file data
    * @returns {AsyncFunction} - write stdout
    */
-  const getTmpFile = async (data = {}) => {
+  const getTmpFileFromFileData = async (data = {}) => {
     const {dataId, dir, host, tabId, windowId} = data;
     let msg;
     if (dataId && dir && host && tabId && windowId) {
@@ -305,12 +305,12 @@
   };
 
   /**
-   * watch temporary file
+   * get temporary file from given file name
    * @param {string} evtType - event type
    * @param {string} fileName - file name
    * @returns {Promise.<Array>} - result of each handler
    */
-  const watchTmpFile = async (evtType, fileName) => {
+  const getTmpFileFromWatcherFileName = async (evtType, fileName) => {
     const func = [];
     fileMap[FILE_WATCH].forEach(async (fsWatcher, key) => {
       if (await isString(fileName) && await isString(key) &&
@@ -338,6 +338,20 @@
       }
     });
     return Promise.all(func);
+  };
+
+  /**
+   * watch temporary file
+   * @param {string} evtType - event type
+   * @param {string} fileName - file name
+   * @returns {?AsyncFunction} - get temp file from file name
+   */
+  const watchTmpFile = (evtType, fileName) => {
+    let func;
+    if (isString(evtType) && isString(fileName)) {
+      func = getTmpFileFromWatcherFileName(evtType, fileName).catch(throwErr);
+    }
+    return func || null;
   };
 
   /**
@@ -459,7 +473,7 @@
             func.push(createTmpFile(obj).then(handleCreatedTmpFile));
             break;
           case TMP_FILE_GET:
-            func.push(getTmpFile(obj));
+            func.push(getTmpFileFromFileData(obj));
             break;
           case TMP_FILES_PB_REMOVE:
             func.push(initPrivateTmpDir(obj));
