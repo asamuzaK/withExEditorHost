@@ -58,7 +58,7 @@
     if (!fsWatcher) {
       fsWatcher = fileMap[FILE_WATCH].get(key);
     }
-    fsWatcher && fsWatcher.watcher.close();
+    fsWatcher && fsWatcher.close();
     fileMap[FILE_WATCH].delete(key);
   };
 
@@ -385,6 +385,12 @@
             encoding: CHAR,
           };
           fileMap[FILE_WATCH].set(filePath, watch(filePath, opt, watchTmpFile));
+        } else {
+          try {
+            fileMap[FILE_WATCH].has(filePath) && await stopWatchFile(filePath);
+          } catch (e) {
+            await writeStdout(hostMsg(e.message, "error"));
+          }
         }
       }
     }
