@@ -325,10 +325,9 @@
                 const value =
                   await readFile(key, {encoding: CHAR, flag: "r"}) || "";
                 data.timestamp = await getFileTimestamp(key) || 0;
-                const msg = {
+                func.push(writeStdout({
                   [TMP_FILE_RES]: {data, value},
-                };
-                func.push(writeStdout(msg));
+                }));
               }
             }
           }
