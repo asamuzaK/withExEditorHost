@@ -180,7 +180,7 @@
    */
   const portHostVersion = async minVer => {
     let msg;
-    if (isString(minVer)) {
+    if (await isString(minVer)) {
       const result = await compareSemVer(hostVersion, minVer);
       if (Number.isInteger(result)) {
         msg = {
@@ -430,7 +430,7 @@
       const {protocol} = new URL(uri);
       if (protocol === "file:") {
         const file = await convertUriToFilePath(uri);
-        if (file && isFile(file)) {
+        if (file && await isFile(file)) {
           func = spawnChildProcess(file);
         }
       }
