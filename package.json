@@ -18,13 +18,13 @@
     "test": "mocha test"
   },
   "dependencies": {
-    "semver-parser": "^1.0.12",
-    "web-ext-native-msg": "^2.1.6"
+    "semver-parser": "^1.0.13",
+    "web-ext-native-msg": "^2.1.7"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "eslint": "^4.14.0",
-    "mocha": "^4.0.1"
+    "mocha": "^4.1.0"
   },
   "version": "2.2.2"
 }
