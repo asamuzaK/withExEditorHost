@@ -12,6 +12,7 @@
   const {compareSemVer} = require("semver-parser");
   const {isString, throwErr} = require("./modules/common");
   const {version: hostVersion} = require("./package.json");
+  const {URL} = require("url");
   const {watch} = require("fs");
   const os = require("os");
   const path = require("path");
