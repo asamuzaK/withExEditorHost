@@ -372,10 +372,8 @@
         const dPath = arr && await createDir(arr, PERM_DIR);
         const fileId = [windowId, tabId, host, dataId].join("_");
         filePath = dPath === path.join(...arr) && dataId && extType &&
-                     await createFile(
-                       path.join(dPath, dataId + extType), value,
-                       {encoding: CHAR, flag: "w", mode: PERM_FILE}
-                     );
+          await createFile(path.join(dPath, dataId + extType), value,
+                           {encoding: CHAR, flag: "w", mode: PERM_FILE});
         filePath && dir && fileMap[dir] &&
           fileMap[dir].set(fileId, {data, filePath});
         if (!incognito && mode === MODE_EDIT && syncAuto) {
