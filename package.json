@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "semver-parser": "^1.0.15",
-    "web-ext-native-msg": "^2.2.2"
+    "web-ext-native-msg": "^2.2.3"
   },
   "devDependencies": {
     "chai": "^4.1.2",
