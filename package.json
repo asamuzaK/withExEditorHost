@@ -15,7 +15,7 @@
   "main": "./index.js",
   "scripts": {
     "lint": "eslint .",
-    "setup": "npm install && node ./setup.js",
+    "setup": "npm install && node ./index.js --setup",
     "start": "node ./index.js",
     "test": "mocha test"
   },

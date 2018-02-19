@@ -5,12 +5,13 @@
 {
   /* api */
   const {
-    ChildProcess, CmdArgs, Input, Output,
+    ChildProcess, CmdArgs, Input, Output, Setup,
     convertUriToFilePath, createDir, createFile, getFileNameFromFilePath,
     getFileTimestamp, isDir, isExecutable, isFile, removeDir, readFile,
   } = require("web-ext-native-msg");
   const {compareSemVer} = require("semver-parser");
   const {isString, throwErr} = require("./modules/common");
+  const {handleSetupCallback} = require("./modules/setup");
   const {version: hostVersion} = require("./package.json");
   const {URL} = require("url");
   const {watch} = require("fs");
@@ -21,9 +22,10 @@
   /* constants */
   const {
     EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
-    FILE_WATCH, HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW,
-    MODE_EDIT, PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
-    TMP_FILE_CREATE, TMP_FILE_DATA_PORT, TMP_FILE_GET, TMP_FILE_RES,
+    EXT_CHROME_ID, EXT_WEB_ID, FILE_WATCH, HOST, HOST_DESC, HOST_VERSION,
+    HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
+    TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
+    TMP_FILE_DATA_PORT, TMP_FILE_GET, TMP_FILE_RES,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
@@ -519,8 +521,11 @@
    */
   const handleExit = code => {
     const msg = (new Output()).encode(hostMsg(`exit ${code || 0}`, "exit"));
-    removeDir(path.join(...TMPDIR_APP), TMPDIR);
-    msg && process.stdout.write(msg);
+    const tmpDirPath = path.join(...TMPDIR_APP);
+    if (isDir(tmpDirPath)) {
+      removeDir(tmpDirPath, TMPDIR);
+      msg && process.stdout.write(msg);
+    }
   };
 
   /* process */
@@ -530,8 +535,30 @@
   process.stdin.on("data", readStdin);
 
   /* startup */
-  Promise.all([
-    createDir(TMPDIR_FILES, PERM_DIR),
-    createDir(TMPDIR_FILES_PB, PERM_DIR),
-  ]).then(portAppStatus).catch(handleReject);
+  {
+    const [, , ...args] = process.argv;
+    let setup;
+    if (Array.isArray(args) && args.length) {
+      for (const arg of args) {
+        if (/^--setup$/i.test(arg)) {
+          setup = true;
+          break;
+        }
+      }
+    }
+    if (setup) {
+      (new Setup({
+        hostDescription: HOST_DESC,
+        hostName: HOST,
+        chromeExtensionIds: [EXT_CHROME_ID],
+        webExtensionIds: [EXT_WEB_ID],
+        callback: handleSetupCallback,
+      })).run();
+    } else {
+      Promise.all([
+        createDir(TMPDIR_FILES, PERM_DIR),
+        createDir(TMPDIR_FILES_PB, PERM_DIR),
+      ]).then(portAppStatus).catch(handleReject);
+    }
+  }
 }
