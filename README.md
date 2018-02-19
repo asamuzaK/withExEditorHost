@@ -41,11 +41,11 @@ Note that the host runs with [Node.js](https://nodejs.org/en/ "Node.js"), so if 
 Also check the required Node.js version in the host's release note.
 Currently, Node.js v8.9.0 or higher is required.
 
-Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command to complete the installation.
+Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command to complete the installation and setup.
 
 ```
 > cd path/to/withExEditorHost
-> npm install
+> npm run setup
 ```
 
 ***
@@ -53,6 +53,7 @@ Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to 
 ## Setting up the host
 
 Open "cmd.exe" / "terminal" and run setup script.
+NOTE: When installing the host, it will be executed automatically so you do not need to enter the following command.
 
 ```
 > cd path/to/withExEditorHost
