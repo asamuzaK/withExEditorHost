@@ -547,18 +547,13 @@
       }
     }
     if (setup) {
-      const {name: appFile} = path.parse(process.execPath);
-      const opt = {
+      (new Setup({
         hostDescription: HOST_DESC,
         hostName: HOST,
         chromeExtensionIds: [EXT_CHROME_ID],
         webExtensionIds: [EXT_WEB_ID],
         callback: handleSetupCallback,
-      };
-      if (!/^node(?:js)?$/i.test(appFile)) {
-        opt.appFile = appFile;
-      }
-      (new Setup(opt)).run();
+      })).run();
     } else {
       Promise.all([
         createDir(TMPDIR_FILES, PERM_DIR),
