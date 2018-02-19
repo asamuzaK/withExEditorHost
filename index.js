@@ -557,7 +557,7 @@
       };
       if (!/^node(?:js)?$/i.test(appFile)) {
         opt.appFile = appFile;
-      };
+      }
       (new Setup(opt)).run();
     } else {
       Promise.all([
