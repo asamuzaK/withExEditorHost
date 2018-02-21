@@ -26,10 +26,10 @@
     "setup": "npm install && node ./index.js --setup",
     "start": "node ./index.js",
     "test": "mocha test",
-    "zippkg:linux": "jszip ./pkg/linux/index -o ./dest/linux.zip",
-    "zippkg:macos": "jszip ./pkg/macos/index -o ./dest/macos.zip",
-    "zippkg:win32": "jszip ./pkg/win32/index.exe -o ./dest/win32.zip",
-    "zippkg:win64": "jszip ./pkg/win64/index.exe -o ./dest/win64.zip"
+    "zippkg:linux": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/linux/index -o ./dest/linux.zip",
+    "zippkg:macos": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/macos/index -o ./dest/macos.zip",
+    "zippkg:win32": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win32/index.exe -o ./dest/win32.zip",
+    "zippkg:win64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
   "dependencies": {
     "semver-parser": "^1.0.15",
