@@ -14,8 +14,7 @@ script:
   - npm run-script test
 
 before_deploy:
-  - npm install
-  - npm run-script beforedeploy
+  - unzip -d ./pkg/linux ./dest/linux.zip && chmod 701 ./pkg/linux/index && zip ./dest/linux.zip ./pkg/linux/index ./LICENSE ./README.md ./README.ja.md
 
 deploy:
   provider: releases
