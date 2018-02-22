@@ -14,22 +14,22 @@
   },
   "main": "./index.js",
   "scripts": {
-    "build": "npm run clean && npm-run-all -p build:*",
-    "build:linux": "pkg ./index.js --targets linux --out-path ./pkg/linux && npm run zippkg:linux",
-    "build:macos": "pkg ./index.js --targets macos --out-path ./pkg/macos && npm run zippkg:macos",
-    "build:win32": "pkg ./index.js --targets win-x86 --out-path ./pkg/win32 && npm run zippkg:win32",
-    "build:win64": "pkg ./index.js --targets win-x64 --out-path ./pkg/win64 && npm run zippkg:win64",
+    "build": "npm run clean && npm-run-all -p package:* && npm-run-all -p zippackage:*",
     "clean": "rimraf ./dest/* ./pkg/*",
     "clean:pkg": "rimraf ./pkg",
     "lint": "eslint .",
+    "package:linux": "pkg ./index.js --targets linux --out-path ./pkg/linux",
+    "package:macos": "pkg ./index.js --targets macos --out-path ./pkg/macos",
+    "package:win32": "pkg ./index.js --targets win-x86 --out-path ./pkg/win32",
+    "package:win64": "pkg ./index.js --targets win-x64 --out-path ./pkg/win64",
     "postbuild": "npm run clean:pkg",
     "setup": "npm install && node ./index.js --setup",
     "start": "node ./index.js",
     "test": "mocha test",
-    "zippkg:linux": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/linux/index -o ./dest/linux.zip",
-    "zippkg:macos": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/macos/index -o ./dest/macos.zip",
-    "zippkg:win32": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win32/index.exe -o ./dest/win32.zip",
-    "zippkg:win64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
+    "zippackage:linux": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/linux/index -o ./dest/linux.zip",
+    "zippackage:macos": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/macos/index -o ./dest/macos.zip",
+    "zippackage:win32": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/win32/index.exe -o ./dest/win32.zip",
+    "zippackage:win64": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
   "dependencies": {
     "semver-parser": "^1.0.15",
@@ -38,12 +38,11 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "eslint": "^4.18.0",
-    "jszip": "^3.1.5",
-    "jszip-cli": "^1.4.24",
     "mocha": "^5.0.1",
     "npm-run-all": "^4.1.2",
     "pkg": "^4.3.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.6.2",
+    "ziptool": "^1.0.2"
   },
   "version": "2.2.6"
 }
