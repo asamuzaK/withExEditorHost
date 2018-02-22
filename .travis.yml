@@ -29,6 +29,7 @@ deploy:
     - dest/win64.zip
   on:
     tags: true
+    node: "9"
 
 after_deploy:
   - npm run-script clean:pkg
