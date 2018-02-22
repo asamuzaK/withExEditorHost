@@ -15,8 +15,7 @@ script:
 
 before_deploy:
   - npm install
-  - ziptool --unzip ./dest/linux.zip -o ./pkg/linux && chmod 701 ./pkg/linux/index && npm run-script zippackage:linux
-  - ziptool --unzip ./dest/macos.zip -o ./pkg/macos && chmod 701 ./pkg/macos/index && npm run-script zippackage:macos
+  - npm run-script beforedeploy
 
 deploy:
   provider: releases

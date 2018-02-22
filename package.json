@@ -14,6 +14,9 @@
   },
   "main": "./index.js",
   "scripts": {
+    "beforedeploy": "npm-run-all -p beforedeploy:*",
+    "beforedeploy:linux": "ziptool --unzip ./dest/linux.zip -o ./pkg/linux && chmod 701 ./pkg/linux/index && npm run-script zippackage:linux",
+    "beforedeploy:macos": "ziptool --unzip ./dest/macos.zip -o ./pkg/macos && chmod 701 ./pkg/macos/index && npm run-script zippackage:macos",
     "build": "npm run clean && npm-run-all -p package:* && npm-run-all -p zippackage:*",
     "clean": "rimraf ./dest/* ./pkg/*",
     "clean:dest": "rimraf ./dest",
