@@ -16,7 +16,7 @@ script:
 before_deploy:
   - npm install
   - mkdir ./pkg
-  - mkdir ./pkg/linux && npm run-script pacage:linux && chmod 701 ./pkg/linux/index && rm ./dest/linux.zip && npm run-script zippackage:linux
+  - mkdir ./pkg/linux && npm run-script package:linux && chmod 701 ./pkg/linux/index && rm ./dest/linux.zip && npm run-script zippackage:linux
   - mkdir ./pkg/macos && unzip -d ./pkg/macos ./dest/macos.zip && chmod 701 ./pkg/macos/index && rm ./dest/macos.zip && npm run-script zippackage:macos
 
 deploy:
