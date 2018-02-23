@@ -16,7 +16,6 @@
   "scripts": {
     "build": "npm run clean && npm-run-all -p package:* && npm-run-all -p zippackage:*",
     "clean": "rimraf ./dest/* ./pkg/*",
-    "clean:dest": "rimraf ./dest",
     "clean:pkg": "rimraf ./pkg",
     "lint": "eslint .",
     "package:linux": "pkg ./index.js --targets linux --out-path ./pkg/linux",
