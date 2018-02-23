@@ -18,6 +18,8 @@ before_deploy:
   - mkdir ./pkg
   - mkdir ./pkg/linux && npm run-script package:linux && chmod 701 ./pkg/linux/index && rm ./dest/linux.zip && npm run-script zippackage:linux
   - mkdir ./pkg/macos && npm run-script package:macos && chmod 701 ./pkg/macos/index && rm ./dest/macos.zip && npm run-script zippackage:macos
+  - mkdir ./pkg/win32 && npm run-script package:win32 && rm ./dest/win32.zip && npm run-script zippackage:win32
+  - mkdir ./pkg/win64 && npm run-script package:win64 && rm ./dest/win64.zip && npm run-script zippackage:win64
 
 deploy:
   provider: releases
