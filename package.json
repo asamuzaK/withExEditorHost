@@ -14,19 +14,38 @@
   },
   "main": "./index.js",
   "scripts": {
+    "build": "npm run clean && npm-run-all -p package:* && npm-run-all -p zippackage:*",
+    "clean": "rimraf ./dest/* ./pkg/*",
+    "clean:dest": "rimraf ./dest",
+    "clean:pkg": "rimraf ./pkg",
     "lint": "eslint .",
-    "setup": "npm install && node ./setup.js",
+    "package:linux32": "pkg ./index.js --targets linux-x86 --out-path ./pkg/linux32",
+    "package:linux64": "pkg ./index.js --targets linux-x64 --out-path ./pkg/linux64",
+    "package:macos": "pkg ./index.js --targets macos --out-path ./pkg/macos",
+    "package:win32": "pkg ./index.js --targets win-x86 --out-path ./pkg/win32",
+    "package:win64": "pkg ./index.js --targets win-x64 --out-path ./pkg/win64",
+    "postbuild": "npm run clean:pkg",
+    "setup": "npm install && node ./index.js --setup",
     "start": "node ./index.js",
-    "test": "mocha test"
+    "test": "mocha test",
+    "zippackage:linux32": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/linux-x86/index -o ./dest/linux-x86.zip",
+    "zippackage:linux64": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/linux-x64/index -o ./dest/linux-x86_64.zip",
+    "zippackage:macos": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/macos/index -o ./dest/macos.zip",
+    "zippackage:win32": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/win32/index.exe -o ./dest/win32.zip",
+    "zippackage:win64": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
   "dependencies": {
     "semver-parser": "^1.0.15",
-    "web-ext-native-msg": "^2.2.0"
+    "web-ext-native-msg": "^2.2.3"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "eslint": "^4.18.0",
-    "mocha": "^5.0.1"
+    "mocha": "^5.0.1",
+    "npm-run-all": "^4.1.2",
+    "pkg": "^4.3.0",
+    "rimraf": "^2.6.2",
+    "ziptool": "^1.0.2"
   },
-  "version": "2.2.6"
+  "version": "3.0.0-a.11"
 }

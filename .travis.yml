@@ -12,3 +12,32 @@ before_script:
 script:
   - npm run-script lint
   - npm run-script test
+
+before_deploy:
+  - npm install
+  - mkdir ./pkg
+  - mkdir ./dest
+  - mkdir ./pkg/linux32 && npm run-script package:linux32 && chmod 755 ./pkg/linux32/index && npm run-script zippackage:linux32
+  - mkdir ./pkg/linux64 && npm run-script package:linux64 && chmod 755 ./pkg/linux64/index && npm run-script zippackage:linux64
+  - mkdir ./pkg/macos && npm run-script package:macos && chmod 755 ./pkg/macos/index && npm run-script zippackage:macos
+  - mkdir ./pkg/win32 && npm run-script package:win32 && npm run-script zippackage:win32
+  - mkdir ./pkg/win64 && npm run-script package:win64 && npm run-script zippackage:win64
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: "Aj79TxQLaAdYi0IWY67aDpIMTTJ116EYgN2q4xob1DLG5qLmeSz8dtCGy23DVVjqhI+9z3w95GPFUqvWiStIj+N+r85eHzuMqGOynfY0E8/eChMMGsSjvU3EHLEyIyxHOs/fgo1wK+syaOrHb6A5ruJqZpnas3fcaNKJukaP4UHWtZyvLd+3w/6C1x1oGlJhfFuH7JQo/JXepz8hYS65dStAWtkd/kEy8305vALVXSIYCkuIDf+k0rx13/wDIiDWvE4XASE5U6y0pdpq+1xm+Dtx2rjb89rupnStHegmQce4Az9zrlTOnLc0jnKEdIAhat6wY7Mtv/hln5vAE8/ikbESUg8fQ7/G0/nBhwMk+NYugXkOdIjXmj6/Al3ckiahA9iIlDzo1ubXhJ72oGsBpik5DMY85N7msCzQO1xWYBVodGas6iHaHHuFkJcdBPhj5RT0lqPzj5grMddOFbp8iugwiD7FMKwsbjxVo2hXKfxx9IWsZf2JSZzODQOWQtXThynfsN0QfWBeJGN8Otwrww8PfKQzZO2htolXIrRmYUSjmTZZXQ7T+9MClE3rs1Qj/kJBDN4jFjsHErkpoq2ANar62jJDjXGzdk0XHyX4lwZGkcbCvzPXxHe0mNpgrpCx3TxeBrBa+9WDY9eOBAkMM6S1IjNIr5UGVW1vTS5DSUE="
+  file:
+    - dest/win64.zip
+    - dest/win32.zip
+    - dest/macos.zip
+    - dest/linux-x86_64.zip
+    - dest/linux-x86.zip
+  on:
+    tags: true
+    node: "9"
+
+after_deploy:
+  - npm run-script clean:pkg
+  - npm run-script clean:dest

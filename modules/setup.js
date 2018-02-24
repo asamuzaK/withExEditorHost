@@ -5,18 +5,15 @@
 {
   /* api */
   const {
-    CmdArgs, Setup,
-    createFile, isDir, isExecutable,
+    CmdArgs, createFile, isDir, isExecutable,
   } = require("web-ext-native-msg");
-  const {isString, logErr} = require("./modules/common");
+  const {isString, logErr} = require("./common");
   const path = require("path");
   const process = require("process");
   const readline = require("readline");
 
   /* constants */
-  const {
-    EDITOR_CONFIG_FILE, EXT_CHROME_ID, EXT_WEB_ID, HOST, HOST_DESC,
-  } = require("./modules/constant");
+  const {EDITOR_CONFIG_FILE} = require("./constant");
   const CHAR = "utf8";
   const INDENT = 2;
   const PERM_FILE = 0o600;
@@ -149,12 +146,7 @@
     return func || null;
   };
 
-  /* run setup */
-  (new Setup({
-    hostDescription: HOST_DESC,
-    hostName: HOST,
-    chromeExtensionIds: [EXT_CHROME_ID],
-    webExtensionIds: [EXT_WEB_ID],
-    callback: handleSetupCallback,
-  })).run();
+  module.exports = {
+    handleSetupCallback,
+  };
 }
