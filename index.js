@@ -432,7 +432,8 @@
         fileMap[dir].delete(fileId);
         func.push(unwatchFile(fileId));
       } else {
-        const fileIdDir = [windowId, tabId, host].join("_");
+        const fileIdDir = host && [windowId, tabId, host].join("_") ||
+                          [windowId, tabId].join("_");
         fileMap[dir].forEach((value, key) => {
           if (key.startsWith(fileIdDir)) {
             fileMap[dir].delete(key);
