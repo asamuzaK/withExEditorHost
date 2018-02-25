@@ -22,6 +22,7 @@
   const EXT_WEB_ID = "jid1-WiAigu4HIo0Tag@jetpack";
   const FILE_EXT = "fileExt";
   const FILE_WATCH = "watchFile";
+  const FILE_UNWATCH = "unwatchFile";
   const IS_ENABLED = "isEnabled";
   const KEY_ACCESS = "accessKey";
   const KEY_EDITOR = "editorShortCut";
@@ -47,6 +48,7 @@
   const TMP_FILES_PB_REMOVE = "removePrivateTmpFiles";
   const TMP_FILE_CREATE = "createTmpFile";
   const TMP_FILE_DATA_PORT = "portTmpFileData";
+  const TMP_FILE_DATA_REMOVE = "removeTmpFileData";
   const TMP_FILE_GET = "getTmpFile";
   const TMP_FILE_RES = "resTmpFile";
   const VARS_SET = "setVars";
@@ -70,6 +72,7 @@
     EXT_WEB_ID,
     FILE_EXT,
     FILE_WATCH,
+    FILE_UNWATCH,
     IS_ENABLED,
     KEY_ACCESS,
     KEY_EDITOR,
@@ -95,6 +98,7 @@
     TMP_FILES_PB_REMOVE,
     TMP_FILE_CREATE,
     TMP_FILE_DATA_PORT,
+    TMP_FILE_DATA_REMOVE,
     TMP_FILE_GET,
     TMP_FILE_RES,
     VARS_SET,
