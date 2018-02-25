@@ -76,12 +76,11 @@
   const createWatcherKeyFromFileData = async (data = {}) => {
     const {dataId, dir, host, tabId, windowId} = data;
     let key;
-      if (dir && fileMap[dir] && dataId && host && tabId && windowId) {
-        const fileId = [windowId, tabId, host, dataId].join("_");
-        const {filePath} = fileMap[dir].get(fileId);
-        if (filePath) {
-          key = filePath;
-        }
+    if (dir && fileMap[dir] && dataId && host && tabId && windowId) {
+      const fileId = [windowId, tabId, host, dataId].join("_");
+      const {filePath} = fileMap[dir].get(fileId);
+      if (filePath) {
+        key = filePath;
       }
     }
     return key || null;
