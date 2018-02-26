@@ -429,15 +429,18 @@
     if (dir && fileMap[dir]) {
       if (dataId) {
         const fileId = [windowId, tabId, host, dataId].join("_");
+        const {filePath} = fileMap[dir].get(fileId);
+        fileMap[FILE_WATCH].has(filePath) && func.push(unwatchFile(filePath));
         fileMap[dir].delete(fileId);
-        func.push(unwatchFile(fileId));
       } else {
         const fileIdDir = host && [windowId, tabId, host].join("_") ||
                           [windowId, tabId].join("_");
         fileMap[dir].forEach((value, key) => {
           if (key.startsWith(fileIdDir)) {
+            const {filePath} = value;
+            fileMap[FILE_WATCH].has(filePath) &&
+              func.push(unwatchFile(filePath));
             fileMap[dir].delete(key);
-            func.push(unwatchFile(key));
           }
         });
       }
