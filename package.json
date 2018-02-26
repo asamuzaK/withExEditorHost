@@ -21,7 +21,6 @@
     "lint": "eslint .",
     "package:linux32": "pkg ./index.js --targets linux-x86 --out-path ./pkg/linux32",
     "package:linux64": "pkg ./index.js --targets linux-x64 --out-path ./pkg/linux64",
-    "package:linuxarm": "pkg ./index.js --targets linux-armv7 --out-path ./pkg/linuxarm",
     "package:macos": "pkg ./index.js --targets macos --out-path ./pkg/macos",
     "package:win32": "pkg ./index.js --targets win-x86 --out-path ./pkg/win32",
     "package:win64": "pkg ./index.js --targets win-x64 --out-path ./pkg/win64",
@@ -30,7 +29,6 @@
     "test": "mocha test",
     "zippackage:linux32": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/linux32/index -o ./dest/linux-x86.zip",
     "zippackage:linux64": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/linux64/index -o ./dest/linux-x86_64.zip",
-    "zippackage:linuxarm": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/linuxarm/index -o ./dest/linux-armv7.zip",
     "zippackage:macos": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/macos/index -o ./dest/macos.zip",
     "zippackage:win32": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/win32/index.exe -o ./dest/win32.zip",
     "zippackage:win64": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
