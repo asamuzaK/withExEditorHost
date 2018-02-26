@@ -53,6 +53,17 @@
   };
 
   /**
+   * delete key from fileMap
+   * @param {string} prop - fileMap property
+   * @param {string} key - key
+   * @returns {void}
+   */
+  const deleteKeyFromFileMap = async (prop, key) =>
+    isString(prop) && fileMap[prop] &&
+    isString(key) && fileMap[prop].has(key) &&
+      fileMap[prop].delete(key);
+
+  /**
    * unwatch file
    * @param {string} key - key
    * @param {Object} [fsWatcher] - fs.FSWatcher
@@ -64,7 +75,7 @@
         fsWatcher = fileMap[FILE_WATCH].get(key);
       }
       fsWatcher && fsWatcher.close();
-      fileMap[FILE_WATCH].delete(key);
+      await deleteKeyFromFileMap(FILE_WATCH, key);
     }
   };
 
@@ -429,18 +440,20 @@
     if (dir && fileMap[dir]) {
       if (dataId) {
         const fileId = [windowId, tabId, host, dataId].join("_");
-        const {filePath} = fileMap[dir].get(fileId);
-        fileMap[FILE_WATCH].has(filePath) && func.push(unwatchFile(filePath));
-        fileMap[dir].delete(fileId);
+        if (fileMap[dir].has(fileId)) {
+          const {filePath} = fileMap[dir].get(fileId);
+          fileMap[FILE_WATCH].has(filePath) && func.push(unwatchFile(filePath));
+          func.push(deleteKeyFromFileMap(dir, fileId));
+        }
       } else {
-        const fileIdDir = host && [windowId, tabId, host].join("_") ||
-                          [windowId, tabId].join("_");
+        const keyPart = host && [windowId, tabId, host].join("_") ||
+                        [windowId, tabId].join("_");
         fileMap[dir].forEach((value, key) => {
-          if (key.startsWith(fileIdDir)) {
+          if (key.startsWith(keyPart)) {
             const {filePath} = value;
             fileMap[FILE_WATCH].has(filePath) &&
               func.push(unwatchFile(filePath));
-            fileMap[dir].delete(key);
+            func.push(deleteKeyFromFileMap(dir, key));
           }
         });
       }
