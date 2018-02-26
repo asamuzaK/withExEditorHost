@@ -35,7 +35,7 @@ deploy:
     - dest/macos.zip
     - dest/linux-x86_64.zip
     - dest/linux-x86.zip
-    - dest/linux-ARMv7.zip
+    - dest/linux-armv7.zip
 
   on:
     tags: true
