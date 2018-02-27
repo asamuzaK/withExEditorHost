@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "semver-parser": "^1.0.15",
-    "web-ext-native-msg": "^2.2.3"
+    "web-ext-native-msg": "^2.2.4"
   },
   "devDependencies": {
     "ajv": "^6.2.0",
