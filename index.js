@@ -22,10 +22,11 @@
   /* constants */
   const {
     EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
-    EXT_CHROME_ID, EXT_WEB_ID, FILE_WATCH, HOST, HOST_DESC, HOST_VERSION,
-    HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
-    TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
-    TMP_FILE_DATA_PORT, TMP_FILE_GET, TMP_FILE_RES,
+    EXT_CHROME_ID, EXT_WEB_ID, FILE_WATCH, FILE_UNWATCH, HOST, HOST_DESC,
+    HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT,
+    PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE,
+    TMP_FILE_CREATE, TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET,
+    TMP_FILE_RES,
   } = require("./modules/constant");
   const APP = `${process.pid}`;
   const CHAR = "utf8";
@@ -52,17 +53,48 @@
   };
 
   /**
-   * stop watch file
+   * delete key from fileMap
+   * @param {string} prop - fileMap property
+   * @param {string} key - key
+   * @returns {void}
+   */
+  const deleteKeyFromFileMap = async (prop, key) =>
+    isString(prop) && fileMap[prop] &&
+    isString(key) && fileMap[prop].has(key) &&
+      fileMap[prop].delete(key);
+
+  /**
+   * unwatch file
    * @param {string} key - key
    * @param {Object} [fsWatcher] - fs.FSWatcher
    * @returns {void}
    */
-  const stopWatchFile = async (key, fsWatcher) => {
-    if (!fsWatcher) {
-      fsWatcher = fileMap[FILE_WATCH].get(key);
+  const unwatchFile = async (key, fsWatcher) => {
+    if (isString(key)) {
+      if (!fsWatcher) {
+        fsWatcher = fileMap[FILE_WATCH].get(key);
+      }
+      fsWatcher && fsWatcher.close();
+      await deleteKeyFromFileMap(FILE_WATCH, key);
     }
-    fsWatcher && fsWatcher.close();
-    fileMap[FILE_WATCH].delete(key);
+  };
+
+  /**
+   * create watcher key from temporary file data
+   * @param {Object} data - temporary file data
+   * @returns {?string} - key
+   */
+  const createWatcherKeyFromFileData = async (data = {}) => {
+    const {dataId, dir, host, tabId, windowId} = data;
+    let key;
+    if (dir && fileMap[dir] && dataId && host && tabId && windowId) {
+      const fileId = [windowId, tabId, host, dataId].join("_");
+      const {filePath} = fileMap[dir].get(fileId);
+      if (filePath) {
+        key = filePath;
+      }
+    }
+    return key || null;
   };
 
   /**
@@ -335,7 +367,7 @@
             }
           }
         } else {
-          func.push(stopWatchFile(key, fsWatcher));
+          func.push(unwatchFile(key, fsWatcher));
         }
       }
     });
@@ -387,7 +419,7 @@
           fileMap[FILE_WATCH].set(filePath, watch(filePath, opt, watchTmpFile));
         } else {
           try {
-            fileMap[FILE_WATCH].has(filePath) && await stopWatchFile(filePath);
+            fileMap[FILE_WATCH].has(filePath) && await unwatchFile(filePath);
           } catch (e) {
             await writeStdout(hostMsg(e.message, "error"));
           }
@@ -395,6 +427,38 @@
       }
     }
     return data && filePath && {data, filePath} || null;
+  };
+
+  /**
+   * remove temporary file data
+   * @param {Object} data - temporary file data
+   * @returns {Promise.<Array>} - result of each handler
+   */
+  const removeTmpFileData = async (data = {}) => {
+    const {dataId, dir, host, tabId, windowId} = data;
+    const func = [];
+    if (dir && fileMap[dir]) {
+      if (dataId) {
+        const fileId = [windowId, tabId, host, dataId].join("_");
+        if (fileMap[dir].has(fileId)) {
+          const {filePath} = fileMap[dir].get(fileId);
+          fileMap[FILE_WATCH].has(filePath) && func.push(unwatchFile(filePath));
+          func.push(deleteKeyFromFileMap(dir, fileId));
+        }
+      } else {
+        const keyPart = host && [windowId, tabId, host].join("_") ||
+                        [windowId, tabId].join("_");
+        fileMap[dir].forEach((value, key) => {
+          if (key.startsWith(keyPart)) {
+            const {filePath} = value;
+            fileMap[FILE_WATCH].has(filePath) &&
+              func.push(unwatchFile(filePath));
+            func.push(deleteKeyFromFileMap(dir, key));
+          }
+        });
+      }
+    }
+    return Promise.all(func);
   };
 
   /* local files */
@@ -469,6 +533,9 @@
           case EDITOR_CONFIG_GET:
             func.push(getEditorConfig(obj));
             break;
+          case FILE_UNWATCH:
+            func.push(createWatcherKeyFromFileData(obj).then(unwatchFile));
+            break;
           case HOST_VERSION_CHECK:
             func.push(portHostVersion(obj));
             break;
@@ -477,6 +544,9 @@
             break;
           case TMP_FILE_CREATE:
             func.push(createTmpFile(obj).then(handleCreatedTmpFile));
+            break;
+          case TMP_FILE_DATA_REMOVE:
+            func.push(removeTmpFileData(obj));
             break;
           case TMP_FILE_GET:
             func.push(getTmpFileFromFileData(obj));
