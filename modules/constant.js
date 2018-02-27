@@ -22,7 +22,6 @@
   const EXT_WEB_ID = "jid1-WiAigu4HIo0Tag@jetpack";
   const FILE_EXT = "fileExt";
   const FILE_WATCH = "watchFile";
-  const FILE_UNWATCH = "unwatchFile";
   const IS_ENABLED = "isEnabled";
   const KEY_ACCESS = "accessKey";
   const KEY_EDITOR = "editorShortCut";
@@ -72,7 +71,6 @@
     EXT_WEB_ID,
     FILE_EXT,
     FILE_WATCH,
-    FILE_UNWATCH,
     IS_ENABLED,
     KEY_ACCESS,
     KEY_EDITOR,
