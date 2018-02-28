@@ -15,6 +15,7 @@
   "main": "./index.js",
   "scripts": {
     "build": "npm run clean && npm-run-all -p package:* && npm-run-all -p zippackage:*",
+    "build:32": "npm run clean && npm-run-all -p package:linux32 package:win32 && npm-run-all -p zippackage:linux32 zippackage:win32",
     "clean": "rimraf ./dest/* ./pkg/*",
     "clean:dest": "rimraf ./dest",
     "clean:pkg": "rimraf ./pkg",

@@ -17,8 +17,9 @@ before_deploy:
   - npm install
   - mkdir ./pkg
   - mkdir ./pkg/linux32 && unzip ./dest/linux-x86.zip -d ./pkg/linux32 && chmod 755 ./pkg/linux32/index && rm ./dest/linux-x86.zip && npm run-script zippackage:linux32
-  - mkdir ./pkg/linux64 && unzip ./dest/linux-x86_64.zip -d ./pkg/linux64 && chmod 755 ./pkg/linux64/index && rm ./dest/linux-x86_64.zip && npm run-script zippackage:linux64
-  - mkdir ./pkg/macos && unzip ./dest/macos.zip -d ./pkg/macos && chmod 755 ./pkg/macos/index && rm ./dest/macos.zip && npm run-script zippackage:macos
+  - mkdir ./pkg/linux64 && npm run-script package:linux64 && chmod 755 ./pkg/linux64/index && npm run-script zippackage:linux64
+  - mkdir ./pkg/macos && npm run-script package:macos && chmod 755 ./pkg/macos/index && npm run-script zippackage:macos
+  - mkdir ./pkg/win64 && npm run-script package:win64 && npm run-script zippackage:win64
 
 deploy:
   provider: releases
@@ -38,4 +39,3 @@ deploy:
 
 after_deploy:
   - npm run-script clean:pkg
-  - npm run-script clean:dest
