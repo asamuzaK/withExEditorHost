@@ -32,7 +32,9 @@ The browser interacts with the host via messages, and the editor is executed by 
 If your browser is not listed or OS for that browser is left blank, file an [issue](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost") for adding support.
 When filing an issue, if you know [where to save the application manifest](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging#App_manifest_location "Native messaging - Mozilla | MDN") in that browser, please let me know.
 
-## Install the host
+## Host installation and setup
+
+NOTE: This is an instruction for `v2.2.x`.
 
 Download a zip file or tar.gz file of the source code from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), after decompressing, save it in an arbitrary place under your home directory (for example, `C:\Users\XXX\withExEditorHost\`).
 If you have a Github account, you can also clone and save the repository.
@@ -41,26 +43,20 @@ Note that the host runs with [Node.js](https://nodejs.org/en/ "Node.js"), so if 
 Also check the required Node.js version in the host's release note.
 Currently, Node.js v8.9.0 or higher is required.
 
-Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command to complete the installation and setup.
+Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command.
 
 ```
 > cd path/to/withExEditorHost
-> npm run setup
+> npm install
 ```
 
-***
-
-## Setting up the host
-
-Open "cmd.exe" / "terminal" and run setup script.
-NOTE: When installing the host, it will be executed automatically so you do not need to enter the following command.
+If successful, run this command.
 
 ```
-> cd path/to/withExEditorHost
 > node setup.js
 ```
 
-When you run the script, you will be asked which browser you want to setup the host for, so please enter the browser name from the list.
+Then you will be asked which browser you want to setup the host for, so please enter the browser name from the list.
 
 After that, you will be prompted for the following, please input as appropriate.
 

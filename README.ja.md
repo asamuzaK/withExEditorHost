@@ -32,7 +32,9 @@
 ブラウザが一覧にない場合やOSがサポート対象になっていない場合は、サポート要望の[イシュー](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost")を登録してください。
 イシューを登録する際、そのブラウザでは[アプリケーションマニフェストをどこに保存すべきか](https://developer.mozilla.org/ja/Add-ons/WebExtensions/Native_messaging#App_manifest_%E3%81%AE%E5%A0%B4%E6%89%80 "Native messaging - Mozilla | MDN")もしご存知でしたら、お知らせください。
 
-## ホストのインストール
+## ホストのインストールとセットアップ
+
+備考：これは`v2.2.x`用のインストラクションです。
 
 [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost")からソースコードのzipファイルかtar.gzファイルをダウンロードして、展開した上で、自分のホームディレクトリ内の任意の場所に保存してください（例えば、`C:\Users\XXX\withExEditorHost\`）。
 Githubのアカウントがある場合は、レポジトリをクローンして保存してもOKです。
@@ -45,22 +47,16 @@ Githubのアカウントがある場合は、レポジトリをクローンし�
 
 ```
 > cd path/to/withExEditorHost
-> npm run setup
+> npm install
 ```
 
-***
-
-## ホストの設定
-
-「cmd.exe」「端末」を開き、セットアップスクリプトを実行します。
-備考：ホストのインストール時には、自動的に実行されますので下記コマンドの入力は不要です。
+続けて、次のコマンドを実行します。
 
 ```
-> cd path/to/withExEditorHost
 > node setup.js
 ```
 
-スクリプトを実行すると、どのブラウザ向けにホストを設定するのか尋ねられますので、リストに表示されたブラウザ名を入力してください。
+どのブラウザ向けにホストを設定するのか尋ねられますので、リストに表示されたブラウザ名を入力してください。
 
 続いて、エディタ関連の以下の入力を求められますので適宜入力してください。
 
