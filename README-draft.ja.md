@@ -89,10 +89,10 @@
 
 ## ソースコードからのホストのセットアップ
 
+ソースコードからのホストの実行には[Node.js](https://nodejs.org/ja/ "Node.js") v8.9.0以上が必要です。
+
 [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost")からソースコードのzipファイルかtar.gzファイルをダウンロードして、展開した上で、自分のホームディレクトリ内の任意の場所に保存してください（例えば、`C:\Users\XXX\withExEditorHost\`）。
 Githubのアカウントがある場合は、レポジトリをクローンして保存してもOKです。
-
-なお、ホストの実行には[Node.js](https://nodejs.org/ja/ "Node.js") v8.9.0以上が必要です。
 
 続いて、Windowsでは「cmd.exe」、Linux / Macでは「端末」（ターミナル）を開き、withExEditorHostの保存先に移動したうえで、下記コマンドを実行してホストの設定を行います。
 

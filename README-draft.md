@@ -89,10 +89,10 @@ Quote path if it contains spaces or backslashes.
 
 ## Host setup from source code
 
+Note that [Node.js](https://nodejs.org/en/ "Node.js") v8.9.0 or higher is required to run the host from source code.
+
 Download a zip file or tar.gz file of the source code from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), after decompressing, save it in an arbitrary place under your home directory (for example, `C:\Users\XXX\withExEditorHost\`).
 If you have a Github account, you can also clone and save the repository.
-
-Note that the host requires [Node.js](https://nodejs.org/en/ "Node.js") v8.9.0 or higher.
 
 Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command.
 
