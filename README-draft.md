@@ -34,7 +34,7 @@ When filing an issue, if you know [where to save the application manifest](https
 
 ## Host setup
 
-NOTE: This is an instruction for `v3.x`.
+NOTE: This is an instruction draft for `v3.x`.
 
 Download a zip file for your OS from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), after decompressing, save it in an arbitrary place under your home directory (for example, `C:\Users\XXX\withExEditorHost\`).
 
@@ -84,6 +84,8 @@ Quote path if it contains spaces or backslashes.
 ```
 > index --setup --config-path="C:\Users\XXX\path\to\another\location"
 ```
+
+***
 
 ## Host setup from source code
 

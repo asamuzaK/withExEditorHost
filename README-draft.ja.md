@@ -85,6 +85,8 @@
 > index --setup --config-path="C:\Users\XXX\path\to\another\location"
 ```
 
+***
+
 ## ソースコードからのホストのセットアップ
 
 [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost")からソースコードのzipファイルかtar.gzファイルをダウンロードして、展開した上で、自分のホームディレクトリ内の任意の場所に保存してください（例えば、`C:\Users\XXX\withExEditorHost\`）。
