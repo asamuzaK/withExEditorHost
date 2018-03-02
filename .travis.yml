@@ -1,6 +1,5 @@
 language: node_js
 sudo: false
-# https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
 dist: trusty
 node_js:
   - "8"
@@ -32,7 +31,6 @@ deploy:
     - dest/macos.zip
     - dest/linux-x86_64.zip
     - dest/linux-x86.zip
-
   on:
     tags: true
     node: "9"
