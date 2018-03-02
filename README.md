@@ -34,6 +34,8 @@ When filing an issue, if you know [where to save the application manifest](https
 
 ## Host setup
 
+NOTE: If you are upgrading from host v2.x, you also need to run the following setup script.
+
 Download a zip file for your OS from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), after decompressing, save it in an arbitrary place under your home directory (for example, `C:\Users\XXX\withExEditorHost\`).
 
 Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command.
