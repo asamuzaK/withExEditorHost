@@ -5,7 +5,7 @@
 {
   /* api */
   const {
-    CmdArgs, createFile, isDir, isExecutable,
+    CmdArgs, createFile, isDir, isExecutable, isFile,
   } = require("web-ext-native-msg");
   const {isString, logErr} = require("./common");
   const path = require("path");
@@ -36,6 +36,18 @@
     editorPath: "",
     cmdArgs: [],
     fileAfterCmdArgs: false,
+  };
+
+  /**
+   * abort setup
+   * @param {string} msg - message
+   * @returns {void}
+   */
+  const abortSetup = msg => {
+    const {rl} = vars;
+    console.info(`Setup aborted: ${msg}`);
+    rl && rl.close();
+    process.exit(1);
   };
 
   /**
@@ -117,13 +129,50 @@
   };
 
   /**
+   * handle editor config file input
+   * @param {string} ans - user input
+   * @returns {void}
+   */
+  const handleEditorConfigFileInput = ans => {
+    const {configPath, rl} = vars;
+    if (!isDir(configPath)) {
+      throw new Error(`No such directory: ${configPath}.`);
+    }
+    if (rl) {
+      const msg =
+        `${path.join(configPath, EDITOR_CONFIG_FILE)} already exists.`;
+      if (isString(ans)) {
+        ans = ans.trim();
+        if (/^y(?:es)?$/i.test(ans)) {
+          rl.question(ques.editorPath, handleEditorPathInput);
+        } else {
+          rl.close();
+          abortSetup(msg);
+        }
+      } else {
+        rl.close();
+        abortSetup(msg);
+      }
+    }
+  };
+
+  /**
    * setup editor
    * @returns {void}
    */
   const setupEditor = () => {
-    const {rl} = vars;
+    const {configPath, rl} = vars;
+    if (!isDir(configPath)) {
+      throw new Error(`No such directory: ${configPath}.`);
+    }
     if (rl) {
-      rl.question(ques.editorPath, handleEditorPathInput);
+      const filePath = path.join(configPath, EDITOR_CONFIG_FILE);
+      if (isFile(filePath)) {
+        rl.question(`${filePath} already exists. Overwrite? [y/n]\n`,
+                    handleEditorConfigFileInput);
+      } else {
+        rl.question(ques.editorPath, handleEditorPathInput);
+      }
     }
   };
 
