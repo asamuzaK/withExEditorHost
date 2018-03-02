@@ -1,7 +1,0 @@
-{
-  "name": "withexeditorhost",
-  "description": "Native messaging host for withExEditor",
-  "path": "C:\\Users\\XXX\\withExEditorHost\\config\\withexeditorhost.cmd",
-  "type": "stdio",
-  "allowed_extensions": ["jid1-WiAigu4HIo0Tag@jetpack"]
-}
