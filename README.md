@@ -32,28 +32,15 @@ The browser interacts with the host via messages, and the editor is executed by 
 If your browser is not listed or OS for that browser is left blank, file an [issue](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost") for adding support.
 When filing an issue, if you know [where to save the application manifest](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging#App_manifest_location "Native messaging - Mozilla | MDN") in that browser, please let me know.
 
-## Host installation and setup
+## Host setup
 
-NOTE: This is an instruction for `v2.2.x`.
-
-Download a zip file or tar.gz file of the source code from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), after decompressing, save it in an arbitrary place under your home directory (for example, `C:\Users\XXX\withExEditorHost\`).
-If you have a Github account, you can also clone and save the repository.
-
-Note that the host runs with [Node.js](https://nodejs.org/en/ "Node.js"), so if you do not have Node.js, please install it.
-Also check the required Node.js version in the host's release note.
-Currently, Node.js v8.9.0 or higher is required.
+Download a zip file for your OS from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), after decompressing, save it in an arbitrary place under your home directory (for example, `C:\Users\XXX\withExEditorHost\`).
 
 Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command.
 
 ```
 > cd path/to/withExEditorHost
-> npm install
-```
-
-If successful, run this command.
-
-```
-> node setup.js
+> index --setup
 ```
 
 Then you will be asked which browser you want to setup the host for, so please enter the browser name from the list.
@@ -79,7 +66,7 @@ In the setup script you can specify some options.
 To specify the browser, please use the `--browser` option.
 
 ```
-> node setup.js --browser=firefox
+> index --setup --browser=firefox
 ```
 
 #### --config-path=*path* option
@@ -93,9 +80,66 @@ If you want to save configuration files in different location, use `--config-pat
 Quote path if it contains spaces or backslashes.
 
 ```
-> node setup.js --config-path="C:\Users\XXX\path\to\another\location"
+> index --setup --config-path="C:\Users\XXX\path\to\another\location"
 ```
 
+***
+
+## Host setup from source code
+
+Note that [Node.js](https://nodejs.org/en/ "Node.js") v8.9.0 or higher is required to run the host from source code.
+
+Download a zip file or tar.gz file of the source code from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), after decompressing, save it in an arbitrary place under your home directory (for example, `C:\Users\XXX\withExEditorHost\`).
+If you have a Github account, you can also clone and save the repository.
+
+Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command.
+
+```
+> cd path/to/withExEditorHost
+> npm run setup
+```
+
+Then you will be asked which browser you want to setup the host for, so please enter the browser name from the list.
+
+After that, you will be prompted for the following, please input as appropriate.
+
+* Enter editor path
+* Enter command line options
+  * NOTE: Quote the argument if it contains spaces or backslashes.
+    For example: `-a -b "C:\Program Files"`
+* Put file path after command arguments?
+  * NOTE: When specifying the file, some editor requires to put the file path after command arguments. Enter `y` in such case.
+
+If config files are created successfully, restart the browser.
+When you start the browser, the browser and the host get connected and the editor will be ready to use.
+
+### Options
+
+In the setup script you can specify some options.
+
+#### --browser=*name* option
+
+To specify the browser, please use the `--browser` option.
+
+```
+> npm run setup -- --browser=firefox
+```
+
+#### --config-path=*path* option
+
+By default, configuration files are saved under user's home directory.
+* Windows: `C:\Users\[UserName]\AppData\Roaming\withexeditorhost\config\`
+* Mac: `~/Library/Application Support/withexeditorhost/config/`
+* Linux: `~/.config/withexeditorhost/config/`
+
+If you want to save configuration files in different location, use `--config-path` option.
+Quote path if it contains spaces or backslashes.
+
+```
+> npm run setup -- --config-path="C:\Users\XXX\path\to\another\location"
+```
+
+<!--
 ***
 
 ## Manual setup
@@ -222,3 +266,4 @@ withexeditorhost: SyntaxError: Unexpected string in JSON at ...
 ```
 
 * Check "editorconfig.json".
+-->
