@@ -49,6 +49,9 @@ Then you will be asked which browser you want to setup the host for, so please e
 
 After that, you will be prompted for the following, please input as appropriate.
 
+NOTE: If you are upgrading from host v2.x, it is not necessary to overwrite the editor setting.
+You can choose `n` and exit.
+
 * Enter editor path
 * Enter command line options
   * NOTE: Quote the argument if it contains spaces or backslashes.
