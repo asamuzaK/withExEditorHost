@@ -9,11 +9,11 @@
     convertUriToFilePath, createDir, createFile, getFileNameFromFilePath,
     getFileTimestamp, isDir, isExecutable, isFile, removeDir, readFile,
   } = require("web-ext-native-msg");
+  const {URL} = require("url");
   const {compareSemVer} = require("semver-parser");
   const {isString, throwErr} = require("./modules/common");
   const {handleSetupCallback} = require("./modules/setup");
   const {version: hostVersion} = require("./package.json");
-  const {URL} = require("url");
   const {watch} = require("fs");
   const os = require("os");
   const path = require("path");
