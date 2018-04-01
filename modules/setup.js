@@ -181,7 +181,7 @@
    * @param {Object} info - info
    * @returns {Function} - setupEditor()
    */
-  const handleSetupCallback = info => {
+  const handleSetupCallback = (info = {}) => {
     const {configDirPath: configPath} = info;
     let func;
     if (isString(configPath)) {
