@@ -27,7 +27,7 @@
     "package:win64": "pkg ./index.js --targets win-x64 --out-path ./pkg/win64",
     "setup": "npm install && node ./index.js --setup",
     "start": "node ./index.js",
-    "test": "mocha test",
+    "test": "mocha test --exit",
     "zippackage:linux32": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/linux32/index -o ./dest/linux-x86.zip",
     "zippackage:linux64": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/linux64/index -o ./dest/linux-x86_64.zip",
     "zippackage:macos": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/macos/index -o ./dest/macos.zip",

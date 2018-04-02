@@ -184,7 +184,7 @@
   const handleSetupCallback = (info = {}) => {
     const {configDirPath: configPath} = info;
     let func;
-    if (isString(configPath)) {
+    if (isString(configPath) && isDir(configPath)) {
       vars.configPath = configPath;
       vars.rl = readline.createInterface({
         input: process.stdin,
