@@ -4,6 +4,7 @@
   const {handleSetupCallback} = require("../modules/setup");
   const {assert} = require("chai");
   const {describe, it} = require("mocha");
+  const fs = require("fs");
   const os = require("os");
   const path = require("path");
   const rewire = require("rewire");
@@ -13,6 +14,7 @@
   const {EDITOR_CONFIG_FILE} = require("../modules/constant");
   const DIR_TMP = os.tmpDir();
   const IS_WIN = os.platform() === "win32";
+  const PERM_APP = 0o755;
 
   const setup = rewire("../modules/setup");
 
@@ -178,6 +180,9 @@
       const editorConfig = setup.__get__("editorConfig");
       const app = IS_WIN && "test.cmd" || "test.sh";
       const file = path.resolve(path.join("test", "file", app));
+      if (!IS_WIN) {
+        fs.chmodSync(file, PERM_APP);
+      }
       sinon.stub(console, "warn");
       userInput(file);
       const {calledOnce: quesCalledOnce} = stubQues;
@@ -338,6 +343,11 @@
     const abortSetup = setup.__get__("abortSetup");
 
     it("should exit with message", () => {
+      const setupVars = setup.__set__("vars", {
+        rl: {
+          close: () => undefined,
+        },
+      });
       sinon.stub(console, "info");
       sinon.stub(process, "exit");
       abortSetup("test");
@@ -347,6 +357,7 @@
       process.exit.restore();
       assert.strictEqual(consoleCalledOnce, true);
       assert.strictEqual(exitCalledOnce, true);
+      setupVars();
     });
   });
 }
