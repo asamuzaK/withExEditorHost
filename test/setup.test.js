@@ -1,7 +1,6 @@
 "use strict";
 {
   /* api */
-  const {handleSetupCallback} = require("../modules/setup");
   const {assert} = require("chai");
   const {describe, it} = require("mocha");
   const fs = require("fs");
@@ -19,6 +18,8 @@
   const setup = rewire("../modules/setup");
 
   describe("handleSetupCallback", () => {
+    const handleSetupCallback = setup.__get__("handleSetupCallback");
+
     it("should return null if no argument is given", () => {
       assert.strictEqual(handleSetupCallback(), null);
     });
