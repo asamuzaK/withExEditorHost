@@ -152,7 +152,6 @@
 
     it("should warn if input answer is not executable", () => {
       const stubQues = sinon.stub();
-      const setupAbort = setup.__set__("abortSetup", msg => msg);
       const setupVars = setup.__set__("vars", {
         configPath: DIR_TMP,
         rl: {
@@ -254,10 +253,10 @@
     it("should get false if user input is no", () => {
       const stubQues = sinon.stub();
       const createEditorConfig = setup.__set__("createEditorConfig",
-                                               async () => {});
+                                               async () => undefined);
       const setupVars = setup.__set__("vars", {
         rl: {
-          close: () => {},
+          close: () => undefined,
         },
       });
       const editorConfig = setup.__get__("editorConfig");
@@ -276,7 +275,7 @@
                                                async () => true);
       const setupVars = setup.__set__("vars", {
         rl: {
-          close: () => {},
+          close: () => undefined,
         },
       });
       const editorConfig = setup.__get__("editorConfig");
@@ -321,11 +320,11 @@
       const setupVars = setup.__set__("vars", {
         configPath: DIR_TMP,
       });
-      const file = path.join(DIR_TMP, EDITOR_CONFIG_FILE);
+      const filePath = path.join(DIR_TMP, EDITOR_CONFIG_FILE);
       const createFile = setup.__set__("createFile", file => file);
       sinon.stub(console, "info");
       await createEditorConfig().then(res => {
-        assert.strictEqual(res, file);
+        assert.strictEqual(res, filePath);
       });
       const {calledOnce: consoleCalledOnce} = console.info;
       assert.strictEqual(consoleCalledOnce, true);
