@@ -74,6 +74,28 @@
     });
   });
 
+  describe("abortSetup", () => {
+    const abortSetup = setup.__get__("abortSetup");
+
+    it("should exit with message", () => {
+      const setupVars = setup.__set__("vars", {
+        rl: {
+          close: () => undefined,
+        },
+      });
+      sinon.stub(console, "info");
+      sinon.stub(process, "exit");
+      abortSetup("test");
+      const {calledOnce: consoleCalledOnce} = console.info;
+      const {calledOnce: exitCalledOnce} = process.exit;
+      console.info.restore();
+      process.exit.restore();
+      assert.strictEqual(consoleCalledOnce, true);
+      assert.strictEqual(exitCalledOnce, true);
+      setupVars();
+    });
+  });
+
   describe("handleEditorConfigFileInput", () => {
     const userInput = setup.__get__("handleEditorConfigFileInput");
 
@@ -337,28 +359,6 @@
       console.info.restore();
       setupVars();
       createFile();
-    });
-  });
-
-  describe("abortSetup", () => {
-    const abortSetup = setup.__get__("abortSetup");
-
-    it("should exit with message", () => {
-      const setupVars = setup.__set__("vars", {
-        rl: {
-          close: () => undefined,
-        },
-      });
-      sinon.stub(console, "info");
-      sinon.stub(process, "exit");
-      abortSetup("test");
-      const {calledOnce: consoleCalledOnce} = console.info;
-      const {calledOnce: exitCalledOnce} = process.exit;
-      console.info.restore();
-      process.exit.restore();
-      assert.strictEqual(consoleCalledOnce, true);
-      assert.strictEqual(exitCalledOnce, true);
-      setupVars();
     });
   });
 }
