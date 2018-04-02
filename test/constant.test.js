@@ -12,6 +12,6 @@
       it("should get string", () => {
         assert.isString(constant);
       });
-    };
+    }
   });
 }
