@@ -11,12 +11,23 @@
 
   /* constant */
   const {
-    EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS, FILE_WATCH,
-    HOST_VERSION, TMP_FILE_DATA_PORT,
+    EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
+    EXT_CHROME_ID, EXT_WEB_ID, FILE_WATCH, HOST, HOST_DESC, HOST_VERSION,
+    HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
+    TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
+    TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES,
   } = require("../modules/constant");
-  const DIR_TMP = os.tmpDir();
+  const APP = `${process.pid}`;
+  const CHAR = "utf8";
   const IS_WIN = os.platform() === "win32";
   const PERM_APP = 0o755;
+  const PERM_DIR = 0o700;
+  const PERM_FILE = 0o600;
+  const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
+                 os.tmpdir();
+  const TMPDIR_APP = [TMPDIR, LABEL, APP];
+  const TMPDIR_FILES = [...TMPDIR_APP, TMP_FILES];
+  const TMPDIR_FILES_PB = [...TMPDIR_APP, TMP_FILES_PB];
 
   const index = rewire("../index");
 
@@ -96,6 +107,7 @@
           },
         },
       ]);
+      writeStdout();
     });
 
     it("should warn if any argument is missing", async () => {
@@ -277,7 +289,6 @@
     });
 
     it("should return child process instance", async () => {
-      const ChildProcess = index.__get__("ChildProcess");
       const writeStdout = index.__set__("writeStdout", msg => msg);
       const app = IS_WIN && "test.cmd" || "test.sh";
       const editorPath = path.resolve(path.join("test", "file", app));
@@ -287,6 +298,54 @@
       const file = path.resolve(path.join("test", "file", "test.txt"));
       const res = await spawnChildProcess(file, editorPath);
       assert.isObject(res);
+      writeStdout();
+    });
+  });
+
+  describe("initPrivateTmpDir", () => {
+    const initPrivateTmpDir = index.__get__("initPrivateTmpDir");
+
+    it("should return null", async () => {
+      const res = await initPrivateTmpDir(false);
+      assert.isNull(res);
+    });
+
+    it("should warn if failed to remove directory", async () => {
+      const writeStdout = index.__set__("writeStdout", msg => msg);
+      const removeDir = index.__set__("removeDir", () => undefined);
+      const res = await initPrivateTmpDir(true);
+      assert.deepEqual(res, {
+        withexeditorhost: {
+          message: "Failed to remove private temporary directory.",
+          status: "warn",
+        },
+      });
+      writeStdout();
+      removeDir();
+    });
+
+    it("should warn if failed to remove directory", async () => {
+      const writeStdout = index.__set__("writeStdout", msg => msg);
+      const createDir = index.__set__("createDir", () => undefined);
+      const res = await initPrivateTmpDir(true);
+      assert.deepEqual(res, {
+        withexeditorhost: {
+          message: "Failed to create private temporary directory.",
+          status: "warn",
+        },
+      });
+      writeStdout();
+      createDir();
+    });
+
+    it("should get null on success", async () => {
+      const writeStdout = index.__set__("writeStdout", msg => msg);
+      const createDir = index.__get__("createDir");
+      const isDir = index.__get__("isDir");
+      const dir = await createDir(TMPDIR_FILES_PB, PERM_DIR);
+      const res = await initPrivateTmpDir(true);
+      assert.isNull(res);
+      assert.isTrue(isDir(dir));
       writeStdout();
     });
   });
