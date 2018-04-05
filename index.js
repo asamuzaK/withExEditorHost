@@ -321,6 +321,35 @@
   };
 
   /**
+   * create tmp file res message
+   * @param {string} key - key
+   * @returns {?AsyncFunction} - write stdout
+   */
+  const createTmpFileResMessage = async key => {
+    let func;
+    if (isString(key) && isFile(key)) {
+      const fileId = await getFileIdFromFilePath(key);
+      if (fileId) {
+        const obj = fileMap[TMP_FILES].get(fileId);
+        if (obj) {
+          const {data} = obj;
+          if (data) {
+            const value =
+              await readFile(key, {encoding: CHAR, flag: "r"}) || "";
+            data.timestamp = await getFileTimestamp(key) || 0;
+            func = writeStdout({
+              [TMP_FILE_RES]: {
+                data, value,
+              },
+            });
+          }
+        }
+      }
+    }
+    return func || null;
+  };
+
+  /**
    * get temporary file from given file name
    * @param {string} evtType - event type
    * @param {string} fileName - file name
@@ -328,30 +357,17 @@
    */
   const getTmpFileFromWatcherFileName = async (evtType, fileName) => {
     const func = [];
-    fileMap[FILE_WATCH].forEach(async (fsWatcher, key) => {
-      if (await isString(fileName) && await isString(key) &&
-          key.endsWith(fileName)) {
-        if (evtType === "change" && await isFile(key)) {
-          const fileId = await getFileIdFromFilePath(key);
-          if (fileId) {
-            const obj = fileMap[TMP_FILES].get(fileId);
-            if (obj) {
-              const {data} = obj;
-              if (data) {
-                const value =
-                  await readFile(key, {encoding: CHAR, flag: "r"}) || "";
-                data.timestamp = await getFileTimestamp(key) || 0;
-                func.push(writeStdout({
-                  [TMP_FILE_RES]: {data, value},
-                }));
-              }
-            }
+    if (evtType === "change" && isString(fileName)) {
+      fileMap[FILE_WATCH].forEach((fsWatcher, key) => {
+        if (isString(key) && key.endsWith(fileName)) {
+          if (isFile(key)) {
+            func.push(createTmpFileResMessage(key));
+          } else {
+            func.push(unwatchFile(key, fsWatcher));
           }
-        } else {
-          func.push(unwatchFile(key, fsWatcher));
         }
-      }
-    });
+      });
+    }
     return Promise.all(func);
   };
 
