@@ -325,7 +325,7 @@
    * @param {string} key - key
    * @returns {?AsyncFunction} - write stdout
    */
-  const createTmpFileResMessage = async key => {
+  const createTmpFileResMsg = async key => {
     let func;
     if (isString(key) && isFile(key)) {
       const fileId = await getFileIdFromFilePath(key);
@@ -361,7 +361,7 @@
       fileMap[FILE_WATCH].forEach((fsWatcher, key) => {
         if (isString(key) && key.endsWith(fileName)) {
           if (isFile(key)) {
-            func.push(createTmpFileResMessage(key));
+            func.push(createTmpFileResMsg(key));
           } else {
             func.push(unwatchFile(key, fsWatcher));
           }
@@ -375,15 +375,10 @@
    * watch temporary file
    * @param {string} evtType - event type
    * @param {string} fileName - file name
-   * @returns {?AsyncFunction} - get temp file from file name
+   * @returns {AsyncFunction} - get temp file from file name
    */
-  const watchTmpFile = (evtType, fileName) => {
-    let func;
-    if (isString(evtType) && isString(fileName)) {
-      func = getTmpFileFromWatcherFileName(evtType, fileName).catch(throwErr);
-    }
-    return func || null;
-  };
+  const watchTmpFile = (evtType, fileName) =>
+    getTmpFileFromWatcherFileName(evtType, fileName).catch(throwErr);
 
   /**
    * create temporary file
