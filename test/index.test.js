@@ -305,7 +305,7 @@
   describe("initPrivateTmpDir", () => {
     const initPrivateTmpDir = index.__get__("initPrivateTmpDir");
 
-    it("should return null", async () => {
+    it("should return null if arg is falsy", async () => {
       const res = await initPrivateTmpDir(false);
       assert.isNull(res);
     });
@@ -324,7 +324,7 @@
       removeDir();
     });
 
-    it("should warn if failed to remove directory", async () => {
+    it("should warn if failed to create directory", async () => {
       const writeStdout = index.__set__("writeStdout", msg => msg);
       const createDir = index.__set__("createDir", () => undefined);
       const res = await initPrivateTmpDir(true);
@@ -346,6 +346,188 @@
       const res = await initPrivateTmpDir(true);
       assert.isNull(res);
       assert.isTrue(isDir(dir));
+      writeStdout();
+    });
+  });
+
+  describe("getTmpFileFromFileData", () => {
+    const getTmpFileFromFileData = index.__get__("getTmpFileFromFileData");
+
+    it("should warn if no argument given", async () => {
+      const writeStdout = index.__set__("writeStdout", msg => msg);
+      const res = await getTmpFileFromFileData();
+      assert.deepEqual(res, {
+        withexeditorhost: {
+          message: "Failed to get temporary file.",
+          status: "warn",
+        },
+      });
+      writeStdout();
+    });
+
+    it("should warn if key in fileMap does not exist", async () => {
+      const writeStdout = index.__set__("writeStdout", msg => msg);
+      const data = {
+        dataId: "dataId",
+        dir: "dir",
+        host: "host",
+        tabId: "tabId",
+        windowId: "windowId",
+      };
+      const res = await getTmpFileFromFileData(data);
+      assert.deepEqual(res, {
+        withexeditorhost: {
+          message: "Failed to get temporary file.",
+          status: "warn",
+        },
+      });
+      writeStdout();
+    });
+  });
+
+  describe("getFileIdFromFilePath", () => {
+    const getFileIdFromFilePath = index.__get__("getFileIdFromFilePath");
+
+    it("should get null if no argument given", async () => {
+      const res = await getFileIdFromFilePath();
+      assert.isNull(res);
+    });
+
+    it("should get null if argument is not string", async () => {
+      const res = await getFileIdFromFilePath(1);
+      assert.isNull(res);
+    });
+
+    it("should get null if argument is not file path", async () => {
+      const res = await getFileIdFromFilePath("foo/bar");
+      assert.isNull(res);
+    });
+
+    it("should get string", async () => {
+      const windowId = "foo";
+      const tabId = "bar";
+      const host = "baz";
+      const name = "quux";
+      const file =
+        path.join(...TMPDIR_FILES, windowId, tabId, host, `${name}.txt`);
+      const fileId = `${windowId}_${tabId}_${host}_${name}`;
+      const res = await getFileIdFromFilePath(file);
+      assert.strictEqual(res, fileId);
+    });
+  });
+
+  describe("createTmpFileResMsg", () => {
+    const createTmpFileResMsg = index.__get__("createTmpFileResMsg");
+
+    it("should get null if no argument given", async () => {
+      const res = await createTmpFileResMsg();
+      assert.isNull(res);
+    });
+
+    it("should get null if argument is not string", async () => {
+      const res = await createTmpFileResMsg(1);
+      assert.isNull(res);
+    });
+
+    it("should get null if argument is not a file", async () => {
+      const res = await createTmpFileResMsg("foo/bar");
+      assert.isNull(res);
+    });
+
+    it("should get message", async () => {
+      const writeStdout = index.__set__("writeStdout", msg => msg);
+      const fileMap = index.__get__("fileMap");
+      const getFileTimestamp = index.__get__("getFileTimestamp");
+      const file = path.resolve(path.join("test", "file", "test.txt"));
+      const {dir, name} = path.parse(file);
+      const dirArr = dir.replace(path.join(...TMPDIR_APP), "").split(path.sep);
+      const [, , windowId, tabId, host] = dirArr;
+      const fileId = `${windowId}_${tabId}_${host}_${name}`;
+      const timestamp = await getFileTimestamp(file);
+      fileMap[TMP_FILES].set(fileId, {
+        data: {},
+      });
+      const res = await createTmpFileResMsg(file);
+      assert.deepEqual(res, {
+        [TMP_FILE_RES]: {
+          data: {
+            timestamp,
+          },
+          value: "test file\n",
+        },
+      });
+      writeStdout();
+    });
+  });
+
+  describe("getTmpFileFromWatcherFileName", () => {
+    const getTmpFileFromWatcherFileName =
+      index.__get__("getTmpFileFromWatcherFileName");
+
+    it("should get lenth 0 if no argument given", async () => {
+      const res = await getTmpFileFromWatcherFileName();
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 0);
+    });
+
+    it("should get lenth 0 if event does not match", async () => {
+      const res = await getTmpFileFromWatcherFileName("foo", "bar");
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 0);
+    });
+
+    it("should get lenth 0 if file arg is not string", async () => {
+      const res = await getTmpFileFromWatcherFileName("change", {});
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 0);
+    });
+
+    it("should get length 0 if Map is empty", async () => {
+      const fileMap = index.__get__("fileMap");
+      fileMap[FILE_WATCH].clear();
+      const res = await getTmpFileFromWatcherFileName("change", "bar");
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 0);
+    });
+
+    it("should get unwatch file if key does not match", async () => {
+      const unwatchFile = index.__set__("unwatchFile", (k, v) => [k, v]);
+      const fileMap = index.__get__("fileMap");
+      const file = path.resolve(path.join("foo", "bar", "test.txt"));
+      const watcher = {
+        close: () => undefined,
+      };
+      fileMap[FILE_WATCH].clear();
+      fileMap[FILE_WATCH].set(file, watcher);
+      const res = await getTmpFileFromWatcherFileName("change", "test.txt");
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 1);
+      assert.deepEqual(res[0], [file, watcher]);
+      unwatchFile();
+    });
+
+    it("should get message", async () => {
+      const writeStdout = index.__set__("writeStdout", msg => msg);
+      const fileMap = index.__get__("fileMap");
+      const getFileTimestamp = index.__get__("getFileTimestamp");
+      const file = path.resolve(path.join("test", "file", "test.txt"));
+      const timestamp = getFileTimestamp(file);
+      const watcher = {
+        close: () => undefined,
+      };
+      fileMap[FILE_WATCH].clear();
+      fileMap[FILE_WATCH].set(file, watcher);
+      const res = await getTmpFileFromWatcherFileName("change", "test.txt");
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 1);
+      assert.deepEqual(res[0], {
+        [TMP_FILE_RES]: {
+          data: {
+            timestamp,
+          },
+          value: "test file\n",
+        },
+      });
       writeStdout();
     });
   });
