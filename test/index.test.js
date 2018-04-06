@@ -89,6 +89,9 @@
 
   describe("portAppStatus", () => {
     const portAppStatus = index.__get__("portAppStatus");
+    const tmpDirMsg = "Failed to create temporary directory.";
+    const tmpDirPrivateMsg = "Failed to create private temporary directory.";
+    const status = "warn";
 
     it("should warn if no argument given", async () => {
       const writeStdout = index.__set__("writeStdout", msg => msg);
@@ -96,14 +99,14 @@
       assert.deepEqual(res, [
         {
           withexeditorhost: {
-            message: "Failed to create temporary directory.",
-            status: "warn",
+            status,
+            message: tmpDirMsg,
           },
         },
         {
           withexeditorhost: {
-            message: "Failed to create private temporary directory.",
-            status: "warn",
+            status,
+            message: tmpDirPrivateMsg,
           },
         },
       ]);
@@ -116,8 +119,8 @@
       assert.deepEqual(res, [
         {
           withexeditorhost: {
-            message: "Failed to create private temporary directory.",
-            status: "warn",
+            status,
+            message: tmpDirPrivateMsg,
           },
         },
       ]);
@@ -130,8 +133,8 @@
       assert.deepEqual(res, [
         {
           withexeditorhost: {
-            message: "Failed to create temporary directory.",
-            status: "warn",
+            status,
+            message: tmpDirMsg,
           },
         },
       ]);
@@ -407,7 +410,7 @@
       const windowId = "foo";
       const tabId = "bar";
       const host = "baz";
-      const name = "quux";
+      const name = "qux";
       const file =
         path.join(...TMPDIR_FILES, windowId, tabId, host, `${name}.txt`);
       const fileId = `${windowId}_${tabId}_${host}_${name}`;
@@ -588,6 +591,194 @@
         close: () => undefined,
       });
       assert.strictEqual(fileMap[FILE_WATCH].has("foo"), false);
+    });
+  });
+
+  describe("watchTmpFile", () => {
+    const watchTmpFile = index.__get__("watchTmpFile");
+
+    it("should pass given args", async () => {
+      const getTmpFileFromWatcherFileName =
+        index.__set__("getTmpFileFromWatcherFileName", async (type, file) => ({
+          evtType: type,
+          fileName: file,
+        }));
+      const evtType = "foo";
+      const fileName = "bar";
+      const res = await watchTmpFile(evtType, fileName);
+      assert.deepEqual(res, {
+        evtType, fileName,
+      });
+      getTmpFileFromWatcherFileName();
+    });
+  });
+
+  describe("createTmpFile", () => {
+    const createTmpFile = index.__get__("createTmpFile");
+
+    it("should get null if no argument given", async () => {
+      const res = await createTmpFile();
+      assert.isNull(res);
+    });
+
+    it("should get null if argument is not object", async () => {
+      const res = await createTmpFile(1);
+      assert.isNull(res);
+    });
+
+    it("should get null if argument is not object", async () => {
+      const res = await createTmpFile(1);
+      assert.isNull(res);
+    });
+
+    it("should get null if data prop is falsy", async () => {
+      const obj = {
+        data: false,
+      };
+      const res = await createTmpFile(obj);
+      assert.isNull(res);
+    });
+
+    it("should get null if data lacks one of required prop", async () => {
+      const data = {
+        dataId: "dataId",
+        dir: "dir",
+        extType: "extType",
+        host: "host",
+        tabId: "tabId",
+        windowId: "windowId",
+      };
+      const func = [];
+      const keys = Object.keys(data);
+      for (const key of keys) {
+        const testData = data;
+        testData[key] = false;
+        const obj = {
+          data: testData,
+        };
+        func.push(createTmpFile(obj).then(res => {
+          assert.isNull(res);
+        }));
+      }
+      await Promise.all(func);
+    });
+
+    it("should set key/value to Map and get object", async () => {
+      const createDir = index.__set__("createDir", arr => path.join(...arr));
+      const createFile = index.__set__("createFile", filePath => filePath);
+      const watch = index.__set__("watch", () => ({}));
+      const fileMap = index.__get__("fileMap");
+      const data = {
+        dataId: "qux",
+        dir: TMP_FILES,
+        extType: ".txt",
+        host: "baz",
+        incognito: false,
+        mode: MODE_EDIT,
+        syncAuto: true,
+        tabId: "bar",
+        windowId: "foo",
+      };
+      const value = "";
+      const obj = {
+        data, value,
+      };
+      const filePath =
+        path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+      fileMap[FILE_WATCH].clear();
+      const res = await createTmpFile(obj);
+      assert.isTrue(fileMap[FILE_WATCH].has(filePath));
+      assert.deepEqual(res, {
+        data, filePath,
+      });
+      createDir();
+      createFile();
+      watch();
+    });
+
+    it("should delete key from Map and get object", async () => {
+      const createDir = index.__set__("createDir", arr => path.join(...arr));
+      const createFile = index.__set__("createFile", filePath => filePath);
+      const watch = index.__set__("watch", () => ({}));
+      const fileMap = index.__get__("fileMap");
+      const data = {
+        dataId: "qux",
+        dir: TMP_FILES,
+        extType: ".txt",
+        host: "baz",
+        incognito: false,
+        mode: MODE_EDIT,
+        syncAuto: false,
+        tabId: "bar",
+        windowId: "foo",
+      };
+      const value = "";
+      const obj = {
+        data, value,
+      };
+      const filePath =
+        path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+      fileMap[FILE_WATCH].clear();
+      fileMap[FILE_WATCH].set(filePath, {
+        close: () => undefined,
+      });
+      const res = await createTmpFile(obj);
+      assert.isFalse(fileMap[FILE_WATCH].has(filePath));
+      assert.deepEqual(res, {
+        data, filePath,
+      });
+      createDir();
+      createFile();
+      watch();
+    });
+
+    it("should write message and get object", async () => {
+      let stdoutMsg;
+      const writeStdout = index.__set__("writeStdout", msg => {
+        stdoutMsg = msg;
+      });
+      const createDir = index.__set__("createDir", arr => path.join(...arr));
+      const createFile = index.__set__("createFile", filePath => filePath);
+      const watch = index.__set__("watch", () => ({}));
+      const fileMap = index.__get__("fileMap");
+      const data = {
+        dataId: "qux",
+        dir: TMP_FILES,
+        extType: ".txt",
+        host: "baz",
+        incognito: false,
+        mode: MODE_EDIT,
+        syncAuto: false,
+        tabId: "bar",
+        windowId: "foo",
+      };
+      const value = "";
+      const obj = {
+        data, value,
+      };
+      const filePath =
+        path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+      fileMap[FILE_WATCH].clear();
+      fileMap[FILE_WATCH].set(filePath, {
+        close: () => {
+          throw new Error("quux");
+        },
+      });
+      const res = await createTmpFile(obj);
+      assert.isTrue(fileMap[FILE_WATCH].has(filePath));
+      assert.deepEqual(res, {
+        data, filePath,
+      });
+      assert.deepEqual(stdoutMsg, {
+        withexeditorhost: {
+          message: "quux",
+          status: "error",
+        },
+      });
+      createDir();
+      createFile();
+      watch();
+      writeStdout();
     });
   });
 }
