@@ -1047,4 +1047,46 @@
       writeStdout();
     });
   });
+
+  describe("viewLocalFile", () => {
+    const viewLocalFile = index.__get__("viewLocalFile");
+
+    it("should get null if argument is not string", async () => {
+      const res = await viewLocalFile(1);
+      assert.isNull(res);
+    });
+
+    it("should get message if argument is not uri", async () => {
+      const writeStdout = index.__set__("writeStdout", msg => msg);
+      const res = await viewLocalFile("foo/bar");
+      assert.deepEqual(res, {
+        withexeditorhost: {
+          message: "Failed to handle foo/bar.",
+          status: "warn",
+        },
+      });
+      writeStdout();
+    });
+
+    it("should get null if not file uri", async () => {
+      const res = await viewLocalFile("https://example.com");
+      assert.isNull(res);
+    });
+
+    it("should get null if file does not exist", async () => {
+      const res = await viewLocalFile("file:///foo/bar.txt");
+      assert.isNull(res);
+    });
+
+    it("should get spawn child process function", async () => {
+      const spawnChildProcess =
+        index.__set__("spawnChildProcess", file => file);
+      const filePath = path.resolve(path.join("test", "file", "test.txt"));
+      const filePathname = filePath.split(path.sep).join("/");
+      const fileUrl = `file://${IS_WIN && "/" || ""}${filePathname}`;
+      const res = await viewLocalFile(fileUrl);
+      assert.strictEqual(res, filePath);
+      spawnChildProcess();
+    });
+  });
 }
