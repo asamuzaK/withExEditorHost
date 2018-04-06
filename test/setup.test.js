@@ -11,7 +11,7 @@
 
   /* constant */
   const {EDITOR_CONFIG_FILE} = require("../modules/constant");
-  const DIR_TMP = os.tmpDir();
+  const DIR_TMP = os.tmpdir();
   const IS_WIN = os.platform() === "win32";
   const PERM_APP = 0o755;
 
