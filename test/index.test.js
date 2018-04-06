@@ -781,4 +781,223 @@
       writeStdout();
     });
   });
+
+  describe("removeTmpFileData", () => {
+    const removeTmpFileData = index.__get__("removeTmpFileData");
+
+    it("should get empty array if no argument given", async () => {
+      const res = await removeTmpFileData();
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 0);
+    });
+
+    it("should get empty array if dir prop is falsy", async () => {
+      const obj = {
+        dir: false,
+      };
+      const res = await removeTmpFileData(obj);
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 0);
+    });
+
+    it("should get empty array if Map does not exist", async () => {
+      const obj = {
+        dir: "foo",
+      };
+      const res = await removeTmpFileData(obj);
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 0);
+    });
+
+    it("should get empty array if Map does not exist", async () => {
+      const fileMap = index.__get__("fileMap");
+      const obj = {
+        dataId: "qux",
+        dir: TMP_FILES,
+        host: "baz",
+        tabId: "bar",
+        windowId: "foo",
+      };
+      fileMap[TMP_FILES].clear();
+      const res = await removeTmpFileData(obj);
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 0);
+    });
+
+    it("should get array with expected length", async () => {
+      const EXPECTED_LENGTH = 1;
+      const fileMap = index.__get__("fileMap");
+      const unwatchFile = index.__set__("unwatchFile", file => file);
+      const deleteKeyFromFileMap =
+        index.__set__("deleteKeyFromFileMap", (dir, fileId) => ({dir, fileId}));
+      const obj = {
+        dataId: "qux",
+        dir: TMP_FILES,
+        host: "baz",
+        tabId: "bar",
+        windowId: "foo",
+      };
+      const fileId = "foo_bar_baz_qux";
+      const filePath =
+        path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+      fileMap[TMP_FILES].clear();
+      fileMap[TMP_FILES].set(fileId, {filePath});
+      fileMap[FILE_WATCH].clear();
+      const res = await removeTmpFileData(obj);
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, EXPECTED_LENGTH);
+      assert.deepEqual(res, [
+        {
+          fileId,
+          dir: TMP_FILES,
+        },
+      ]);
+      unwatchFile();
+      deleteKeyFromFileMap();
+    });
+
+    it("should get array with expected length", async () => {
+      const EXPECTED_LENGTH = 2;
+      const fileMap = index.__get__("fileMap");
+      const unwatchFile = index.__set__("unwatchFile", file => file);
+      const deleteKeyFromFileMap =
+        index.__set__("deleteKeyFromFileMap", (dir, fileId) => ({dir, fileId}));
+      const obj = {
+        dataId: "qux",
+        dir: TMP_FILES,
+        host: "baz",
+        tabId: "bar",
+        windowId: "foo",
+      };
+      const fileId = "foo_bar_baz_qux";
+      const filePath =
+        path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+      fileMap[TMP_FILES].clear();
+      fileMap[TMP_FILES].set(fileId, {filePath});
+      fileMap[FILE_WATCH].clear();
+      fileMap[FILE_WATCH].set(filePath, true);
+      const res = await removeTmpFileData(obj);
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, EXPECTED_LENGTH);
+      assert.deepEqual(res, [
+        filePath,
+        {
+          fileId,
+          dir: TMP_FILES,
+        },
+      ]);
+      unwatchFile();
+      deleteKeyFromFileMap();
+    });
+
+    it("should get array with expected length", async () => {
+      const EXPECTED_LENGTH = 1;
+      const fileMap = index.__get__("fileMap");
+      const unwatchFile = index.__set__("unwatchFile", file => file);
+      const deleteKeyFromFileMap =
+        index.__set__("deleteKeyFromFileMap", (dir, fileId) => ({dir, fileId}));
+      const obj = {
+        dataId: null,
+        dir: TMP_FILES,
+        host: "baz",
+        tabId: "bar",
+        windowId: "foo",
+      };
+      const fileId = "foo_bar_baz_qux";
+      const filePath =
+        path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+      fileMap[TMP_FILES].clear();
+      fileMap[TMP_FILES].set(fileId, {filePath});
+      fileMap[FILE_WATCH].clear();
+      const res = await removeTmpFileData(obj);
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, EXPECTED_LENGTH);
+      assert.deepEqual(res, [
+        {
+          fileId,
+          dir: TMP_FILES,
+        },
+      ]);
+      unwatchFile();
+      deleteKeyFromFileMap();
+    });
+
+    it("should get array with expected length", async () => {
+      const EXPECTED_LENGTH = 2;
+      const fileMap = index.__get__("fileMap");
+      const unwatchFile = index.__set__("unwatchFile", file => file);
+      const deleteKeyFromFileMap =
+        index.__set__("deleteKeyFromFileMap", (dir, fileId) => ({dir, fileId}));
+      const obj = {
+        dataId: null,
+        dir: TMP_FILES,
+        host: "baz",
+        tabId: "bar",
+        windowId: "foo",
+      };
+      const fileId = "foo_bar_baz_qux";
+      const filePath =
+        path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+      fileMap[TMP_FILES].clear();
+      fileMap[TMP_FILES].set(fileId, {filePath});
+      fileMap[FILE_WATCH].clear();
+      fileMap[FILE_WATCH].set(filePath, true);
+      const res = await removeTmpFileData(obj);
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, EXPECTED_LENGTH);
+      assert.deepEqual(res, [
+        filePath,
+        {
+          fileId,
+          dir: TMP_FILES,
+        },
+      ]);
+      unwatchFile();
+      deleteKeyFromFileMap();
+    });
+
+    it("should get array with expected length", async () => {
+      const EXPECTED_LENGTH = 3;
+      const fileMap = index.__get__("fileMap");
+      const unwatchFile = index.__set__("unwatchFile", file => file);
+      const deleteKeyFromFileMap =
+        index.__set__("deleteKeyFromFileMap", (dir, fileId) => ({dir, fileId}));
+      const obj = {
+        dataId: null,
+        dir: TMP_FILES,
+        host: null,
+        tabId: "bar",
+        windowId: "foo",
+      };
+      const fileId = "foo_bar_baz_qux";
+      const fileId2 = "foo_bar";
+      const filePath =
+        path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+      const filePath2 =
+        path.join(...TMPDIR_FILES, "foo", "bar", "baz", "quux.txt");
+      fileMap[TMP_FILES].clear();
+      fileMap[TMP_FILES].set(fileId, {filePath});
+      fileMap[TMP_FILES].set(fileId2, {
+        filePath: filePath2,
+      });
+      fileMap[FILE_WATCH].clear();
+      fileMap[FILE_WATCH].set(filePath, true);
+      const res = await removeTmpFileData(obj);
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, EXPECTED_LENGTH);
+      assert.deepEqual(res, [
+        filePath,
+        {
+          fileId,
+          dir: TMP_FILES,
+        },
+        {
+          fileId: fileId2,
+          dir: TMP_FILES,
+        },
+      ]);
+      unwatchFile();
+      deleteKeyFromFileMap();
+    });
+  });
 }
