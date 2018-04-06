@@ -13,17 +13,15 @@
   /* constant */
   const {
     EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
-    EXT_CHROME_ID, EXT_WEB_ID, FILE_WATCH, HOST, HOST_DESC, HOST_VERSION,
-    HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
-    TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
-    TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES,
+    FILE_WATCH, HOST_VERSION,
+    LABEL, MODE_EDIT,
+    TMP_FILES, TMP_FILES_PB,
+    TMP_FILE_DATA_PORT, TMP_FILE_RES,
   } = require("../modules/constant");
   const APP = `${process.pid}`;
-  const CHAR = "utf8";
   const IS_WIN = os.platform() === "win32";
   const PERM_APP = 0o755;
   const PERM_DIR = 0o700;
-  const PERM_FILE = 0o600;
   const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
                  os.tmpdir();
   const TMPDIR_APP = [TMPDIR, LABEL, APP];
@@ -1184,9 +1182,7 @@
       const res = await readStdin(chunk);
       assert.isTrue(Array.isArray(res));
       assert.strictEqual(res.length, 1);
-      assert.deepEqual(res, [
-        "test",
-      ]);
+      assert.deepEqual(res, ["test"]);
       handleMsg();
     });
   });
@@ -1197,7 +1193,7 @@
     it("should exit with code", async () => {
       const {stdout} = process;
       sinon.stub(stdout, "write");
-      const res = await handleExit(0);
+      await handleExit(0);
       const {calledOnce} = stdout.write;
       stdout.write.restore();
       assert.isTrue(calledOnce);
