@@ -3,6 +3,7 @@
   /* api */
   const {assert} = require("chai");
   const {describe, it} = require("mocha");
+  const {Output} = require("web-ext-native-msg");
   const fs = require("fs");
   const os = require("os");
   const path = require("path");
@@ -1171,6 +1172,35 @@
       ]);
       writeStdout();
       getEditorConfig();
+    });
+  });
+
+  describe("readStdin", () => {
+    const readStdin = index.__get__("readStdin");
+
+    it("should get function", async () => {
+      const handleMsg = index.__set__("handleMsg", msg => msg);
+      const chunk = (new Output()).encode("test");
+      const res = await readStdin(chunk);
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 1);
+      assert.deepEqual(res, [
+        "test",
+      ]);
+      handleMsg();
+    });
+  });
+
+  describe("handleExit", () => {
+    const handleExit = index.__get__("handleExit");
+
+    it("should exit with code", async () => {
+      const {stdout} = process;
+      sinon.stub(stdout, "write");
+      const res = await handleExit(0);
+      const {calledOnce} = stdout.write;
+      stdout.write.restore();
+      assert.isTrue(calledOnce);
     });
   });
 }
