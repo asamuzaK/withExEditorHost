@@ -484,12 +484,16 @@
   const viewLocalFile = async uri => {
     let func;
     if (await isString(uri)) {
-      const {protocol} = new URL(uri);
-      if (protocol === "file:") {
-        const file = await convertUriToFilePath(uri);
-        if (file && await isFile(file)) {
-          func = spawnChildProcess(file);
+      try {
+        const {protocol} = new URL(uri);
+        if (protocol === "file:") {
+          const file = await convertUriToFilePath(uri);
+          if (file && await isFile(file)) {
+            func = spawnChildProcess(file);
+          }
         }
+      } catch (e) {
+        func = writeStdout(hostMsg(`Failed to handle ${uri}.`, "warn"));
       }
     }
     return func || null;
