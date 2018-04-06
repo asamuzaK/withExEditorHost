@@ -11,7 +11,7 @@
 
   /* constant */
   const {
-    EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
+    EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
     EXT_CHROME_ID, EXT_WEB_ID, FILE_WATCH, HOST, HOST_DESC, HOST_VERSION,
     HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
     TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
@@ -998,6 +998,53 @@
       ]);
       unwatchFile();
       deleteKeyFromFileMap();
+    });
+  });
+
+  describe("getEditorConfig", () => {
+    const getEditorConfig = index.__get__("getEditorConfig");
+
+    it("should get array with expected length", async () => {
+      const EXPECTED_LENGTH = 1;
+      const FILE_PATH = path.join("test", "file", "test.txt");
+      const editorConfigPath =
+        index.__set__("EDITOR_CONFIG_FILE", FILE_PATH);
+      const portEditorConfig = index.__set__("portEditorConfig",
+                                             (data, file) => ({data, file}));
+      const res = await getEditorConfig();
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, EXPECTED_LENGTH);
+      assert.deepEqual(res, [
+        {
+          data: "test file\n",
+          file: path.resolve(FILE_PATH),
+        },
+      ]);
+      portEditorConfig();
+      editorConfigPath();
+    });
+
+    it("should get array with expected length", async () => {
+      const EXPECTED_LENGTH = 2;
+      const FILE_PATH = path.join("test", "file", "foo.txt");
+      const editorConfigPath = index.__set__("EDITOR_CONFIG_FILE", FILE_PATH);
+      const writeStdout = index.__set__("writeStdout", msg => msg);
+      const res = await getEditorConfig();
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, EXPECTED_LENGTH);
+      assert.deepEqual(res, [
+        {
+          withexeditorhost: {
+            message: `Failed to handle ${path.resolve(FILE_PATH)}.`,
+            status: "warn",
+          },
+        },
+        {
+          [EDITOR_CONFIG_RES]: null,
+        },
+      ]);
+      editorConfigPath();
+      writeStdout();
     });
   });
 }
