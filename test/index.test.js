@@ -1089,4 +1089,44 @@
       spawnChildProcess();
     });
   });
+
+  describe("handleCreatedTmpFile", () => {
+    const handleCreatedTmpFile = index.__get__("handleCreatedTmpFile");
+
+    it("should get empty array if argument not given", async () => {
+      const res = await handleCreatedTmpFile();
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 0);
+    });
+
+    it("should get empty array if file path is not file", async () => {
+      const res = await handleCreatedTmpFile({
+        filePath: "foo/bar",
+      });
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 0);
+    });
+
+    it("should get array with expected length", async () => {
+      const EXPECTED_LENGTH = 2;
+      const spawnChildProcess =
+        index.__set__("spawnChildProcess", file => file);
+      const portFileData = index.__set__("portFileData", obj => obj);
+      const filePath = path.resolve(path.join("test", "file", "test.txt"));
+      const data = {
+        filePath,
+      };
+      const res = await handleCreatedTmpFile(data);
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, EXPECTED_LENGTH);
+      assert.deepEqual(res, [
+        filePath,
+        {
+          filePath,
+        },
+      ]);
+      spawnChildProcess();
+      portFileData();
+    });
+  });
 }
