@@ -1129,4 +1129,48 @@
       portFileData();
     });
   });
+
+  describe("handleMsg", () => {
+    const handleMsg = index.__get__("handleMsg");
+
+    it("should get message if no argument given", async () => {
+      const writeStdout = index.__set__("writeStdout", msg => msg);
+      const res = await handleMsg();
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, 1);
+      assert.deepEqual(res, [
+        {
+          withexeditorhost: {
+            message: "No handler found for undefined.",
+            status: "warn",
+          },
+        },
+      ]);
+      writeStdout();
+    });
+
+    it("should get function and/or message", async () => {
+      const EXPECTED_LENGTH = 2;
+      const writeStdout = index.__set__("writeStdout", msg => msg);
+      const getEditorConfig = index.__set__("getEditorConfig", obj => obj);
+      const msg = {
+        [EDITOR_CONFIG_GET]: true,
+        foo: "bar",
+      };
+      const res = await handleMsg(msg);
+      assert.isTrue(Array.isArray(res));
+      assert.strictEqual(res.length, EXPECTED_LENGTH);
+      assert.deepEqual(res, [
+        true,
+        {
+          withexeditorhost: {
+            message: "No handler found for foo.",
+            status: "warn",
+          },
+        },
+      ]);
+      writeStdout();
+      getEditorConfig();
+    });
+  });
 }
