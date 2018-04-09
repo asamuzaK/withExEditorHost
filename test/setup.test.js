@@ -46,6 +46,16 @@
       };
       assert.strictEqual(handleSetupCallback(info), null);
     });
+
+    it("should return function", () => {
+      const setupEditor = setup.__set__("setupEditor", () => true);
+      const info = {
+        configDirPath: DIR_TMP,
+      };
+      const res = handleSetupCallback(info);
+      assert.isTrue(res);
+      setupEditor();
+    });
   });
 
   describe("setupEditor", () => {
@@ -60,7 +70,10 @@
     });
 
     it("should ask a question", () => {
-      const stubQues = sinon.stub();
+      let ques;
+      const stubQues = sinon.stub().callsFake(q => {
+        ques = q;
+      });
       const setupVars = setup.__set__("vars", {
         configPath: DIR_TMP,
         rl: {
@@ -70,6 +83,28 @@
       setupEditor();
       const {calledOnce: quesCalledOnce} = stubQues;
       assert.strictEqual(quesCalledOnce, true);
+      assert.strictEqual(ques, "Enter editor path:\n");
+      setupVars();
+    });
+
+    it("should ask a question", () => {
+      let ques;
+      const stubQues = sinon.stub().callsFake(q => {
+        ques = q;
+      });
+      const configPath = path.resolve(path.join("test", "file"));
+      const filePath = path.join(configPath, "editorconfig.json");
+      const setupVars = setup.__set__("vars", {
+        configPath,
+        rl: {
+          question: stubQues,
+        },
+      });
+      setupEditor();
+      const {calledOnce: quesCalledOnce} = stubQues;
+      assert.strictEqual(quesCalledOnce, true);
+      assert.strictEqual(ques,
+                         `${filePath} already exists. Overwrite? [y/n]\n`);
       setupVars();
     });
   });
@@ -163,7 +198,10 @@
     const userInput = setup.__get__("handleEditorPathInput");
 
     it("should ask a question if no argument is given", () => {
-      const stubQues = sinon.stub();
+      let ques;
+      const stubQues = sinon.stub().callsFake(q => {
+        ques = q;
+      });
       const setupVars = setup.__set__("vars", {
         rl: {
           question: stubQues,
@@ -172,11 +210,32 @@
       userInput();
       const {calledOnce: quesCalledOnce} = stubQues;
       assert.strictEqual(quesCalledOnce, true);
+      assert.strictEqual(ques, "Enter command line options:\n");
+      setupVars();
+    });
+
+    it("should ask a question if empty string is given", () => {
+      let ques;
+      const stubQues = sinon.stub().callsFake(q => {
+        ques = q;
+      });
+      const setupVars = setup.__set__("vars", {
+        rl: {
+          question: stubQues,
+        },
+      });
+      userInput("");
+      const {calledOnce: quesCalledOnce} = stubQues;
+      assert.strictEqual(quesCalledOnce, true);
+      assert.strictEqual(ques, "Enter command line options:\n");
       setupVars();
     });
 
     it("should warn if input answer is not executable", () => {
-      const stubQues = sinon.stub();
+      let ques;
+      const stubQues = sinon.stub().callsFake(q => {
+        ques = q;
+      });
       const setupVars = setup.__set__("vars", {
         configPath: DIR_TMP,
         rl: {
@@ -185,16 +244,20 @@
       });
       sinon.stub(console, "warn");
       userInput("foo/bar");
-      const {calledOnce: quesCalledOnce} = stubQues;
       const {calledOnce: consoleCalledOnce} = console.warn;
-      assert.strictEqual(quesCalledOnce, true);
+      const {calledOnce: quesCalledOnce} = stubQues;
       assert.strictEqual(consoleCalledOnce, true);
+      assert.strictEqual(quesCalledOnce, true);
+      assert.strictEqual(ques, "Enter editor path:\n");
       console.warn.restore();
       setupVars();
     });
 
     it("should set executable app path", () => {
-      const stubQues = sinon.stub();
+      let ques;
+      const stubQues = sinon.stub().callsFake(q => {
+        ques = q;
+      });
       const setupVars = setup.__set__("vars", {
         rl: {
           question: stubQues,
@@ -208,12 +271,13 @@
       }
       sinon.stub(console, "warn");
       userInput(file);
-      const {calledOnce: quesCalledOnce} = stubQues;
       const {calledOnce: consoleCalledOnce} = console.warn;
+      const {calledOnce: quesCalledOnce} = stubQues;
       const {editorPath} = editorConfig;
-      assert.strictEqual(quesCalledOnce, true);
       assert.strictEqual(consoleCalledOnce, false);
       assert.strictEqual(editorPath, file);
+      assert.strictEqual(quesCalledOnce, true);
+      assert.strictEqual(ques, "Enter command line options:\n");
       console.warn.restore();
       setupVars();
     });
@@ -223,7 +287,10 @@
     const userInput = setup.__get__("handleCmdArgsInput");
 
     it("should get empty array if no argument is given", () => {
-      const stubQues = sinon.stub();
+      let ques;
+      const stubQues = sinon.stub().callsFake(q => {
+        ques = q;
+      });
       const setupVars = setup.__set__("vars", {
         rl: {
           question: stubQues,
@@ -234,12 +301,16 @@
       const {calledOnce: quesCalledOnce} = stubQues;
       const {cmdArgs} = editorConfig;
       assert.strictEqual(quesCalledOnce, false);
+      assert.strictEqual(ques, undefined);
       assert.deepEqual(cmdArgs, []);
       setupVars();
     });
 
     it("should get empty array if argument is not string", () => {
-      const stubQues = sinon.stub();
+      let ques;
+      const stubQues = sinon.stub().callsFake(q => {
+        ques = q;
+      });
       const setupVars = setup.__set__("vars", {
         rl: {
           question: stubQues,
@@ -250,12 +321,37 @@
       const {calledOnce: quesCalledOnce} = stubQues;
       const {cmdArgs} = editorConfig;
       assert.strictEqual(quesCalledOnce, false);
+      assert.strictEqual(ques, undefined);
+      assert.deepEqual(cmdArgs, []);
+      setupVars();
+    });
+
+    it("should get empty array if empty string is given", () => {
+      let ques;
+      const stubQues = sinon.stub().callsFake(q => {
+        ques = q;
+      });
+      const setupVars = setup.__set__("vars", {
+        rl: {
+          question: stubQues,
+        },
+      });
+      const editorConfig = setup.__get__("editorConfig");
+      userInput("");
+      const {calledOnce: quesCalledOnce} = stubQues;
+      const {cmdArgs} = editorConfig;
+      assert.strictEqual(quesCalledOnce, true);
+      assert.strictEqual(ques,
+                         "Put file path after command arguments? [y/n]\n");
       assert.deepEqual(cmdArgs, []);
       setupVars();
     });
 
     it("should set cmd args in array", () => {
-      const stubQues = sinon.stub();
+      let ques;
+      const stubQues = sinon.stub().callsFake(q => {
+        ques = q;
+      });
       const setupVars = setup.__set__("vars", {
         rl: {
           question: stubQues,
@@ -266,6 +362,8 @@
       const {calledOnce: quesCalledOnce} = stubQues;
       const {cmdArgs} = editorConfig;
       assert.strictEqual(quesCalledOnce, true);
+      assert.strictEqual(ques,
+                         "Put file path after command arguments? [y/n]\n");
       assert.deepEqual(cmdArgs, ["-a", "-b"]);
       setupVars();
     });

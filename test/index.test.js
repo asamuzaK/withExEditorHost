@@ -30,6 +30,17 @@
 
   const index = rewire("../index");
 
+  describe("fileMap", () => {
+    it("should be instance of Map", () => {
+      const fileMap = index.__get__("fileMap");
+      const keys = Object.keys(fileMap);
+      for (const key of keys) {
+        const val = fileMap[key];
+        assert.isTrue(val instanceof Map);
+      }
+    });
+  });
+
   describe("hostMsg", () => {
     const hostMsg = index.__get__("hostMsg");
 
