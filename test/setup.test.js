@@ -15,25 +15,27 @@
   const IS_WIN = os.platform() === "win32";
   const PERM_APP = 0o755;
 
-  const setup = rewire("../modules/setup");
+  const setupJs = rewire("../modules/setup");
 
   describe("handleSetupCallback", () => {
-    const handleSetupCallback = setup.__get__("handleSetupCallback");
-
     it("should return null if no argument is given", () => {
+      const handleSetupCallback = setupJs.__get__("handleSetupCallback");
       assert.strictEqual(handleSetupCallback(), null);
     });
 
     it("should return null if argument is not an object", () => {
+      const handleSetupCallback = setupJs.__get__("handleSetupCallback");
       assert.strictEqual(handleSetupCallback(""), null);
     });
 
     it("should return null if argument does not contain property", () => {
+      const handleSetupCallback = setupJs.__get__("handleSetupCallback");
       const info = {};
       assert.strictEqual(handleSetupCallback(info), null);
     });
 
     it("should return null if argument property is not string type", () => {
+      const handleSetupCallback = setupJs.__get__("handleSetupCallback");
       const info = {
         configDirPath: true,
       };
@@ -41,6 +43,7 @@
     });
 
     it("should return null if argument property is not a directory", () => {
+      const handleSetupCallback = setupJs.__get__("handleSetupCallback");
       const info = {
         configDirPath: "foo/bar",
       };
@@ -48,7 +51,8 @@
     });
 
     it("should return function", () => {
-      const setupEditor = setup.__set__("setupEditor", () => true);
+      const handleSetupCallback = setupJs.__get__("handleSetupCallback");
+      const setupEditor = setupJs.__set__("setupEditor", () => true);
       const info = {
         configDirPath: DIR_TMP,
       };
@@ -59,10 +63,9 @@
   });
 
   describe("setupEditor", () => {
-    const setupEditor = setup.__get__("setupEditor");
-
     it("should throw if argument is not a directory", () => {
-      const setupVars = setup.__set__("vars", {
+      const setupEditor = setupJs.__get__("setupEditor");
+      const setupVars = setupJs.__set__("vars", {
         configPath: "foo/bar",
       });
       assert.throws(() => setupEditor(), "No such directory: foo/bar.");
@@ -71,10 +74,11 @@
 
     it("should ask a question", () => {
       let ques;
+      const setupEditor = setupJs.__get__("setupEditor");
       const stubQues = sinon.stub().callsFake(q => {
         ques = q;
       });
-      const setupVars = setup.__set__("vars", {
+      const setupVars = setupJs.__set__("vars", {
         configPath: DIR_TMP,
         rl: {
           question: stubQues,
@@ -89,12 +93,13 @@
 
     it("should ask a question", () => {
       let ques;
+      const setupEditor = setupJs.__get__("setupEditor");
       const stubQues = sinon.stub().callsFake(q => {
         ques = q;
       });
       const configPath = path.resolve(path.join("test", "file"));
       const filePath = path.join(configPath, "editorconfig.json");
-      const setupVars = setup.__set__("vars", {
+      const setupVars = setupJs.__set__("vars", {
         configPath,
         rl: {
           question: stubQues,
@@ -110,10 +115,9 @@
   });
 
   describe("abortSetup", () => {
-    const abortSetup = setup.__get__("abortSetup");
-
     it("should exit with message", () => {
-      const setupVars = setup.__set__("vars", {
+      const abortSetup = setupJs.__get__("abortSetup");
+      const setupVars = setupJs.__set__("vars", {
         rl: {
           close: () => undefined,
         },
@@ -132,10 +136,9 @@
   });
 
   describe("handleEditorConfigFileInput", () => {
-    const userInput = setup.__get__("handleEditorConfigFileInput");
-
     it("should throw if argument is not a directory", () => {
-      const setupVars = setup.__set__("vars", {
+      const userInput = setupJs.__get__("handleEditorConfigFileInput");
+      const setupVars = setupJs.__set__("vars", {
         configPath: "foo/bar",
       });
       assert.throws(() => userInput(), "No such directory: foo/bar.");
@@ -143,9 +146,10 @@
     });
 
     it("should close if no argument is given", () => {
+      const userInput = setupJs.__get__("handleEditorConfigFileInput");
       const stubQues = sinon.stub();
-      const setupAbort = setup.__set__("abortSetup", msg => msg);
-      const setupVars = setup.__set__("vars", {
+      const setupAbort = setupJs.__set__("abortSetup", msg => msg);
+      const setupVars = setupJs.__set__("vars", {
         configPath: DIR_TMP,
         rl: {
           question: stubQues,
@@ -160,9 +164,10 @@
     });
 
     it("should close if answer is no", () => {
+      const userInput = setupJs.__get__("handleEditorConfigFileInput");
       const stubQues = sinon.stub();
-      const setupAbort = setup.__set__("abortSetup", msg => msg);
-      const setupVars = setup.__set__("vars", {
+      const setupAbort = setupJs.__set__("abortSetup", msg => msg);
+      const setupVars = setupJs.__set__("vars", {
         configPath: DIR_TMP,
         rl: {
           question: stubQues,
@@ -177,9 +182,10 @@
     });
 
     it("should ask a question if answer is yes", () => {
+      const userInput = setupJs.__get__("handleEditorConfigFileInput");
       const stubQues = sinon.stub();
-      const setupAbort = setup.__set__("abortSetup", msg => msg);
-      const setupVars = setup.__set__("vars", {
+      const setupAbort = setupJs.__set__("abortSetup", msg => msg);
+      const setupVars = setupJs.__set__("vars", {
         configPath: DIR_TMP,
         rl: {
           question: stubQues,
@@ -195,14 +201,13 @@
   });
 
   describe("handleEditorPathInput", () => {
-    const userInput = setup.__get__("handleEditorPathInput");
-
     it("should ask a question if no argument is given", () => {
       let ques;
+      const userInput = setupJs.__get__("handleEditorPathInput");
       const stubQues = sinon.stub().callsFake(q => {
         ques = q;
       });
-      const setupVars = setup.__set__("vars", {
+      const setupVars = setupJs.__set__("vars", {
         rl: {
           question: stubQues,
         },
@@ -216,10 +221,11 @@
 
     it("should ask a question if empty string is given", () => {
       let ques;
+      const userInput = setupJs.__get__("handleEditorPathInput");
       const stubQues = sinon.stub().callsFake(q => {
         ques = q;
       });
-      const setupVars = setup.__set__("vars", {
+      const setupVars = setupJs.__set__("vars", {
         rl: {
           question: stubQues,
         },
@@ -233,10 +239,11 @@
 
     it("should warn if input answer is not executable", () => {
       let ques;
+      const userInput = setupJs.__get__("handleEditorPathInput");
       const stubQues = sinon.stub().callsFake(q => {
         ques = q;
       });
-      const setupVars = setup.__set__("vars", {
+      const setupVars = setupJs.__set__("vars", {
         configPath: DIR_TMP,
         rl: {
           question: stubQues,
@@ -255,15 +262,16 @@
 
     it("should set executable app path", () => {
       let ques;
+      const userInput = setupJs.__get__("handleEditorPathInput");
       const stubQues = sinon.stub().callsFake(q => {
         ques = q;
       });
-      const setupVars = setup.__set__("vars", {
+      const setupVars = setupJs.__set__("vars", {
         rl: {
           question: stubQues,
         },
       });
-      const editorConfig = setup.__get__("editorConfig");
+      const editorConfig = setupJs.__get__("editorConfig");
       const app = IS_WIN && "test.cmd" || "test.sh";
       const file = path.resolve(path.join("test", "file", app));
       if (!IS_WIN) {
@@ -284,19 +292,18 @@
   });
 
   describe("handleCmdArgsInput", () => {
-    const userInput = setup.__get__("handleCmdArgsInput");
-
     it("should get empty array if no argument is given", () => {
       let ques;
+      const userInput = setupJs.__get__("handleCmdArgsInput");
       const stubQues = sinon.stub().callsFake(q => {
         ques = q;
       });
-      const setupVars = setup.__set__("vars", {
+      const setupVars = setupJs.__set__("vars", {
         rl: {
           question: stubQues,
         },
       });
-      const editorConfig = setup.__get__("editorConfig");
+      const editorConfig = setupJs.__get__("editorConfig");
       userInput();
       const {calledOnce: quesCalledOnce} = stubQues;
       const {cmdArgs} = editorConfig;
@@ -308,15 +315,16 @@
 
     it("should get empty array if argument is not string", () => {
       let ques;
+      const userInput = setupJs.__get__("handleCmdArgsInput");
       const stubQues = sinon.stub().callsFake(q => {
         ques = q;
       });
-      const setupVars = setup.__set__("vars", {
+      const setupVars = setupJs.__set__("vars", {
         rl: {
           question: stubQues,
         },
       });
-      const editorConfig = setup.__get__("editorConfig");
+      const editorConfig = setupJs.__get__("editorConfig");
       userInput(["-a", "-b"]);
       const {calledOnce: quesCalledOnce} = stubQues;
       const {cmdArgs} = editorConfig;
@@ -328,15 +336,16 @@
 
     it("should get empty array if empty string is given", () => {
       let ques;
+      const userInput = setupJs.__get__("handleCmdArgsInput");
       const stubQues = sinon.stub().callsFake(q => {
         ques = q;
       });
-      const setupVars = setup.__set__("vars", {
+      const setupVars = setupJs.__set__("vars", {
         rl: {
           question: stubQues,
         },
       });
-      const editorConfig = setup.__get__("editorConfig");
+      const editorConfig = setupJs.__get__("editorConfig");
       userInput("");
       const {calledOnce: quesCalledOnce} = stubQues;
       const {cmdArgs} = editorConfig;
@@ -349,15 +358,16 @@
 
     it("should set cmd args in array", () => {
       let ques;
+      const userInput = setupJs.__get__("handleCmdArgsInput");
       const stubQues = sinon.stub().callsFake(q => {
         ques = q;
       });
-      const setupVars = setup.__set__("vars", {
+      const setupVars = setupJs.__set__("vars", {
         rl: {
           question: stubQues,
         },
       });
-      const editorConfig = setup.__get__("editorConfig");
+      const editorConfig = setupJs.__get__("editorConfig");
       userInput("-a -b");
       const {calledOnce: quesCalledOnce} = stubQues;
       const {cmdArgs} = editorConfig;
@@ -370,22 +380,22 @@
   });
 
   describe("handleFilePosInput", () => {
-    const userInput = setup.__get__("handleFilePosInput");
-
     it("should return null if no argument is given", () => {
+      const userInput = setupJs.__get__("handleFilePosInput");
       assert.strictEqual(userInput(), null);
     });
 
     it("should get false if user input is no", () => {
+      const userInput = setupJs.__get__("handleFilePosInput");
       const stubQues = sinon.stub();
-      const createEditorConfig = setup.__set__("createEditorConfig",
-                                               async () => undefined);
-      const setupVars = setup.__set__("vars", {
+      const createEditorConfig = setupJs.__set__("createEditorConfig",
+                                                 async () => undefined);
+      const setupVars = setupJs.__set__("vars", {
         rl: {
           close: () => undefined,
         },
       });
-      const editorConfig = setup.__get__("editorConfig");
+      const editorConfig = setupJs.__get__("editorConfig");
       userInput("n");
       const {calledOnce: quesCalledOnce} = stubQues;
       const {fileAfterCmdArgs} = editorConfig;
@@ -396,15 +406,16 @@
     });
 
     it("should get true if user input is yes", async () => {
+      const userInput = setupJs.__get__("handleFilePosInput");
       const stubQues = sinon.stub();
-      const createEditorConfig = setup.__set__("createEditorConfig",
-                                               async () => true);
-      const setupVars = setup.__set__("vars", {
+      const createEditorConfig = setupJs.__set__("createEditorConfig",
+                                                 async () => true);
+      const setupVars = setupJs.__set__("vars", {
         rl: {
           close: () => undefined,
         },
       });
-      const editorConfig = setup.__get__("editorConfig");
+      const editorConfig = setupJs.__get__("editorConfig");
       const res = await userInput("y");
       const {calledOnce: quesCalledOnce} = stubQues;
       const {fileAfterCmdArgs} = editorConfig;
@@ -417,10 +428,9 @@
   });
 
   describe("createEditorConfig", () => {
-    const createEditorConfig = setup.__get__("createEditorConfig");
-
     it("should throw if config path is not a directory", async () => {
-      const setupVars = setup.__set__("vars", {
+      const createEditorConfig = setupJs.__get__("createEditorConfig");
+      const setupVars = setupJs.__set__("vars", {
         configPath: "foo/bar",
       });
       await createEditorConfig().catch(e => {
@@ -430,11 +440,12 @@
     });
 
     it("should throw if failed to create file", async () => {
-      const setupVars = setup.__set__("vars", {
+      const createEditorConfig = setupJs.__get__("createEditorConfig");
+      const setupVars = setupJs.__set__("vars", {
         configPath: DIR_TMP,
       });
       const file = path.join(DIR_TMP, EDITOR_CONFIG_FILE);
-      const createFile = setup.__set__("createFile", () => false);
+      const createFile = setupJs.__set__("createFile", () => false);
       await createEditorConfig().catch(e => {
         assert.strictEqual(e.message, `Failed to create ${file}.`);
       });
@@ -443,11 +454,12 @@
     });
 
     it("should return editor config path", async () => {
-      const setupVars = setup.__set__("vars", {
+      const createEditorConfig = setupJs.__get__("createEditorConfig");
+      const setupVars = setupJs.__set__("vars", {
         configPath: DIR_TMP,
       });
       const filePath = path.join(DIR_TMP, EDITOR_CONFIG_FILE);
-      const createFile = setup.__set__("createFile", file => file);
+      const createFile = setupJs.__set__("createFile", file => file);
       sinon.stub(console, "info");
       await createEditorConfig().then(res => {
         assert.strictEqual(res, filePath);
