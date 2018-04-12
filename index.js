@@ -591,16 +591,13 @@
     }
   };
 
-  /* process */
-  process.on("exit", handleExit);
-  process.on("uncaughtException", throwErr);
-  process.on("unhandleRejection", handleReject);
-  process.stdin.on("data", readStdin);
-
-  /* startup */
-  {
+  /**
+   * handle startup
+   * @returns {AsyncFunction} - handler
+   */
+  const startup = () => {
     const [, , ...args] = process.argv;
-    let setup;
+    let setup, func;
     if (Array.isArray(args) && args.length) {
       for (const arg of args) {
         if (/^--setup$/i.test(arg)) {
@@ -610,7 +607,7 @@
       }
     }
     if (setup) {
-      (new Setup({
+      func = (new Setup({
         hostDescription: HOST_DESC,
         hostName: HOST,
         chromeExtensionIds: [EXT_CHROME_ID],
@@ -618,10 +615,19 @@
         callback: handleSetupCallback,
       })).run();
     } else {
-      Promise.all([
+      func = Promise.all([
         createDir(TMPDIR_FILES, PERM_DIR),
         createDir(TMPDIR_FILES_PB, PERM_DIR),
       ]).then(portAppStatus).catch(handleReject);
     }
-  }
+    return func;
+  };
+
+  /* process */
+  process.on("exit", handleExit);
+  process.on("uncaughtException", throwErr);
+  process.on("unhandleRejection", handleReject);
+  process.stdin.on("data", readStdin);
+
+  startup();
 }

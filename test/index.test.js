@@ -1,9 +1,10 @@
+/* eslint-disable max-nested-callbacks */
 "use strict";
 {
   /* api */
+  const {Output} = require("web-ext-native-msg");
   const {assert} = require("chai");
   const {describe, it} = require("mocha");
-  const {Output} = require("web-ext-native-msg");
   const fs = require("fs");
   const os = require("os");
   const path = require("path");
@@ -12,11 +13,11 @@
 
   /* constant */
   const {
-    EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
-    FILE_WATCH, HOST_VERSION,
-    LABEL, MODE_EDIT,
-    TMP_FILES, TMP_FILES_PB,
-    TMP_FILE_DATA_PORT, TMP_FILE_RES,
+    EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
+    EXT_CHROME_ID, EXT_WEB_ID, FILE_WATCH, HOST, HOST_DESC, HOST_VERSION,
+    HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
+    TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
+    TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES,
   } = require("../modules/constant");
   const APP = `${process.pid}`;
   const IS_WIN = os.platform() === "win32";
@@ -1229,6 +1230,39 @@
       writeStdout();
       getEditorConfig();
     });
+
+    it("should get function", async () => {
+      const EXPECTED_LENGTH = 1;
+      const handleMsg = indexJs.__get__("handleMsg");
+      const keyMap = {
+        [EDITOR_CONFIG_GET]: "getEditorConfig",
+        [HOST_VERSION_CHECK]: "portHostVersion",
+        [LOCAL_FILE_VIEW]: "viewLocalFile(obj)",
+        [TMP_FILE_CREATE]: ["createTmpFile", "handleCreatedTmpFile"],
+        [TMP_FILE_DATA_REMOVE]: "removeTmpFileData",
+        [TMP_FILE_GET]: "getTmpFileFromFileData(obj)",
+        [TMP_FILES_PB_REMOVE]: "initPrivateTmpDir",
+      };
+      Object.entries(keyMap).forEach(async arg => {
+        const [key, value] = arg;
+        const msg = {
+          [key]: key,
+        };
+        let func, func2;
+        if (Array.isArray(value)) {
+          func = indexJs.__set__(value[0], obj => obj);
+          func2 = indexJs.__set__(value[1], obj => obj);
+        } else {
+          func = indexJs.__set__(value, obj => obj);
+        }
+        const res = await handleMsg(msg);
+        assert.isTrue(Array.isArray(res));
+        assert.strictEqual(res.length, EXPECTED_LENGTH);
+        assert.deepEqual(res, [key]);
+        func();
+        func2 && func2();
+      });
+    });
   });
 
   describe("readStdin", () => {
@@ -1253,6 +1287,87 @@
       const {calledOnce} = stdout.write;
       stdout.write.restore();
       assert.isTrue(calledOnce);
+    });
+  });
+
+  describe("startup", () => {
+    it("should get function", async () => {
+      const func = indexJs.__get__("startup");
+      const createDir = indexJs.__set__("createDir", async arr => arr);
+      const portAppStatus = indexJs.__set__("portAppStatus", async arr => arr);
+      const res = await func();
+      assert.isArray(res);
+      assert.deepEqual(res, [TMPDIR_FILES, TMPDIR_FILES_PB]);
+      createDir();
+      portAppStatus();
+    });
+
+    it("should get function", async () => {
+      const func = indexJs.__get__("startup");
+      const processArgv = indexJs.__set__("process", {
+        argv: [
+          "foo",
+          "bar",
+        ],
+      });
+      const createDir = indexJs.__set__("createDir", async arr => arr);
+      const portAppStatus = indexJs.__set__("portAppStatus", async arr => arr);
+      const res = await func();
+      assert.isArray(res);
+      assert.deepEqual(res, [TMPDIR_FILES, TMPDIR_FILES_PB]);
+      processArgv();
+      createDir();
+      portAppStatus();
+    });
+
+    it("should get function", async () => {
+      const func = indexJs.__get__("startup");
+      const processArgv = indexJs.__set__("process", {
+        argv: [
+          "foo",
+          "bar",
+          "baz",
+        ],
+      });
+      const createDir = indexJs.__set__("createDir", async arr => arr);
+      const portAppStatus = indexJs.__set__("portAppStatus", async arr => arr);
+      const res = await func();
+      assert.isArray(res);
+      assert.deepEqual(res, [TMPDIR_FILES, TMPDIR_FILES_PB]);
+      processArgv();
+      createDir();
+      portAppStatus();
+    });
+
+    it("should get function", async () => {
+      const func = indexJs.__get__("startup");
+      const processArgv = indexJs.__set__("process", {
+        argv: [
+          "foo",
+          "bar",
+          "--setup",
+        ],
+      });
+      class fakeSetup {
+        constructor(opt) {
+          this._opt = opt;
+        }
+        run() {
+          return this._opt;
+        }
+      }
+      const stubSetup = indexJs.__set__("Setup", fakeSetup);
+      const res = await func();
+      assert.isObject(res);
+      assert.hasAllKeys(res, [
+        "hostDescription",
+        "hostName",
+        "chromeExtensionIds",
+        "webExtensionIds",
+        "callback",
+      ]);
+      processArgv();
+      stubSetup();
     });
   });
 }
