@@ -403,6 +403,37 @@
       });
       writeStdout();
     });
+
+    it("should get message", async () => {
+      const getTmpFileFromFileData = indexJs.__get__("getTmpFileFromFileData");
+      const fileMap = indexJs.__get__("fileMap");
+      const getFileTimestamp = indexJs.__get__("getFileTimestamp");
+      const writeStdout = indexJs.__set__("writeStdout", msg => msg);
+      const filePath = path.resolve(path.join("test", "file", "test.txt"));
+      const {dir, name} = path.parse(filePath);
+      const dirArr = dir.replace(path.join(...TMPDIR_APP), "").split(path.sep);
+      const [, , windowId, tabId, host] = dirArr;
+      const fileId = `${windowId}_${tabId}_${host}_${name}`;
+      const timestamp = await getFileTimestamp(filePath);
+      const data = {
+        filePath, host, tabId, windowId,
+        dataId: name,
+        dir: TMP_FILES,
+      };
+      fileMap[TMP_FILES].set(fileId, {filePath});
+      const res = await getTmpFileFromFileData(data);
+      assert.deepEqual(res, {
+        [TMP_FILE_RES]: {
+          data: {
+            filePath, host, tabId, timestamp, windowId,
+            dataId: name,
+            dir: TMP_FILES,
+          },
+          value: "test file\n",
+        },
+      });
+      writeStdout();
+    });
   });
 
   describe("getFileIdFromFilePath", () => {
@@ -1237,10 +1268,10 @@
       const keyMap = {
         [EDITOR_CONFIG_GET]: "getEditorConfig",
         [HOST_VERSION_CHECK]: "portHostVersion",
-        [LOCAL_FILE_VIEW]: "viewLocalFile(obj)",
+        [LOCAL_FILE_VIEW]: "viewLocalFile",
         [TMP_FILE_CREATE]: ["createTmpFile", "handleCreatedTmpFile"],
         [TMP_FILE_DATA_REMOVE]: "removeTmpFileData",
-        [TMP_FILE_GET]: "getTmpFileFromFileData(obj)",
+        [TMP_FILE_GET]: "getTmpFileFromFileData",
         [TMP_FILES_PB_REMOVE]: "initPrivateTmpDir",
       };
       Object.entries(keyMap).forEach(async arg => {
@@ -1250,22 +1281,33 @@
         };
         let func, func2;
         if (Array.isArray(value)) {
-          func = indexJs.__set__(value[0], obj => obj);
-          func2 = indexJs.__set__(value[1], obj => obj);
+          const [val, val2] = value;
+          func = indexJs.__set__(val, async obj => obj);
+          func2 = indexJs.__set__(val2, async obj => obj);
         } else {
-          func = indexJs.__set__(value, obj => obj);
+          func = indexJs.__set__(value, async obj => obj);
+          func2 = () => undefined;
         }
         const res = await handleMsg(msg);
         assert.isTrue(Array.isArray(res));
         assert.strictEqual(res.length, EXPECTED_LENGTH);
         assert.deepEqual(res, [key]);
         func();
-        func2 && func2();
+        func2();
       });
     });
   });
 
   describe("readStdin", () => {
+    it("should get null", async () => {
+      const readStdin = indexJs.__get__("readStdin");
+      const handleMsg = indexJs.__set__("handleMsg", msg => msg);
+      const chunk = (new Output()).encode("");
+      const res = await readStdin(chunk);
+      assert.isNull(res);
+      handleMsg();
+    });
+
     it("should get function", async () => {
       const readStdin = indexJs.__get__("readStdin");
       const handleMsg = indexJs.__set__("handleMsg", msg => msg);
