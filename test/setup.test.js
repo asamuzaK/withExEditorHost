@@ -85,7 +85,7 @@ describe("setupEditor", () => {
     });
     setupEditor();
     const {calledOnce: quesCalledOnce} = stubQues;
-    assert.strictEqual(quesCalledOnce, true);
+    assert.isTrue(quesCalledOnce);
     assert.strictEqual(ques, "Enter editor path:\n");
     setupVars();
   });
