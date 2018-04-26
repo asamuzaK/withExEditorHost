@@ -3,7 +3,7 @@ sudo: false
 dist: trusty
 node_js:
   - "8"
-  - "9"
+  - "10"
 
 before_script:
   - npm install
@@ -33,7 +33,7 @@ deploy:
     - dest/linux-x86.zip
   on:
     tags: true
-    node: "9"
+    node: "10"
 
 after_deploy:
   - npm run clean:pkg
