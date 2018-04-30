@@ -35,8 +35,8 @@
     "zippackage:win64": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
   "dependencies": {
-    "semver-parser": "^1.1.1",
-    "web-ext-native-msg": "^2.3.2"
+    "semver-parser": "^1.1.2",
+    "web-ext-native-msg": "^2.3.3"
   },
   "devDependencies": {
     "chai": "^4.1.2",
@@ -47,7 +47,7 @@
     "pkg": "^4.3.1",
     "rewire": "^4.0.1",
     "rimraf": "^2.6.2",
-    "sinon": "^4.5.0",
+    "sinon": "^5.0.1",
     "ziptool": "^1.0.2"
   },
   "version": "3.1.1"
