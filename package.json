@@ -35,7 +35,7 @@
     "zippackage:win64": "ziptool --zip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
   "dependencies": {
-    "semver-parser": "^1.1.2",
+    "semver-parser": "^2.0.0",
     "web-ext-native-msg": "^2.3.3"
   },
   "devDependencies": {
