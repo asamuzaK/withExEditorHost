@@ -281,11 +281,11 @@ const initPrivateTmpDir = async bool => {
 const getTmpFileFromFileData = async (data = {}) => {
   const {dataId, dir, host, tabId, windowId} = data;
   let msg;
-  if (dataId && dir && host && tabId && windowId) {
+  if (dataId && dir && host && tabId && windowId && fileMap[dir]) {
     const fileId = [windowId, tabId, host, dataId].join("_");
-    if (dir && fileMap[dir]) {
+    if (fileMap[dir].has(fileId)) {
       const {filePath} = fileMap[dir].get(fileId);
-      if (filePath && await isFile(filePath)) {
+      if (await isString(filePath) && await isFile(filePath)) {
         const value = await readFile(filePath, {encoding: CHAR, flag: "r"}) ||
                       "";
         data.timestamp = await getFileTimestamp(filePath) || 0;
@@ -438,7 +438,7 @@ const removeTmpFileData = async (data = {}) => {
       }
     } else {
       const keyPart = host && [windowId, tabId, host].join("_") ||
-                      [windowId, tabId].join("_");
+                      `${[windowId, tabId].join("_")}_`;
       fileMap[dir].forEach((value, key) => {
         if (key.startsWith(keyPart)) {
           const {filePath} = value;
