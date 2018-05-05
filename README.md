@@ -34,7 +34,9 @@ When filing an issue, if you know [where to save the application manifest](https
 
 ## Host setup
 
-NOTE: If you are upgrading from host v2.x, you also need to run the following setup script.
+When setting up the host, disable withExEditor installed in the browser.
+
+NOTE: If you are upgrading from host v2.x, you also need to run the following setup script. In addition, please delete all v2.x files.
 
 Download a zip file for your OS from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), after decompressing, save it in an arbitrary place under your home directory (for example, `C:\Users\XXX\withExEditorHost\`).
 
@@ -59,8 +61,8 @@ You can choose `n` and exit.
 * Put file path after command arguments?
   * NOTE: When specifying the file, some editor requires to put the file path after command arguments. Enter `y` in such case.
 
-If config files are created successfully, restart the browser.
-When you start the browser, the browser and the host get connected and the editor will be ready to use.
+If config files are created successfully, enable withExEditor again.
+The browser and the host get connected and the editor will be ready to use.
 
 ### Options
 
@@ -94,6 +96,8 @@ Quote path if it contains spaces or backslashes.
 
 Note that [Node.js](https://nodejs.org/en/ "Node.js") v8.9.0 or higher is required to run the host from source code.
 
+When setting up the host, disable withExEditor installed in the browser.
+
 Download a zip file or tar.gz file of the source code from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), after decompressing, save it in an arbitrary place under your home directory (for example, `C:\Users\XXX\withExEditorHost\`).
 If you have a Github account, you can also clone and save the repository.
 
@@ -115,8 +119,8 @@ After that, you will be prompted for the following, please input as appropriate.
 * Put file path after command arguments?
   * NOTE: When specifying the file, some editor requires to put the file path after command arguments. Enter `y` in such case.
 
-If config files are created successfully, restart the browser.
-When you start the browser, the browser and the host get connected and the editor will be ready to use.
+If config files are created successfully, enable withExEditor again.
+The browser and the host get connected and the editor will be ready to use.
 
 ### Options
 
