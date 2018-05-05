@@ -33,7 +33,7 @@ deploy:
     - dest/linux-x86.zip
   on:
     tags: true
-    node: "10"
+    node: "8"
 
 after_deploy:
   - npm run clean:pkg
