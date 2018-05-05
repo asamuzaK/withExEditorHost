@@ -1053,7 +1053,7 @@ describe("removeTmpFileData", () => {
       windowId: "foo",
     };
     const fileId = "foo_bar_baz_qux";
-    const fileId2 = "foo_bar";
+    const fileId2 = "foo_bar_baz_quux";
     const filePath =
       path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
     const filePath2 =
