@@ -1054,14 +1054,20 @@ describe("removeTmpFileData", () => {
     };
     const fileId = "foo_bar_baz_qux";
     const fileId2 = "foo_bar_baz_quux";
+    const fileId3 = "foo_barr_baz_qux";
     const filePath =
       path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
     const filePath2 =
       path.join(...TMPDIR_FILES, "foo", "bar", "baz", "quux.txt");
+    const filePath3 =
+      path.join(...TMPDIR_FILES, "foo", "barr", "baz", "qux.txt");
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES].set(fileId, {filePath});
     fileMap[TMP_FILES].set(fileId2, {
       filePath: filePath2,
+    });
+    fileMap[TMP_FILES].set(fileId3, {
+      filePath: filePath3,
     });
     fileMap[FILE_WATCH].clear();
     fileMap[FILE_WATCH].set(filePath, true);
