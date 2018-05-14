@@ -1,8 +1,0 @@
-.eslintrc
-.gitignore
-.npmingore
-.nyc_output
-.travis.yml
-dest/
-pkg/
-test/
