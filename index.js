@@ -596,16 +596,22 @@ const handleExit = code => {
  */
 const startup = () => {
   const [, , ...args] = process.argv;
-  let setup, func;
+  let setup, ver, func;
   if (Array.isArray(args) && args.length) {
     for (const arg of args) {
       if (/^--setup$/i.test(arg)) {
         setup = true;
         break;
+      } else if (/^(?:-v|--version)$/i.test(arg)) {
+        ver = true;
+        break;
       }
     }
   }
-  if (setup) {
+  if (ver) {
+    console.info(hostVersion);
+    process.exit(0);
+  } else if (setup) {
     func = (new Setup({
       hostDescription: HOST_DESC,
       hostName: HOST,
