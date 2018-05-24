@@ -20,6 +20,7 @@ const EDITOR_PATH = "editorPath";
 const EXT_CHROME_ID = "chrome-extension://koghhpkkcndhhclklnnnhcpkkplfkgoi/";
 const EXT_WEB_ID = "jid1-WiAigu4HIo0Tag@jetpack";
 const FILE_EXT = "fileExt";
+const FILE_NOT_FOUND_TIMESTAMP = -1;
 const FILE_WATCH = "watchFile";
 const IS_ENABLED = "isEnabled";
 const KEY_ACCESS = "accessKey";
@@ -69,6 +70,7 @@ module.exports = {
   EXT_CHROME_ID,
   EXT_WEB_ID,
   FILE_EXT,
+  FILE_NOT_FOUND_TIMESTAMP,
   FILE_WATCH,
   IS_ENABLED,
   KEY_ACCESS,
