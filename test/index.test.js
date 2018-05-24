@@ -18,6 +18,7 @@ const {
   TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES,
 } = require("../modules/constant");
 const APP = `${process.pid}`;
+const FILE_NOT_FOUND_TIMESTAMP = -1;
 const IS_WIN = os.platform() === "win32";
 const PERM_APP = 0o755;
 const PERM_DIR = 0o700;
@@ -383,7 +384,7 @@ describe("getTmpFileFromFileData", () => {
       {
         [TMP_FILE_RES]: {
           data: {
-            timestamp: -1,
+            timestamp: FILE_NOT_FOUND_TIMESTAMP,
           },
         },
       },
@@ -417,7 +418,7 @@ describe("getTmpFileFromFileData", () => {
             host: "host",
             tabId: "tabId",
             windowId: "windowId",
-            timestamp: -1,
+            timestamp: FILE_NOT_FOUND_TIMESTAMP,
           },
         },
       },
