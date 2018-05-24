@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "semver-parser": "^2.0.0",
-    "web-ext-native-msg": "^2.3.4"
+    "web-ext-native-msg": "^2.4.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
@@ -48,7 +48,7 @@
     "pkg": "^4.3.1",
     "rewire": "^4.0.1",
     "rimraf": "^2.6.2",
-    "sinon": "^5.0.7"
+    "sinon": "^5.0.9"
   },
   "version": "3.1.5"
 }
