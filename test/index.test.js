@@ -373,12 +373,21 @@ describe("getTmpFileFromFileData", () => {
     const getTmpFileFromFileData = indexJs.__get__("getTmpFileFromFileData");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
     const res = await getTmpFileFromFileData();
-    assert.deepEqual(res, {
-      withexeditorhost: {
-        message: "Failed to get temporary file.",
-        status: "warn",
+    assert.deepEqual(res, [
+      {
+        withexeditorhost: {
+          message: "Failed to get temporary file.",
+          status: "warn",
+        },
       },
-    });
+      {
+        [TMP_FILE_RES]: {
+          data: {
+            timestamp: -1,
+          },
+        },
+      },
+    ]);
     writeStdout();
   });
 
@@ -393,12 +402,26 @@ describe("getTmpFileFromFileData", () => {
       windowId: "windowId",
     };
     const res = await getTmpFileFromFileData(data);
-    assert.deepEqual(res, {
-      withexeditorhost: {
-        message: "Failed to get temporary file.",
-        status: "warn",
+    assert.deepEqual(res, [
+      {
+        withexeditorhost: {
+          message: "Failed to get temporary file.",
+          status: "warn",
+        },
       },
-    });
+      {
+        [TMP_FILE_RES]: {
+          data: {
+            dataId: "dataId",
+            dir: "dir",
+            host: "host",
+            tabId: "tabId",
+            windowId: "windowId",
+            timestamp: -1,
+          },
+        },
+      },
+    ]);
     writeStdout();
   });
 
@@ -420,16 +443,18 @@ describe("getTmpFileFromFileData", () => {
     };
     fileMap[TMP_FILES].set(fileId, {filePath});
     const res = await getTmpFileFromFileData(data);
-    assert.deepEqual(res, {
-      [TMP_FILE_RES]: {
-        data: {
-          filePath, host, tabId, timestamp, windowId,
-          dataId: name,
-          dir: TMP_FILES,
+    assert.deepEqual(res, [
+      {
+        [TMP_FILE_RES]: {
+          data: {
+            filePath, host, tabId, timestamp, windowId,
+            dataId: name,
+            dir: TMP_FILES,
+          },
+          value: "test file\n",
         },
-        value: "test file\n",
       },
-    });
+    ]);
     writeStdout();
   });
 });
