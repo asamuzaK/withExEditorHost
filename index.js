@@ -28,6 +28,7 @@ const {
 } = require("./modules/constant");
 const APP = `${process.pid}`;
 const CHAR = "utf8";
+const FILE_NOT_FOUND_TIMESTAMP = -1;
 const PERM_DIR = 0o700;
 const PERM_FILE = 0o600;
 const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
@@ -280,6 +281,7 @@ const initPrivateTmpDir = async bool => {
  */
 const getTmpFileFromFileData = async (data = {}) => {
   const {dataId, dir, host, tabId, windowId} = data;
+  const func = [];
   let msg;
   if (dataId && dir && host && tabId && windowId && fileMap[dir]) {
     const fileId = [windowId, tabId, host, dataId].join("_");
@@ -292,13 +294,21 @@ const getTmpFileFromFileData = async (data = {}) => {
         msg = {
           [TMP_FILE_RES]: {data, value},
         };
+        func.push(writeStdout(msg));
       }
     }
   }
   if (!msg) {
-    msg = hostMsg("Failed to get temporary file.", "warn");
+    data.timestamp = FILE_NOT_FOUND_TIMESTAMP;
+    msg = {
+      [TMP_FILE_RES]: {data},
+    };
+    func.push(
+      writeStdout(hostMsg("Failed to get temporary file.", "warn")),
+      writeStdout(msg),
+    );
   }
-  return writeStdout(msg);
+  return Promise.all(func);
 };
 
 /**
