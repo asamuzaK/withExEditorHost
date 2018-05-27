@@ -370,25 +370,11 @@ describe("initPrivateTmpDir", () => {
 });
 
 describe("getTmpFileFromFileData", () => {
-  it("should warn if no argument given", async () => {
+  it("should get empty array if no argument given", async () => {
     const getTmpFileFromFileData = indexJs.__get__("getTmpFileFromFileData");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
     const res = await getTmpFileFromFileData();
-    assert.deepEqual(res, [
-      {
-        withexeditorhost: {
-          message: "Failed to get temporary file.",
-          status: "warn",
-        },
-      },
-      {
-        [TMP_FILE_RES]: {
-          data: {
-            timestamp: FILE_NOT_FOUND_TIMESTAMP,
-          },
-        },
-      },
-    ]);
+    assert.deepEqual(res, []);
     writeStdout();
   });
 
@@ -405,12 +391,6 @@ describe("getTmpFileFromFileData", () => {
     const res = await getTmpFileFromFileData(data);
     assert.deepEqual(res, [
       {
-        withexeditorhost: {
-          message: "Failed to get temporary file.",
-          status: "warn",
-        },
-      },
-      {
         [TMP_FILE_RES]: {
           data: {
             dataId: "dataId",
@@ -420,6 +400,12 @@ describe("getTmpFileFromFileData", () => {
             windowId: "windowId",
             timestamp: FILE_NOT_FOUND_TIMESTAMP,
           },
+        },
+      },
+      {
+        withexeditorhost: {
+          message: "Failed to get temporary file. ID: dataId",
+          status: "warn",
         },
       },
     ]);

@@ -298,16 +298,16 @@ const getTmpFileFromFileData = async (data = {}) => {
       }
     }
   }
-  if (!msg) {
+  if (dataId && !msg) {
     data.timestamp = FILE_NOT_FOUND_TIMESTAMP;
     msg = {
       [TMP_FILE_RES]: {data},
     };
     func.push(
+      writeStdout(msg),
       writeStdout(
         hostMsg(`Failed to get temporary file. ID: ${dataId}`, "warn")
       ),
-      writeStdout(msg),
     );
   }
   return Promise.all(func);
