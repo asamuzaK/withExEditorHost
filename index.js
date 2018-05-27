@@ -304,7 +304,9 @@ const getTmpFileFromFileData = async (data = {}) => {
       [TMP_FILE_RES]: {data},
     };
     func.push(
-      writeStdout(hostMsg("Failed to get temporary file.", "warn")),
+      writeStdout(
+        hostMsg(`Failed to get temporary file. ID: ${dataId}`, "warn")
+      ),
       writeStdout(msg),
     );
   }
