@@ -391,7 +391,7 @@ describe("getTmpFileFromFileData", () => {
     const res = await getTmpFileFromFileData(data);
     assert.deepEqual(res, [
       {
-        [TMP_FILE_RES]: {
+        [TMP_FILE_DATA_REMOVE]: {
           data: {
             dataId: "dataId",
             dir: "dir",
