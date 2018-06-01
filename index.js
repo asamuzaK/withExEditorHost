@@ -301,7 +301,7 @@ const getTmpFileFromFileData = async (data = {}) => {
   if (dataId && !msg) {
     data.timestamp = FILE_NOT_FOUND_TIMESTAMP;
     msg = {
-      [TMP_FILE_RES]: {data},
+      [TMP_FILE_DATA_REMOVE]: {data},
     };
     func.push(
       writeStdout(msg),
