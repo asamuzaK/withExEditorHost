@@ -228,9 +228,7 @@ const handleSetupCallback = (info = {}) => {
               "editor command args, need to be quoted")
       .option("-f, --file-after-args",
               "put file path at the end of command args")
-      .allowUnknownOption()
-      .parse(process.argv)
-      .opts();
+      .allowUnknownOption().parse(process.argv).opts();
     if (overwriteEditorConfig) {
       vars.overwriteEditorConfig = !!overwriteEditorConfig;
     }
