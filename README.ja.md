@@ -44,7 +44,7 @@
 
 ```
 > cd path/to/withExEditorHost
-> index --setup
+> index setup
 ```
 
 どのブラウザ向けにホストを設定するのか尋ねられますので、リストに表示されたブラウザ名を入力してください。
@@ -68,26 +68,34 @@
 
 セットアップスクリプトではいくつかのオプションを指定することができます。
 
-#### --browserオプション
+#### -b --browser
 
-ブラウザをあらかじめ指定する場合には、`--browser`オプションで指定してください。
+ブラウザをあらかじめ指定する場合には、`-b`または`--browser`オプションで指定してください。
 
 ```
-> index --setup --browser=firefox
+> index setup --browser=firefox
 ```
 
-#### --config-pathオプション
+#### -c --config-path
 
 セットアップスクリプトは、デフォルトでユーザーのホームディレクトリ下に各設定ファイルを保持します。
 * Windowsの場合：`C:\Users\[UserName]\AppData\Roaming\withexeditorhost\config\`
 * Macの場合：`~/Library/Application Support/withexeditorhost/config/`
 * Linuxの場合：`~/.config/withexeditorhost/config/`
 
-設定ファイルの保存先を変更したい場合は、`--config-path`オプションで指定してください。
+設定ファイルの保存先を変更したい場合は、`-c`または`--config-path`オプションで指定してください。
 パスに空白やバックスラッシュが含まれる場合は引用符で括ってください。
 
 ```
-> index --setup --config-path="C:\Users\XXX\path\to\another\location"
+> index setup --config-path="C:\Users\XXX\path\to\another\location"
+```
+
+#### その他
+
+その他のオプションについては、ヘルプで確認してください
+
+```
+> node index --help
 ```
 
 ***
@@ -126,153 +134,32 @@ Githubのアカウントがある場合は、レポジトリをクローンし�
 
 セットアップスクリプトではいくつかのオプションを指定することができます。
 
-#### --browserオプション
+#### -b --browser
 
-ブラウザをあらかじめ指定する場合には、`--browser`オプションで指定してください。
+ブラウザをあらかじめ指定する場合には、`-b`または`--browser`オプションで指定してください。
 
 ```
 > npm run setup -- --browser=firefox
 ```
 
-#### --config-pathオプション
+#### -c --config-path
 
 セットアップスクリプトは、デフォルトでユーザーのホームディレクトリ下に各設定ファイルを保持します。
 * Windowsの場合：`C:\Users\[UserName]\AppData\Roaming\withexeditorhost\config\`
 * Macの場合：`~/Library/Application Support/withexeditorhost/config/`
 * Linuxの場合：`~/.config/withexeditorhost/config/`
 
-設定ファイルの保存先を変更したい場合は、`--config-path`オプションで指定してください。
+設定ファイルの保存先を変更したい場合は、`-c`まはた`--config-path`オプションで指定してください。
 パスに空白やバックスラッシュが含まれる場合は引用符で括ってください。
 
 ```
 > npm run setup -- --config-path="C:\Users\XXX\path\to\another\location"
 ```
 
-<!--
-***
+#### その他
 
-## 手動設定
-
-withExEditorHostの"_config"というフォルダの中に必要な設定ファイルのサンプルがあります。
-
-_configフォルダのコピーを作成して`config`にリネームしてください。
-なお、_configフォルダの中身は直接編集しないようにしてください。
-withExEditorHostをアップデートしたときに上書きされてしまう可能性があります。
-
-### ホストを起動するシェルスクリプトの編集
-
-Windowsの場合は"withexeditorhost.cmd"を開いて、ホストのindex.jsファイルのパスを記入します。
+その他のオプションについては、ヘルプで確認してください
 
 ```
-@echo off
-:: Fill in the path of the index.js file of the host.
-node "C:\Users\XXX\withExEditorHost\index.js"
+> node index --help
 ```
-
-Linux / Macの場合は"withexeditorhost.sh"を開いて、ホストのindex.jsファイルのパスを記入します。
-
-```
-#!/usr/bin/env bash
-# Fill in the path of the index.js file of the host.
-# Replace "node" command to "nodejs" according to your environment.
-node /path/to/withexeditorhost/index.js
-```
-
-### アプリケーションマニフェストの編集
-
-"withexeditorhost.json"を開いて、その中の`path`フィールドにシェルスクリプトのパスを記入します。
-Windowsの場合は、ディレクトリの区切りであるバックスラッシュ文字にはさらにバックスラッシュを加えてエスケープさせる必要があることに注意してください。
-
-Gecko：
-```
-{
-  "name": "withexeditorhost",
-  "description": "Native messaging host for withExEditor",
-  "path": "C:\\Users\\XXX\\path\\to\\withExEditorHost\\config\\withexeditorhost.cmd",
-  "type": "stdio",
-  "allowed_extensions": ["jid1-WiAigu4HIo0Tag@jetpack"]
-}
-```
-
-Blink：
-```
-{
-  "name": "withexeditorhost",
-  "description": "Native messaging host for withExEditor",
-  "path": "C:\\Users\\XXX\\path\\to\\withExEditorHost\\config\\withexeditorhost.cmd",
-  "type": "stdio",
-  "allowed_origins": ["chrome-extension://koghhpkkcndhhclklnnnhcpkkplfkgoi/"]
-}
-```
-
-Windowsではレジストリも設定する必要があります。
-cmd.exeで次のコマンドを実行するとレジストリキーを保存することができます。
-`"HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost"`と`"C:\Users\XXX\path\to\withExEditorHosts\config\withexeditorhost.json"`の部分は、適宜書き換えてください。
-
-```
-REG ADD "HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost" /ve /d "C:\Users\XXX\path\to\withExEditorHosts\config\withexeditorhost.json" /f
-```
-
-LinuxとMacでは、"withexeditorhost.json"を指定の場所に保存する必要があります。
-以下は、Firefoxでの例です。ほかのブラウザについては公式のドキュメントなどを参照してください。
-
-Linux:
-```
-~/.mozilla/native-messaging-hosts/withexeditorhost.json
-```
-
-Mac:
-```
-~/Library/Application Support/Mozilla/NativeMessagingHosts/withexeditorhost.json
-```
-
-### エディタ設定ファイルの編集
-
-"editorconfig.json"を開いて、使用するエディタの情報を記入します。
-
-```
-{
-  "editorPath": "C:\\Program Files\\Path\\To\\Your\\Editor.exe",
-  "cmdArgs": ["-a", "-b", "--c=d\\e"],
-  "fileAfterCmdArgs": false
-}
-```
-
-* *editorPath* - 使用するエディタのパス。バックスラッシュ文字はエスケープさせる必要があります。
-* *cmdArgs"* - コマンドラインオプション。[]括弧の中にカンマ区切りで各引数を記入してください。バックスラッシュ文字はエスケープさせる必要があります。
-* *fileAfterCmdArgs* - 真偽値（`true` / `false`）。いくつかのエディタでは、ファイルを指定する場合はコマンドの最後に置くように求めているものがあります。そのような場合に有効化してください。
-
-以上の作業を終えたら、ブラウザを再起動してください。
-
-***
-
-## トラブルシューティング
-
-何か問題が起きたら、ブラウザコンソールをチェックしてみてください（Firefoxの場合、Ctrl + Shift + J）。
-
-```
-Error: Attempt to postMessage on disconnected port
-```
-
-* Windows: レジストリは正しく保存されていますか？
-* Linux / Mac: "withexeditorhost.json"の保存先は間違っていませんか？
-* ブラウザを起動したとき、Node.jsのプロセスも立ち上がっていますか？
-  * もしNode.jsが立ち上がっていないならば、Node.jsの$PATH環境変数が設定されているかどうか確認してみてください。
-    あるいは、シェルスクリプトで、nodeコマンドではなくNode.jsのパスに変更してみてください。
-    ```
-    /path/to/node.js /path/to/withexeditorhost/index.js
-    ```
-  * また、"withexeditorhost.sh"に実行ビットが付与されていることも確認してください（Linux / Mac）。
-
-```
-withexeditorhost: SyntaxError: Unexpected token {
-```
-
-* Node.jsをアップグレードしてください。
-
-```
-withexeditorhost: SyntaxError: Unexpected string in JSON at ...
-```
-
-* "editorconfig.json"を確認してください。
--->

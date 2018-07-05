@@ -44,7 +44,7 @@ Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to 
 
 ```
 > cd path/to/withExEditorHost
-> index --setup
+> index setup
 ```
 
 Then you will be asked which browser you want to setup the host for, so please enter the browser name from the list.
@@ -68,15 +68,15 @@ The browser and the host get connected and the editor will be ready to use.
 
 In the setup script you can specify some options.
 
-#### --browser=*name* option
+#### -b --browser
 
-To specify the browser, please use the `--browser` option.
+To specify the browser, please use `-b` or `--browser` option.
 
 ```
-> index --setup --browser=firefox
+> index setup --browser=firefox
 ```
 
-#### --config-path=*path* option
+#### -c --config-path
 
 By default, configuration files are saved under user's home directory.
 * Windows: `C:\Users\[UserName]\AppData\Roaming\withexeditorhost\config\`
@@ -87,7 +87,15 @@ If you want to save configuration files in different location, use `--config-pat
 Quote path if it contains spaces or backslashes.
 
 ```
-> index --setup --config-path="C:\Users\XXX\path\to\another\location"
+> index setup --config-path="C:\Users\XXX\path\to\another\location"
+```
+
+#### Other options
+
+See help for other options.
+
+```
+> node index --help
 ```
 
 ***
@@ -126,153 +134,32 @@ The browser and the host get connected and the editor will be ready to use.
 
 In the setup script you can specify some options.
 
-#### --browser=*name* option
+#### -b --browser
 
-To specify the browser, please use the `--browser` option.
+To specify the browser, please use `-b` or `--browser` option.
 
 ```
 > npm run setup -- --browser=firefox
 ```
 
-#### --config-path=*path* option
+#### -c --config-path
 
 By default, configuration files are saved under user's home directory.
 * Windows: `C:\Users\[UserName]\AppData\Roaming\withexeditorhost\config\`
 * Mac: `~/Library/Application Support/withexeditorhost/config/`
 * Linux: `~/.config/withexeditorhost/config/`
 
-If you want to save configuration files in different location, use `--config-path` option.
+If you want to save configuration files in different location, use `-c` or `--config-path` option.
 Quote path if it contains spaces or backslashes.
 
 ```
 > npm run setup -- --config-path="C:\Users\XXX\path\to\another\location"
 ```
 
-<!--
-***
+#### Other options
 
-## Manual setup
-
-There are sample configuration files in "_config" folder of withExEditorHost.
-
-Create a copy of the _config folder and rename it to `config`.
-Please do not edit the contents of the `_config` folder directly.
-It may be overwritten when updating withExEditorHost.
-
-### Edit the shell script which executes the host
-
-On Windows, open "withexeditorhost.cmd" and enter the path of the index.js file of the host.
+For other options, see help
 
 ```
-@echo off
-:: Fill in the path of the index.js file of the host.
-node "C:\Users\XXX\withExEditorHost\index.js"
+> node index --help
 ```
-
-On Linux / Mac, open "withexeditorhost.sh" and enter the path of the index.js file of the host.
-
-```
-#!/usr/bin/env bash
-# Fill in the path of the index.js file of the host.
-# Replace "node" command to "nodejs" according to your environment.
-node /path/to/withexeditorhost/index.js
-```
-
-### Edit the application manifest
-
-Open "withexeditorhost.json" and enter the path of the shell script in the `path` field in it.
-Note that on Windows, it is necessary to escape backslashes, which is a directory delimiter, by adding an extra backslash.
-
-Gecko:
-```
-{
-  "name": "withexeditorhost",
-  "description": "Native messaging host for withExEditor",
-  "path": "C:\\Users\\XXX\\path\\to\\withExEditorHost\\config\\withexeditorhost.cmd",
-  "type": "stdio",
-  "allowed_extensions": ["jid1-WiAigu4HIo0Tag@jetpack"]
-}
-```
-
-Blink:
-```
-{
-  "name": "withexeditorhost",
-  "description": "Native messaging host for withExEditor",
-  "path": "C:\\Users\\XXX\\path\\to\\withExEditorHost\\config\\withexeditorhost.cmd",
-  "type": "stdio",
-  "allowed_origins": ["chrome-extension://koghhpkkcndhhclklnnnhcpkkplfkgoi/"]
-}
-```
-
-On Windows, you also need to set the registry.
-You can save the registry key by executing the following command with cmd.exe.
-Edit `"HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost"` and `"C:\Users\XXX\path\to\withExEditorHosts\config\withexeditorhost.json"` part.
-
-```
-REG ADD "HKEY_CURRENT_USER\SOFTWARE\Mozilla\NativeMessagingHosts\withexeditorhost" /ve /d "C:\Users\XXX\path\to\withExEditorHosts\config\withexeditorhost.json" /f
-```
-
-On Linux and Mac, you need to save "withexeditorhost.json" in the specified location.
-The following is an example for Firefox. For other browsers, refer to the official documents etc.
-
-Linux:
-```
-~/.mozilla/native-messaging-hosts/withexeditorhost.json
-```
-
-Mac:
-```
-~/Library/Application Support/Mozilla/NativeMessagingHosts/withexeditorhost.json
-```
-
-### Edit the editor configuration
-
-Open "editorconfig.json" and fill in the information of the editor.
-
-```
-{
-  "editorPath": "C:\\Program Files\\Path\\To\\Your\\Editor.exe",
-  "cmdArgs": ["-a", "-b", "--c=d\\e"],
-  "fileAfterCmdArgs": false
-}
-```
-
-* *editorPath* - The path of the editor to use. Backslashes must be escaped.
-* *cmdArgs* - Command line options. Enter each argument in array, separated by comma. Backslashes must be escaped.
-* *fileAfterCmdArgs* - Boolean (`true` / `false`). When specifying the file, some editor requires to put the file path after command arguments. Set `true` in such case.
-
-After the above work, restart the browser.
-
-***
-
-## Troubleshooting
-
-If something goes wrong, check the browser console (Ctrl + Shift + J in Firefox).
-
-```
-Error: Attempt to postMessage on disconnected port
-```
-
-* Windows: Is the registry saved correctly?
-* Linux / Mac: Is "withexeditorhost.json" saved in the right location?
-* When you start the browser, is a Node.js process executed too?
-  * If not, make sure that Node.js's installation directory is listed in the $PATH environment variable.
-    Or change the shell script from "node" command to full path of Node.js.
-    ```
-    /path/to/node.js /path/to/withexeditorhost/index.js
-    ```
-  * Also, make sure the execute bit is set on "withexeditorhost.sh" (Linux / Mac).
-
-```
-withexeditorhost: SyntaxError: Unexpected token {
-```
-
-* Upgrade Node.js
-
-```
-withexeditorhost: SyntaxError: Unexpected string in JSON at ...
-```
-
-* Check "editorconfig.json".
--->
