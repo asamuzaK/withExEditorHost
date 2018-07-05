@@ -7,7 +7,7 @@ const {
   CmdArgs, createFile, isDir, isExecutable, isFile,
 } = require("web-ext-native-msg");
 const {Command} = require("commander");
-const {getType, isString, logErr} = require("./common");
+const {isString, logErr} = require("./common");
 const path = require("path");
 const process = require("process");
 const readline = require("readline");
