@@ -649,8 +649,7 @@ commander.option("-b, --browser <name>", "specify the browser")
   .option("-o, --overwrite", "overwrite config if exists")
   .option("-O, --overwrite-editor-config", "overwrite editor config if exists")
   .option("-e, --editor-path <path>", "editor path")
-  .option("-a, --editor-args <list>",
-          "list of editor command args, comma separated")
+  .option("-a, --editor-args <args>", "editor command args, need to be quoted")
   .option("-f, --file-after-args", "put file path at the end of command args");
 commander.command("setup").alias("s").description("run setup").action(runSetup);
 commander.parse(process.argv);

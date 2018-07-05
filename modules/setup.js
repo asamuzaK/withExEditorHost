@@ -224,8 +224,8 @@ const handleSetupCallback = (info = {}) => {
     } = (new Command()).option("-O, --overwrite-editor-config",
                                "overwrite editor config if exists")
       .option("-e, --editor-path <path>", "editor path")
-      .option("-a, --editor-args <list>",
-              "list of editor command args, comma separated")
+      .option("-a, --editor-args <args>",
+              "editor command args, need to be quoted")
       .option("-f, --file-after-args",
               "put file path at the end of command args")
       .allowUnknownOption()
@@ -238,7 +238,7 @@ const handleSetupCallback = (info = {}) => {
       vars.editorPath = editorPath.trim();
     }
     if (isString(editorArgs) && editorArgs.length) {
-      const args = editorArgs.trim().split(",");
+      const args = (new CmdArgs(editorArgs.trim())).toArray();
       if (args.length) {
         vars.editorArgs = args;
       }
