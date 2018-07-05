@@ -14,6 +14,7 @@ const {isString, throwErr} = require("./modules/common");
 const {handleSetupCallback} = require("./modules/setup");
 const {version: hostVersion} = require("./package.json");
 const {watch} = require("fs");
+const commander = require("commander");
 const os = require("os");
 const path = require("path");
 const process = require("process");
@@ -603,6 +604,18 @@ const handleExit = code => {
 };
 
 /**
+ * run setup
+ * @returns {Function} - setup run
+ */
+const runSetup = () => (new Setup({
+  hostDescription: HOST_DESC,
+  hostName: HOST,
+  chromeExtensionIds: [EXT_CHROME_ID],
+  webExtensionIds: [EXT_WEB_ID],
+  callback: handleSetupCallback,
+})).run();
+
+/**
  * handle startup
  * @returns {AsyncFunction} - handler
  */
@@ -611,7 +624,7 @@ const startup = () => {
   let setup, ver, func;
   if (Array.isArray(args) && args.length) {
     for (const arg of args) {
-      if (/^--setup$/i.test(arg)) {
+      if (/^s(?:etup)?$/i.test(arg)) {
         setup = true;
         break;
       } else if (/^(?:-v|--version)$/i.test(arg)) {
@@ -620,25 +633,27 @@ const startup = () => {
       }
     }
   }
-  if (ver) {
-    console.info(hostVersion);
-    process.exit(0);
-  } else if (setup) {
-    func = (new Setup({
-      hostDescription: HOST_DESC,
-      hostName: HOST,
-      chromeExtensionIds: [EXT_CHROME_ID],
-      webExtensionIds: [EXT_WEB_ID],
-      callback: handleSetupCallback,
-    })).run();
-  } else {
+  if (!(setup || ver)) {
     func = Promise.all([
       createDir(TMPDIR_FILES, PERM_DIR),
       createDir(TMPDIR_FILES_PB, PERM_DIR),
     ]).then(portAppStatus).catch(handleReject);
   }
-  return func;
+  return func || null;
 };
+
+/* commands */
+commander.version(hostVersion, "-v, --version");
+commander.option("-b, --browser <name>", "specify the browser")
+  .option("-c, --config-path <path>", "path to save config files")
+  .option("-o, --overwrite", "overwrite config if exists")
+  .option("-O, --overwrite-editor-config", "overwrite editor config if exists")
+  .option("-e, --editor-path <path>", "editor path")
+  .option("-a, --editor-args <list>",
+          "list of editor command args, comma separated")
+  .option("-f, --file-after-args", "put file path at the end of command args");
+commander.command("setup").alias("s").description("run setup").action(runSetup);
+commander.parse(process.argv);
 
 /* process */
 process.on("exit", handleExit);
