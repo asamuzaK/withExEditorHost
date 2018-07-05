@@ -149,7 +149,7 @@ Githubのアカウントがある場合は、レポジトリをクローンし�
 * Macの場合：`~/Library/Application Support/withexeditorhost/config/`
 * Linuxの場合：`~/.config/withexeditorhost/config/`
 
-設定ファイルの保存先を変更したい場合は、`-c`まはた`--config-path`オプションで指定してください。
+設定ファイルの保存先を変更したい場合は、`-c`または`--config-path`オプションで指定してください。
 パスに空白やバックスラッシュが含まれる場合は引用符で括ってください。
 
 ```
