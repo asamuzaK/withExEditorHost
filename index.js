@@ -664,11 +664,11 @@ const startup = () => {
 commander.version(hostVersion, "-v, --version");
 commander.option(CMD_BROWSER, CMD_BROWSER_DESC)
   .option(CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC)
-  .option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
-  .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
-  .option(CMD_FILE_POS, CMD_FILE_POS_DESC)
   .option(CMD_OVERWRITE_CONFIG, CMD_OVERWRITE_CONFIG_DESC)
-  .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC);
+  .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC)
+  .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
+  .option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
+  .option(CMD_FILE_POS, CMD_FILE_POS_DESC);
 commander.command("setup").alias("s").description("run setup").action(runSetup);
 commander.parse(process.argv);
 
