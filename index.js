@@ -21,6 +21,10 @@ const process = require("process");
 
 /* constants */
 const {
+  CMD_BROWSER, CMD_BROWSER_DESC, CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC,
+  CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC, CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC,
+  CMD_OVERWRITE_CONFIG, CMD_OVERWRITE_CONFIG_DESC, CMD_OVERWRITE_EDITOR_CONFIG,
+  CMD_OVERWRITE_EDITOR_CONFIG_DESC, CMD_FILE_POS, CMD_FILE_POS_DESC,
   EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
   EXT_CHROME_ID, EXT_WEB_ID, FILE_WATCH, HOST, HOST_DESC, HOST_VERSION,
   HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
@@ -607,13 +611,27 @@ const handleExit = code => {
  * run setup
  * @returns {Function} - setup run()
  */
-const runSetup = () => (new Setup({
-  hostDescription: HOST_DESC,
-  hostName: HOST,
-  chromeExtensionIds: [EXT_CHROME_ID],
-  webExtensionIds: [EXT_WEB_ID],
-  callback: handleSetupCallback,
-})).run();
+const runSetup = () => {
+  const {browser, configPath, overwriteConfig} = commander.opts();
+  const opt = {
+    hostDescription: HOST_DESC,
+    hostName: HOST,
+    chromeExtensionIds: [EXT_CHROME_ID],
+    webExtensionIds: [EXT_WEB_ID],
+    callback: handleSetupCallback,
+  };
+  const setup = new Setup(opt);
+  if (isString(browser) && browser.length) {
+    setup.browser = browser.trim();
+  }
+  if (isString(configPath) && configPath.length) {
+    setup.configPath = configPath.trim();
+  }
+  if (overwriteConfig) {
+    setup.overwriteConfig = !!overwriteConfig;
+  }
+  return setup.run();
+};
 
 /**
  * handle startup
@@ -644,13 +662,13 @@ const startup = () => {
 
 /* commands */
 commander.version(hostVersion, "-v, --version");
-commander.option("-b, --browser <name>", "specify the browser")
-  .option("-c, --config-path <path>", "path to save config files")
-  .option("-o, --overwrite-config", "overwrite config if exists")
-  .option("-O, --overwrite-editor-config", "overwrite editor config if exists")
-  .option("-e, --editor-path <path>", "editor path")
-  .option("-a, --editor-args <args>", "editor command args, need to be quoted")
-  .option("-f, --file-after-args", "put file path at the end of command args");
+commander.option(CMD_BROWSER, CMD_BROWSER_DESC)
+  .option(CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC)
+  .option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
+  .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
+  .option(CMD_FILE_POS, CMD_FILE_POS_DESC)
+  .option(CMD_OVERWRITE_CONFIG, CMD_OVERWRITE_CONFIG_DESC)
+  .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC);
 commander.command("setup").alias("s").description("run setup").action(runSetup);
 commander.parse(process.argv);
 

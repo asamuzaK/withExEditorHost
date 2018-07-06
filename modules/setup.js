@@ -13,7 +13,11 @@ const process = require("process");
 const readline = require("readline");
 
 /* constants */
-const {EDITOR_CONFIG_FILE} = require("./constant");
+const {
+  CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC, CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC,
+  CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC,
+  CMD_FILE_POS, CMD_FILE_POS_DESC, EDITOR_CONFIG_FILE,
+} = require("./constant");
 const CHAR = "utf8";
 const INDENT = 2;
 const PERM_FILE = 0o600;
@@ -221,13 +225,10 @@ const handleSetupCallback = (info = {}) => {
   if (isString(configPath) && isDir(configPath)) {
     const {
       editorArgs, editorPath, fileAfterArgs, overwriteEditorConfig,
-    } = (new Command()).option("-O, --overwrite-editor-config",
-                               "overwrite editor config if exists")
-      .option("-e, --editor-path <path>", "editor path")
-      .option("-a, --editor-args <args>",
-              "editor command args, need to be quoted")
-      .option("-f, --file-after-args",
-              "put file path at the end of command args")
+    } = (new Command()).option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
+      .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
+      .option(CMD_FILE_POS, CMD_FILE_POS_DESC)
+      .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC)
       .allowUnknownOption().parse(process.argv).opts();
     if (overwriteEditorConfig) {
       vars.overwriteEditorConfig = !!overwriteEditorConfig;
