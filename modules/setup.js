@@ -27,7 +27,6 @@ const vars = {
   configPath: null,
   editorArgs: [],
   editorPath: "",
-  fileAfterArgs: false,
   overwriteEditorConfig: false,
   rl: null,
 };
@@ -36,14 +35,12 @@ const vars = {
 const ques = {
   editorPath: "Enter editor path:\n",
   cmdArgs: "Enter command line options:\n",
-  filePos: "Put file path after command arguments? [y/n]\n",
 };
 
 /* editor config */
 const editorConfig = {
   editorPath: "",
   cmdArgs: [],
-  fileAfterCmdArgs: false,
 };
 
 /**
@@ -80,37 +77,19 @@ const createEditorConfig = async () => {
 };
 
 /**
- * handle editor temporary file position input
+ * handle editor cmd args input
  * @param {string} ans - user input
  * @returns {?AsyncFunction} - createEditorConfig()
  */
-const handleFilePosInput = ans => {
+const handleCmdArgsInput = ans => {
   const {rl} = vars;
   let func;
   if (rl && isString(ans)) {
-    ans = ans.trim();
-    /^y(?:es)?$/i.test(ans) && (editorConfig.fileAfterCmdArgs = true);
+    editorConfig.cmdArgs = (new CmdArgs(ans.trim())).toArray();
+    rl.close();
     func = createEditorConfig().catch(logErr);
   }
-  rl && rl.close();
   return func || null;
-};
-
-/**
- * handle editor cmd args input
- * @param {string} ans - user input
- * @returns {void}
- */
-const handleCmdArgsInput = ans => {
-  const {fileAfterArgs, rl} = vars;
-  if (rl && isString(ans)) {
-    editorConfig.cmdArgs = (new CmdArgs(ans.trim())).toArray();
-    if (fileAfterArgs) {
-      handleFilePosInput("y");
-    } else {
-      rl.question(ques.filePos, handleFilePosInput);
-    }
-  }
 };
 
 /**
@@ -224,7 +203,7 @@ const handleSetupCallback = (info = {}) => {
   let func;
   if (isString(configPath) && isDir(configPath)) {
     const {
-      editorArgs, editorPath, fileAfterArgs, overwriteEditorConfig,
+      editorArgs, editorPath, overwriteEditorConfig,
     } = (new Command()).option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
       .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
       .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC)
@@ -240,9 +219,6 @@ const handleSetupCallback = (info = {}) => {
       if (args.length) {
         vars.editorArgs = args;
       }
-    }
-    if (fileAfterArgs) {
-      vars.fileAfterArgs = !!fileAfterArgs;
     }
     vars.configPath = configPath;
     vars.rl = readline.createInterface({
