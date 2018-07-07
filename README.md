@@ -93,7 +93,7 @@ Quote path if it contains spaces or backslashes.
 See help for other options.
 
 ```
-> node index --help
+> index --help
 ```
 
 ***
