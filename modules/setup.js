@@ -16,7 +16,7 @@ const readline = require("readline");
 const {
   CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC, CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC,
   CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC,
-  CMD_FILE_POS, CMD_FILE_POS_DESC, EDITOR_CONFIG_FILE,
+  EDITOR_CONFIG_FILE,
 } = require("./constant");
 const CHAR = "utf8";
 const INDENT = 2;
@@ -227,7 +227,6 @@ const handleSetupCallback = (info = {}) => {
       editorArgs, editorPath, fileAfterArgs, overwriteEditorConfig,
     } = (new Command()).option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
       .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
-      .option(CMD_FILE_POS, CMD_FILE_POS_DESC)
       .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC)
       .allowUnknownOption().parse(process.argv).opts();
     if (overwriteEditorConfig) {
