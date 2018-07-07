@@ -3,6 +3,20 @@
  */
 "use strict";
 /* shared constants */
+const CMD_BROWSER = "-b, --browser <name>";
+const CMD_BROWSER_DESC = "specify the browser";
+const CMD_CONFIG_PATH = "-c, --config-path <path>";
+const CMD_CONFIG_PATH_DESC = "path to save config files";
+const CMD_EDITOR_ARGS = "-a, --editor-args <args>";
+const CMD_EDITOR_ARGS_DESC = "editor command args, need to be quoted";
+const CMD_EDITOR_PATH = "-e, --editor-path <path>";
+const CMD_EDITOR_PATH_DESC = "editor path";
+const CMD_OVERWRITE_CONFIG = "-o, --overwrite-config";
+const CMD_OVERWRITE_CONFIG_DESC = "overwrite config if exists";
+const CMD_OVERWRITE_EDITOR_CONFIG = "-O, --overwrite-editor-config";
+const CMD_OVERWRITE_EDITOR_CONFIG_DESC = "overwrite editor config if exists";
+const CMD_FILE_POS = "-f, --file-after-args";
+const CMD_FILE_POS_DESC = "put file path at the end of editor command args";
 const CONTENT_GET = "getContent";
 const CONTEXT_MENU = "contextMenu";
 const CONTEXT_MODE = "contextMode";
@@ -52,6 +66,20 @@ const TMP_FILE_RES = "resTmpFile";
 const VARS_SET = "setVars";
 
 module.exports = {
+  CMD_BROWSER,
+  CMD_BROWSER_DESC,
+  CMD_CONFIG_PATH,
+  CMD_CONFIG_PATH_DESC,
+  CMD_EDITOR_ARGS,
+  CMD_EDITOR_ARGS_DESC,
+  CMD_EDITOR_PATH,
+  CMD_EDITOR_PATH_DESC,
+  CMD_OVERWRITE_CONFIG,
+  CMD_OVERWRITE_CONFIG_DESC,
+  CMD_OVERWRITE_EDITOR_CONFIG,
+  CMD_OVERWRITE_EDITOR_CONFIG_DESC,
+  CMD_FILE_POS,
+  CMD_FILE_POS_DESC,
   CONTENT_GET,
   CONTEXT_MENU,
   CONTEXT_MODE,

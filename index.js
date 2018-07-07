@@ -14,12 +14,17 @@ const {isString, throwErr} = require("./modules/common");
 const {handleSetupCallback} = require("./modules/setup");
 const {version: hostVersion} = require("./package.json");
 const {watch} = require("fs");
+const commander = require("commander");
 const os = require("os");
 const path = require("path");
 const process = require("process");
 
 /* constants */
 const {
+  CMD_BROWSER, CMD_BROWSER_DESC, CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC,
+  CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC, CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC,
+  CMD_OVERWRITE_CONFIG, CMD_OVERWRITE_CONFIG_DESC, CMD_OVERWRITE_EDITOR_CONFIG,
+  CMD_OVERWRITE_EDITOR_CONFIG_DESC, CMD_FILE_POS, CMD_FILE_POS_DESC,
   EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
   EXT_CHROME_ID, EXT_WEB_ID, FILE_WATCH, HOST, HOST_DESC, HOST_VERSION,
   HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
@@ -603,6 +608,32 @@ const handleExit = code => {
 };
 
 /**
+ * run setup
+ * @returns {Function} - setup run()
+ */
+const runSetup = () => {
+  const {browser, configPath, overwriteConfig} = commander.opts();
+  const opt = {
+    hostDescription: HOST_DESC,
+    hostName: HOST,
+    chromeExtensionIds: [EXT_CHROME_ID],
+    webExtensionIds: [EXT_WEB_ID],
+    callback: handleSetupCallback,
+  };
+  const setup = new Setup(opt);
+  if (isString(browser) && browser.length) {
+    setup.browser = browser.trim();
+  }
+  if (isString(configPath) && configPath.length) {
+    setup.configPath = configPath.trim();
+  }
+  if (overwriteConfig) {
+    setup.overwriteConfig = !!overwriteConfig;
+  }
+  return setup.run();
+};
+
+/**
  * handle startup
  * @returns {AsyncFunction} - handler
  */
@@ -611,7 +642,7 @@ const startup = () => {
   let setup, ver, func;
   if (Array.isArray(args) && args.length) {
     for (const arg of args) {
-      if (/^--setup$/i.test(arg)) {
+      if (/^s(?:etup)?$/i.test(arg)) {
         setup = true;
         break;
       } else if (/^(?:-v|--version)$/i.test(arg)) {
@@ -620,25 +651,26 @@ const startup = () => {
       }
     }
   }
-  if (ver) {
-    console.info(hostVersion);
-    process.exit(0);
-  } else if (setup) {
-    func = (new Setup({
-      hostDescription: HOST_DESC,
-      hostName: HOST,
-      chromeExtensionIds: [EXT_CHROME_ID],
-      webExtensionIds: [EXT_WEB_ID],
-      callback: handleSetupCallback,
-    })).run();
-  } else {
+  if (!(setup || ver)) {
     func = Promise.all([
       createDir(TMPDIR_FILES, PERM_DIR),
       createDir(TMPDIR_FILES_PB, PERM_DIR),
     ]).then(portAppStatus).catch(handleReject);
   }
-  return func;
+  return func || null;
 };
+
+/* commands */
+commander.version(hostVersion, "-v, --version");
+commander.option(CMD_BROWSER, CMD_BROWSER_DESC)
+  .option(CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC)
+  .option(CMD_OVERWRITE_CONFIG, CMD_OVERWRITE_CONFIG_DESC)
+  .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC)
+  .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
+  .option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
+  .option(CMD_FILE_POS, CMD_FILE_POS_DESC);
+commander.command("setup").alias("s").description("run setup").action(runSetup);
+commander.parse(process.argv);
 
 /* process */
 process.on("exit", handleExit);

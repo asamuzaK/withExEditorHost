@@ -6,13 +6,18 @@
 const {
   CmdArgs, createFile, isDir, isExecutable, isFile,
 } = require("web-ext-native-msg");
+const {Command} = require("commander");
 const {isString, logErr} = require("./common");
 const path = require("path");
 const process = require("process");
 const readline = require("readline");
 
 /* constants */
-const {EDITOR_CONFIG_FILE} = require("./constant");
+const {
+  CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC, CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC,
+  CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC,
+  CMD_FILE_POS, CMD_FILE_POS_DESC, EDITOR_CONFIG_FILE,
+} = require("./constant");
 const CHAR = "utf8";
 const INDENT = 2;
 const PERM_FILE = 0o600;
@@ -20,6 +25,10 @@ const PERM_FILE = 0o600;
 /* variable */
 const vars = {
   configPath: null,
+  editorArgs: [],
+  editorPath: "",
+  fileAfterArgs: false,
+  overwriteEditorConfig: false,
   rl: null,
 };
 
@@ -81,9 +90,9 @@ const handleFilePosInput = ans => {
   if (rl && isString(ans)) {
     ans = ans.trim();
     /^y(?:es)?$/i.test(ans) && (editorConfig.fileAfterCmdArgs = true);
-    rl.close();
     func = createEditorConfig().catch(logErr);
   }
+  rl && rl.close();
   return func || null;
 };
 
@@ -93,10 +102,14 @@ const handleFilePosInput = ans => {
  * @returns {void}
  */
 const handleCmdArgsInput = ans => {
-  const {rl} = vars;
+  const {fileAfterArgs, rl} = vars;
   if (rl && isString(ans)) {
     editorConfig.cmdArgs = (new CmdArgs(ans.trim())).toArray();
-    rl.question(ques.filePos, handleFilePosInput);
+    if (fileAfterArgs) {
+      handleFilePosInput("y");
+    } else {
+      rl.question(ques.filePos, handleFilePosInput);
+    }
   }
 };
 
@@ -106,21 +119,33 @@ const handleCmdArgsInput = ans => {
  * @returns {void}
  */
 const handleEditorPathInput = ans => {
-  const {rl} = vars;
+  const {editorArgs, rl} = vars;
   if (rl) {
+    let args;
+    if (Array.isArray(editorArgs) && editorArgs.length) {
+      args = (new CmdArgs(editorArgs)).toString();
+    }
     if (isString(ans)) {
       ans = ans.trim();
       if (ans.length) {
-        if (isExecutable(ans)) {
+        if (isFile(ans) && isExecutable(ans)) {
           editorConfig.editorPath = ans;
-          rl.question(ques.cmdArgs, handleCmdArgsInput);
+          if (args) {
+            handleCmdArgsInput(args);
+          } else {
+            rl.question(ques.cmdArgs, handleCmdArgsInput);
+          }
         } else {
           console.warn(`${ans} is not executable.`);
           rl.question(ques.editorPath, handleEditorPathInput);
         }
+      } else if (args) {
+        handleCmdArgsInput(args);
       } else {
         rl.question(ques.cmdArgs, handleCmdArgsInput);
       }
+    } else if (args) {
+      handleCmdArgsInput(args);
     } else {
       rl.question(ques.cmdArgs, handleCmdArgsInput);
     }
@@ -133,7 +158,7 @@ const handleEditorPathInput = ans => {
  * @returns {void}
  */
 const handleEditorConfigFileInput = ans => {
-  const {configPath, rl} = vars;
+  const {configPath, editorPath, rl} = vars;
   if (!isDir(configPath)) {
     throw new Error(`No such directory: ${configPath}.`);
   }
@@ -143,7 +168,11 @@ const handleEditorConfigFileInput = ans => {
     if (isString(ans)) {
       ans = ans.trim();
       if (/^y(?:es)?$/i.test(ans)) {
-        rl.question(ques.editorPath, handleEditorPathInput);
+        if (isString(editorPath) && editorPath.length) {
+          handleEditorPathInput(editorPath);
+        } else {
+          rl.question(ques.editorPath, handleEditorPathInput);
+        }
       } else {
         rl.close();
         abortSetup(msg);
@@ -160,15 +189,25 @@ const handleEditorConfigFileInput = ans => {
  * @returns {void}
  */
 const setupEditor = () => {
-  const {configPath, rl} = vars;
+  const {configPath, editorPath, overwriteEditorConfig, rl} = vars;
   if (!isDir(configPath)) {
     throw new Error(`No such directory: ${configPath}.`);
   }
   if (rl) {
     const filePath = path.join(configPath, EDITOR_CONFIG_FILE);
     if (isFile(filePath)) {
-      rl.question(`${filePath} already exists. Overwrite? [y/n]\n`,
-                  handleEditorConfigFileInput);
+      if (overwriteEditorConfig) {
+        if (editorPath) {
+          handleEditorPathInput(editorPath);
+        } else {
+          rl.question(ques.editorPath, handleEditorPathInput);
+        }
+      } else {
+        rl.question(`${filePath} already exists. Overwrite? [y/n]\n`,
+                    handleEditorConfigFileInput);
+      }
+    } else if (editorPath) {
+      handleEditorPathInput(editorPath);
     } else {
       rl.question(ques.editorPath, handleEditorPathInput);
     }
@@ -184,6 +223,28 @@ const handleSetupCallback = (info = {}) => {
   const {configDirPath: configPath} = info;
   let func;
   if (isString(configPath) && isDir(configPath)) {
+    const {
+      editorArgs, editorPath, fileAfterArgs, overwriteEditorConfig,
+    } = (new Command()).option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
+      .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
+      .option(CMD_FILE_POS, CMD_FILE_POS_DESC)
+      .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC)
+      .allowUnknownOption().parse(process.argv).opts();
+    if (overwriteEditorConfig) {
+      vars.overwriteEditorConfig = !!overwriteEditorConfig;
+    }
+    if (isString(editorPath) && editorPath.length) {
+      vars.editorPath = editorPath.trim();
+    }
+    if (isString(editorArgs) && editorArgs.length) {
+      const args = (new CmdArgs(editorArgs.trim())).toArray();
+      if (args.length) {
+        vars.editorArgs = args;
+      }
+    }
+    if (fileAfterArgs) {
+      vars.fileAfterArgs = !!fileAfterArgs;
+    }
     vars.configPath = configPath;
     vars.rl = readline.createInterface({
       input: process.stdin,

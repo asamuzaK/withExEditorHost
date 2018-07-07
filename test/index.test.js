@@ -1348,6 +1348,80 @@ describe("handleExit", () => {
   });
 });
 
+describe("runSetup", () => {
+  it("should get function", async () => {
+    const func = indexJs.__get__("runSetup");
+    class fakeSetup {
+      constructor(opt) {
+        this._opt = opt;
+      }
+      set browser(name) {
+        this._opt.browser = name;
+      }
+      set configPath(dir) {
+        this._opt.configPath = dir;
+      }
+      set fileAfterArgs(bool) {
+        this._opt.fileAfterArgs = bool;
+      }
+      run() {
+        return this._opt;
+      }
+    }
+    const stubSetup = indexJs.__set__("Setup", fakeSetup);
+    const res = await func();
+    assert.isObject(res);
+    assert.hasAllKeys(res, [
+      "hostDescription",
+      "hostName",
+      "chromeExtensionIds",
+      "webExtensionIds",
+      "callback",
+    ]);
+    stubSetup();
+  });
+
+  it("should get function", async () => {
+    const func = indexJs.__get__("runSetup");
+    const commander = indexJs.__get__("commander");
+    sinon.stub(commander, "opts").returns({
+      browser: "firefox", configPath: "foo/bar", overwriteConfig: true,
+    });
+    class fakeSetup {
+      constructor(opt) {
+        this._opt = opt;
+      }
+      set browser(name) {
+        this._opt.browser = name;
+      }
+      set configPath(dir) {
+        this._opt.configPath = dir;
+      }
+      set overwriteConfig(bool) {
+        this._opt.overwriteConfig = !!bool;
+      }
+      run() {
+        return this._opt;
+      }
+    }
+    const stubSetup = indexJs.__set__("Setup", fakeSetup);
+    const res = await func();
+    assert.isObject(res);
+    assert.hasAllKeys(res, [
+      "browser",
+      "configPath",
+      "overwriteConfig",
+      "hostDescription",
+      "hostName",
+      "chromeExtensionIds",
+      "webExtensionIds",
+      "callback",
+    ]);
+    commander.opts.restore();
+    stubSetup();
+  });
+});
+
 describe("startup", () => {
   it("should get function", async () => {
     const func = indexJs.__get__("startup");
@@ -1397,34 +1471,59 @@ describe("startup", () => {
     portAppStatus();
   });
 
-  it("should get function", async () => {
+  it("should get null", async () => {
     const func = indexJs.__get__("startup");
     const processArgv = indexJs.__set__("process", {
       argv: [
         "foo",
         "bar",
-        "--setup",
+        "setup",
       ],
     });
-    class fakeSetup {
-      constructor(opt) {
-        this._opt = opt;
-      }
-      run() {
-        return this._opt;
-      }
-    }
-    const stubSetup = indexJs.__set__("Setup", fakeSetup);
     const res = await func();
-    assert.isObject(res);
-    assert.hasAllKeys(res, [
-      "hostDescription",
-      "hostName",
-      "chromeExtensionIds",
-      "webExtensionIds",
-      "callback",
-    ]);
+    assert.isNull(res);
     processArgv();
-    stubSetup();
+  });
+
+  it("should get null", async () => {
+    const func = indexJs.__get__("startup");
+    const processArgv = indexJs.__set__("process", {
+      argv: [
+        "foo",
+        "bar",
+        "s",
+      ],
+    });
+    const res = await func();
+    assert.isNull(res);
+    processArgv();
+  });
+
+  it("should get null", async () => {
+    const func = indexJs.__get__("startup");
+    const processArgv = indexJs.__set__("process", {
+      argv: [
+        "foo",
+        "bar",
+        "-v",
+      ],
+    });
+    const res = await func();
+    assert.isNull(res);
+    processArgv();
+  });
+
+  it("should get null", async () => {
+    const func = indexJs.__get__("startup");
+    const processArgv = indexJs.__set__("process", {
+      argv: [
+        "foo",
+        "bar",
+        "--version",
+      ],
+    });
+    const res = await func();
+    assert.isNull(res);
+    processArgv();
   });
 });

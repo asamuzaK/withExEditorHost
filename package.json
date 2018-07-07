@@ -25,7 +25,7 @@
     "package:macos": "pkg ./index.js --targets macos --out-path ./pkg/macos",
     "package:win32": "pkg ./index.js --targets win-x86 --out-path ./pkg/win32",
     "package:win64": "pkg ./index.js --targets win-x64 --out-path ./pkg/win64",
-    "setup": "npm install --production && node ./index.js --setup",
+    "setup": "npm install --production && node ./index.js setup",
     "start": "node ./index.js",
     "test": "nyc --reporter=text mocha test --exit",
     "zippackage:linux32": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/linux32/index -o ./dest/linux-x86.zip",
@@ -35,8 +35,9 @@
     "zippackage:win64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
   "dependencies": {
+    "commander": "^2.16.0",
     "semver-parser": "^2.0.2",
-    "web-ext-native-msg": "^2.5.0"
+    "web-ext-native-msg": "^3.0.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
@@ -48,7 +49,7 @@
     "pkg": "^4.3.3",
     "rewire": "^4.0.1",
     "rimraf": "^2.6.2",
-    "sinon": "^6.1.0"
+    "sinon": "^6.1.2"
   },
   "version": "3.4.0"
 }
