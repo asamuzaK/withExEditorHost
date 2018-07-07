@@ -46,7 +46,6 @@ const TMPDIR_FILES_PB = [...TMPDIR_APP, TMP_FILES_PB];
 const vars = {
   editorPath: "",
   cmdArgs: [],
-  fileAfterCmdArgs: false,
 };
 
 /* file map */
@@ -163,9 +162,6 @@ const portEditorConfig = async (data, editorConfig) => {
           case "cmdArgs":
             vars[item] = (new CmdArgs(obj)).toArray();
             break;
-          case "fileAfterCmdArgs":
-            vars[item] = !!obj;
-            break;
           default:
         }
       }
@@ -229,13 +225,12 @@ const spawnChildProcess = async (file, app = vars.editorPath) => {
     return writeStdout(hostMsg("Application is not executable.", "warn"));
   }
   const args = vars.cmdArgs || [];
-  const pos = vars.fileAfterCmdArgs || false;
   const opt = {
     cwd: null,
     encoding: CHAR,
     env: process.env,
   };
-  const proc = await (new ChildProcess(app, args, opt)).spawn(file, pos);
+  const proc = await (new ChildProcess(app, args, opt)).spawn(file, true);
   proc.on("error", e => {
     e = (new Output()).encode(e.message);
     e && process.stderr.write(e);
