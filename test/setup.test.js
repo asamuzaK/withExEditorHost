@@ -291,138 +291,84 @@ describe("handleEditorPathInput", () => {
 });
 
 describe("handleCmdArgsInput", () => {
-  it("should get empty array if no argument is given", () => {
-    let ques;
+  it("should return null if no argument is given", async () => {
     const userInput = setupJs.__get__("handleCmdArgsInput");
-    const stubQues = sinon.stub().callsFake(q => {
-      ques = q;
-    });
-    const setupVars = setupJs.__set__("vars", {
-      rl: {
-        question: stubQues,
-      },
-    });
     const editorConfig = setupJs.__get__("editorConfig");
-    userInput();
-    const {calledOnce: quesCalledOnce} = stubQues;
-    const {cmdArgs} = editorConfig;
-    assert.strictEqual(quesCalledOnce, false);
-    assert.strictEqual(ques, undefined);
-    assert.deepEqual(cmdArgs, []);
-    setupVars();
-  });
-
-  it("should get empty array if argument is not string", () => {
-    let ques;
-    const userInput = setupJs.__get__("handleCmdArgsInput");
-    const stubQues = sinon.stub().callsFake(q => {
-      ques = q;
-    });
-    const setupVars = setupJs.__set__("vars", {
-      rl: {
-        question: stubQues,
-      },
-    });
-    const editorConfig = setupJs.__get__("editorConfig");
-    userInput(["-a", "-b"]);
-    const {calledOnce: quesCalledOnce} = stubQues;
-    const {cmdArgs} = editorConfig;
-    assert.strictEqual(quesCalledOnce, false);
-    assert.strictEqual(ques, undefined);
-    assert.deepEqual(cmdArgs, []);
-    setupVars();
-  });
-
-  it("should get empty array if empty string is given", () => {
-    let ques;
-    const userInput = setupJs.__get__("handleCmdArgsInput");
-    const stubQues = sinon.stub().callsFake(q => {
-      ques = q;
-    });
-    const setupVars = setupJs.__set__("vars", {
-      rl: {
-        question: stubQues,
-      },
-    });
-    const editorConfig = setupJs.__get__("editorConfig");
-    userInput("");
-    const {calledOnce: quesCalledOnce} = stubQues;
-    const {cmdArgs} = editorConfig;
-    assert.strictEqual(quesCalledOnce, true);
-    assert.strictEqual(ques,
-                       "Put file path after command arguments? [y/n]\n");
-    assert.deepEqual(cmdArgs, []);
-    setupVars();
-  });
-
-  it("should set cmd args in array", () => {
-    let ques;
-    const userInput = setupJs.__get__("handleCmdArgsInput");
-    const stubQues = sinon.stub().callsFake(q => {
-      ques = q;
-    });
-    const setupVars = setupJs.__set__("vars", {
-      rl: {
-        question: stubQues,
-      },
-    });
-    const editorConfig = setupJs.__get__("editorConfig");
-    userInput("-a -b");
-    const {calledOnce: quesCalledOnce} = stubQues;
-    const {cmdArgs} = editorConfig;
-    assert.strictEqual(quesCalledOnce, true);
-    assert.strictEqual(ques,
-                       "Put file path after command arguments? [y/n]\n");
-    assert.deepEqual(cmdArgs, ["-a", "-b"]);
-    setupVars();
-  });
-});
-
-describe("handleFilePosInput", () => {
-  it("should return null if no argument is given", () => {
-    const userInput = setupJs.__get__("handleFilePosInput");
-    assert.strictEqual(userInput(), null);
-  });
-
-  it("should get false if user input is no", () => {
-    const userInput = setupJs.__get__("handleFilePosInput");
-    const stubQues = sinon.stub();
-    const createEditorConfig = setupJs.__set__("createEditorConfig",
-                                               async () => undefined);
+    const stubFunc = sinon.stub().callsFake(async () => undefined);
+    const createEditorConfig = setupJs.__set__("createEditorConfig", stubFunc);
     const setupVars = setupJs.__set__("vars", {
       rl: {
         close: () => undefined,
       },
     });
-    const editorConfig = setupJs.__get__("editorConfig");
-    userInput("n");
-    const {calledOnce: quesCalledOnce} = stubQues;
-    const {fileAfterCmdArgs} = editorConfig;
-    assert.strictEqual(quesCalledOnce, false);
-    assert.strictEqual(fileAfterCmdArgs, false);
-    setupVars();
+    const res = await userInput();
+    const {calledOnce} = stubFunc;
+    const {cmdArgs} = editorConfig;
+    assert.strictEqual(calledOnce, false);
+    assert.isNull(res);
+    assert.deepEqual(cmdArgs, []);
     createEditorConfig();
+    setupVars();
   });
 
-  it("should get true if user input is yes", async () => {
-    const userInput = setupJs.__get__("handleFilePosInput");
-    const stubQues = sinon.stub();
-    const createEditorConfig = setupJs.__set__("createEditorConfig",
-                                               async () => true);
+  it("should return null if argument is not string", async () => {
+    const userInput = setupJs.__get__("handleCmdArgsInput");
+    const editorConfig = setupJs.__get__("editorConfig");
+    const stubFunc = sinon.stub().callsFake(async () => undefined);
+    const createEditorConfig = setupJs.__set__("createEditorConfig", stubFunc);
     const setupVars = setupJs.__set__("vars", {
       rl: {
         close: () => undefined,
       },
     });
-    const editorConfig = setupJs.__get__("editorConfig");
-    const res = await userInput("y");
-    const {calledOnce: quesCalledOnce} = stubQues;
-    const {fileAfterCmdArgs} = editorConfig;
-    assert.strictEqual(quesCalledOnce, false);
-    assert.strictEqual(fileAfterCmdArgs, true);
-    assert.strictEqual(res, true);
-    setupVars();
+    const res = await userInput(["foo", "bar"]);
+    const {calledOnce} = stubFunc;
+    const {cmdArgs} = editorConfig;
+    assert.strictEqual(calledOnce, false);
+    assert.isNull(res);
+    assert.deepEqual(cmdArgs, []);
     createEditorConfig();
+    setupVars();
+  });
+
+  it("should return funtion if empty string is given", async () => {
+    const userInput = setupJs.__get__("handleCmdArgsInput");
+    const editorConfig = setupJs.__get__("editorConfig");
+    const stubFunc = sinon.stub().callsFake(async () => undefined);
+    const createEditorConfig = setupJs.__set__("createEditorConfig", stubFunc);
+    const setupVars = setupJs.__set__("vars", {
+      rl: {
+        close: () => undefined,
+      },
+    });
+    const res = await userInput("");
+    const {calledOnce} = stubFunc;
+    const {cmdArgs} = editorConfig;
+    assert.strictEqual(calledOnce, true);
+    assert.isUndefined(res);
+    assert.deepEqual(cmdArgs, []);
+    createEditorConfig();
+    setupVars();
+  });
+
+  it("should return function and set cmd args in array", async () => {
+    const userInput = setupJs.__get__("handleCmdArgsInput");
+    const editorConfig = setupJs.__get__("editorConfig");
+    const stubFunc = sinon.stub().callsFake(async () => undefined);
+    const createEditorConfig = setupJs.__set__("createEditorConfig", stubFunc);
+    const setupVars = setupJs.__set__("vars", {
+      rl: {
+        close: () => undefined,
+      },
+    });
+    const res = await userInput("foo bar \"baz quux\"");
+    const {calledOnce} = stubFunc;
+    const {cmdArgs} = editorConfig;
+    assert.strictEqual(calledOnce, true);
+    assert.isUndefined(res);
+    assert.deepEqual(cmdArgs, ["foo", "bar", "baz quux"]);
+    createEditorConfig();
+    setupVars();
   });
 });
 
