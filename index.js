@@ -24,7 +24,7 @@ const {
   CMD_BROWSER, CMD_BROWSER_DESC, CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC,
   CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC, CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC,
   CMD_OVERWRITE_CONFIG, CMD_OVERWRITE_CONFIG_DESC, CMD_OVERWRITE_EDITOR_CONFIG,
-  CMD_OVERWRITE_EDITOR_CONFIG_DESC, CMD_FILE_POS, CMD_FILE_POS_DESC,
+  CMD_OVERWRITE_EDITOR_CONFIG_DESC,
   EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
   EXT_CHROME_ID, EXT_WEB_ID, FILE_WATCH, HOST, HOST_DESC, HOST_VERSION,
   HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
@@ -46,7 +46,6 @@ const TMPDIR_FILES_PB = [...TMPDIR_APP, TMP_FILES_PB];
 const vars = {
   editorPath: "",
   cmdArgs: [],
-  fileAfterCmdArgs: false,
 };
 
 /* file map */
@@ -163,9 +162,6 @@ const portEditorConfig = async (data, editorConfig) => {
           case "cmdArgs":
             vars[item] = (new CmdArgs(obj)).toArray();
             break;
-          case "fileAfterCmdArgs":
-            vars[item] = !!obj;
-            break;
           default:
         }
       }
@@ -229,13 +225,12 @@ const spawnChildProcess = async (file, app = vars.editorPath) => {
     return writeStdout(hostMsg("Application is not executable.", "warn"));
   }
   const args = vars.cmdArgs || [];
-  const pos = vars.fileAfterCmdArgs || false;
   const opt = {
     cwd: null,
     encoding: CHAR,
     env: process.env,
   };
-  const proc = await (new ChildProcess(app, args, opt)).spawn(file, pos);
+  const proc = await (new ChildProcess(app, args, opt)).spawn(file, true);
   proc.on("error", e => {
     e = (new Output()).encode(e.message);
     e && process.stderr.write(e);
@@ -667,8 +662,7 @@ commander.option(CMD_BROWSER, CMD_BROWSER_DESC)
   .option(CMD_OVERWRITE_CONFIG, CMD_OVERWRITE_CONFIG_DESC)
   .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC)
   .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
-  .option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
-  .option(CMD_FILE_POS, CMD_FILE_POS_DESC);
+  .option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC);
 commander.command("setup").alias("s").description("run setup").action(runSetup);
 commander.parse(process.argv);
 
