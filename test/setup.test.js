@@ -111,6 +111,93 @@ describe("setupEditor", () => {
                        `${filePath} already exists. Overwrite? [y/n]\n`);
     setupVars();
   });
+
+  it("should call function", () => {
+    const setupEditor = setupJs.__get__("setupEditor");
+    const stubFunc = sinon.stub().callsFake(a => a);
+    const stubQues = sinon.stub().callsFake(a => a);
+    const handleEditorPathInput = setupJs.__set__("handleEditorPathInput",
+                                                  stubFunc);
+    const configPath = path.resolve(path.join("test", "file"));
+    const app = IS_WIN && "test.cmd" || "test.sh";
+    const editorPath = path.resolve(path.join("test", "file", app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const setupVars = setupJs.__set__("vars", {
+      configPath, editorPath,
+      overwriteEditorConfig: true,
+      rl: {
+        close: () => undefined,
+        question: stubQues,
+      },
+    });
+    setupEditor();
+    const {calledOnce: funcCalled} = stubFunc;
+    const {calledOnce: quesCalled} = stubQues;
+    assert.isTrue(funcCalled);
+    assert.isFalse(quesCalled);
+    handleEditorPathInput();
+    setupVars();
+  });
+
+  it("should call function", () => {
+    let ques;
+    const setupEditor = setupJs.__get__("setupEditor");
+    const stubFunc = sinon.stub().callsFake(a => a);
+    const stubQues = sinon.stub().callsFake(q => {
+      ques = q;
+    });
+    const handleEditorPathInput = setupJs.__set__("handleEditorPathInput",
+                                                  stubFunc);
+    const configPath = path.resolve(path.join("test", "file"));
+    const ext = IS_WIN && ".cmd" || ".sh";
+    const setupVars = setupJs.__set__("vars", {
+      configPath,
+      overwriteEditorConfig: true,
+      rl: {
+        close: () => undefined,
+        question: stubQues,
+      },
+    });
+    setupEditor();
+    const {calledOnce: funcCalled} = stubFunc;
+    const {calledOnce: quesCalled} = stubQues;
+    assert.isFalse(funcCalled);
+    assert.isTrue(quesCalled);
+    assert.strictEqual(ques, "Enter editor path:\n");
+    handleEditorPathInput();
+    setupVars();
+  });
+
+  it("should call function", () => {
+    const setupEditor = setupJs.__get__("setupEditor");
+    const stubFunc = sinon.stub().callsFake(a => a);
+    const stubQues = sinon.stub().callsFake(a => a);
+    const handleEditorPathInput = setupJs.__set__("handleEditorPathInput",
+                                                  stubFunc);
+    const configPath = DIR_TMP;
+    const app = IS_WIN && "test.cmd" || "test.sh";
+    const editorPath = path.resolve(path.join("test", "file", app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const setupVars = setupJs.__set__("vars", {
+      configPath, editorPath,
+      overwriteEditorConfig: true,
+      rl: {
+        close: () => undefined,
+        question: stubQues,
+      },
+    });
+    setupEditor();
+    const {calledOnce: funcCalled} = stubFunc;
+    const {calledOnce: quesCalled} = stubQues;
+    assert.isTrue(funcCalled);
+    assert.isFalse(quesCalled);
+    handleEditorPathInput();
+    setupVars();
+  });
 });
 
 describe("abortSetup", () => {
@@ -197,6 +284,35 @@ describe("handleEditorConfigFileInput", () => {
     setupVars();
     setupAbort();
   });
+
+  it("should call function", () => {
+    let ques;
+    const userInput = setupJs.__get__("handleEditorConfigFileInput");
+    const stubFunc = sinon.stub().callsFake(a => a);
+    const stubQues = sinon.stub().callsFake(a => a);
+    const handleEditorPathInput = setupJs.__set__("handleEditorPathInput",
+                                                  stubFunc);
+    const configPath = path.resolve(path.join("test", "file"));
+    const app = IS_WIN && "test.cmd" || "test.sh";
+    const editorPath = path.resolve(path.join("test", "file", app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const setupVars = setupJs.__set__("vars", {
+      configPath, editorPath,
+      rl: {
+        close: () => undefined,
+        question: stubQues,
+      },
+    });
+    userInput("y");
+    const {calledOnce: funcCalledOnce} = stubFunc;
+    const {calledOnce: quesCalledOnce} = stubQues;
+    assert.isTrue(funcCalledOnce);
+    assert.isFalse(quesCalledOnce);
+    handleEditorPathInput();
+    setupVars();
+  });
 });
 
 describe("handleEditorPathInput", () => {
@@ -218,6 +334,27 @@ describe("handleEditorPathInput", () => {
     setupVars();
   });
 
+  it("should call function", () => {
+    const userInput = setupJs.__get__("handleEditorPathInput");
+    const stubFunc = sinon.stub().callsFake(a => a);
+    const stubQues = sinon.stub().callsFake(a => a);
+    const handleCmdArgsInput = setupJs.__set__("handleCmdArgsInput", stubFunc);
+    const setupVars = setupJs.__set__("vars", {
+      editorArgs: ["foo", "bar"],
+      rl: {
+        close: () => undefined,
+        question: stubQues,
+      },
+    });
+    userInput();
+    const {calledOnce: funcCalled} = stubFunc;
+    const {calledOnce: quesCalled} = stubQues;
+    assert.isTrue(funcCalled, stubFunc);
+    assert.isFalse(quesCalled, stubQues);
+    handleCmdArgsInput();
+    setupVars();
+  });
+
   it("should ask a question if empty string is given", () => {
     let ques;
     const userInput = setupJs.__get__("handleEditorPathInput");
@@ -233,6 +370,27 @@ describe("handleEditorPathInput", () => {
     const {calledOnce: quesCalledOnce} = stubQues;
     assert.strictEqual(quesCalledOnce, true);
     assert.strictEqual(ques, "Enter command line options:\n");
+    setupVars();
+  });
+
+  it("should call function", () => {
+    const userInput = setupJs.__get__("handleEditorPathInput");
+    const stubFunc = sinon.stub().callsFake(a => a);
+    const stubQues = sinon.stub().callsFake(a => a);
+    const handleCmdArgsInput = setupJs.__set__("handleCmdArgsInput", stubFunc);
+    const setupVars = setupJs.__set__("vars", {
+      editorArgs: ["foo", "bar"],
+      rl: {
+        close: () => undefined,
+        question: stubQues,
+      },
+    });
+    userInput("");
+    const {calledOnce: funcCalled} = stubFunc;
+    const {calledOnce: quesCalled} = stubQues;
+    assert.isTrue(funcCalled, stubFunc);
+    assert.isFalse(quesCalled, stubQues);
+    handleCmdArgsInput();
     setupVars();
   });
 
@@ -286,6 +444,59 @@ describe("handleEditorPathInput", () => {
     assert.strictEqual(quesCalledOnce, true);
     assert.strictEqual(ques, "Enter command line options:\n");
     console.warn.restore();
+    setupVars();
+  });
+
+  it("should call function", () => {
+    const userInput = setupJs.__get__("handleEditorPathInput");
+    const stubFunc = sinon.stub().callsFake(a => a);
+    const stubQues = sinon.stub().callsFake(a => a);
+    const app = IS_WIN && "test.cmd" || "test.sh";
+    const editorPath = path.resolve(path.join("test", "file", app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const handleCmdArgsInput = setupJs.__set__("handleCmdArgsInput", stubFunc);
+    const setupVars = setupJs.__set__("vars", {
+      editorArgs: ["foo", "bar"],
+      rl: {
+        close: () => undefined,
+        question: stubQues,
+      },
+    });
+    userInput(editorPath);
+    const {calledOnce: funcCalled} = stubFunc;
+    const {calledOnce: quesCalled} = stubQues;
+    assert.isTrue(funcCalled, stubFunc);
+    assert.isFalse(quesCalled, stubQues);
+    handleCmdArgsInput();
+    setupVars();
+  });
+
+  it("should call function", () => {
+    const userInput = setupJs.__get__("handleEditorPathInput");
+    const stubFunc = sinon.stub().callsFake(a => a);
+    const stubQues = sinon.stub().callsFake(a => a);
+    const app = IS_WIN && "test.cmd" || "test.sh";
+    const editorPath = path.resolve(path.join("test", "file", app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const handleCmdArgsInput = setupJs.__set__("handleCmdArgsInput", stubFunc);
+    const setupVars = setupJs.__set__("vars", {
+      editorPath,
+      editorArgs: ["foo", "bar"],
+      rl: {
+        close: () => undefined,
+        question: stubQues,
+      },
+    });
+    userInput();
+    const {calledOnce: funcCalled} = stubFunc;
+    const {calledOnce: quesCalled} = stubQues;
+    assert.isTrue(funcCalled, stubFunc);
+    assert.isFalse(quesCalled, stubQues);
+    handleCmdArgsInput();
     setupVars();
   });
 });

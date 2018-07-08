@@ -208,18 +208,10 @@ const handleSetupCallback = (info = {}) => {
       .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
       .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC)
       .allowUnknownOption().parse(process.argv).opts();
-    if (overwriteEditorConfig) {
-      vars.overwriteEditorConfig = !!overwriteEditorConfig;
-    }
-    if (isString(editorPath) && editorPath.length) {
-      vars.editorPath = editorPath.trim();
-    }
-    if (isString(editorArgs) && editorArgs.length) {
-      const args = (new CmdArgs(editorArgs.trim())).toArray();
-      if (args.length) {
-        vars.editorArgs = args;
-      }
-    }
+    vars.overwriteEditorConfig = !!overwriteEditorConfig;
+    vars.editorPath = isString(editorPath) && editorPath.trim() || "";
+    vars.editorArgs = isString(editorArgs) &&
+                      (new CmdArgs(editorArgs.trim())).toArray() || [];
     vars.configPath = configPath;
     vars.rl = readline.createInterface({
       input: process.stdin,

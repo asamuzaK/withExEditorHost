@@ -212,6 +212,40 @@ const portHostVersion = async minVer => {
 
 /* child process */
 /**
+ * handle child process error
+ * @param {!Object} e - Error
+ * @returns {void}
+ */
+const handleChildProcessErr = e => {
+  e = (new Output()).encode(e.message);
+  e && process.stderr.write(e);
+};
+
+/**
+ * handle child process stderr
+ * @param {*} data - data
+ * @returns {void}
+ */
+const handleChildProcessStderr = data => {
+  if (data) {
+    data = (new Output()).encode(hostMsg(data, `${PROCESS_CHILD}_stderr`));
+    data && process.stdout.write(data);
+  }
+};
+
+/**
+ * handle child process stdout
+ * @param {*} data - data
+ * @returns {void}
+ */
+const handleChildProcessStdout = data => {
+  if (data) {
+    data = (new Output()).encode(hostMsg(data, `${PROCESS_CHILD}_stdout`));
+    data && process.stdout.write(data);
+  }
+};
+
+/**
  * spawn child process
  * @param {string} file - file path
  * @param {string} app - app path
@@ -231,22 +265,9 @@ const spawnChildProcess = async (file, app = vars.editorPath) => {
     env: process.env,
   };
   const proc = await (new ChildProcess(app, args, opt)).spawn(file, true);
-  proc.on("error", e => {
-    e = (new Output()).encode(e.message);
-    e && process.stderr.write(e);
-  });
-  proc.stderr.on("data", data => {
-    if (data) {
-      data = (new Output()).encode(hostMsg(data, `${PROCESS_CHILD}_stderr`));
-      data && process.stdout.write(data);
-    }
-  });
-  proc.stdout.on("data", data => {
-    if (data) {
-      data = (new Output()).encode(hostMsg(data, `${PROCESS_CHILD}_stdout`));
-      data && process.stdout.write(data);
-    }
-  });
+  proc.on("error", handleChildProcessErr);
+  proc.stderr.on("data", handleChildProcessStderr);
+  proc.stdout.on("data", handleChildProcessStdout);
   return proc;
 };
 

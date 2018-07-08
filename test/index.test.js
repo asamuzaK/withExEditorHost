@@ -272,6 +272,47 @@ describe("portHostVersion", () => {
   });
 });
 
+describe("handleChildProcessErr", () => {
+  it("should write message", () => {
+    const func = indexJs.__get__("handleChildProcessErr");
+    const e = {
+      message: "foo",
+    };
+    const {stderr} = process;
+    sinon.stub(stderr, "write");
+    func(e);
+    const {calledOnce} = stderr.write;
+    stderr.write.restore();
+    assert.isTrue(calledOnce);
+  });
+});
+
+describe("handleChildProcessStderr", () => {
+  it("should write message", () => {
+    const func = indexJs.__get__("handleChildProcessStderr");
+    const msg = "foo";
+    const {stdout} = process;
+    sinon.stub(stdout, "write");
+    func(msg);
+    const {calledOnce} = stdout.write;
+    stdout.write.restore();
+    assert.isTrue(calledOnce);
+  });
+});
+
+describe("handleChildProcessStdout", () => {
+  it("should write message", () => {
+    const func = indexJs.__get__("handleChildProcessStdout");
+    const msg = "foo";
+    const {stdout} = process;
+    sinon.stub(stdout, "write");
+    func(msg);
+    const {calledOnce} = stdout.write;
+    stdout.write.restore();
+    assert.isTrue(calledOnce);
+  });
+});
+
 describe("spawnChildProcess", () => {
   it("should warn if file arg is not a file", async () => {
     const spawnChildProcess = indexJs.__get__("spawnChildProcess");
