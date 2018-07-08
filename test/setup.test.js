@@ -151,7 +151,6 @@ describe("setupEditor", () => {
     const handleEditorPathInput = setupJs.__set__("handleEditorPathInput",
                                                   stubFunc);
     const configPath = path.resolve(path.join("test", "file"));
-    const ext = IS_WIN && ".cmd" || ".sh";
     const setupVars = setupJs.__set__("vars", {
       configPath,
       overwriteEditorConfig: true,
@@ -286,7 +285,6 @@ describe("handleEditorConfigFileInput", () => {
   });
 
   it("should call function", () => {
-    let ques;
     const userInput = setupJs.__get__("handleEditorConfigFileInput");
     const stubFunc = sinon.stub().callsFake(a => a);
     const stubQues = sinon.stub().callsFake(a => a);
