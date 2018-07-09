@@ -106,7 +106,7 @@ describe("setupEditor", () => {
     });
     setupEditor();
     const {calledOnce: quesCalledOnce} = stubQues;
-    assert.strictEqual(quesCalledOnce, true);
+    assert.isTrue(quesCalledOnce);
     assert.strictEqual(ques,
                        `${filePath} already exists. Overwrite? [y/n]\n`);
     setupVars();
@@ -214,8 +214,8 @@ describe("abortSetup", () => {
     const {calledOnce: exitCalledOnce} = process.exit;
     console.info.restore();
     process.exit.restore();
-    assert.strictEqual(consoleCalledOnce, true);
-    assert.strictEqual(exitCalledOnce, true);
+    assert.isTrue(consoleCalledOnce);
+    assert.isTrue(exitCalledOnce);
     setupVars();
   });
 });
@@ -243,7 +243,7 @@ describe("handleEditorConfigFileInput", () => {
     });
     userInput();
     const {called: quesCalled} = stubQues;
-    assert.strictEqual(quesCalled, false);
+    assert.isFalse(quesCalled);
     setupVars();
     setupAbort();
   });
@@ -261,7 +261,7 @@ describe("handleEditorConfigFileInput", () => {
     });
     userInput("n");
     const {called: quesCalled} = stubQues;
-    assert.strictEqual(quesCalled, false);
+    assert.isFalse(quesCalled);
     setupVars();
     setupAbort();
   });
@@ -279,7 +279,7 @@ describe("handleEditorConfigFileInput", () => {
     });
     userInput("y");
     const {calledOnce: quesCalledOnce} = stubQues;
-    assert.strictEqual(quesCalledOnce, true);
+    assert.isTrue(quesCalledOnce);
     setupVars();
     setupAbort();
   });
@@ -327,7 +327,7 @@ describe("handleEditorPathInput", () => {
     });
     userInput();
     const {calledOnce: quesCalledOnce} = stubQues;
-    assert.strictEqual(quesCalledOnce, true);
+    assert.isTrue(quesCalledOnce);
     assert.strictEqual(ques, "Enter command line options:\n");
     setupVars();
   });
@@ -366,7 +366,7 @@ describe("handleEditorPathInput", () => {
     });
     userInput("");
     const {calledOnce: quesCalledOnce} = stubQues;
-    assert.strictEqual(quesCalledOnce, true);
+    assert.isTrue(quesCalledOnce);
     assert.strictEqual(ques, "Enter command line options:\n");
     setupVars();
   });
@@ -386,8 +386,8 @@ describe("handleEditorPathInput", () => {
     userInput("");
     const {calledOnce: funcCalled} = stubFunc;
     const {calledOnce: quesCalled} = stubQues;
-    assert.isTrue(funcCalled, stubFunc);
-    assert.isFalse(quesCalled, stubQues);
+    assert.isTrue(funcCalled);
+    assert.isFalse(quesCalled);
     handleCmdArgsInput();
     setupVars();
   });
@@ -408,8 +408,8 @@ describe("handleEditorPathInput", () => {
     userInput("foo/bar");
     const {calledOnce: consoleCalledOnce} = console.warn;
     const {calledOnce: quesCalledOnce} = stubQues;
-    assert.strictEqual(consoleCalledOnce, true);
-    assert.strictEqual(quesCalledOnce, true);
+    assert.isTrue(consoleCalledOnce);
+    assert.isTrue(quesCalledOnce);
     assert.strictEqual(ques, "Enter editor path:\n");
     console.warn.restore();
     setupVars();
@@ -437,9 +437,9 @@ describe("handleEditorPathInput", () => {
     const {calledOnce: consoleCalledOnce} = console.warn;
     const {calledOnce: quesCalledOnce} = stubQues;
     const {editorPath} = editorConfig;
-    assert.strictEqual(consoleCalledOnce, false);
+    assert.isFalse(consoleCalledOnce);
     assert.strictEqual(editorPath, file);
-    assert.strictEqual(quesCalledOnce, true);
+    assert.isTrue(quesCalledOnce);
     assert.strictEqual(ques, "Enter command line options:\n");
     console.warn.restore();
     setupVars();
@@ -465,8 +465,8 @@ describe("handleEditorPathInput", () => {
     userInput(editorPath);
     const {calledOnce: funcCalled} = stubFunc;
     const {calledOnce: quesCalled} = stubQues;
-    assert.isTrue(funcCalled, stubFunc);
-    assert.isFalse(quesCalled, stubQues);
+    assert.isTrue(funcCalled);
+    assert.isFalse(quesCalled);
     handleCmdArgsInput();
     setupVars();
   });
@@ -492,8 +492,8 @@ describe("handleEditorPathInput", () => {
     userInput();
     const {calledOnce: funcCalled} = stubFunc;
     const {calledOnce: quesCalled} = stubQues;
-    assert.isTrue(funcCalled, stubFunc);
-    assert.isFalse(quesCalled, stubQues);
+    assert.isTrue(funcCalled);
+    assert.isFalse(quesCalled);
     handleCmdArgsInput();
     setupVars();
   });
@@ -513,7 +513,7 @@ describe("handleCmdArgsInput", () => {
     const res = await userInput();
     const {calledOnce} = stubFunc;
     const {cmdArgs} = editorConfig;
-    assert.strictEqual(calledOnce, false);
+    assert.isFalse(calledOnce);
     assert.isNull(res);
     assert.deepEqual(cmdArgs, []);
     createEditorConfig();
@@ -533,7 +533,7 @@ describe("handleCmdArgsInput", () => {
     const res = await userInput(["foo", "bar"]);
     const {calledOnce} = stubFunc;
     const {cmdArgs} = editorConfig;
-    assert.strictEqual(calledOnce, false);
+    assert.isFalse(calledOnce);
     assert.isNull(res);
     assert.deepEqual(cmdArgs, []);
     createEditorConfig();
@@ -553,7 +553,7 @@ describe("handleCmdArgsInput", () => {
     const res = await userInput("");
     const {calledOnce} = stubFunc;
     const {cmdArgs} = editorConfig;
-    assert.strictEqual(calledOnce, true);
+    assert.isTrue(calledOnce);
     assert.isUndefined(res);
     assert.deepEqual(cmdArgs, []);
     createEditorConfig();
@@ -570,12 +570,12 @@ describe("handleCmdArgsInput", () => {
         close: () => undefined,
       },
     });
-    const res = await userInput("foo bar \"baz quux\"");
+    const res = await userInput("foo bar \"baz qux\"");
     const {calledOnce} = stubFunc;
     const {cmdArgs} = editorConfig;
-    assert.strictEqual(calledOnce, true);
+    assert.isTrue(calledOnce);
     assert.isUndefined(res);
-    assert.deepEqual(cmdArgs, ["foo", "bar", "baz quux"]);
+    assert.deepEqual(cmdArgs, ["foo", "bar", "baz qux"]);
     createEditorConfig();
     setupVars();
   });
@@ -619,7 +619,7 @@ describe("createEditorConfig", () => {
       assert.strictEqual(res, filePath);
     });
     const {calledOnce: consoleCalledOnce} = console.info;
-    assert.strictEqual(consoleCalledOnce, true);
+    assert.isTrue(consoleCalledOnce);
     console.info.restore();
     setupVars();
     createFile();

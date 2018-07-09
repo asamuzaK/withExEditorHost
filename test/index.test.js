@@ -66,7 +66,7 @@ describe("handleReject", () => {
     const res = handleReject(e);
     const {calledOnce} = stdout.write;
     stdout.write.restore();
-    assert.strictEqual(calledOnce, true);
+    assert.isTrue(calledOnce);
     assert.strictEqual(res, false);
   });
 });
@@ -79,7 +79,7 @@ describe("writeStdout", () => {
     const res = await writeStdout();
     const {calledOnce} = stdout.write;
     stdout.write.restore();
-    assert.strictEqual(calledOnce, false);
+    assert.isFalse(calledOnce);
     assert.isNull(res);
   });
 
@@ -91,7 +91,7 @@ describe("writeStdout", () => {
     await writeStdout(msg);
     const {calledOnce} = stdout.write;
     stdout.write.restore();
-    assert.strictEqual(calledOnce, true);
+    assert.isTrue(calledOnce);
   });
 });
 
