@@ -25,7 +25,7 @@ const PERM_FILE = 0o600;
 /* variable */
 const vars = {
   configPath: null,
-  editorArgs: [],
+  editorArgs: null,
   editorPath: "",
   overwriteEditorConfig: false,
   rl: null,
@@ -101,7 +101,7 @@ const handleEditorPathInput = ans => {
   const {editorArgs, rl} = vars;
   if (rl) {
     let args;
-    if (Array.isArray(editorArgs) && editorArgs.length) {
+    if (Array.isArray(editorArgs)) {
       args = (new CmdArgs(editorArgs)).toString();
     }
     if (isString(ans)) {
@@ -109,7 +109,7 @@ const handleEditorPathInput = ans => {
       if (ans.length) {
         if (isFile(ans) && isExecutable(ans)) {
           editorConfig.editorPath = ans;
-          if (args) {
+          if (isString(args)) {
             handleCmdArgsInput(args);
           } else {
             rl.question(ques.cmdArgs, handleCmdArgsInput);
@@ -118,12 +118,12 @@ const handleEditorPathInput = ans => {
           console.warn(`${ans} is not executable.`);
           rl.question(ques.editorPath, handleEditorPathInput);
         }
-      } else if (args) {
+      } else if (isString(args)) {
         handleCmdArgsInput(args);
       } else {
         rl.question(ques.cmdArgs, handleCmdArgsInput);
       }
-    } else if (args) {
+    } else if (isString(args)) {
       handleCmdArgsInput(args);
     } else {
       rl.question(ques.cmdArgs, handleCmdArgsInput);
@@ -211,7 +211,7 @@ const handleSetupCallback = (info = {}) => {
     vars.overwriteEditorConfig = !!overwriteEditorConfig;
     vars.editorPath = isString(editorPath) && editorPath.trim() || "";
     vars.editorArgs = isString(editorArgs) &&
-                      (new CmdArgs(editorArgs.trim())).toArray() || [];
+                      (new CmdArgs(editorArgs.trim())).toArray() || null;
     vars.configPath = configPath;
     vars.rl = readline.createInterface({
       input: process.stdin,

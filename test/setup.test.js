@@ -456,6 +456,32 @@ describe("handleEditorPathInput", () => {
     }
     const handleCmdArgsInput = setupJs.__set__("handleCmdArgsInput", stubFunc);
     const setupVars = setupJs.__set__("vars", {
+      editorArgs: [],
+      rl: {
+        close: () => undefined,
+        question: stubQues,
+      },
+    });
+    userInput(editorPath);
+    const {calledOnce: funcCalled} = stubFunc;
+    const {calledOnce: quesCalled} = stubQues;
+    assert.isTrue(funcCalled);
+    assert.isFalse(quesCalled);
+    handleCmdArgsInput();
+    setupVars();
+  });
+
+  it("should call function", () => {
+    const userInput = setupJs.__get__("handleEditorPathInput");
+    const stubFunc = sinon.stub().callsFake(a => a);
+    const stubQues = sinon.stub().callsFake(a => a);
+    const app = IS_WIN && "test.cmd" || "test.sh";
+    const editorPath = path.resolve(path.join("test", "file", app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const handleCmdArgsInput = setupJs.__set__("handleCmdArgsInput", stubFunc);
+    const setupVars = setupJs.__set__("vars", {
       editorArgs: ["foo", "bar"],
       rl: {
         close: () => undefined,
