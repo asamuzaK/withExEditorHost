@@ -35,13 +35,13 @@
     "zippackage:win64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
   "dependencies": {
-    "commander": "^2.16.0",
+    "commander": "^2.17.0",
     "semver-parser": "^2.0.3",
     "web-ext-native-msg": "^3.1.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "eslint": "^5.2.0",
+    "eslint": "^5.3.0",
     "jszip-cli": "^1.4.24",
     "mocha": "^5.2.0",
     "npm-run-all": "^4.1.3",
