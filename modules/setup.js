@@ -6,18 +6,14 @@
 const {
   CmdArgs, createFile, isDir, isExecutable, isFile,
 } = require("web-ext-native-msg");
-const {Command} = require("commander");
 const {isString, logErr} = require("./common");
+const commander = require("commander");
 const path = require("path");
 const process = require("process");
 const readline = require("readline");
 
 /* constants */
-const {
-  CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC, CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC,
-  CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC,
-  EDITOR_CONFIG_FILE,
-} = require("./constant");
+const {EDITOR_CONFIG_FILE} = require("./constant");
 const CHAR = "utf8";
 const INDENT = 2;
 const PERM_FILE = 0o600;
@@ -202,16 +198,12 @@ const handleSetupCallback = (info = {}) => {
   const {configDirPath: configPath} = info;
   let func;
   if (isString(configPath) && isDir(configPath)) {
-    const {
-      editorArgs, editorPath, overwriteEditorConfig,
-    } = (new Command()).option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
-      .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
-      .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC)
-      .allowUnknownOption().parse(process.argv).opts();
+    const {editorArgs, editorPath, overwriteEditorConfig} = commander.opts();
     vars.overwriteEditorConfig = !!overwriteEditorConfig;
     vars.editorPath = isString(editorPath) && editorPath.trim() || "";
     vars.editorArgs = isString(editorArgs) &&
                       (new CmdArgs(editorArgs.trim())).toArray() || null;
+    console.log(vars.editorArgs);
     vars.configPath = configPath;
     vars.rl = readline.createInterface({
       input: process.stdin,
