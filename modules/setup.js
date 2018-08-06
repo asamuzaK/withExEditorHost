@@ -203,7 +203,6 @@ const handleSetupCallback = (info = {}) => {
     vars.editorPath = isString(editorPath) && editorPath.trim() || "";
     vars.editorArgs = isString(editorArgs) &&
                       (new CmdArgs(editorArgs.trim())).toArray() || null;
-    console.log(vars.editorArgs);
     vars.configPath = configPath;
     vars.rl = readline.createInterface({
       input: process.stdin,
