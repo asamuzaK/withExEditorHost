@@ -818,6 +818,40 @@ describe("createTmpFile", () => {
     watch();
   });
 
+  it("should escape file name, set key/value to Map, get object", async () => {
+    const createTmpFile = indexJs.__get__("createTmpFile");
+    const createDir = indexJs.__set__("createDir", arr => path.join(...arr));
+    const createFile = indexJs.__set__("createFile", filePath => filePath);
+    const watch = indexJs.__set__("watch", () => ({}));
+    const fileMap = indexJs.__get__("fileMap");
+    const data = {
+      dataId: ":qux",
+      dir: TMP_FILES,
+      extType: ".txt",
+      host: "baz",
+      incognito: false,
+      mode: MODE_EDIT,
+      syncAuto: true,
+      tabId: "bar",
+      windowId: "foo",
+    };
+    const value = "";
+    const obj = {
+      data, value,
+    };
+    const filePath =
+      path.join(...TMPDIR_FILES, "foo", "bar", "baz", "%3Aqux.txt");
+    fileMap[FILE_WATCH].clear();
+    const res = await createTmpFile(obj);
+    assert.isTrue(fileMap[FILE_WATCH].has(filePath));
+    assert.deepEqual(res, {
+      data, filePath,
+    });
+    createDir();
+    createFile();
+    watch();
+  });
+
   it("should delete key from Map and get object", async () => {
     const createTmpFile = indexJs.__get__("createTmpFile");
     const createDir = indexJs.__set__("createDir", arr => path.join(...arr));
