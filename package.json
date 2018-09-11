@@ -35,9 +35,9 @@
     "zippackage:win64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
   "dependencies": {
-    "commander": "^2.17.1",
-    "semver-parser": "^2.0.4",
-    "web-ext-native-msg": "^3.1.1"
+    "commander": "^2.18.0",
+    "semver-parser": "^2.0.5",
+    "web-ext-native-msg": "^3.2.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
