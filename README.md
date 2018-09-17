@@ -161,3 +161,67 @@ For other options, see help
 ```
 > node index --help
 ```
+
+***
+
+## Host setup from npm (Experimental)
+
+[Node.js](https://nodejs.org/en/ "Node.js") v8.9.0 or higher is required.
+
+When setting up the host, disable withExEditor installed in the browser.
+
+Get host from [withexeditorhost - npm](https://www.npmjs.com/package/withexeditorhost) and install globally, then run the setup script.
+
+Note: The command is `node index setup`, not `npm run setup`.
+
+```
+> npm i -g withexeditorhost
+> cd path/to/npm/node_modules/withexeditorhost
+> node index setup
+```
+
+Then you will be asked which browser you want to setup the host for, so please enter the browser name from the list.
+
+After that, you will be prompted for the following, please input as appropriate.
+
+* Enter editor path
+* Enter command line options
+  * NOTE: Quote the argument if it contains spaces or backslashes.
+    For example: `-a -b "C:\Program Files"`
+
+If config files are created successfully, enable withExEditor again.
+The browser and the host get connected and the editor will be ready to use.
+
+### Options
+
+In the setup script you can specify some options.
+
+#### -b --browser
+
+To specify the browser, please use `-b` or `--browser` option.
+
+```
+> node index setup --browser=firefox
+```
+
+#### -c --config-path
+
+By default, configuration files are saved under user's home directory.
+* Windows: `C:\Users\[UserName]\AppData\Roaming\withexeditorhost\config\`
+* Mac: `~/Library/Application Support/withexeditorhost/config/`
+* Linux: `~/.config/withexeditorhost/config/`
+
+If you want to save configuration files in different location, use `-c` or `--config-path` option.
+Quote path if it contains spaces or backslashes.
+
+```
+> node index setup --config-path="C:\Users\XXX\path\to\another\location"
+```
+
+#### Other options
+
+For other options, see help
+
+```
+> node index --help
+```
