@@ -170,9 +170,9 @@ For other options, see help
 
 When setting up the host, disable withExEditor installed in the browser.
 
-Get host from [withexeditorhost - npm](https://www.npmjs.com/package/withexeditorhost) and install globally, then run the setup script.
+Get host from [withexeditorhost - npm](https://www.npmjs.com/package/withexeditorhost) and install globally, move to installed path (for example, `C:\Users\XXX\AppData\Roaming\npm\node_modules\withexeditorhost`), then run the setup script.
 
-NOTE: The command is `node index setup`, not `npm run setup`.
+NOTE: The setup command is `node index setup`, not `npm run setup`.
 
 ```
 > npm i -g withexeditorhost
