@@ -35,7 +35,7 @@
     "zippackage:win64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
   "dependencies": {
-    "commander": "^2.18.0",
+    "commander": "^2.19.0",
     "semver-parser": "^2.0.5",
     "web-ext-native-msg": "^3.2.0"
   },
@@ -49,7 +49,7 @@
     "pkg": "^4.3.4",
     "rewire": "^4.0.1",
     "rimraf": "^2.6.2",
-    "sinon": "^6.3.4"
+    "sinon": "^6.3.5"
   },
   "version": "4.1.0"
 }
