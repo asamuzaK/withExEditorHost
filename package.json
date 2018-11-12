@@ -40,9 +40,9 @@
     "web-ext-native-msg": "^3.2.2"
   },
   "devDependencies": {
-    "acorn": "^6.0.2",
+    "acorn": "^6.0.4",
     "chai": "^4.2.0",
-    "eslint": "^5.8.0",
+    "eslint": "^5.9.0",
     "jszip-cli": "^1.4.24",
     "mocha": "^5.2.0",
     "npm-run-all": "^4.1.3",
