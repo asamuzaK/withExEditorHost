@@ -18,7 +18,6 @@ The browser interacts with the host via messages, and the editor is executed by 
 |Browser      |Windows|Linux  |Mac    |
 |:------------|:-----:|:-----:|:-----:|
 |Firefox      |   ✓   |   ✓   |   ✓   |
-|Cyberfox     |   ✓ *1|       |       |
 |Waterfox     |   ✓ *1|       |       |
 |Chrome       |   ✓   |   ✓   |   ✓   |
 |Chrome Canary|   ✓ *2|       |   ✓   |
