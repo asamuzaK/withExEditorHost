@@ -61,10 +61,12 @@ const createEditorConfig = async () => {
     throw new Error(`No such directory: ${configPath}.`);
   }
   const editorConfigPath = path.join(configPath, EDITOR_CONFIG_FILE);
-  const file = await createFile(
-    editorConfigPath, JSON.stringify(editorConfig, null, INDENT),
-    {encoding: CHAR, flag: "w", mode: PERM_FILE}
-  );
+  const content = `${JSON.stringify(editorConfig, null, INDENT)}\n`;
+  const file = await createFile(editorConfigPath, content, {
+    encoding: CHAR,
+    flag: "w",
+    mode: PERM_FILE,
+  });
   if (!file) {
     throw new Error(`Failed to create ${editorConfigPath}.`);
   }

@@ -650,4 +650,28 @@ describe("createEditorConfig", () => {
     setupVars();
     createFile();
   });
+
+  it("should get new line at EOF", async () => {
+    const createEditorConfig = setupJs.__get__("createEditorConfig");
+    const dir = path.join(DIR_TMP, "withexeditorhost");
+    const setupVars = setupJs.__set__("vars", {
+      configPath: dir,
+    });
+    const filePath = path.join(dir, EDITOR_CONFIG_FILE);
+    sinon.stub(console, "info");
+    await fs.mkdirSync(dir);
+    const res = await createEditorConfig();
+    const file = fs.readFileSync(res, {
+      encoding: "utf8",
+      flag: "r",
+    });
+    const {calledOnce: consoleCalledOnce} = console.info;
+    assert.isTrue(consoleCalledOnce);
+    assert.strictEqual(res, filePath);
+    assert.isTrue(file.endsWith("\n"));
+    console.info.restore();
+    setupVars();
+    await fs.unlinkSync(filePath);
+    await fs.rmdirSync(dir);
+  });
 });
