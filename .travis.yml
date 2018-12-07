@@ -2,7 +2,6 @@ language: node_js
 sudo: false
 dist: trusty
 os:
-  - windows
   - linux
 node_js:
   - "8"
@@ -38,7 +37,6 @@ deploy:
   on:
     tags: true
     node: "10"
-    condition: "$TRAVIS_OS_NAME" == "linux"
 
 after_deploy:
   - npm run clean:pkg
