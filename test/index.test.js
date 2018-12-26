@@ -95,15 +95,15 @@ describe("writeStdout", () => {
   });
 });
 
-describe("portAppStatus", () => {
+describe("exportAppStatus", () => {
   const tmpDirMsg = "Failed to create temporary directory.";
   const tmpDirPrivateMsg = "Failed to create private temporary directory.";
   const status = "warn";
 
   it("should warn if no argument given", async () => {
-    const portAppStatus = indexJs.__get__("portAppStatus");
+    const exportAppStatus = indexJs.__get__("exportAppStatus");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
-    const res = await portAppStatus();
+    const res = await exportAppStatus();
     assert.deepEqual(res, [
       {
         withexeditorhost: {
@@ -122,9 +122,9 @@ describe("portAppStatus", () => {
   });
 
   it("should warn if any argument is missing", async () => {
-    const portAppStatus = indexJs.__get__("portAppStatus");
+    const exportAppStatus = indexJs.__get__("exportAppStatus");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
-    const res = await portAppStatus(["foo"]);
+    const res = await exportAppStatus(["foo"]);
     assert.deepEqual(res, [
       {
         withexeditorhost: {
@@ -137,9 +137,9 @@ describe("portAppStatus", () => {
   });
 
   it("should warn if any argument is missing", async () => {
-    const portAppStatus = indexJs.__get__("portAppStatus");
+    const exportAppStatus = indexJs.__get__("exportAppStatus");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
-    const res = await portAppStatus([undefined, "foo"]);
+    const res = await exportAppStatus([undefined, "foo"]);
     assert.deepEqual(res, [
       {
         withexeditorhost: {
@@ -152,9 +152,9 @@ describe("portAppStatus", () => {
   });
 
   it("should write message", async () => {
-    const portAppStatus = indexJs.__get__("portAppStatus");
+    const exportAppStatus = indexJs.__get__("exportAppStatus");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
-    const res = await portAppStatus(["foo", "bar"]);
+    const res = await exportAppStatus(["foo", "bar"]);
     assert.deepEqual(res, [
       {
         withexeditorhost: {
@@ -167,18 +167,18 @@ describe("portAppStatus", () => {
   });
 });
 
-describe("portEditorConfig", () => {
+describe("exportEditorConfig", () => {
   it("should return null if no argument given", async () => {
-    const portEditorConfig = indexJs.__get__("portEditorConfig");
-    const res = await portEditorConfig();
+    const exportEditorConfig = indexJs.__get__("exportEditorConfig");
+    const res = await exportEditorConfig();
     assert.isNull(res);
   });
 
   it("should warn if arg is not JSON parsable", async () => {
-    const portEditorConfig = indexJs.__get__("portEditorConfig");
+    const exportEditorConfig = indexJs.__get__("exportEditorConfig");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
     const data = () => undefined;
-    const res = await portEditorConfig(data);
+    const res = await exportEditorConfig(data);
     assert.deepEqual(res, {
       withexeditorhost: {
         message: "Unexpected token ( in JSON at position 0",
@@ -189,7 +189,7 @@ describe("portEditorConfig", () => {
   });
 
   it("should write message", async () => {
-    const portEditorConfig = indexJs.__get__("portEditorConfig");
+    const exportEditorConfig = indexJs.__get__("exportEditorConfig");
     const getFileTimestamp = indexJs.__get__("getFileTimestamp");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
     const app = IS_WIN && "test.cmd" || "test.sh";
@@ -202,7 +202,7 @@ describe("portEditorConfig", () => {
     const data = JSON.stringify({
       editorPath,
     });
-    const res = await portEditorConfig(data, file);
+    const res = await exportEditorConfig(data, file);
     assert.deepEqual(res, {
       [EDITOR_CONFIG_RES]: {
         editorName: "test",
@@ -214,20 +214,20 @@ describe("portEditorConfig", () => {
   });
 });
 
-describe("portFileData", () => {
+describe("exportFileData", () => {
   it("should return null if no argument given", async () => {
-    const portFileData = indexJs.__get__("portFileData");
-    const res = await portFileData();
+    const exportFileData = indexJs.__get__("exportFileData");
+    const res = await exportFileData();
     assert.isNull(res);
   });
 
   it("should write message", async () => {
-    const portFileData = indexJs.__get__("portFileData");
+    const exportFileData = indexJs.__get__("exportFileData");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
     const obj = {
       data: "foo",
     };
-    const res = await portFileData(obj);
+    const res = await exportFileData(obj);
     assert.deepEqual(res, {
       [TMP_FILE_DATA_PORT]: {
         data: "foo",
@@ -237,12 +237,12 @@ describe("portFileData", () => {
   });
 });
 
-describe("portHostVersion", () => {
+describe("exportHostVersion", () => {
   it("should return 1 or positive", async () => {
-    const portHostVersion = indexJs.__get__("portHostVersion");
+    const exportHostVersion = indexJs.__get__("exportHostVersion");
     const hostVersion = indexJs.__set__("hostVersion", "v1.2.3");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
-    const msg = await portHostVersion("v1.0.0");
+    const msg = await exportHostVersion("v1.0.0");
     const {result} = msg[HOST_VERSION];
     assert.isAbove(result, 0);
     hostVersion();
@@ -250,10 +250,10 @@ describe("portHostVersion", () => {
   });
 
   it("should return 0", async () => {
-    const portHostVersion = indexJs.__get__("portHostVersion");
+    const exportHostVersion = indexJs.__get__("exportHostVersion");
     const hostVersion = indexJs.__set__("hostVersion", "v1.2.3");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
-    const msg = await portHostVersion("v1.2.3");
+    const msg = await exportHostVersion("v1.2.3");
     const {result} = msg[HOST_VERSION];
     assert.strictEqual(result, 0);
     hostVersion();
@@ -261,10 +261,10 @@ describe("portHostVersion", () => {
   });
 
   it("should return -1 or negative", async () => {
-    const portHostVersion = indexJs.__get__("portHostVersion");
+    const exportHostVersion = indexJs.__get__("exportHostVersion");
     const hostVersion = indexJs.__set__("hostVersion", "v1.2.3");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
-    const msg = await portHostVersion("v1.5.0");
+    const msg = await exportHostVersion("v1.5.0");
     const {result} = msg[HOST_VERSION];
     assert.isBelow(result, 0);
     hostVersion();
@@ -1184,8 +1184,8 @@ describe("getEditorConfig", () => {
     const getEditorConfig = indexJs.__get__("getEditorConfig");
     const editorConfigPath =
       indexJs.__set__("EDITOR_CONFIG_FILE", FILE_PATH);
-    const portEditorConfig = indexJs.__set__("portEditorConfig",
-                                             (data, file) => ({data, file}));
+    const exportEditorConfig = indexJs.__set__("exportEditorConfig",
+                                               (data, file) => ({data, file}));
     const res = await getEditorConfig();
     assert.isTrue(Array.isArray(res));
     assert.strictEqual(res.length, EXPECTED_LENGTH);
@@ -1195,7 +1195,7 @@ describe("getEditorConfig", () => {
         file: path.resolve(FILE_PATH),
       },
     ]);
-    portEditorConfig();
+    exportEditorConfig();
     editorConfigPath();
   });
 
@@ -1291,7 +1291,7 @@ describe("handleCreatedTmpFile", () => {
     const handleCreatedTmpFile = indexJs.__get__("handleCreatedTmpFile");
     const spawnChildProcess =
       indexJs.__set__("spawnChildProcess", file => file);
-    const portFileData = indexJs.__set__("portFileData", obj => obj);
+    const exportFileData = indexJs.__set__("exportFileData", obj => obj);
     const filePath = path.resolve(path.join("test", "file", "test.txt"));
     const data = {
       filePath,
@@ -1306,7 +1306,7 @@ describe("handleCreatedTmpFile", () => {
       },
     ]);
     spawnChildProcess();
-    portFileData();
+    exportFileData();
   });
 });
 
@@ -1358,7 +1358,7 @@ describe("handleMsg", () => {
     const handleMsg = indexJs.__get__("handleMsg");
     const keyMap = {
       [EDITOR_CONFIG_GET]: "getEditorConfig",
-      [HOST_VERSION_CHECK]: "portHostVersion",
+      [HOST_VERSION_CHECK]: "exportHostVersion",
       [LOCAL_FILE_VIEW]: "viewLocalFile",
       [TMP_FILE_CREATE]: ["createTmpFile", "handleCreatedTmpFile"],
       [TMP_FILE_DATA_REMOVE]: "removeTmpFileData",
@@ -1501,12 +1501,13 @@ describe("startup", () => {
   it("should get function", async () => {
     const func = indexJs.__get__("startup");
     const createDir = indexJs.__set__("createDir", async arr => arr);
-    const portAppStatus = indexJs.__set__("portAppStatus", async arr => arr);
+    const exportAppStatus = indexJs.__set__("exportAppStatus",
+                                            async arr => arr);
     const res = await func();
     assert.isArray(res);
     assert.deepEqual(res, [TMPDIR_FILES, TMPDIR_FILES_PB]);
     createDir();
-    portAppStatus();
+    exportAppStatus();
   });
 
   it("should get function", async () => {
@@ -1518,13 +1519,14 @@ describe("startup", () => {
       ],
     });
     const createDir = indexJs.__set__("createDir", async arr => arr);
-    const portAppStatus = indexJs.__set__("portAppStatus", async arr => arr);
+    const exportAppStatus = indexJs.__set__("exportAppStatus",
+                                            async arr => arr);
     const res = await func();
     assert.isArray(res);
     assert.deepEqual(res, [TMPDIR_FILES, TMPDIR_FILES_PB]);
     processArgv();
     createDir();
-    portAppStatus();
+    exportAppStatus();
   });
 
   it("should get function", async () => {
@@ -1537,13 +1539,14 @@ describe("startup", () => {
       ],
     });
     const createDir = indexJs.__set__("createDir", async arr => arr);
-    const portAppStatus = indexJs.__set__("portAppStatus", async arr => arr);
+    const exportAppStatus = indexJs.__set__("exportAppStatus",
+                                            async arr => arr);
     const res = await func();
     assert.isArray(res);
     assert.deepEqual(res, [TMPDIR_FILES, TMPDIR_FILES_PB]);
     processArgv();
     createDir();
-    portAppStatus();
+    exportAppStatus();
   });
 
   it("should get null", async () => {

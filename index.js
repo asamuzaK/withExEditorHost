@@ -117,11 +117,11 @@ const writeStdout = async msg => {
 };
 
 /**
- * port app status
+ * export app status
  * @param {Array} arr - array of temporary directories
  * @returns {Promise.<Array>} - results of each handler
  */
-const portAppStatus = async (arr = []) => {
+const exportAppStatus = async (arr = []) => {
   const [tmpDir, tmpDirPb] = arr;
   const func = [];
   if (tmpDir && tmpDirPb) {
@@ -138,12 +138,12 @@ const portAppStatus = async (arr = []) => {
 };
 
 /**
- * port editor config
+ * export editor config
  * @param {string} data - editor config
  * @param {string} editorConfig - editor config file path
  * @returns {?AsyncFunction} - write stdout
  */
-const portEditorConfig = async (data, editorConfig) => {
+const exportEditorConfig = async (data, editorConfig) => {
   let msg;
   try {
     data = data && JSON.parse(data);
@@ -179,11 +179,11 @@ const portEditorConfig = async (data, editorConfig) => {
 };
 
 /**
- * port file data
+ * export file data
  * @param {Object} obj - file data
  * @returns {?AsyncFunction} - write stdout
  */
-const portFileData = async (obj = {}) => {
+const exportFileData = async (obj = {}) => {
   const {data} = obj;
   const msg = data && {
     [TMP_FILE_DATA_PORT]: {data},
@@ -191,11 +191,11 @@ const portFileData = async (obj = {}) => {
   return msg && writeStdout(msg) || null;
 };
 
-/* port host version
+/* export host version
  * @param {string} minVer - required min version
  * @returns {?AsyncFunction} - write stdout
  */
-const portHostVersion = async minVer => {
+const exportHostVersion = async minVer => {
   let msg;
   if (await isString(minVer)) {
     const result = await compareSemVer(hostVersion, minVer);
@@ -499,7 +499,7 @@ const getEditorConfig = async () => {
     const data = await readFile(editorConfigPath, {
       encoding: CHAR, flag: "r",
     });
-    func.push(portEditorConfig(data, editorConfigPath));
+    func.push(exportEditorConfig(data, editorConfigPath));
   } else {
     func.push(
       writeStdout(hostMsg(`Failed to handle ${editorConfigPath}.`, "warn")),
@@ -542,7 +542,7 @@ const handleCreatedTmpFile = async (obj = {}) => {
   const {filePath} = obj;
   const func = [];
   if (await isFile(filePath)) {
-    func.push(spawnChildProcess(filePath), portFileData(obj));
+    func.push(spawnChildProcess(filePath), exportFileData(obj));
   }
   return Promise.all(func);
 };
@@ -563,7 +563,7 @@ const handleMsg = async msg => {
           func.push(getEditorConfig(obj));
           break;
         case HOST_VERSION_CHECK:
-          func.push(portHostVersion(obj));
+          func.push(exportHostVersion(obj));
           break;
         case LOCAL_FILE_VIEW:
           func.push(viewLocalFile(obj));
@@ -672,7 +672,7 @@ const startup = () => {
     func = Promise.all([
       createDir(TMPDIR_FILES, PERM_DIR),
       createDir(TMPDIR_FILES_PB, PERM_DIR),
-    ]).then(portAppStatus).catch(handleReject);
+    ]).then(exportAppStatus).catch(handleReject);
   }
   return func || null;
 };
