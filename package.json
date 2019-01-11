@@ -40,7 +40,6 @@
     "web-ext-native-msg": "^3.3.0"
   },
   "devDependencies": {
-    "acorn": "^6.0.5",
     "chai": "^4.2.0",
     "eslint": "^5.12.0",
     "jszip-cli": "^1.4.24",
