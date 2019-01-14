@@ -3,6 +3,7 @@ sudo: false
 dist: trusty
 os:
   - windows
+  - osx
   - linux
 node_js:
   - "10"
