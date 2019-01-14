@@ -5,8 +5,9 @@
 /* api */
 const {
   ChildProcess, CmdArgs, Input, Output, Setup,
-  convertUriToFilePath, createDir, createFile, getFileNameFromFilePath,
-  getFileTimestamp, isDir, isExecutable, isFile, removeDir, readFile,
+  convertUriToFilePath, createDirectory, createFile,
+  getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
+  removeDir, readFile,
 } = require("web-ext-native-msg");
 const {URL} = require("url");
 const {compareSemVer} = require("semver-parser");
@@ -281,15 +282,15 @@ const initPrivateTmpDir = async bool => {
   let msg;
   if (bool) {
     const dir = path.join(...TMPDIR_FILES_PB);
+    fileMap[TMP_FILES_PB].clear();
     await removeDir(dir, TMPDIR);
-    if (await isDir(dir)) {
+    if (isDir(dir)) {
       msg = hostMsg("Failed to remove private temporary directory.", "warn");
     } else {
-      const dPath = await createDir(TMPDIR_FILES_PB, PERM_DIR);
-      fileMap[TMP_FILES_PB].clear();
-      dir !== dPath && (
-        msg = hostMsg("Failed to create private temporary directory.", "warn")
-      );
+      await createDirectory(dir, PERM_DIR);
+      if (!isDir(dir)) {
+        msg = hostMsg("Failed to create private temporary directory.", "warn");
+      }
     }
   }
   return msg && writeStdout(msg) || null;
@@ -426,12 +427,13 @@ const createTmpFile = async (obj = {}) => {
       windowId,
     } = data;
     if (dataId && dir && extType && host && tabId && windowId) {
-      const arr = [...TMPDIR_APP, dir, windowId, tabId, host];
-      const dPath = arr && await createDir(arr, PERM_DIR);
+      const dirPath = await createDirectory(
+        path.join(...TMPDIR_APP, dir, windowId, tabId, host), PERM_DIR
+      );
       const fileId = [windowId, tabId, host, dataId].join("_");
-      const fileName = encodeURIComponent(dataId);
-      filePath = dPath === path.join(...arr) && dataId && extType &&
-        await createFile(path.join(dPath, fileName + extType), value,
+      const fileName = dataId && encodeURIComponent(dataId);
+      filePath = dirPath && fileName && extType &&
+        await createFile(path.join(dirPath, fileName + extType), value,
                          {encoding: CHAR, flag: "w", mode: PERM_FILE});
       filePath && dir && fileMap[dir] &&
         fileMap[dir].set(fileId, {data, filePath});
@@ -670,8 +672,8 @@ const startup = () => {
   }
   if (!(setup || ver)) {
     func = Promise.all([
-      createDir(TMPDIR_FILES, PERM_DIR),
-      createDir(TMPDIR_FILES_PB, PERM_DIR),
+      createDirectory(path.join(...TMPDIR_FILES), PERM_DIR),
+      createDirectory(path.join(...TMPDIR_FILES_PB), PERM_DIR),
     ]).then(exportAppStatus).catch(handleReject);
   }
   return func || null;

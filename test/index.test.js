@@ -385,7 +385,8 @@ describe("initPrivateTmpDir", () => {
   it("should warn if failed to create directory", async () => {
     const initPrivateTmpDir = indexJs.__get__("initPrivateTmpDir");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
-    const createDir = indexJs.__set__("createDir", () => undefined);
+    const createDirectory = indexJs.__set__("createDirectory",
+                                            async () => undefined);
     const res = await initPrivateTmpDir(true);
     assert.deepEqual(res, {
       withexeditorhost: {
@@ -394,15 +395,15 @@ describe("initPrivateTmpDir", () => {
       },
     });
     writeStdout();
-    createDir();
+    createDirectory();
   });
 
   it("should get null on success", async () => {
     const initPrivateTmpDir = indexJs.__get__("initPrivateTmpDir");
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
-    const createDir = indexJs.__get__("createDir");
+    const createDirectory = indexJs.__get__("createDirectory");
     const isDir = indexJs.__get__("isDir");
-    const dir = await createDir(TMPDIR_FILES_PB, PERM_DIR);
+    const dir = await createDirectory(path.join(...TMPDIR_FILES_PB), PERM_DIR);
     const res = await initPrivateTmpDir(true);
     assert.isNull(res);
     assert.isTrue(isDir(dir));
@@ -786,7 +787,8 @@ describe("createTmpFile", () => {
 
   it("should set key/value to Map and get object", async () => {
     const createTmpFile = indexJs.__get__("createTmpFile");
-    const createDir = indexJs.__set__("createDir", arr => path.join(...arr));
+    const createDirectory = indexJs.__set__("createDirectory",
+                                            async arg => arg);
     const createFile = indexJs.__set__("createFile", filePath => filePath);
     const watch = indexJs.__set__("watch", () => ({}));
     const fileMap = indexJs.__get__("fileMap");
@@ -805,22 +807,22 @@ describe("createTmpFile", () => {
     const obj = {
       data, value,
     };
-    const filePath =
-      path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+    const filePath = path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
     fileMap[FILE_WATCH].clear();
     const res = await createTmpFile(obj);
     assert.isTrue(fileMap[FILE_WATCH].has(filePath));
     assert.deepEqual(res, {
       data, filePath,
     });
-    createDir();
+    createDirectory();
     createFile();
     watch();
   });
 
   it("should escape file name, set key/value to Map, get object", async () => {
     const createTmpFile = indexJs.__get__("createTmpFile");
-    const createDir = indexJs.__set__("createDir", arr => path.join(...arr));
+    const createDirectory = indexJs.__set__("createDirectory",
+                                            async arg => arg);
     const createFile = indexJs.__set__("createFile", filePath => filePath);
     const watch = indexJs.__set__("watch", () => ({}));
     const fileMap = indexJs.__get__("fileMap");
@@ -847,14 +849,15 @@ describe("createTmpFile", () => {
     assert.deepEqual(res, {
       data, filePath,
     });
-    createDir();
+    createDirectory();
     createFile();
     watch();
   });
 
   it("should delete key from Map and get object", async () => {
     const createTmpFile = indexJs.__get__("createTmpFile");
-    const createDir = indexJs.__set__("createDir", arr => path.join(...arr));
+    const createDirectory = indexJs.__set__("createDirectory",
+                                            async arg => arg);
     const createFile = indexJs.__set__("createFile", filePath => filePath);
     const watch = indexJs.__set__("watch", () => ({}));
     const fileMap = indexJs.__get__("fileMap");
@@ -884,7 +887,7 @@ describe("createTmpFile", () => {
     assert.deepEqual(res, {
       data, filePath,
     });
-    createDir();
+    createDirectory();
     createFile();
     watch();
   });
@@ -895,7 +898,8 @@ describe("createTmpFile", () => {
     const writeStdout = indexJs.__set__("writeStdout", msg => {
       stdoutMsg = msg;
     });
-    const createDir = indexJs.__set__("createDir", arr => path.join(...arr));
+    const createDirectory = indexJs.__set__("createDirectory",
+                                            async arg => arg);
     const createFile = indexJs.__set__("createFile", filePath => filePath);
     const watch = indexJs.__set__("watch", () => ({}));
     const fileMap = indexJs.__get__("fileMap");
@@ -914,8 +918,7 @@ describe("createTmpFile", () => {
     const obj = {
       data, value,
     };
-    const filePath =
-      path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+    const filePath = path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
     fileMap[FILE_WATCH].clear();
     fileMap[FILE_WATCH].set(filePath, {
       close: () => {
@@ -933,7 +936,7 @@ describe("createTmpFile", () => {
         status: "error",
       },
     });
-    createDir();
+    createDirectory();
     createFile();
     watch();
     writeStdout();
@@ -1500,13 +1503,17 @@ describe("runSetup", () => {
 describe("startup", () => {
   it("should get function", async () => {
     const func = indexJs.__get__("startup");
-    const createDir = indexJs.__set__("createDir", async arr => arr);
+    const createDirectory = indexJs.__set__("createDirectory",
+                                            async arg => arg);
     const exportAppStatus = indexJs.__set__("exportAppStatus",
                                             async arr => arr);
     const res = await func();
     assert.isArray(res);
-    assert.deepEqual(res, [TMPDIR_FILES, TMPDIR_FILES_PB]);
-    createDir();
+    assert.deepEqual(res, [
+      path.join(...TMPDIR_FILES),
+      path.join(...TMPDIR_FILES_PB),
+    ]);
+    createDirectory();
     exportAppStatus();
   });
 
@@ -1518,14 +1525,18 @@ describe("startup", () => {
         "bar",
       ],
     });
-    const createDir = indexJs.__set__("createDir", async arr => arr);
+    const createDirectory = indexJs.__set__("createDirectory",
+                                            async arg => arg);
     const exportAppStatus = indexJs.__set__("exportAppStatus",
                                             async arr => arr);
     const res = await func();
     assert.isArray(res);
-    assert.deepEqual(res, [TMPDIR_FILES, TMPDIR_FILES_PB]);
+    assert.deepEqual(res, [
+      path.join(...TMPDIR_FILES),
+      path.join(...TMPDIR_FILES_PB),
+    ]);
     processArgv();
-    createDir();
+    createDirectory();
     exportAppStatus();
   });
 
@@ -1538,14 +1549,18 @@ describe("startup", () => {
         "baz",
       ],
     });
-    const createDir = indexJs.__set__("createDir", async arr => arr);
+    const createDirectory = indexJs.__set__("createDirectory",
+                                            async arg => arg);
     const exportAppStatus = indexJs.__set__("exportAppStatus",
                                             async arr => arr);
     const res = await func();
     assert.isArray(res);
-    assert.deepEqual(res, [TMPDIR_FILES, TMPDIR_FILES_PB]);
+    assert.deepEqual(res, [
+      path.join(...TMPDIR_FILES),
+      path.join(...TMPDIR_FILES_PB),
+    ]);
     processArgv();
-    createDir();
+    createDirectory();
     exportAppStatus();
   });
 
