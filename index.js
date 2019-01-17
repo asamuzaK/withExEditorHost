@@ -10,7 +10,11 @@ const {
   removeDir, readFile,
 } = require("web-ext-native-msg");
 const {URL} = require("url");
-const {compareSemVer} = require("semver-parser");
+const {
+  promises: {
+    compareSemVer,
+  },
+} = require("semver-parser");
 const {isString, throwErr} = require("./modules/common");
 const {handleSetupCallback} = require("./modules/setup");
 const {version: hostVersion} = require("./package.json");
@@ -151,7 +155,7 @@ const exportEditorConfig = async (data, editorConfig) => {
     if (data) {
       const {editorPath} = data;
       const editorName = await getFileNameFromFilePath(editorPath);
-      const executable = await isExecutable(editorPath);
+      const executable = isExecutable(editorPath);
       const timestamp = await getFileTimestamp(editorConfig) || 0;
       const items = Object.keys(vars);
       for (const item of items) {
@@ -198,7 +202,7 @@ const exportFileData = async (obj = {}) => {
  */
 const exportHostVersion = async minVer => {
   let msg;
-  if (await isString(minVer)) {
+  if (isString(minVer)) {
     const result = await compareSemVer(hostVersion, minVer);
     if (Number.isInteger(result)) {
       msg = {
@@ -253,10 +257,10 @@ const handleChildProcessStdout = data => {
  * @returns {ChildProcess|AsyncFunction} - child process / write stdout
  */
 const spawnChildProcess = async (file, app = vars.editorPath) => {
-  if (await !isFile(file)) {
+  if (!isFile(file)) {
     return writeStdout(hostMsg("Given path is not a file.", "warn"));
   }
-  if (await !isExecutable(app)) {
+  if (!isExecutable(app)) {
     return writeStdout(hostMsg("Application is not executable.", "warn"));
   }
   const args = vars.cmdArgs || [];
@@ -308,7 +312,7 @@ const getTmpFileFromFileData = async (data = {}) => {
     const fileId = [windowId, tabId, host, dataId].join("_");
     if (fileMap[dir].has(fileId)) {
       const {filePath} = fileMap[dir].get(fileId);
-      if (await isString(filePath) && await isFile(filePath)) {
+      if (isString(filePath) && isFile(filePath)) {
         const value = await readFile(filePath, {encoding: CHAR, flag: "r"}) ||
                       "";
         data.timestamp = await getFileTimestamp(filePath) || 0;
@@ -341,7 +345,7 @@ const getTmpFileFromFileData = async (data = {}) => {
  */
 const getFileIdFromFilePath = async filePath => {
   let fileId;
-  if (await isString(filePath)) {
+  if (isString(filePath)) {
     const {dir, name} = path.parse(filePath);
     const dirArr = dir.replace(TMPDIR_APP, "").split(path.sep);
     const [, , windowId, tabId, host] = dirArr;
@@ -496,7 +500,7 @@ const removeTmpFileData = async (data = {}) => {
 const getEditorConfig = async () => {
   const func = [];
   const editorConfigPath = path.resolve(path.join(".", EDITOR_CONFIG_FILE));
-  if (editorConfigPath && await isFile(editorConfigPath)) {
+  if (editorConfigPath && isFile(editorConfigPath)) {
     const data = await readFile(editorConfigPath, {
       encoding: CHAR, flag: "r",
     });
@@ -517,12 +521,12 @@ const getEditorConfig = async () => {
  */
 const viewLocalFile = async uri => {
   let func;
-  if (await isString(uri)) {
+  if (isString(uri)) {
     try {
       const {protocol} = new URL(uri);
       if (protocol === "file:") {
         const file = await convertUriToFilePath(uri);
-        if (file && await isFile(file)) {
+        if (file && isFile(file)) {
           func = spawnChildProcess(file);
         }
       }
@@ -542,7 +546,7 @@ const viewLocalFile = async uri => {
 const handleCreatedTmpFile = async (obj = {}) => {
   const {filePath} = obj;
   const func = [];
-  if (await isFile(filePath)) {
+  if (isFile(filePath)) {
     func.push(spawnChildProcess(filePath), exportFileData(obj));
   }
   return Promise.all(func);
