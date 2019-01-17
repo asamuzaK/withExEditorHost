@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "commander": "^2.19.0",
-    "semver-parser": "^2.0.7",
+    "semver-parser": "^3.0.0-b.1",
     "web-ext-native-msg": "^4.0.0-a.6"
   },
   "devDependencies": {
