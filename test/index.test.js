@@ -7,6 +7,7 @@ const {describe, it} = require("mocha");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
+const process = require("process");
 const rewire = require("rewire");
 const sinon = require("sinon");
 
@@ -24,9 +25,9 @@ const PERM_APP = 0o755;
 const PERM_DIR = 0o700;
 const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
                os.tmpdir();
-const TMPDIR_APP = [TMPDIR, LABEL, APP];
-const TMPDIR_FILES = [...TMPDIR_APP, TMP_FILES];
-const TMPDIR_FILES_PB = [...TMPDIR_APP, TMP_FILES_PB];
+const TMPDIR_APP = path.join(TMPDIR, LABEL, APP);
+const TMPDIR_FILES = path.join(TMPDIR_APP, TMP_FILES);
+const TMPDIR_FILES_PB = path.join(TMPDIR_APP, TMP_FILES_PB);
 
 const indexJs = rewire("../index");
 
@@ -403,7 +404,7 @@ describe("initPrivateTmpDir", () => {
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
     const createDirectory = indexJs.__get__("createDirectory");
     const isDir = indexJs.__get__("isDir");
-    const dir = await createDirectory(path.join(...TMPDIR_FILES_PB), PERM_DIR);
+    const dir = await createDirectory(TMPDIR_FILES_PB, PERM_DIR);
     const res = await initPrivateTmpDir(true);
     assert.isNull(res);
     assert.isTrue(isDir(dir));
@@ -461,7 +462,7 @@ describe("getTmpFileFromFileData", () => {
     const writeStdout = indexJs.__set__("writeStdout", msg => msg);
     const filePath = path.resolve(path.join("test", "file", "test.txt"));
     const {dir, name} = path.parse(filePath);
-    const dirArr = dir.replace(path.join(...TMPDIR_APP), "").split(path.sep);
+    const dirArr = dir.replace(TMPDIR_APP, "").split(path.sep);
     const [, , windowId, tabId, host] = dirArr;
     const fileId = `${windowId}_${tabId}_${host}_${name}`;
     const timestamp = await getFileTimestamp(filePath);
@@ -513,8 +514,7 @@ describe("getFileIdFromFilePath", () => {
     const tabId = "bar";
     const host = "baz";
     const name = "qux";
-    const file =
-      path.join(...TMPDIR_FILES, windowId, tabId, host, `${name}.txt`);
+    const file = path.join(TMPDIR_FILES, windowId, tabId, host, `${name}.txt`);
     const fileId = `${windowId}_${tabId}_${host}_${name}`;
     const res = await getFileIdFromFilePath(file);
     assert.strictEqual(res, fileId);
@@ -547,7 +547,7 @@ describe("createTmpFileResMsg", () => {
     const getFileTimestamp = indexJs.__get__("getFileTimestamp");
     const file = path.resolve(path.join("test", "file", "test.txt"));
     const {dir, name} = path.parse(file);
-    const dirArr = dir.replace(path.join(...TMPDIR_APP), "").split(path.sep);
+    const dirArr = dir.replace(TMPDIR_APP, "").split(path.sep);
     const [, , windowId, tabId, host] = dirArr;
     const fileId = `${windowId}_${tabId}_${host}_${name}`;
     const timestamp = await getFileTimestamp(file);
@@ -807,7 +807,7 @@ describe("createTmpFile", () => {
     const obj = {
       data, value,
     };
-    const filePath = path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+    const filePath = path.join(TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
     fileMap[FILE_WATCH].clear();
     const res = await createTmpFile(obj);
     assert.isTrue(fileMap[FILE_WATCH].has(filePath));
@@ -841,8 +841,7 @@ describe("createTmpFile", () => {
     const obj = {
       data, value,
     };
-    const filePath =
-      path.join(...TMPDIR_FILES, "foo", "bar", "baz", "%3Aqux.txt");
+    const filePath = path.join(TMPDIR_FILES, "foo", "bar", "baz", "%3Aqux.txt");
     fileMap[FILE_WATCH].clear();
     const res = await createTmpFile(obj);
     assert.isTrue(fileMap[FILE_WATCH].has(filePath));
@@ -876,8 +875,7 @@ describe("createTmpFile", () => {
     const obj = {
       data, value,
     };
-    const filePath =
-      path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+    const filePath = path.join(TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
     fileMap[FILE_WATCH].clear();
     fileMap[FILE_WATCH].set(filePath, {
       close: () => undefined,
@@ -918,7 +916,7 @@ describe("createTmpFile", () => {
     const obj = {
       data, value,
     };
-    const filePath = path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+    const filePath = path.join(TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
     fileMap[FILE_WATCH].clear();
     fileMap[FILE_WATCH].set(filePath, {
       close: () => {
@@ -1003,8 +1001,7 @@ describe("removeTmpFileData", () => {
       windowId: "foo",
     };
     const fileId = "foo_bar_baz_qux";
-    const filePath =
-      path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+    const filePath = path.join(TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES].set(fileId, {filePath});
     fileMap[FILE_WATCH].clear();
@@ -1037,8 +1034,7 @@ describe("removeTmpFileData", () => {
       windowId: "foo",
     };
     const fileId = "foo_bar_baz_qux";
-    const filePath =
-      path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+    const filePath = path.join(TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES].set(fileId, {filePath});
     fileMap[FILE_WATCH].clear();
@@ -1073,8 +1069,7 @@ describe("removeTmpFileData", () => {
       windowId: "foo",
     };
     const fileId = "foo_bar_baz_qux";
-    const filePath =
-      path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+    const filePath = path.join(TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES].set(fileId, {filePath});
     fileMap[FILE_WATCH].clear();
@@ -1107,8 +1102,7 @@ describe("removeTmpFileData", () => {
       windowId: "foo",
     };
     const fileId = "foo_bar_baz_qux";
-    const filePath =
-      path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+    const filePath = path.join(TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES].set(fileId, {filePath});
     fileMap[FILE_WATCH].clear();
@@ -1145,12 +1139,9 @@ describe("removeTmpFileData", () => {
     const fileId = "foo_bar_baz_qux";
     const fileId2 = "foo_bar_baz_quux";
     const fileId3 = "foo_barr_baz_qux";
-    const filePath =
-      path.join(...TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
-    const filePath2 =
-      path.join(...TMPDIR_FILES, "foo", "bar", "baz", "quux.txt");
-    const filePath3 =
-      path.join(...TMPDIR_FILES, "foo", "barr", "baz", "qux.txt");
+    const filePath = path.join(TMPDIR_FILES, "foo", "bar", "baz", "qux.txt");
+    const filePath2 = path.join(TMPDIR_FILES, "foo", "bar", "baz", "quux.txt");
+    const filePath3 = path.join(TMPDIR_FILES, "foo", "barr", "baz", "qux.txt");
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES].set(fileId, {filePath});
     fileMap[TMP_FILES].set(fileId2, {
@@ -1509,10 +1500,7 @@ describe("startup", () => {
                                             async arr => arr);
     const res = await func();
     assert.isArray(res);
-    assert.deepEqual(res, [
-      path.join(...TMPDIR_FILES),
-      path.join(...TMPDIR_FILES_PB),
-    ]);
+    assert.deepEqual(res, [TMPDIR_FILES, TMPDIR_FILES_PB]);
     createDirectory();
     exportAppStatus();
   });
@@ -1531,10 +1519,7 @@ describe("startup", () => {
                                             async arr => arr);
     const res = await func();
     assert.isArray(res);
-    assert.deepEqual(res, [
-      path.join(...TMPDIR_FILES),
-      path.join(...TMPDIR_FILES_PB),
-    ]);
+    assert.deepEqual(res, [TMPDIR_FILES, TMPDIR_FILES_PB]);
     processArgv();
     createDirectory();
     exportAppStatus();
@@ -1555,10 +1540,7 @@ describe("startup", () => {
                                             async arr => arr);
     const res = await func();
     assert.isArray(res);
-    assert.deepEqual(res, [
-      path.join(...TMPDIR_FILES),
-      path.join(...TMPDIR_FILES_PB),
-    ]);
+    assert.deepEqual(res, [TMPDIR_FILES, TMPDIR_FILES_PB]);
     processArgv();
     createDirectory();
     exportAppStatus();

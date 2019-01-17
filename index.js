@@ -39,9 +39,9 @@ const PERM_DIR = 0o700;
 const PERM_FILE = 0o600;
 const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
                os.tmpdir();
-const TMPDIR_APP = [TMPDIR, LABEL, APP];
-const TMPDIR_FILES = [...TMPDIR_APP, TMP_FILES];
-const TMPDIR_FILES_PB = [...TMPDIR_APP, TMP_FILES_PB];
+const TMPDIR_APP = path.join(TMPDIR, LABEL, APP);
+const TMPDIR_FILES = path.join(TMPDIR_APP, TMP_FILES);
+const TMPDIR_FILES_PB = path.join(TMPDIR_APP, TMP_FILES_PB);
 
 /* variables */
 const vars = {
@@ -281,14 +281,13 @@ const spawnChildProcess = async (file, app = vars.editorPath) => {
 const initPrivateTmpDir = async bool => {
   let msg;
   if (bool) {
-    const dir = path.join(...TMPDIR_FILES_PB);
     fileMap[TMP_FILES_PB].clear();
-    await removeDir(dir, TMPDIR);
-    if (isDir(dir)) {
+    await removeDir(TMPDIR_FILES_PB, TMPDIR);
+    if (isDir(TMPDIR_FILES_PB)) {
       msg = hostMsg("Failed to remove private temporary directory.", "warn");
     } else {
-      await createDirectory(dir, PERM_DIR);
-      if (!isDir(dir)) {
+      await createDirectory(TMPDIR_FILES_PB, PERM_DIR);
+      if (!isDir(TMPDIR_FILES_PB)) {
         msg = hostMsg("Failed to create private temporary directory.", "warn");
       }
     }
@@ -344,7 +343,7 @@ const getFileIdFromFilePath = async filePath => {
   let fileId;
   if (await isString(filePath)) {
     const {dir, name} = path.parse(filePath);
-    const dirArr = dir.replace(path.join(...TMPDIR_APP), "").split(path.sep);
+    const dirArr = dir.replace(TMPDIR_APP, "").split(path.sep);
     const [, , windowId, tabId, host] = dirArr;
     if (windowId && tabId && host && name) {
       fileId = [windowId, tabId, host, name].join("_");
@@ -428,7 +427,7 @@ const createTmpFile = async (obj = {}) => {
     } = data;
     if (dataId && dir && extType && host && tabId && windowId) {
       const dirPath = await createDirectory(
-        path.join(...TMPDIR_APP, dir, windowId, tabId, host), PERM_DIR
+        path.join(TMPDIR_APP, dir, windowId, tabId, host), PERM_DIR
       );
       const fileId = [windowId, tabId, host, dataId].join("_");
       const fileName = dataId && encodeURIComponent(dataId);
@@ -619,9 +618,8 @@ const readStdin = chunk => {
  */
 const handleExit = code => {
   const msg = (new Output()).encode(hostMsg(`exit ${code || 0}`, "exit"));
-  const tmpDirPath = path.join(...TMPDIR_APP);
-  if (isDir(tmpDirPath)) {
-    removeDir(tmpDirPath, TMPDIR);
+  if (isDir(TMPDIR_APP)) {
+    removeDir(TMPDIR_APP, TMPDIR);
     msg && process.stdout.write(msg);
   }
 };
@@ -672,8 +670,8 @@ const startup = () => {
   }
   if (!(setup || ver)) {
     func = Promise.all([
-      createDirectory(path.join(...TMPDIR_FILES), PERM_DIR),
-      createDirectory(path.join(...TMPDIR_FILES_PB), PERM_DIR),
+      createDirectory(TMPDIR_FILES, PERM_DIR),
+      createDirectory(TMPDIR_FILES_PB, PERM_DIR),
     ]).then(exportAppStatus).catch(handleReject);
   }
   return func || null;
