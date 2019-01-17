@@ -57,7 +57,7 @@ const abortSetup = msg => {
  */
 const createEditorConfig = async () => {
   const {configPath} = vars;
-  if (await !isDir(configPath)) {
+  if (!isDir(configPath)) {
     throw new Error(`No such directory: ${configPath}.`);
   }
   const editorConfigPath = path.join(configPath, EDITOR_CONFIG_FILE);
