@@ -14,6 +14,7 @@ const commander = require("commander");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
+const process = require("process");
 const readline = require("readline-sync");
 const sinon = require("sinon");
 
