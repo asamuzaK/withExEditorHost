@@ -54,6 +54,16 @@ const getType = o =>
   Object.prototype.toString.call(o).slice(TYPE_FROM, TYPE_TO);
 
 /**
+ * is object, and not an empty object
+ * @param {*} o - object to check;
+ * @returns {boolean} - result
+ */
+const isObjectNotEmpty = o => {
+  const items = /Object/i.test(getType(o)) && Object.keys(o);
+  return !!(items && items.length);
+};
+
+/**
  * is string
  * @param {*} o - object to check
  * @returns {boolean} - result
@@ -95,6 +105,6 @@ const stripHtmlTags = v => {
 };
 
 module.exports = {
-  escapeChar, getType, isString, logErr, logMsg, logWarn,
+  escapeChar, getType, isObjectNotEmpty, isString, logErr, logMsg, logWarn,
   stringifyPositiveInt, stripHtmlTags, throwErr,
 };

@@ -1,7 +1,7 @@
 "use strict";
 /* api */
 const {
-  escapeChar, getType, isString, logErr, logMsg, logWarn,
+  escapeChar, getType, isObjectNotEmpty, isString, logErr, logMsg, logWarn,
   stringifyPositiveInt, stripHtmlTags, throwErr,
 } = require("../modules/common");
 const {assert} = require("chai");
@@ -53,6 +53,22 @@ describe("getType", () => {
 
   it("should get String", () => {
     assert.strictEqual(getType("a"), "String");
+  });
+});
+
+describe("isObjectNotEmpty", () => {
+  it("should get false", () => {
+    const items = [{}, [], ["foo"], "", "foo", undefined, null, 1, true];
+    for (const item of items) {
+      assert.isFalse(isObjectNotEmpty(item));
+    }
+  });
+
+  it("should get true", () => {
+    const item = {
+      foo: "bar",
+    };
+    assert.isTrue(isObjectNotEmpty(item));
   });
 });
 
