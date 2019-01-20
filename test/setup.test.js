@@ -100,6 +100,10 @@ describe("handleEditorPathInput", () => {
   });
 
   it("should call function and get string", async () => {
+    let wrn;
+    const stubWarn = sinon.stub(console, "warn").callsFake(msg => {
+      wrn = msg;
+    });
     const app = IS_WIN && "test.cmd" || "test.sh";
     const editorPath = path.resolve(path.join("test", "file", app));
     if (!IS_WIN) {
@@ -112,6 +116,10 @@ describe("handleEditorPathInput", () => {
     stubRlPath.onFirstCall().returns(unexecutablePath);
     stubRlPath.onSecondCall().returns(editorPath);
     const res = await handleEditorPathInput();
+    const {calledOnce: warnCalled} = stubWarn;
+    stubWarn.restore();
+    assert.isTrue(warnCalled);
+    assert.strictEqual(wrn, `${unexecutablePath} is not executable.`);
     assert.strictEqual(stubRlPath.callCount, i + 2);
     assert.strictEqual(res, editorPath);
     stubRlPath.restore();
