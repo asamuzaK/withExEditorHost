@@ -48,7 +48,7 @@ Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to 
 > index setup
 ```
 
-Then you will be asked which browser you want to setup the host for, so please enter the browser name from the list.
+Then you will be asked which browser you want to setup the host for, so please select from the browsers listed.
 
 After that, you will be prompted for the following, please input as appropriate.
 
@@ -115,7 +115,7 @@ NOTE: The setup command is `node index setup`.
 > node index setup
 ```
 
-Then you will be asked which browser you want to setup the host for, so please enter the browser name from the list.
+Then you will be asked which browser you want to setup the host for, so please select from the browsers listed.
 
 After that, you will be prompted for the following, please input as appropriate.
 
@@ -180,7 +180,7 @@ NOTE: The setup command is `npm run setup`.
 > npm run setup
 ```
 
-Then you will be asked which browser you want to setup the host for, so please enter the browser name from the list.
+Then you will be asked which browser you want to setup the host for, so please select from the browsers listed.
 
 After that, you will be prompted for the following, please input as appropriate.
 
