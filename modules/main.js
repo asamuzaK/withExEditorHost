@@ -11,11 +11,9 @@ const {
 } = require("web-ext-native-msg");
 const {URL} = require("url");
 const {
-  promises: {
-    compareSemVer,
-  },
+  compareSemVer, isValidSemVer,
 } = require("semver-parser");
-const {isObjectNotEmpty, isString} = require("./common");
+const {getType, isObjectNotEmpty, isString} = require("./common");
 const {handleSetupCallback} = require("./setup");
 const {version: hostVersion} = require("../package.json");
 const {watch} = require("fs");
@@ -82,20 +80,6 @@ const handleReject = e => {
 };
 
 /**
- * write stderr
- * @param {*} msg - message
- * @returns {?Function} - write message to the Writable stream
- */
-const writeStderr = async msg => {
-  let func;
-  msg = (new Output()).encode(msg);
-  if (msg) {
-    func = process.stderr.write(msg);
-  }
-  return func || null;
-};
-
-/**
  * write stdout
  * @param {*} msg - message
  * @returns {?Function} - write message to the Writable stream
@@ -120,37 +104,36 @@ const exportAppStatus = async () =>
  * export editor config
  * @param {string} data - editor config
  * @param {string} editorConfigPath - editor config file path
- * @returns {?AsyncFunction} - writeStdout() / writeStderr()
+ * @returns {?AsyncFunction} - writeStdout()
  */
 const exportEditorConfig = async (data, editorConfigPath) => {
+  if (!isString(data)) {
+    throw new TypeError(`Expected String but got ${getType(data)}.`);
+  }
   let func;
-  try {
-    data = data && JSON.parse(data);
-    if (data) {
-      const {editorPath} = data;
-      const editorName = await getFileNameFromFilePath(editorPath);
-      const executable = isExecutable(editorPath);
-      const timestamp = await getFileTimestamp(editorConfigPath);
-      const keys = Object.keys(editorConfig);
-      for (const key of keys) {
-        const value = data[key];
-        if (key === "editorPath") {
-          editorConfig[key] = value;
-        }
-        if (key === "cmdArgs") {
-          editorConfig[key] = (new CmdArgs(value)).toArray();
-        }
+  data = data && JSON.parse(data);
+  if (isObjectNotEmpty(data)) {
+    const {editorPath} = data;
+    const editorName = await getFileNameFromFilePath(editorPath);
+    const executable = isExecutable(editorPath);
+    const timestamp = await getFileTimestamp(editorConfigPath);
+    const keys = Object.keys(editorConfig);
+    for (const key of keys) {
+      const value = data[key];
+      if (key === "editorPath") {
+        editorConfig[key] = value;
       }
-      const msg = {
-        [EDITOR_CONFIG_RES]: {
-          editorName, executable,
-          [EDITOR_CONFIG_TS]: timestamp,
-        },
-      };
-      func = writeStdout(msg);
+      if (key === "cmdArgs") {
+        editorConfig[key] = (new CmdArgs(value)).toArray();
+      }
     }
-  } catch (e) {
-    func = writeStderr(hostMsg(e.message, "error"));
+    const msg = {
+      [EDITOR_CONFIG_RES]: {
+        editorName, executable,
+        [EDITOR_CONFIG_TS]: timestamp,
+      },
+    };
+    func = writeStdout(msg);
   }
   return func || null;
 };
@@ -174,20 +157,23 @@ const exportFileData = async (obj = {}) => {
 
 /* export host version
  * @param {string} minVer - required min version
- * @returns {?AsyncFunction} - writeStdout()
+ * @returns {AsyncFunction} - writeStdout()
  */
 const exportHostVersion = async minVer => {
-  let func;
-  if (isString(minVer)) {
-    const result = await compareSemVer(hostVersion, minVer);
-    const msg = {
-      [HOST_VERSION]: {
-        result,
-      },
-    };
-    func = writeStdout(msg);
+  if (!isString(minVer)) {
+    throw new TypeError(`Expected String but got ${getType(minVer)}.`);
   }
-  return func || null;
+  if (!isValidSemVer(minVer)) {
+    throw new Error(`${minVer} is not valid SemVer.`);
+  }
+  const result = await compareSemVer(hostVersion, minVer);
+  const msg = {
+    [HOST_VERSION]: {
+      result,
+    },
+  };
+  const func = writeStdout(msg);
+  return func;
 };
 
 /* child process */
@@ -197,15 +183,17 @@ const exportHostVersion = async minVer => {
  * @returns {void}
  */
 const handleChildProcessErr = e => {
+  let msg;
   if (e) {
-    let msg;
     if (e.message) {
       msg = (new Output()).encode(e.message);
     } else {
       msg = (new Output()).encode(e);
     }
-    process.stderr.write(msg);
+  } else {
+    msg = (new Output()).encode("unknown error");
   }
+  process.stderr.write(msg);
 };
 
 /**
@@ -215,8 +203,10 @@ const handleChildProcessErr = e => {
  */
 const handleChildProcessStderr = data => {
   if (data) {
-    const msg = (new Output()).encode(data.toString());
-    process.stderr.write(msg);
+    const msg = (new Output()).encode(
+      hostMsg(data.toString(), `${PROCESS_CHILD}_stderr`)
+    );
+    process.stdout.write(msg);
   }
 };
 
@@ -242,10 +232,10 @@ const handleChildProcessStdout = data => {
  */
 const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
   if (!isFile(file)) {
-    return writeStderr(hostMsg(`No such file: ${file}`, "warn"));
+    throw new Error(`No such file: ${file}`);
   }
   if (!isExecutable(app)) {
-    return writeStderr(hostMsg("Application is not executable.", "warn"));
+    throw new Error("Application is not executable.");
   }
   const args = (new CmdArgs(editorConfig.cmdArgs)).toArray();
   const opt = {
@@ -344,7 +334,7 @@ const getTmpFileFromFileData = async (data = {}) => {
     };
     func.push(writeStdout(msg));
     if (dataId) {
-      func.push(writeStderr(
+      func.push(writeStdout(
         hostMsg(`Failed to get temporary file. ID: ${dataId}`, "warn")
       ));
     }
@@ -464,11 +454,7 @@ const createTmpFile = async (obj = {}) => {
         };
         fileMap[FILE_WATCH].set(filePath, watch(filePath, opt, watchTmpFile));
       } else {
-        try {
-          fileMap[FILE_WATCH].has(filePath) && await unwatchFile(filePath);
-        } catch (e) {
-          await writeStderr(hostMsg(e.message, "error"));
-        }
+        fileMap[FILE_WATCH].has(filePath) && await unwatchFile(filePath);
       }
     }
   }
@@ -529,7 +515,7 @@ const getEditorConfig = async editorConfigPath => {
     func.push(exportEditorConfig(data, editorConfigPath));
   } else {
     func.push(
-      writeStderr(hostMsg(`No such file: ${editorConfigPath}`, "warn")),
+      writeStdout(hostMsg(`No such file: ${editorConfigPath}`, "warn")),
       writeStdout({[EDITOR_CONFIG_RES]: null}),
     );
   }
@@ -542,18 +528,15 @@ const getEditorConfig = async editorConfigPath => {
  * @returns {?AsyncFunction} - spawnChildProcess() / writeStderr()
  */
 const viewLocalFile = async uri => {
+  if (!isString(uri)) {
+    throw new TypeError(`Expected String but got ${getType(uri)}.`);
+  }
   let func;
-  if (isString(uri)) {
-    try {
-      const {protocol} = new URL(uri);
-      if (protocol === "file:") {
-        const file = await convertUriToFilePath(uri);
-        if (file && isFile(file)) {
-          func = spawnChildProcess(file);
-        }
-      }
-    } catch (e) {
-      func = writeStderr(hostMsg(`Failed to handle ${uri}.`, "warn"));
+  const {protocol} = new URL(uri);
+  if (protocol === "file:") {
+    const file = await convertUriToFilePath(uri);
+    if (file && isFile(file)) {
+      func = spawnChildProcess(file);
     }
   }
   return func || null;
@@ -611,12 +594,12 @@ const handleMsg = async msg => {
           break;
         default:
           func.push(
-            writeStderr(hostMsg(`No handler found for ${key}.`, "warn"))
+            writeStdout(hostMsg(`No handler found for ${key}.`, "warn"))
           );
       }
     }
   } else {
-    func.push(writeStderr(hostMsg(`No handler found for ${msg}.`, "warn")));
+    func.push(writeStdout(hostMsg(`No handler found for ${msg}.`, "warn")));
   }
   return Promise.all(func);
 };
@@ -698,5 +681,5 @@ module.exports = {
   handleChildProcessErr, handleChildProcessStderr, handleChildProcessStdout,
   handleCreatedTmpFile, handleExit, handleMsg, handleReject, hostMsg,
   initPrivateTmpDir, readStdin, removeTmpFileData, runSetup, spawnChildProcess,
-  startup, unwatchFile, viewLocalFile, watchTmpFile, writeStderr, writeStdout,
+  startup, unwatchFile, viewLocalFile, watchTmpFile, writeStdout,
 };

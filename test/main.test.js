@@ -10,7 +10,7 @@ const {
   handleChildProcessErr, handleChildProcessStderr, handleChildProcessStdout,
   handleCreatedTmpFile, handleExit, handleMsg, handleReject, hostMsg,
   initPrivateTmpDir, readStdin, removeTmpFileData, runSetup, spawnChildProcess,
-  startup, unwatchFile, viewLocalFile, watchTmpFile, writeStderr, writeStdout,
+  startup, unwatchFile, viewLocalFile, watchTmpFile, writeStdout,
 } = require("../modules/main");
 const {
   Input, Output, Setup,
@@ -35,7 +35,7 @@ const sinon = require("sinon");
 const {
   EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
   FILE_WATCH,
-  HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT,
+  HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT,
   TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
   TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES,
 } = require("../modules/constant");
@@ -125,23 +125,6 @@ describe("handleReject", () => {
   });
 });
 
-describe("writeStderr", () => {
-  it("should get null", async () => {
-    const res = await writeStderr();
-    assert.isNull(res);
-  });
-
-  it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
-    const msg = (new Output()).encode("foo");
-    const res = await writeStderr("foo");
-    const {calledOnce: writeCalled} = stubWrite;
-    stubWrite.restore();
-    assert.isTrue(writeCalled);
-    assert.deepEqual(res, msg);
-  });
-});
-
 describe("writeStdout", () => {
   it("should get null", async () => {
     const res = await writeStdout();
@@ -186,23 +169,17 @@ describe("exportEditorConfig", () => {
     editorConfig.cmdArgs = [];
   });
 
-  it("should get null", async () => {
-    const res = await exportEditorConfig();
-    assert.isNull(res);
+  it("should throw", async () => {
+    await exportEditorConfig().catch(e => {
+      assert.instanceOf(e, TypeError);
+      assert.strictEqual(e.message, "Expected String but got Undefined.");
+    });
   });
 
-  it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, "write").callsFake(buf => buf);
-    const res = await exportEditorConfig("{foo:bar}");
-    const {called: writeCalled} = stubWrite;
-    const {calledOnce: errWriteCalled} = stubErrWrite;
-    stubWrite.restore();
-    stubErrWrite.restore();
-    assert.isFalse(writeCalled);
-    assert.isTrue(errWriteCalled);
-    assert.isTrue(Buffer.isBuffer(res));
+  it("should throw", async () => {
+    await exportEditorConfig("{foo:bar}").catch(e => {
+      assert.instanceOf(e, Error);
+    });
   });
 
   it("should call function", async () => {
@@ -282,9 +259,18 @@ describe("exportFileData", () => {
 });
 
 describe("exportHostVersion", () => {
-  it("should get null", async () => {
-    const res = await exportHostVersion();
-    assert.isNull(res);
+  it("should throw", async () => {
+    await exportHostVersion().catch(e => {
+      assert.instanceOf(e, TypeError);
+      assert.strictEqual(e.message, "Expected String but got Undefined.");
+    });
+  });
+
+  it("should throw", async () => {
+    await exportHostVersion("1").catch(e => {
+      assert.instanceOf(e, Error);
+      assert.strictEqual(e.message, "1 is not valid SemVer.");
+    });
   });
 
   it("should call function", async () => {
@@ -342,12 +328,17 @@ describe("exportHostVersion", () => {
 });
 
 describe("handleChildProcessErr", () => {
-  it("should not call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
+  it("should call function", async () => {
+    let info;
+    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => {
+      info = buf;
+    });
+    const msg = (new Output()).encode("unknown error");
     await handleChildProcessErr();
-    const {called: writeCalled} = stubWrite;
+    const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
-    assert.isFalse(writeCalled);
+    assert.isTrue(writeCalled);
+    assert.deepEqual(info, msg);
   });
 
   it("should call function", async () => {
@@ -379,7 +370,7 @@ describe("handleChildProcessErr", () => {
 
 describe("handleChildProcessStderr", () => {
   it("should not call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     await handleChildProcessStderr();
     const {called: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -388,10 +379,15 @@ describe("handleChildProcessStderr", () => {
 
   it("should call function", async () => {
     let info;
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => {
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => {
       info = buf;
     });
-    const msg = (new Output()).encode("foo");
+    const msg = (new Output()).encode({
+      withexeditorhost: {
+        message: "foo",
+        status: "childProcess_stderr",
+      },
+    });
     await handleChildProcessStderr("foo");
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -436,59 +432,19 @@ describe("spawnChildProcess", () => {
     editorConfig.editorPath = "";
   });
 
-  it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
-    const stubSpawn = sinon.stub(childProcess, "spawn").returns({
-      on: a => a,
-      stderr: {
-        on: a => a,
-      },
-      stdout: {
-        on: a => a,
-      },
+  it("should throw", async () => {
+    await spawnChildProcess().catch(e => {
+      assert.instanceOf(e, Error);
+      assert.strictEqual(e.message, "No such file: undefined");
     });
-    const msg = (new Output()).encode({
-      withexeditorhost: {
-        message: "No such file: undefined",
-        status: "warn",
-      },
-    });
-    const res = await spawnChildProcess();
-    const {calledOnce: writeCalled} = stubWrite;
-    const {called: spawnCalled} = stubSpawn;
-    stubWrite.restore();
-    stubSpawn.restore();
-    assert.isTrue(writeCalled);
-    assert.isFalse(spawnCalled);
-    assert.deepEqual(res, msg);
   });
 
-  it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
-    const stubSpawn = sinon.stub(childProcess, "spawn").returns({
-      on: a => a,
-      stderr: {
-        on: a => a,
-      },
-      stdout: {
-        on: a => a,
-      },
-    });
-    const msg = (new Output()).encode({
-      withexeditorhost: {
-        message: "Application is not executable.",
-        status: "warn",
-      },
-    });
+  it("should throw", async () => {
     const filePath = path.resolve(path.join("test", "file", "test.txt"));
-    const res = await spawnChildProcess(filePath);
-    const {calledOnce: writeCalled} = stubWrite;
-    const {called: spawnCalled} = stubSpawn;
-    stubWrite.restore();
-    stubSpawn.restore();
-    assert.isTrue(writeCalled);
-    assert.isFalse(spawnCalled);
-    assert.deepEqual(res, msg);
+    await spawnChildProcess(filePath).catch(e => {
+      assert.instanceOf(e, Error);
+      assert.strictEqual(e.message, "Application is not executable.");
+    });
   });
 
   it("should call function", async () => {
@@ -735,8 +691,6 @@ describe("getTmpFileFromFileData", () => {
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, "write").callsFake(buf => buf);
     const msg = (new Output()).encode({
       [TMP_FILE_DATA_REMOVE]: {
         data: {
@@ -754,19 +708,15 @@ describe("getTmpFileFromFileData", () => {
     const res = await getTmpFileFromFileData({
       dataId: "foo",
     });
-    const {calledOnce: writeCalled} = stubWrite;
-    const {calledOnce: errWriteCalled} = stubErrWrite;
+    const {called: writeCalled, callCount: writeCallCount} = stubWrite;
     stubWrite.restore();
-    stubErrWrite.restore();
     assert.isTrue(writeCalled);
-    assert.isTrue(errWriteCalled);
+    assert.strictEqual(writeCallCount, 2);
     assert.deepEqual(res, [msg, err]);
   });
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, "write").callsFake(buf => buf);
     const data = {
       dataId: "foo",
       dir: TMP_FILES,
@@ -793,19 +743,15 @@ describe("getTmpFileFromFileData", () => {
       },
     });
     const res = await getTmpFileFromFileData(data);
-    const {calledOnce: writeCalled} = stubWrite;
-    const {calledOnce: errWriteCalled} = stubErrWrite;
+    const {called: writeCalled, callCount: writeCallCount} = stubWrite;
     stubWrite.restore();
-    stubErrWrite.restore();
     assert.isTrue(writeCalled);
-    assert.isTrue(errWriteCalled);
+    assert.strictEqual(writeCallCount, 2);
     assert.deepEqual(res, [msg, err]);
   });
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, "write").callsFake(buf => buf);
     const data = {
       dataId: "foo",
       dir: TMP_FILES,
@@ -834,20 +780,16 @@ describe("getTmpFileFromFileData", () => {
       },
     });
     const res = await getTmpFileFromFileData(data);
-    const {calledOnce: writeCalled} = stubWrite;
-    const {calledOnce: errWriteCalled} = stubErrWrite;
+    const {called: writeCalled, callCount: writeCallCount} = stubWrite;
     stubWrite.restore();
-    stubErrWrite.restore();
     assert.isTrue(writeCalled);
-    assert.isTrue(errWriteCalled);
+    assert.strictEqual(writeCallCount, 2);
     assert.isFalse(fileMap[TMP_FILES].has("windowId_tabId_host_foo"));
     assert.deepEqual(res, [msg, err]);
   });
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, "write").callsFake(buf => buf);
     const data = {
       dataId: "foo",
       dir: TMP_FILES,
@@ -873,19 +815,14 @@ describe("getTmpFileFromFileData", () => {
     });
     const res = await getTmpFileFromFileData(data);
     const {calledOnce: writeCalled} = stubWrite;
-    const {called: errWriteCalled} = stubErrWrite;
     stubWrite.restore();
-    stubErrWrite.restore();
     assert.isTrue(writeCalled);
-    assert.isFalse(errWriteCalled);
     assert.isTrue(fileMap[TMP_FILES].has("windowId_tabId_host_foo"));
     assert.deepEqual(res, [msg]);
   });
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, "write").callsFake(buf => buf);
     const data = {
       dataId: "foo",
       dir: TMP_FILES_PB,
@@ -911,11 +848,8 @@ describe("getTmpFileFromFileData", () => {
     });
     const res = await getTmpFileFromFileData(data);
     const {calledOnce: writeCalled} = stubWrite;
-    const {called: errWriteCalled} = stubErrWrite;
     stubWrite.restore();
-    stubErrWrite.restore();
     assert.isTrue(writeCalled);
-    assert.isFalse(errWriteCalled);
     assert.isTrue(fileMap[TMP_FILES_PB].has("windowId_tabId_host_foo"));
     assert.deepEqual(res, [msg]);
   });
@@ -1209,54 +1143,7 @@ describe("createTmpFile", () => {
     }
   });
 
-  it("should call function and get object", async () => {
-    let err;
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => {
-      err = buf;
-    });
-    const stubClose = sinon.stub().throws("error", "error message");
-    const msg = (new Output()).encode({
-      withexeditorhost: {
-        message: "error message",
-        status: "error",
-      },
-    });
-    const data = {
-      dataId: "qux",
-      dir: TMP_FILES,
-      extType: ".txt",
-      host: "baz",
-      incognito: false,
-      mode: "quux",
-      syncAuto: false,
-      tabId: "bar",
-      windowId: "foo",
-    };
-    const value = "";
-    const obj = {
-      data, value,
-    };
-    const filePath =
-      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz", "qux.txt");
-    fileMap[FILE_WATCH].set(filePath, {
-      close: stubClose,
-    });
-    const res = await createTmpFile(obj);
-    const {calledOnce: writeCalled} = stubWrite;
-    stubWrite.restore();
-    assert.isTrue(stubClose.calledOnce);
-    assert.isTrue(writeCalled);
-    assert.deepEqual(err, msg);
-    assert.deepEqual(res, {
-      data, filePath,
-    });
-  });
-
   it("should create file and get object", async () => {
-    let err;
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => {
-      err = buf;
-    });
     const data = {
       dataId: "qux",
       dir: TMP_FILES,
@@ -1275,16 +1162,69 @@ describe("createTmpFile", () => {
     const filePath =
       path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz", "qux.txt");
     const res = await createTmpFile(obj);
-    const {called: writeCalled} = stubWrite;
-    stubWrite.restore();
     assert.isTrue(isFile(filePath));
-    assert.isFalse(writeCalled);
-    assert.isUndefined(err);
     assert.isTrue(fileMap[FILE_WATCH].has(filePath));
     assert.deepEqual(res, {
       data, filePath,
     });
     await fileMap[FILE_WATCH].get(filePath).close();
+  });
+
+  it("should create file and get object", async () => {
+    const data = {
+      dataId: "qux",
+      dir: TMP_FILES,
+      extType: ".txt",
+      host: "baz",
+      incognito: false,
+      mode: "foobar",
+      syncAuto: true,
+      tabId: "bar",
+      windowId: "foo",
+    };
+    const value = "";
+    const obj = {
+      data, value,
+    };
+    const filePath =
+      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz", "qux.txt");
+    const res = await createTmpFile(obj);
+    assert.isTrue(isFile(filePath));
+    assert.isFalse(fileMap[FILE_WATCH].has(filePath));
+    assert.deepEqual(res, {
+      data, filePath,
+    });
+  });
+
+  it("should create file and get object", async () => {
+    const stubClose = sinon.stub();
+    const data = {
+      dataId: "qux",
+      dir: TMP_FILES,
+      extType: ".txt",
+      host: "baz",
+      incognito: false,
+      mode: "foobar",
+      syncAuto: true,
+      tabId: "bar",
+      windowId: "foo",
+    };
+    const value = "";
+    const obj = {
+      data, value,
+    };
+    const filePath =
+      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz", "qux.txt");
+    fileMap[FILE_WATCH].set(filePath, {
+      close: stubClose,
+    });
+    const res = await createTmpFile(obj);
+    assert.isTrue(isFile(filePath));
+    assert.isTrue(stubClose.calledOnce);
+    assert.isFalse(fileMap[FILE_WATCH].has(filePath));
+    assert.deepEqual(res, {
+      data, filePath,
+    });
   });
 });
 
@@ -1442,79 +1382,48 @@ describe("removeTmpFileData", () => {
 describe("getEditorConfig", () => {
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, "write").callsFake(buf => buf);
-    const msg = (new Output()).encode({
+    const err = (new Output()).encode({
       withexeditorhost: {
         message: "No such file: undefined",
         status: "warn",
       },
     });
-    const msg2 = (new Output()).encode({
+    const msg = (new Output()).encode({
       [EDITOR_CONFIG_RES]: null,
     });
     const res = await getEditorConfig();
-    const {calledOnce: writeCalled} = stubWrite;
-    const {calledOnce: errWriteCalled} = stubErrWrite;
+    const {called: writeCalled, callCount: writeCallCount} = stubWrite;
     stubWrite.restore();
-    stubErrWrite.restore();
     assert.isTrue(writeCalled);
-    assert.isTrue(errWriteCalled);
-    assert.isTrue(Array.isArray(res));
-    assert.strictEqual(res.length, 2);
-    assert.deepEqual(res, [msg, msg2]);
+    assert.strictEqual(writeCallCount, 2);
+    assert.deepEqual(res, [err, msg]);
   });
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, "write").callsFake(buf => buf);
     const editorConfigPath = path.resolve(path.join(".", "foo.json"));
-    const msg = (new Output()).encode({
+    const err = (new Output()).encode({
       withexeditorhost: {
         message: `No such file: ${editorConfigPath}`,
         status: "warn",
       },
     });
-    const msg2 = (new Output()).encode({
+    const msg = (new Output()).encode({
       [EDITOR_CONFIG_RES]: null,
     });
     const res = await getEditorConfig(editorConfigPath);
-    const {calledOnce: writeCalled} = stubWrite;
-    const {calledOnce: errWriteCalled} = stubErrWrite;
+    const {called: writeCalled, callCount: writeCallCount} = stubWrite;
     stubWrite.restore();
-    stubErrWrite.restore();
     assert.isTrue(writeCalled);
-    assert.isTrue(errWriteCalled);
-    assert.isTrue(Array.isArray(res));
-    assert.strictEqual(res.length, 2);
-    assert.deepEqual(res, [msg, msg2]);
+    assert.strictEqual(writeCallCount, 2);
+    assert.deepEqual(res, [err, msg]);
   });
 
   it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, "write").callsFake(buf => buf);
     const editorConfigPath =
       path.resolve(path.join("test", "file", "editorconfig.json"));
-    const timestamp = getFileTimestamp(editorConfigPath);
-    const msg = (new Output()).encode({
-      [EDITOR_CONFIG_RES]: {
-        editorName: "index",
-        executable: false,
-        [EDITOR_CONFIG_TS]: timestamp,
-      },
-    });
     const res = await getEditorConfig(editorConfigPath);
-    const {calledOnce: writeCalled} = stubWrite;
-    const {called: errWriteCalled} = stubErrWrite;
-    stubWrite.restore();
-    stubErrWrite.restore();
-    assert.isTrue(writeCalled);
-    assert.isFalse(errWriteCalled);
-    assert.isTrue(Array.isArray(res));
-    assert.strictEqual(res.length, 1);
-    assert.deepEqual(res, [msg]);
+    assert.deepEqual(res, [null]);
   });
 });
 
@@ -1526,9 +1435,17 @@ describe("viewLocalFile", () => {
     editorConfig.editorPath = "";
   });
 
-  it("should get null", async () => {
-    const res = await viewLocalFile();
-    assert.isNull(res);
+  it("should throw", async () => {
+    await viewLocalFile().catch(e => {
+      assert.instanceOf(e, TypeError);
+      assert.strictEqual(e.message, "Expected String but got Undefined.");
+    });
+  });
+
+  it("should throw", async () => {
+    await viewLocalFile("foo/bar").catch(e => {
+      assert.instanceOf(e, Error);
+    });
   });
 
   it("should get null if not file uri", async () => {
@@ -1539,39 +1456,6 @@ describe("viewLocalFile", () => {
   it("should get null if file does not exist", async () => {
     const res = await viewLocalFile("file:///foo/bar.txt");
     assert.isNull(res);
-  });
-
-  it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
-    const stubSpawn = sinon.stub(childProcess, "spawn").returns({
-      on: a => a,
-      stderr: {
-        on: a => a,
-      },
-      stdout: {
-        on: a => a,
-      },
-    });
-    const msg = (new Output()).encode({
-      withexeditorhost: {
-        message: "Failed to handle foo/bar.",
-        status: "warn",
-      },
-    });
-    const app = IS_WIN && "test.cmd" || "test.sh";
-    const editorPath = path.resolve(path.join("test", "file", app));
-    if (!IS_WIN) {
-      fs.chmodSync(editorPath, PERM_APP);
-    }
-    editorConfig.editorPath = editorPath;
-    const res = await viewLocalFile("foo/bar");
-    const {calledOnce: writeCalled} = stubWrite;
-    const {called: spawnCalled} = stubSpawn;
-    stubWrite.restore();
-    stubSpawn.restore();
-    assert.isTrue(writeCalled);
-    assert.isFalse(spawnCalled);
-    assert.deepEqual(res, msg);
   });
 
   it("should call function", async () => {
@@ -1669,7 +1553,7 @@ describe("handleCreatedTmpFile", () => {
 
 describe("handleMsg", () => {
   it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const msg = (new Output()).encode({
       withexeditorhost: {
         message: "No handler found for undefined.",
@@ -1686,7 +1570,7 @@ describe("handleMsg", () => {
   });
 
   it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const msg = (new Output()).encode({
       withexeditorhost: {
         message: "No handler found for foo.",
@@ -1703,7 +1587,7 @@ describe("handleMsg", () => {
   });
 
   it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const msg = (new Output()).encode({
       withexeditorhost: {
         message: "No handler found for foo.",
@@ -1722,7 +1606,7 @@ describe("handleMsg", () => {
   });
 
   it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     await createDirectory(TMPDIR_FILES_PB);
     const res = await handleMsg({
       [TMP_FILES_PB_REMOVE]: true,
@@ -1738,8 +1622,6 @@ describe("handleMsg", () => {
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, "write").callsFake(buf => buf);
     const msg = (new Output()).encode({
       [TMP_FILE_DATA_REMOVE]: {
         data: {
@@ -1751,16 +1633,13 @@ describe("handleMsg", () => {
       [TMP_FILE_GET]: {},
     });
     const {calledOnce: writeCalled} = stubWrite;
-    const {called: errWriteCalled} = stubErrWrite;
     stubWrite.restore();
-    stubErrWrite.restore();
     assert.isTrue(writeCalled);
-    assert.isFalse(errWriteCalled);
     assert.deepEqual(res, [[msg]]);
   });
 
   it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const res = await handleMsg({
       [TMP_FILE_DATA_REMOVE]: {},
     });
@@ -1773,7 +1652,7 @@ describe("handleMsg", () => {
   });
 
   it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const res = await handleMsg({
       [TMP_FILE_CREATE]: {},
     });
@@ -1786,22 +1665,9 @@ describe("handleMsg", () => {
   });
 
   it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const res = await handleMsg({
-      [LOCAL_FILE_VIEW]: null,
-    });
-    const {called: writeCalled} = stubWrite;
-    stubWrite.restore();
-    assert.isFalse(writeCalled);
-    assert.isTrue(Array.isArray(res));
-    assert.strictEqual(res.length, 1);
-    assert.deepEqual(res, [null]);
-  });
-
-  it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
-    const res = await handleMsg({
-      [HOST_VERSION_CHECK]: null,
+      [LOCAL_FILE_VIEW]: "file:///foo/bar.txt",
     });
     const {called: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -1813,30 +1679,40 @@ describe("handleMsg", () => {
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const msg = (new Output()).encode({
+      [HOST_VERSION]: {
+        result: 0,
+      },
+    });
+    const res = await handleMsg({
+      [HOST_VERSION_CHECK]: hostVersion,
+    });
+    const {calledOnce: writeCalled} = stubWrite;
+    stubWrite.restore();
+    assert.isTrue(writeCalled);
+    assert.deepEqual(res, [msg]);
+  });
+
+  it("should call function", async () => {
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const editorConfigPath = path.resolve(path.join(".", EDITOR_CONFIG_FILE));
-    const msg1 = (new Output()).encode({
+    const err = (new Output()).encode({
       withexeditorhost: {
         message: `No such file: ${editorConfigPath}`,
         status: "warn",
       },
     });
-    const msg2 = (new Output()).encode({
+    const msg = (new Output()).encode({
       [EDITOR_CONFIG_RES]: null,
     });
     const res = await handleMsg({
       [EDITOR_CONFIG_GET]: true,
     });
-    const {calledOnce: writeCalled} = stubWrite;
-    const {calledOnce: errWriteCalled} = stubErrWrite;
+    const {called: writeCalled, callCount: writeCallCount} = stubWrite;
     stubWrite.restore();
-    stubErrWrite.restore();
     assert.isTrue(writeCalled);
-    assert.isTrue(errWriteCalled);
-    assert.isTrue(Array.isArray(res));
-    assert.strictEqual(res.length, 1);
-    assert.deepEqual(res, [[msg1, msg2]]);
+    assert.strictEqual(writeCallCount, 2);
+    assert.deepEqual(res, [[err, msg]]);
   });
 });
 
@@ -1848,7 +1724,7 @@ describe("readStdin", () => {
   });
 
   it("should call function", async () => {
-    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const chunk = (new Output()).encode({
       foo: "bar",
     });
