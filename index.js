@@ -34,6 +34,8 @@ commander.command("setup").alias("s").description("run setup").action(() => {
 commander.parse(process.argv);
 
 /* process */
+process.on("SIGINT", () => { process.exit() });
+process.on("SIGTERM", () => { process.exit() });
 process.on("exit", handleExit);
 process.on("uncaughtException", throwErr);
 process.on("unhandleRejection", handleReject);
