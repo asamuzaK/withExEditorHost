@@ -38,7 +38,7 @@
     "commander": "^2.19.0",
     "readline-sync": "^1.4.9",
     "semver-parser": "^3.0.0-b.1",
-    "web-ext-native-msg": "^4.0.0-b.1"
+    "web-ext-native-msg": "^4.0.0-b.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
