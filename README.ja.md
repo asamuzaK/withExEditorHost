@@ -94,7 +94,7 @@
 その他のオプションについては、ヘルプで確認してください
 
 ```
-> index --help
+> index setup --help
 ```
 
 ***
@@ -159,7 +159,7 @@
 その他のオプションについては、ヘルプで確認してください
 
 ```
-> node index --help
+> node index setup --help
 ```
 
 ***
@@ -224,5 +224,5 @@
 その他のオプションについては、ヘルプで確認してください
 
 ```
-> node index --help
+> node index setup --help
 ```

@@ -94,7 +94,7 @@ Quote path if it contains spaces or backslashes.
 See help for other options.
 
 ```
-> index --help
+> index setup --help
 ```
 
 ***
@@ -158,7 +158,7 @@ Quote path if it contains spaces or backslashes.
 For other options, see help
 
 ```
-> node index --help
+> node index setup --help
 ```
 
 ***
@@ -223,5 +223,5 @@ Quote path if it contains spaces or backslashes.
 For other options, see help
 
 ```
-> node index --help
+> node index setup --help
 ```

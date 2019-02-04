@@ -21,17 +21,14 @@ const {
 
 /* commands */
 commander.version(hostVersion, "-v, --version");
-commander.option(CMD_BROWSER, CMD_BROWSER_DESC)
+commander.command(CMD_SETUP).alias(CMD_SETUP_ALIAS).description(CMD_SETUP_DESC)
+  .option(CMD_BROWSER, CMD_BROWSER_DESC)
   .option(CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC)
   .option(CMD_OVERWRITE_CONFIG, CMD_OVERWRITE_CONFIG_DESC)
   .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC)
   .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
-  .option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC);
-commander.command(CMD_SETUP).alias(CMD_SETUP_ALIAS).description(CMD_SETUP_DESC)
-  .action(() => {
-    const opt = commander.opts();
-    return runSetup(opt);
-  });
+  .option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
+  .action(runSetup);
 commander.parse(process.argv);
 
 /* process */
