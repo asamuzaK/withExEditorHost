@@ -1774,46 +1774,50 @@ describe("handleExit", () => {
     removeDir(TMPDIR_APP, TMPDIR);
   });
 
+  it("should not call function", async () => {
+    let msg;
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => {
+      msg = buf;
+    });
+    handleExit(0);
+    const {calledOnce: writeCalled} = stubWrite;
+    stubWrite.restore();
+    assert.isFalse(writeCalled);
+    assert.isUndefined(msg);
+  });
+
   it("should call function", async () => {
     let msg;
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => {
       msg = buf;
     });
     const input = new Input();
-    handleExit(0);
+    handleExit(1);
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
     assert.isTrue(writeCalled);
     assert.deepEqual(input.decode(msg), [
       {
         withexeditorhost: {
-          message: "exit 0",
+          message: "exit 1",
           status: "exit",
         },
       },
     ]);
   });
 
-  it("should remove dir and call function", async () => {
+  it("should remove dir and not call function", async () => {
     let msg;
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => {
       msg = buf;
     });
-    const input = new Input();
     const dir = await createDirectory(TMPDIR_APP);
     handleExit(0);
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
-    assert.isTrue(writeCalled);
+    assert.isFalse(writeCalled);
     assert.isFalse(isDir(dir));
-    assert.deepEqual(input.decode(msg), [
-      {
-        withexeditorhost: {
-          message: "exit 0",
-          status: "exit",
-        },
-      },
-    ]);
+    assert.isUndefined(msg);
   });
 
   it("should remove dir and call function", async () => {

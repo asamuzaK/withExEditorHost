@@ -656,11 +656,13 @@ const runSetup = (cmdOpts = {}) => {
  * @returns {void}
  */
 const handleExit = code => {
-  const msg = (new Output()).encode(hostMsg(`exit ${code || 0}`, "exit"));
   if (isDir(TMPDIR_APP)) {
     removeDir(TMPDIR_APP, TMPDIR);
   }
-  msg && process.stdout.write(msg);
+  if (code) {
+    const msg = (new Output()).encode(hostMsg(`exit ${code}`, "exit"));
+    msg && process.stdout.write(msg);
+  }
 };
 
 /**
