@@ -15,6 +15,9 @@ const CMD_OVERWRITE_CONFIG = "-o, --overwrite-config";
 const CMD_OVERWRITE_CONFIG_DESC = "overwrite config if exists";
 const CMD_OVERWRITE_EDITOR_CONFIG = "-O, --overwrite-editor-config";
 const CMD_OVERWRITE_EDITOR_CONFIG_DESC = "overwrite editor config if exists";
+const CMD_SETUP = "setup";
+const CMD_SETUP_ALIAS = "s";
+const CMD_SETUP_DESC = "run setup";
 const CONTENT_GET = "getContent";
 const CONTEXT_MENU = "contextMenu";
 const CONTEXT_MODE = "contextMode";
@@ -76,6 +79,9 @@ module.exports = {
   CMD_OVERWRITE_CONFIG_DESC,
   CMD_OVERWRITE_EDITOR_CONFIG,
   CMD_OVERWRITE_EDITOR_CONFIG_DESC,
+  CMD_SETUP,
+  CMD_SETUP_ALIAS,
+  CMD_SETUP_DESC,
   CONTENT_GET,
   CONTEXT_MENU,
   CONTEXT_MODE,

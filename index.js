@@ -3,10 +3,10 @@
  */
 "use strict";
 /* api */
+const {throwErr} = require("./modules/common");
 const {
   handleExit, handleReject, readStdin, runSetup, startup,
 } = require("./modules/main");
-const {throwErr} = require("./modules/common");
 const {version: hostVersion} = require("./package.json");
 const commander = require("commander");
 const process = require("process");
@@ -16,7 +16,7 @@ const {
   CMD_BROWSER, CMD_BROWSER_DESC, CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC,
   CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC, CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC,
   CMD_OVERWRITE_CONFIG, CMD_OVERWRITE_CONFIG_DESC, CMD_OVERWRITE_EDITOR_CONFIG,
-  CMD_OVERWRITE_EDITOR_CONFIG_DESC,
+  CMD_OVERWRITE_EDITOR_CONFIG_DESC, CMD_SETUP, CMD_SETUP_ALIAS, CMD_SETUP_DESC,
 } = require("./modules/constant");
 
 /* commands */
@@ -27,10 +27,11 @@ commander.option(CMD_BROWSER, CMD_BROWSER_DESC)
   .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC)
   .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
   .option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC);
-commander.command("setup").alias("s").description("run setup").action(() => {
-  const opt = commander.opts();
-  return runSetup(opt);
-});
+commander.command(CMD_SETUP).alias(CMD_SETUP_ALIAS).description(CMD_SETUP_DESC)
+  .action(() => {
+    const opt = commander.opts();
+    return runSetup(opt);
+  });
 commander.parse(process.argv);
 
 /* process */
