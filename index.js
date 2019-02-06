@@ -37,4 +37,23 @@ process.on("uncaughtException", throwErr);
 process.on("unhandleRejection", handleReject);
 process.stdin.on("data", readStdin);
 
-startup();
+/* startup */
+(() => {
+  const [, , ...args] = process.argv;
+  let func, setup, ver;
+  if (Array.isArray(args) && args.length) {
+    for (const arg of args) {
+      if (/^s(?:etup)?$/i.test(arg)) {
+        setup = true;
+        break;
+      } else if (/^(?:-v|--version)$/i.test(arg)) {
+        ver = true;
+        break;
+      }
+    }
+  }
+  if (!(setup || ver)) {
+    func = startup();
+  }
+  return func || null;
+})();
