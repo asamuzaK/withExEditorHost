@@ -37,8 +37,6 @@ When filing an issue, if you know [where to save the application manifest](https
 
 When setting up the host, disable withExEditor installed in the browser.
 
-NOTE: If you are upgrading from host v2.x, you also need to run the following setup script. In addition, please delete all v2.x files.
-
 Download a zip file for your OS from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), after decompressing, save it in an arbitrary place under your home directory (for example, `C:\Users\XXX\withExEditorHost\`).
 
 Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command.
@@ -51,9 +49,6 @@ Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to 
 Then you will be asked which browser you want to setup the host for, so please select from the browsers listed.
 
 After that, you will be prompted for the following, please input as appropriate.
-
-NOTE: If you are upgrading from host v2.x, it is not necessary to overwrite the editor setting.
-You can choose `n` and exit.
 
 * Enter editor path
 * Enter command line options
@@ -96,6 +91,11 @@ See help for other options.
 ```
 > index setup --help
 ```
+
+### Upgrade
+
+When upgrading the host, just overwrite the binary file etc.
+It is not necessary to run the setup script again after the upgrade.
 
 ***
 
@@ -160,6 +160,14 @@ For other options, see help
 ```
 > node index setup --help
 ```
+
+### Upgrade
+
+```
+> npm up -g
+```
+
+It is not necessary to run the setup script again after the upgrade.
 
 ***
 
