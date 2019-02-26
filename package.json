@@ -37,7 +37,7 @@
   "dependencies": {
     "commander": "^2.19.0",
     "readline-sync": "^1.4.9",
-    "semver-parser": "^3.0.0-b.1",
+    "semver-parser": "^3.0.0-b.2",
     "web-ext-native-msg": "^4.0.0-b.3"
   },
   "devDependencies": {
