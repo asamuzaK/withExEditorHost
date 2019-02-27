@@ -73,17 +73,17 @@ const handleEditorPathInput = async editorFilePath => {
 
 /**
  * create editor config
- * @param {Object} opt - config options
  * @returns {string} - editor config path
  */
-const createEditorConfig = async (opt = {}) => {
-  const {configPath, editorArgs, editorPath: editorFilePath} = opt;
+const createEditorConfig = async () => {
+  const configPath = setupOpts.get("configPath");
   if (!isDir(configPath)) {
     throw new Error(`No such directory: ${configPath}`);
   }
   const filePath = path.join(configPath, EDITOR_CONFIG_FILE);
-  const editorPath = await handleEditorPathInput(editorFilePath);
-  const cmdArgs = await handleCmdArgsInput(editorArgs);
+  const editorPath =
+    await handleEditorPathInput(setupOpts.get("editorFilePath"));
+  const cmdArgs = await handleCmdArgsInput(setupOpts.get("editorCmdArgs"));
   const content = `${JSON.stringify({editorPath, cmdArgs}, null, INDENT)}\n`;
   await createFile(filePath, content, {
     encoding: CHAR,
@@ -108,27 +108,23 @@ const handleSetupCallback = (info = {}) => {
   const editorPath = setupOpts.get("editorPath");
   const overwriteEditorConfig = setupOpts.get("overwriteEditorConfig");
   const file = path.join(configPath, EDITOR_CONFIG_FILE);
-  const opt = {
-    configPath,
-    editorArgs: null,
-    editorPath: null,
-  };
   let func;
+  setupOpts.set("configPath", configPath);
   if (isString(editorPath)) {
-    opt.editorPath = editorPath.trim();
+    setupOpts.set("editorFilePath", editorPath.trim());
   }
   if (isString(editorArgs)) {
-    opt.editorArgs = (new CmdArgs(editorArgs.trim())).toArray();
+    setupOpts.set("editorCmdArgs", (new CmdArgs(editorArgs.trim())).toArray());
   }
   if (isFile(file) && !overwriteEditorConfig) {
     const ans = readline.keyInYNStrict(`${file} already exists.\nOverwrite?`);
     if (ans) {
-      func = createEditorConfig(opt).catch(throwErr);
+      func = createEditorConfig().catch(throwErr);
     } else {
       func = abortSetup(`${file} already exists.`);
     }
   } else {
-    func = createEditorConfig(opt).catch(throwErr);
+    func = createEditorConfig().catch(throwErr);
   }
   return func || null;
 };

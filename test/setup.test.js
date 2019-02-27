@@ -129,10 +129,12 @@ describe("createEditorConfig", () => {
   beforeEach(() => {
     const configDirPath = path.join(DIR_TMP, "withexeditorhost-test");
     removeDir(configDirPath, DIR_TMP);
+    setupOpts.clear();
   });
   afterEach(() => {
     const configDirPath = path.join(DIR_TMP, "withexeditorhost-test");
     removeDir(configDirPath, DIR_TMP);
+    setupOpts.clear();
   });
 
   it("should throw", async () => {
@@ -156,11 +158,10 @@ describe("createEditorConfig", () => {
       path.join(DIR_TMP, "withexeditorhost-test")
     );
     const filePath = path.join(configPath, EDITOR_CONFIG_FILE);
-    const res = await createEditorConfig({
-      configPath,
-      editorPath,
-      editorArgs: [],
-    });
+    setupOpts.set("configPath", configPath);
+    setupOpts.set("editorFilePath", editorPath);
+    setupOpts.set("editorCmdArgs", []);
+    const res = await createEditorConfig();
     const file = fs.readFileSync(filePath, {
       encoding: "utf8",
       flag: "r",
@@ -227,6 +228,7 @@ describe("handleSetupCallback", () => {
     const {calledOnce: exitCalled} = stubExit;
     stubInfo.restore();
     stubExit.restore();
+    assert.strictEqual(setupOpts.get("configPath"), configDirPath);
     assert.isTrue(stubRlPath.calledOnce);
     assert.isTrue(stubRlQues.calledOnce);
     assert.isFalse(stubRlKey.called);
@@ -269,6 +271,7 @@ describe("handleSetupCallback", () => {
     const {calledOnce: exitCalled} = stubExit;
     stubInfo.restore();
     stubExit.restore();
+    assert.strictEqual(setupOpts.get("configPath"), configDirPath);
     assert.isFalse(stubRlPath.called);
     assert.isFalse(stubRlQues.called);
     assert.isTrue(stubRlKey.calledOnce);
@@ -311,6 +314,7 @@ describe("handleSetupCallback", () => {
     const {calledOnce: exitCalled} = stubExit;
     stubInfo.restore();
     stubExit.restore();
+    assert.strictEqual(setupOpts.get("configPath"), configDirPath);
     assert.isTrue(stubRlPath.calledOnce);
     assert.isTrue(stubRlQues.calledOnce);
     assert.isTrue(stubRlKey.calledOnce);
@@ -356,6 +360,9 @@ describe("handleSetupCallback", () => {
     const {calledOnce: exitCalled} = stubExit;
     stubInfo.restore();
     stubExit.restore();
+    assert.strictEqual(setupOpts.get("configPath"), configDirPath);
+    assert.strictEqual(setupOpts.get("editorFilePath"), editorPath);
+    assert.deepEqual(setupOpts.get("editorCmdArgs"), ["foo", "bar", "baz"]);
     assert.isFalse(stubRlPath.called);
     assert.isFalse(stubRlQues.called);
     assert.isFalse(stubRlKey.called);
