@@ -9,11 +9,11 @@ const {
   getTmpFileFromWatcherFileName,
   handleChildProcessErr, handleChildProcessStderr, handleChildProcessStdout,
   handleCreatedTmpFile, handleExit, handleMsg, handleReject, hostMsg,
-  initPrivateTmpDir, readStdin, removeTmpFileData, runSetup, spawnChildProcess,
+  initPrivateTmpDir, readStdin, removeTmpFileData, spawnChildProcess,
   startup, unwatchFile, viewLocalFile, watchTmpFile, writeStdout,
 } = require("../modules/main");
 const {
-  Input, Output, Setup,
+  Input, Output,
   createDirectory, createFile, getFileTimestamp, isDir, isFile, removeDir,
 } = require("web-ext-native-msg");
 const {
@@ -1741,28 +1741,6 @@ describe("readStdin", () => {
     assert.isTrue(Array.isArray(res));
     assert.strictEqual(res.length, 1);
     assert.deepEqual(res, [[msg]]);
-  });
-});
-
-describe("runSetup", () => {
-  it("should call function", async () => {
-    const stubRun = sinon.stub(Setup.prototype, "run").callsFake(() => true);
-    const res = await runSetup();
-    assert.isTrue(stubRun.calledOnce);
-    assert.isTrue(res);
-    stubRun.restore();
-  });
-
-  it("should call function", async () => {
-    const stubRun = sinon.stub(Setup.prototype, "run").callsFake(() => true);
-    const res = await runSetup({
-      browser: "firefox",
-      configPath: path.resolve(path.join("test", "file")),
-      overwriteConfig: true,
-    });
-    assert.isTrue(stubRun.calledOnce);
-    assert.isTrue(res);
-    stubRun.restore();
   });
 });
 

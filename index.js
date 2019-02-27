@@ -5,8 +5,9 @@
 /* api */
 const {throwErr} = require("./modules/common");
 const {
-  handleExit, handleReject, readStdin, runSetup, startup,
+  handleExit, handleReject, readStdin, startup,
 } = require("./modules/main");
+const {runSetup} = require("./modules/setup");
 const {version: hostVersion} = require("./package.json");
 const commander = require("commander");
 const process = require("process");

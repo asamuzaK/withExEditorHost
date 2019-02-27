@@ -4,19 +4,23 @@
 "use strict";
 /* api */
 const {
-  CmdArgs, createFile, isDir, isExecutable, isFile,
+  CmdArgs, Setup, createFile, isDir, isExecutable, isFile,
 } = require("web-ext-native-msg");
 const {isString, throwErr} = require("./common");
-const commander = require("commander");
 const path = require("path");
 const process = require("process");
 const readline = require("readline-sync");
 
 /* constants */
-const {EDITOR_CONFIG_FILE} = require("./constant");
+const {
+  EDITOR_CONFIG_FILE, EXT_CHROME_ID, EXT_WEB_ID, HOST, HOST_DESC,
+} = require("./constant");
 const CHAR = "utf8";
 const INDENT = 2;
 const PERM_FILE = 0o600;
+
+/* setup command options */
+const setupOpts = new Map();
 
 /**
  * abort setup
@@ -100,7 +104,9 @@ const handleSetupCallback = (info = {}) => {
   if (!isDir(configPath)) {
     throw new Error(`No such directory: ${configPath}.`);
   }
-  const {editorArgs, editorPath, overwriteEditorConfig} = commander.opts();
+  const editorArgs = setupOpts.get("editorArgs");
+  const editorPath = setupOpts.get("editorPath");
+  const overwriteEditorConfig = setupOpts.get("overwriteEditorConfig");
   const file = path.join(configPath, EDITOR_CONFIG_FILE);
   const opt = {
     configPath,
@@ -127,10 +133,45 @@ const handleSetupCallback = (info = {}) => {
   return func || null;
 };
 
+/**
+ * run setup
+ * @param {Object} cmdOpts - cmd options
+ * @returns {Function} - setup.run()
+ */
+const runSetup = (cmdOpts = {}) => {
+  const {
+    browser, configPath, editorArgs, editorPath, overwriteConfig,
+    overwriteEditorConfig,
+  } = cmdOpts;
+  const opt = {
+    hostDescription: HOST_DESC,
+    hostName: HOST,
+    chromeExtensionIds: [EXT_CHROME_ID],
+    webExtensionIds: [EXT_WEB_ID],
+    callback: handleSetupCallback,
+  };
+  const setup = new Setup(opt);
+  if (isString(browser) && browser.length) {
+    setup.browser = browser.trim();
+  }
+  if (isString(configPath) && configPath.length) {
+    setup.configPath = configPath.trim();
+  }
+  if (overwriteConfig) {
+    setup.overwriteConfig = !!overwriteConfig;
+  }
+  setupOpts.set("editorArgs", editorArgs);
+  setupOpts.set("editorPath", editorPath);
+  setupOpts.set("overwriteEditorConfig", overwriteEditorConfig);
+  return setup.run();
+};
+
 module.exports = {
   abortSetup,
   createEditorConfig,
   handleCmdArgsInput,
   handleEditorPathInput,
   handleSetupCallback,
+  runSetup,
+  setupOpts,
 };

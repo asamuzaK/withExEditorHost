@@ -2,15 +2,14 @@
 "use strict";
 /* api */
 const {
-  abortSetup, createEditorConfig,
-  handleCmdArgsInput, handleEditorPathInput, handleSetupCallback,
+  abortSetup, createEditorConfig, handleCmdArgsInput, handleEditorPathInput,
+  handleSetupCallback, runSetup, setupOpts,
 } = require("../modules/setup");
 const {
-  createDirectory, createFile, isFile, removeDir,
+  Setup, createDirectory, createFile, isFile, removeDir,
 } = require("web-ext-native-msg");
 const {assert} = require("chai");
 const {afterEach, beforeEach, describe, it} = require("mocha");
-const commander = require("commander");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -185,10 +184,12 @@ describe("handleSetupCallback", () => {
   beforeEach(() => {
     const configDirPath = path.join(DIR_TMP, "withexeditorhost-test");
     removeDir(configDirPath, DIR_TMP);
+    setupOpts.clear();
   });
   afterEach(() => {
     const configDirPath = path.join(DIR_TMP, "withexeditorhost-test");
     removeDir(configDirPath, DIR_TMP);
+    setupOpts.clear();
   });
 
   it("should throw", () => {
@@ -217,10 +218,6 @@ describe("handleSetupCallback", () => {
       sinon.stub(readline, "questionPath").returns(editorPath);
     const stubRlQues = sinon.stub(readline, "question").returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
-    const stubCommander = sinon.stub(commander, "opts").callsFake(() => {
-      const opt = {};
-      return opt;
-    });
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, "withexeditorhost-test")
     );
@@ -241,7 +238,6 @@ describe("handleSetupCallback", () => {
     stubRlPath.restore();
     stubRlQues.restore();
     stubRlKey.restore();
-    stubCommander.restore();
   });
 
   it("should abort", async () => {
@@ -259,10 +255,6 @@ describe("handleSetupCallback", () => {
       sinon.stub(readline, "questionPath").returns(editorPath);
     const stubRlQues = sinon.stub(readline, "question").returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(false);
-    const stubCommander = sinon.stub(commander, "opts").callsFake(() => {
-      const opt = {};
-      return opt;
-    });
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, "withexeditorhost-test")
     );
@@ -288,7 +280,6 @@ describe("handleSetupCallback", () => {
     stubRlPath.restore();
     stubRlQues.restore();
     stubRlKey.restore();
-    stubCommander.restore();
   });
 
   it("should call function", async () => {
@@ -306,10 +297,6 @@ describe("handleSetupCallback", () => {
       sinon.stub(readline, "questionPath").returns(editorPath);
     const stubRlQues = sinon.stub(readline, "question").returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
-    const stubCommander = sinon.stub(commander, "opts").callsFake(() => {
-      const opt = {};
-      return opt;
-    });
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, "withexeditorhost-test")
     );
@@ -335,7 +322,6 @@ describe("handleSetupCallback", () => {
     stubRlPath.restore();
     stubRlQues.restore();
     stubRlKey.restore();
-    stubCommander.restore();
   });
 
   it("should call function", async () => {
@@ -353,14 +339,6 @@ describe("handleSetupCallback", () => {
       sinon.stub(readline, "questionPath").returns(editorPath);
     const stubRlQues = sinon.stub(readline, "question").returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
-    const stubCommander = sinon.stub(commander, "opts").callsFake(() => {
-      const opt = {
-        editorPath,
-        editorArgs: "foo bar baz",
-        overwriteEditorConfig: true,
-      };
-      return opt;
-    });
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, "withexeditorhost-test")
     );
@@ -370,6 +348,9 @@ describe("handleSetupCallback", () => {
       encoding: CHAR,
       flag: "w",
     });
+    setupOpts.set("editorPath", editorPath);
+    setupOpts.set("editorArgs", "foo bar baz");
+    setupOpts.set("overwriteEditorConfig", true);
     const res = await handleSetupCallback({configDirPath});
     const {calledOnce: infoCalled} = stubInfo;
     const {calledOnce: exitCalled} = stubExit;
@@ -386,6 +367,45 @@ describe("handleSetupCallback", () => {
     stubRlPath.restore();
     stubRlQues.restore();
     stubRlKey.restore();
-    stubCommander.restore();
+  });
+});
+
+describe("runSetup", () => {
+  beforeEach(() => {
+    setupOpts.clear();
+  });
+  afterEach(() => {
+    setupOpts.clear();
+  });
+
+  it("should call function", async () => {
+    const stubRun = sinon.stub(Setup.prototype, "run").callsFake(() => true);
+    const res = await runSetup();
+    assert.isTrue(stubRun.calledOnce);
+    assert.isTrue(res);
+    stubRun.restore();
+  });
+
+  it("should call function", async () => {
+    const stubRun = sinon.stub(Setup.prototype, "run").callsFake(() => true);
+    const app = IS_WIN && "test.cmd" || "test.sh";
+    const editorPath = path.resolve(path.join("test", "file", app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const res = await runSetup({
+      editorPath,
+      browser: "firefox",
+      configPath: path.resolve(path.join("test", "file")),
+      overwriteConfig: true,
+      editorArgs: "foo bar baz",
+      overwriteEditorConfig: true,
+    });
+    assert.isTrue(stubRun.calledOnce);
+    assert.strictEqual(setupOpts.get("editorPath"), editorPath);
+    assert.strictEqual(setupOpts.get("editorArgs"), "foo bar baz");
+    assert.isTrue(setupOpts.get("overwriteEditorConfig"));
+    assert.isTrue(res);
+    stubRun.restore();
   });
 });

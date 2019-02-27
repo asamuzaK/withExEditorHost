@@ -4,7 +4,7 @@
 "use strict";
 /* api */
 const {
-  ChildProcess, CmdArgs, Input, Output, Setup,
+  ChildProcess, CmdArgs, Input, Output,
   convertUriToFilePath, createDirectory, createFile,
   getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
   removeDir, removeDirectory, readFile,
@@ -14,7 +14,6 @@ const {
   compareSemVer, isValidSemVer,
 } = require("semver-parser");
 const {getType, isObjectNotEmpty, isString} = require("./common");
-const {handleSetupCallback} = require("./setup");
 const {version: hostVersion} = require("../package.json");
 const {watch} = require("fs");
 const os = require("os");
@@ -24,8 +23,8 @@ const process = require("process");
 /* constants */
 const {
   EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
-  EXT_CHROME_ID, EXT_WEB_ID, FILE_WATCH, HOST, HOST_DESC, HOST_VERSION,
-  HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
+  FILE_WATCH, HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL,
+  LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
   TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
   TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES,
 } = require("./constant");
@@ -624,33 +623,6 @@ const readStdin = chunk => {
 };
 
 /**
- * run setup
- * @param {Object} cmdOpts - cmd options
- * @returns {Function} - setup.run()
- */
-const runSetup = (cmdOpts = {}) => {
-  const {browser, configPath, overwriteConfig} = cmdOpts;
-  const opt = {
-    hostDescription: HOST_DESC,
-    hostName: HOST,
-    chromeExtensionIds: [EXT_CHROME_ID],
-    webExtensionIds: [EXT_WEB_ID],
-    callback: handleSetupCallback,
-  };
-  const setup = new Setup(opt);
-  if (isString(browser) && browser.length) {
-    setup.browser = browser.trim();
-  }
-  if (isString(configPath) && configPath.length) {
-    setup.configPath = configPath.trim();
-  }
-  if (overwriteConfig) {
-    setup.overwriteConfig = !!overwriteConfig;
-  }
-  return setup.run();
-};
-
-/**
  * handle exit
  * @param {number} code - exit code
  * @returns {void}
@@ -682,6 +654,6 @@ module.exports = {
   getTmpFileFromWatcherFileName,
   handleChildProcessErr, handleChildProcessStderr, handleChildProcessStdout,
   handleCreatedTmpFile, handleExit, handleMsg, handleReject, hostMsg,
-  initPrivateTmpDir, readStdin, removeTmpFileData, runSetup, spawnChildProcess,
+  initPrivateTmpDir, readStdin, removeTmpFileData, spawnChildProcess,
   startup, unwatchFile, viewLocalFile, watchTmpFile, writeStdout,
 };
