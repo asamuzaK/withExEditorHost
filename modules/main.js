@@ -524,7 +524,7 @@ const getEditorConfig = async editorConfigPath => {
 /**
  * view local file
  * @param {string} uri - local file uri
- * @returns {?AsyncFunction} - spawnChildProcess() / writeStderr()
+ * @returns {?AsyncFunction} - spawnChildProcess()
  */
 const viewLocalFile = async uri => {
   if (!isString(uri)) {
