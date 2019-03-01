@@ -18,15 +18,16 @@ const {
 } = require("web-ext-native-msg");
 const {
   promises: {
-    parseSemVer,
+    compareSemVer, parseSemVer,
   },
 } = require("semver-parser");
-const {version: hostVersion} = require("../package.json");
+const {name: hostName, version: hostVersion} = require("../package.json");
 const {assert} = require("chai");
 const {afterEach, beforeEach, describe, it} = require("mocha");
 const childProcess = require("child_process");
 const fs = require("fs");
 const os = require("os");
+const packageJson = require("package-json");
 const path = require("path");
 const process = require("process");
 const sinon = require("sinon");
@@ -283,6 +284,9 @@ describe("exportHostVersion", () => {
       major, minor, patch,
     } = await parseSemVer(hostVersion);
     const ver = `${major > 0 && major - 1 || 0}.${minor}.${patch}`;
+    const {version: latest} = await packageJson(hostName);
+    const currentResult = await compareSemVer(latest, hostVersion);
+    const isLatest = currentResult >= 0;
     const res = await exportHostVersion(ver);
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -290,6 +294,8 @@ describe("exportHostVersion", () => {
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
     assert.isAbove(obj.hostVersion.result, 0);
+    assert.strictEqual(obj.hostVersion.latest, latest);
+    assert.strictEqual(obj.hostVersion.isLatest, isLatest);
   });
 
   it("should call function", async () => {
@@ -302,6 +308,9 @@ describe("exportHostVersion", () => {
       major, minor, patch,
     } = await parseSemVer(hostVersion);
     const ver = `${major}.${minor}.${patch + 1}`;
+    const {version: latest} = await packageJson(hostName);
+    const currentResult = await compareSemVer(latest, hostVersion);
+    const isLatest = currentResult >= 0;
     const res = await exportHostVersion(ver);
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -309,6 +318,8 @@ describe("exportHostVersion", () => {
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
     assert.isBelow(obj.hostVersion.result, 0);
+    assert.strictEqual(obj.hostVersion.latest, latest);
+    assert.strictEqual(obj.hostVersion.isLatest, isLatest);
   });
 
   it("should call function", async () => {
@@ -317,6 +328,9 @@ describe("exportHostVersion", () => {
       msg = buf;
       return buf;
     });
+    const {version: latest} = await packageJson(hostName);
+    const currentResult = await compareSemVer(latest, hostVersion);
+    const isLatest = currentResult >= 0;
     const res = await exportHostVersion(hostVersion);
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -324,6 +338,8 @@ describe("exportHostVersion", () => {
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
     assert.strictEqual(obj.hostVersion.result, 0);
+    assert.strictEqual(obj.hostVersion.latest, latest);
+    assert.strictEqual(obj.hostVersion.isLatest, isLatest);
   });
 });
 
@@ -1679,8 +1695,13 @@ describe("handleMsg", () => {
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
+    const {version: latest} = await packageJson(hostName);
+    const currentResult = await compareSemVer(latest, hostVersion);
+    const isLatest = currentResult >= 0;
     const msg = (new Output()).encode({
       [HOST_VERSION]: {
+        isLatest,
+        latest,
         result: 0,
       },
     });
