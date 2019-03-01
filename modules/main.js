@@ -14,9 +14,10 @@ const {
   compareSemVer, isValidSemVer,
 } = require("semver-parser");
 const {getType, isObjectNotEmpty, isString} = require("./common");
-const {version: hostVersion} = require("../package.json");
+const {name: hostName, version: hostVersion} = require("../package.json");
 const {watch} = require("fs");
 const os = require("os");
+const packageJson = require("package-json");
 const path = require("path");
 const process = require("process");
 
@@ -165,9 +166,14 @@ const exportHostVersion = async minVer => {
   if (!isValidSemVer(minVer)) {
     throw new Error(`${minVer} is not valid SemVer.`);
   }
+  const {version: latest} = await packageJson(hostName);
   const result = await compareSemVer(hostVersion, minVer);
+  const currentResult = await compareSemVer(latest, hostVersion);
+  const isLatest = currentResult >= 0;
   const msg = {
     [HOST_VERSION]: {
+      isLatest,
+      latest,
       result,
     },
   };
