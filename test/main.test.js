@@ -285,7 +285,7 @@ describe("exportHostVersion", () => {
     } = await parseSemVer(hostVersion);
     const ver = `${major > 0 && major - 1 || 0}.${minor}.${patch}`;
     const {version: latest} = await packageJson(hostName);
-    const currentResult = await compareSemVer(latest, hostVersion);
+    const currentResult = await compareSemVer(hostVersion, latest);
     const isLatest = currentResult >= 0;
     const res = await exportHostVersion(ver);
     const {calledOnce: writeCalled} = stubWrite;
@@ -309,7 +309,7 @@ describe("exportHostVersion", () => {
     } = await parseSemVer(hostVersion);
     const ver = `${major}.${minor}.${patch + 1}`;
     const {version: latest} = await packageJson(hostName);
-    const currentResult = await compareSemVer(latest, hostVersion);
+    const currentResult = await compareSemVer(hostVersion, latest);
     const isLatest = currentResult >= 0;
     const res = await exportHostVersion(ver);
     const {calledOnce: writeCalled} = stubWrite;
@@ -329,7 +329,7 @@ describe("exportHostVersion", () => {
       return buf;
     });
     const {version: latest} = await packageJson(hostName);
-    const currentResult = await compareSemVer(latest, hostVersion);
+    const currentResult = await compareSemVer(hostVersion, latest);
     const isLatest = currentResult >= 0;
     const res = await exportHostVersion(hostVersion);
     const {calledOnce: writeCalled} = stubWrite;
@@ -1696,7 +1696,7 @@ describe("handleMsg", () => {
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const {version: latest} = await packageJson(hostName);
-    const currentResult = await compareSemVer(latest, hostVersion);
+    const currentResult = await compareSemVer(hostVersion, latest);
     const isLatest = currentResult >= 0;
     const msg = (new Output()).encode({
       [HOST_VERSION]: {
