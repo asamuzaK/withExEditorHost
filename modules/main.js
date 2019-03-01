@@ -168,7 +168,7 @@ const exportHostVersion = async minVer => {
   }
   const {version: latest} = await packageJson(hostName);
   const result = await compareSemVer(hostVersion, minVer);
-  const currentResult = await compareSemVer(latest, hostVersion);
+  const currentResult = await compareSemVer(hostVersion, latest);
   const isLatest = currentResult >= 0;
   const msg = {
     [HOST_VERSION]: {
