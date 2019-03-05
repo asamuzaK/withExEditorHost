@@ -23,7 +23,7 @@
     "lint": "eslint .",
     "package:linux32": "nexe ./index.js -t linux-x86-10.15.1 -o ./pkg/linux32/index",
     "package:linux64": "nexe ./index.js -t linux-x64-10.15.1 -o ./pkg/linux64/index",
-    "package:mac64": "nexe ./index.js -t mac-x64-10.15.1 -o ./pkg/mac64/index",
+    "package:macos": "nexe ./index.js -t mac-x64-10.15.1 -o ./pkg/macos/index",
     "package:win32": "nexe ./index.js -t win-x86-10.15.1 -o ./pkg/win32/index.exe",
     "package:win64": "nexe ./index.js -t win-x64-10.15.1 -o ./pkg/win64/index.exe",
     "setup": "npm install --production && node ./index.js setup",
@@ -31,7 +31,7 @@
     "test": "nyc --reporter=text mocha test/*.test.js --exit",
     "zippackage:linux32": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/linux32/index -o ./dest/linux-x86.zip",
     "zippackage:linux64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/linux64/index -o ./dest/linux-x86_64.zip",
-    "zippackage:mac64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/mac64/index -o ./dest/mac64.zip",
+    "zippackage:macos": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/macos/index -o ./dest/macos.zip",
     "zippackage:win32": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win32/index.exe -o ./dest/win32.zip",
     "zippackage:win64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
