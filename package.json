@@ -15,12 +15,13 @@
   "main": "./index.js",
   "scripts": {
     "build": "npm run clean && npm-run-all -p package:* && npm-run-all -p zippackage:*",
-    "build:32": "npm run clean && npm-run-all -p package:linux32 package:win32 && npm-run-all -p zippackage:linux32 zippackage:win32",
+    "build:32": "npm run clean:32 && npm-run-all -p package:linux32 package:win32 && npm-run-all -p zippackage:linux32 zippackage:win32",
     "clean": "rimraf ./dest/* ./pkg/*",
+    "clean:32": "rimraf ./dest/* ./pkg/win32/* ./pkg/linux32/*",
     "clean:dest": "rimraf ./dest",
     "clean:pkg": "rimraf ./pkg",
     "lint": "eslint .",
-    "package:linux32": "nexe ./index.js -t -t linux-x86-10.15.1 -o ./pkg/linux32/index",
+    "package:linux32": "nexe ./index.js -t linux-x86-10.15.1 -o ./pkg/linux32/index",
     "package:linux64": "nexe ./index.js -t linux-x64-10.15.1 -o ./pkg/linux64/index",
     "package:mac64": "nexe ./index.js -t mac-x64-10.15.1 -o ./pkg/mac64/index",
     "package:win32": "nexe ./index.js -t win-x86-10.15.1 -o ./pkg/win32/index.exe",
@@ -52,5 +53,5 @@
     "rimraf": "^2.6.3",
     "sinon": "^7.2.7"
   },
-  "version": "5.0.0-b.4.4"
+  "version": "5.0.0-b.4.5"
 }
