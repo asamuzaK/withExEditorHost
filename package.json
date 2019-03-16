@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "eslint": "^5.15.1",
+    "eslint": "^5.15.2",
     "jszip-cli": "^1.4.24",
     "mocha": "^6.0.2",
     "nexe": "^3.0.0-beta.15",
@@ -53,5 +53,5 @@
     "rimraf": "^2.6.3",
     "sinon": "^7.2.7"
   },
-  "version": "5.0.0-b.6"
+  "version": "5.0.0"
 }
