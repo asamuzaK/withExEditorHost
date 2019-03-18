@@ -1,5 +1,5 @@
 /**
- * index.js
+ * main.js
  */
 "use strict";
 /* api */
