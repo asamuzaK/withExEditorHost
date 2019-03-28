@@ -6,7 +6,7 @@
 const {
   CmdArgs, Setup, createFile, isDir, isExecutable, isFile,
 } = require("web-ext-native-msg");
-const {isString, throwErr} = require("./common");
+const {isString, logErr, throwErr} = require("./common");
 const path = require("path");
 const process = require("process");
 const readline = require("readline-sync");
@@ -161,6 +161,9 @@ const runSetup = (cmdOpts = {}) => {
   setupOpts.set("overwriteEditorConfig", overwriteEditorConfig);
   return setup.run();
 };
+
+/* process */
+process.on("unhandledRejection", logErr);
 
 module.exports = {
   abortSetup,

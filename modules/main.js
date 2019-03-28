@@ -652,6 +652,11 @@ const startup = () => Promise.all([
   createDirectory(TMPDIR_FILES_PB, PERM_DIR),
 ]).then(exportAppStatus).catch(handleReject);
 
+/* process */
+process.on("exit", handleExit);
+process.on("unhandledRejection", handleReject);
+process.stdin.on("data", readStdin);
+
 module.exports = {
   editorConfig, fileMap,
   createTmpFile, createTmpFileResMsg, deleteKeyFromFileMap,

@@ -4,9 +4,7 @@
 "use strict";
 /* api */
 const {throwErr} = require("./modules/common");
-const {
-  handleExit, handleReject, readStdin, startup,
-} = require("./modules/main");
+const {startup} = require("./modules/main");
 const {runSetup} = require("./modules/setup");
 const {version: hostVersion} = require("./package.json");
 const commander = require("commander");
@@ -33,10 +31,7 @@ commander.command(CMD_SETUP).alias(CMD_SETUP_ALIAS).description(CMD_SETUP_DESC)
 commander.parse(process.argv);
 
 /* process */
-process.on("exit", handleExit);
 process.on("uncaughtException", throwErr);
-process.on("unhandledRejection", handleReject);
-process.stdin.on("data", readStdin);
 
 /* startup */
 (() => {
