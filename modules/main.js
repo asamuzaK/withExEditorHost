@@ -644,22 +644,28 @@ const handleExit = code => {
 };
 
 /**
+ * add process listeners
+ * @returns {void}
+ */
+const addProcessListeners = () => {
+  process.on("exit", handleExit);
+  process.on("unhandledRejection", handleReject);
+  process.stdin.on("data", readStdin);
+};
+
+/**
  * handle startup
  * @returns {AsyncFunction} - Promise chain
  */
 const startup = () => Promise.all([
+  addProcessListeners(),
   createDirectory(TMPDIR_FILES, PERM_DIR),
   createDirectory(TMPDIR_FILES_PB, PERM_DIR),
 ]).then(exportAppStatus).catch(handleReject);
 
-/* process */
-process.on("exit", handleExit);
-process.on("unhandledRejection", handleReject);
-process.stdin.on("data", readStdin);
-
 module.exports = {
   editorConfig, fileMap,
-  createTmpFile, createTmpFileResMsg, deleteKeyFromFileMap,
+  addProcessListeners, createTmpFile, createTmpFileResMsg, deleteKeyFromFileMap,
   exportAppStatus, exportEditorConfig, exportFileData, exportHostVersion,
   getEditorConfig, getFileIdFromFilePath, getTmpFileFromFileData,
   getTmpFileFromWatcherFileName,
