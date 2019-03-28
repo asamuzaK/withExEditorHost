@@ -3,7 +3,7 @@
  */
 "use strict";
 /* api */
-const {throwErr} = require("./modules/common");
+const {logErr, throwErr} = require("./modules/common");
 const {startup} = require("./modules/main");
 const {runSetup} = require("./modules/setup");
 const {version: hostVersion} = require("./package.json");
@@ -32,6 +32,7 @@ commander.parse(process.argv);
 
 /* process */
 process.on("uncaughtException", throwErr);
+process.on("unhandledRejection", logErr);
 
 /* startup */
 (() => {

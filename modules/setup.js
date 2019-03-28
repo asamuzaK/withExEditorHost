@@ -162,9 +162,6 @@ const runSetup = (cmdOpts = {}) => {
   return setup.run();
 };
 
-/* process */
-process.on("unhandledRejection", logErr);
-
 module.exports = {
   abortSetup,
   createEditorConfig,

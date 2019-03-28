@@ -3,7 +3,7 @@
 /* api */
 const {
   editorConfig, fileMap,
-  createTmpFile, createTmpFileResMsg, deleteKeyFromFileMap,
+  addProcessListeners, createTmpFile, createTmpFileResMsg, deleteKeyFromFileMap,
   exportAppStatus, exportEditorConfig, exportFileData, exportHostVersion,
   getEditorConfig, getFileIdFromFilePath, getTmpFileFromFileData,
   getTmpFileFromWatcherFileName,
@@ -1839,6 +1839,22 @@ describe("handleExit", () => {
         },
       },
     ]);
+  });
+});
+
+describe("addProcessListeners", () => {
+  it("should set listeners", async () => {
+    const stubOn = sinon.stub(process, "on");
+    const stubStdinOn = sinon.stub(process.stdin, "on");
+    const i = stubOn.callCount;
+    const j = stubStdinOn.callCount;
+    await addProcessListeners();
+    const {callCount: stubOnCallCount} = stubOn;
+    const {callCount: stubStdinOnCallCount} = stubStdinOn;
+    stubOn.restore();
+    stubStdinOn.restore();
+    assert.strictEqual(stubOnCallCount, i + 2);
+    assert.strictEqual(stubStdinOnCallCount, j + 1);
   });
 });
 
