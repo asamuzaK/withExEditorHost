@@ -35,7 +35,7 @@ commander.parse(process.argv);
 /* process */
 process.on("exit", handleExit);
 process.on("uncaughtException", throwErr);
-process.on("unhandleRejection", handleReject);
+process.on("unhandledRejection", handleReject);
 process.stdin.on("data", readStdin);
 
 /* startup */
