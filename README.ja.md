@@ -36,6 +36,8 @@
 
 ## ホストのセットアップ
 
+備考：Node.jsがインストール済みの場合は、下記、[npm からのホストのセットアップ](#npm-からのホストのセットアップ)をお勧めします。
+
 ホストを設定するときは、ブラウザにインストールされているwithExEditorを無効化してください。
 
 [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost")から、お使いのOS用のzipファイルをダウンロードして展開した上で、自分のホームディレクトリ内の任意の場所に保存してください（例えば、`C:\Users\XXX\withExEditorHost\`）。

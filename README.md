@@ -36,6 +36,8 @@ When filing an issue, if you know [where to save the application manifest](https
 
 ## Host setup
 
+NOTE: If Node.js is already installed, [Host setup from npm](#host-setup-from-npm) is recommended.
+
 When setting up the host, disable withExEditor installed in the browser.
 
 Download a zip file for your OS from [Releases](https://github.com/asamuzaK/withExEditorHost/releases "Releases · asamuzaK/withExEditorHost"), after decompressing, save it in an arbitrary place under your home directory (for example, `C:\Users\XXX\withExEditorHost\`).
