@@ -2,31 +2,29 @@ language: node_js
 dist: trusty
 env:
   global:
-    - secure: o0ak5QwdZk+jhlFqMsa7MzwN4r5rE7/2bJhjKFDvDfdaAydmkk2wbOYGP2o5Y+JbAbLq6hQM4m7p8PYwCQIWKetKq24zWJiEl4jWmXrcUZBju6v3fhpu+xbFcMdyOcacU59/v2pkc2CY7plFlXwTjviy2HFX0GlONYfwILdriYa5LHK/w87nkwY7VpVO7NWf4Pi9EkuYp4OE2q+nuqyo7h3imG3IQXgjqqdu6ajL758WUPhE0NDAwLk3PUtcD5Q+QO5EsI2TbachhPuKy3dSYPhgMTSBcy7k0mcpAO6MHCMrFnVD5gbhbLpfkzGokUvdUPVzW3kVyav2IgxM38bPMS8uetSRU7Du1N8cNihFt1JHNS+FMaPKkW0D1hvH/bOf/EuOlueffvKOCldHvqbv6X4GUZ00/qtdfy45e/nUlc9z1hOrR4CuPiu6bfxhCy0Ibx2kMfhVr+E9XfTO4/VppUca/LLY54aSBqlKl07+nV3bPVDk31JP/Ijvfg6so/VdwPg8wu7uBkUqWsUx+HGzl/Y+gF1IaURdrGE2gerdhMv/jdfIcRqHEesQgu+ZBRU2RrUiRnMSs1f3IvFeiOLe0Ts6tmI/dfln7ABfQwoZeXaz758vQhr7BwwLuEWPaiywDe42qC2WvcmfYEP/BbZOH4VgpfJs4VrVhp6Y/tCFJgI=
-    - secure: kh76WJ8JsZnhY8wvs54m7hqII7URR5Z28Mcr098WquDr00aQTxaUAsyo2d+QiBurSb9DN/2f4CC7oCA5lGjRkpnjvUl8V20ky3ib4lsh0iyJQqnZfU6Uid79zJ8osRRPFOVHOmc1aMbCiBuuXlgBlzSE+ajNfbv9xM2wqWbSvE5q56T4kWi8A2YaDF4dP9G5nmarG9mezk4+Lf8AV+4Bze0DLafeLIg4LATfylDE97hVh2tPsx7kXjcTX7nMPuBWKxrfJP7B1DM7OedWcLyWJjW1d68xqlVI8XP1uJMEjxBHWtn0g2ZDXUHSqTvN8Ek9OMSIHFx9ed5bHIbvVABCyrwieTJAKJ9ZypVbFWy1YoPPMdNk9EihPkAb00UIzKmHeaD6X7jQpJod3IWkqwrX2pj7OjPDhGV6pN0t2vWoWTK15tsnEtFBykORuwqWxedOryMXeyQRWTMfvP6lqxpDfLoS7ynwN8pD9gIclixrCsviBV0F8hZmQ8i+jeNVw455eEie/lY3Q4PziNn4AOIuR60bLa0AZM8f4ixehNSivOfU08mXfsT6zYMaL/A60tG60w7B8/S1m+EoqQwjjZ8XKHhEiYpOxVpb/adx0ufOjwzZ/eVeZP0HumIRyi/GAHKUmQk51zBL9J2Gfr/FNEnMggDVzkz/R4Z7WW8k9zJYaK0=
-
+    secure: ZFOXwWhD7wW8G8ijHHNndI7tDr8CtE7EZ3W+hh7XYlGxeldoafgHCbuzCPqfF11KZla+yIu4KbwdDOfrIV9Ceov7V2iqkDITgbr4Bwuv86vcYRVzD1uKTjTOLfdUCmTi+lp0GIoghdIpLuRRVoLbwD1+DZJAGW0gChvxH5/oIPNcOe5u1N+AZWhP53D4yYUjcKQni333HEhYvgAuX845g2vrHy2OgfnYzibWYAz4b8AXVBOTdKZbOXMotRwpYvr1nQSCXaqUl283/NVmuH+SY40nTiyBOhNtTKL4PbQkXpgWu7FstAII7forbWSutN6RRuSPna6zCu3rbGiHOGa9EyIScM46K7bA4OgjxFmqhKJEF52Ftybyx3cD83sn9Im+kDc6W1qMxGjIXES0LWBtpfGnamhuXxkIr7kxxVHClkq+taR3Hvw4QR7WDWsnyCXGZ3FlO7h88+CrEj+dcX14ZpjgVsjyub1nwSjjX/q74d2pw6BZxhfcPxurKBVAeD3BIhu6WKteQwwVGZelfICO08lVpde0BbTJVUlVQNNiUUIiMFhzPWYmULv2U+fqxe+eRO4GI7ffmcNBhO6n1+2dbVT3SP2bxToyb/XKJTKGAoOjUsvWqkjhMdx/LItKLF4wAK6UsP5PlGqKe5PU0bdvKbj7m74JiJWJKTG+jlfZCQY=
 os:
-  - windows
-  - osx
-  - linux
+- windows
+- osx
+- linux
 node_js:
-  - "10"
-  - "11"
+- "10"
+- "11"
 
 before_script:
-  - npm install
+- npm install
 
 script:
-  - npm run lint
-  - npm run test
+- npm run lint
+- npm run test
 
 before_deploy:
-  - npm install
-  - mkdir ./pkg
-  - mkdir ./pkg/linux32 && unzip ./dest/linux-x86.zip -d ./pkg/linux32 && chmod 755 ./pkg/linux32/index && rm ./dest/linux-x86.zip && npm run zippackage:linux32
-  - mkdir ./pkg/linux64 && npm run package:linux64 && chmod 755 ./pkg/linux64/index && npm run zippackage:linux64
-  - mkdir ./pkg/macos && npm run package:macos && chmod 755 ./pkg/macos/index && npm run zippackage:macos
-  - mkdir ./pkg/win64 && npm run package:win64 && npm run zippackage:win64
+- npm install
+- mkdir ./pkg
+- mkdir ./pkg/linux32 && unzip ./dest/linux-x86.zip -d ./pkg/linux32 && chmod 755 ./pkg/linux32/index && rm ./dest/linux-x86.zip && npm run zippackage:linux32
+- mkdir ./pkg/linux64 && GITHUB_TOKEN=$GH_TOKEN npm run package:linux64 && chmod 755 ./pkg/linux64/index && npm run zippackage:linux64
+- mkdir ./pkg/macos && GITHUB_TOKEN=$GH_TOKEN npm run package:macos && chmod 755 ./pkg/macos/index && npm run zippackage:macos
+- mkdir ./pkg/win64 && GITHUB_TOKEN=$GH_TOKEN npm run package:win64 && npm run zippackage:win64
 
 deploy:
   provider: releases
@@ -35,15 +33,15 @@ deploy:
   api_key:
     secure: Aj79TxQLaAdYi0IWY67aDpIMTTJ116EYgN2q4xob1DLG5qLmeSz8dtCGy23DVVjqhI+9z3w95GPFUqvWiStIj+N+r85eHzuMqGOynfY0E8/eChMMGsSjvU3EHLEyIyxHOs/fgo1wK+syaOrHb6A5ruJqZpnas3fcaNKJukaP4UHWtZyvLd+3w/6C1x1oGlJhfFuH7JQo/JXepz8hYS65dStAWtkd/kEy8305vALVXSIYCkuIDf+k0rx13/wDIiDWvE4XASE5U6y0pdpq+1xm+Dtx2rjb89rupnStHegmQce4Az9zrlTOnLc0jnKEdIAhat6wY7Mtv/hln5vAE8/ikbESUg8fQ7/G0/nBhwMk+NYugXkOdIjXmj6/Al3ckiahA9iIlDzo1ubXhJ72oGsBpik5DMY85N7msCzQO1xWYBVodGas6iHaHHuFkJcdBPhj5RT0lqPzj5grMddOFbp8iugwiD7FMKwsbjxVo2hXKfxx9IWsZf2JSZzODQOWQtXThynfsN0QfWBeJGN8Otwrww8PfKQzZO2htolXIrRmYUSjmTZZXQ7T+9MClE3rs1Qj/kJBDN4jFjsHErkpoq2ANar62jJDjXGzdk0XHyX4lwZGkcbCvzPXxHe0mNpgrpCx3TxeBrBa+9WDY9eOBAkMM6S1IjNIr5UGVW1vTS5DSUE=
   file:
-    - dest/win64.zip
-    - dest/win32.zip
-    - dest/macos.zip
-    - dest/linux-x86_64.zip
-    - dest/linux-x86.zip
+  - dest/win64.zip
+  - dest/win32.zip
+  - dest/macos.zip
+  - dest/linux-x86_64.zip
+  - dest/linux-x86.zip
   on:
     tags: true
     node: "10"
     condition: "$TRAVIS_OS_NAME = linux"
 
 after_deploy:
-  - npm run clean:pkg
+- npm run clean:pkg
