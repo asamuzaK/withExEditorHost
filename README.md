@@ -98,8 +98,10 @@ See help for other options.
 
 ### Upgrade
 
-When upgrading the host, just overwrite the binary file etc.
-It is not necessary to run the setup script again after the upgrade.
+Before upgrading a host, disable withExEditor installed in your browser.
+To upgrade, just overwrite binary files, that's all.
+There is no need to run the setup script again after the upgrade.
+Enable withExEditor after the upgrade.
 
 ***
 
@@ -167,11 +169,15 @@ For other options, see help
 
 ### Upgrade
 
+Before upgrading the host, disable withExEditor installed in the browser.
+Run update command.
+
 ```
 > npm up -g
 ```
 
-It is not necessary to run the setup script again after the upgrade.
+There is no need to run the setup script again after the upgrade.
+Enable withExEditor after the upgrade.
 
 ***
 
