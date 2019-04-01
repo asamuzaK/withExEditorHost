@@ -1,8 +1,5 @@
 language: node_js
 dist: trusty
-env:
-  global:
-    secure: ZFOXwWhD7wW8G8ijHHNndI7tDr8CtE7EZ3W+hh7XYlGxeldoafgHCbuzCPqfF11KZla+yIu4KbwdDOfrIV9Ceov7V2iqkDITgbr4Bwuv86vcYRVzD1uKTjTOLfdUCmTi+lp0GIoghdIpLuRRVoLbwD1+DZJAGW0gChvxH5/oIPNcOe5u1N+AZWhP53D4yYUjcKQni333HEhYvgAuX845g2vrHy2OgfnYzibWYAz4b8AXVBOTdKZbOXMotRwpYvr1nQSCXaqUl283/NVmuH+SY40nTiyBOhNtTKL4PbQkXpgWu7FstAII7forbWSutN6RRuSPna6zCu3rbGiHOGa9EyIScM46K7bA4OgjxFmqhKJEF52Ftybyx3cD83sn9Im+kDc6W1qMxGjIXES0LWBtpfGnamhuXxkIr7kxxVHClkq+taR3Hvw4QR7WDWsnyCXGZ3FlO7h88+CrEj+dcX14ZpjgVsjyub1nwSjjX/q74d2pw6BZxhfcPxurKBVAeD3BIhu6WKteQwwVGZelfICO08lVpde0BbTJVUlVQNNiUUIiMFhzPWYmULv2U+fqxe+eRO4GI7ffmcNBhO6n1+2dbVT3SP2bxToyb/XKJTKGAoOjUsvWqkjhMdx/LItKLF4wAK6UsP5PlGqKe5PU0bdvKbj7m74JiJWJKTG+jlfZCQY=
 os:
 - windows
 - osx
@@ -22,9 +19,9 @@ before_deploy:
 - npm install
 - mkdir ./pkg
 - mkdir ./pkg/linux32 && unzip ./dest/linux-x86.zip -d ./pkg/linux32 && chmod 755 ./pkg/linux32/index && rm ./dest/linux-x86.zip && npm run zippackage:linux32
-- mkdir ./pkg/linux64 && GITHUB_TOKEN=$GH_TOKEN npm run package:linux64 && chmod 755 ./pkg/linux64/index && npm run zippackage:linux64
-- mkdir ./pkg/macos && GITHUB_TOKEN=$GH_TOKEN npm run package:macos && chmod 755 ./pkg/macos/index && npm run zippackage:macos
-- mkdir ./pkg/win64 && GITHUB_TOKEN=$GH_TOKEN npm run package:win64 && npm run zippackage:win64
+- mkdir ./pkg/linux64 && npm run package:linux64 && chmod 755 ./pkg/linux64/index && npm run zippackage:linux64
+- mkdir ./pkg/macos && npm run package:macos && chmod 755 ./pkg/macos/index && npm run zippackage:macos
+- mkdir ./pkg/win64 && npm run package:win64 && npm run zippackage:win64
 
 deploy:
   provider: releases
