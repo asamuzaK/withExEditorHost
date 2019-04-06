@@ -37,7 +37,7 @@ When filing an issue, if you know [where to save the application manifest](https
 ## Host setup
 
 NOTE: If you already have Node.js installed, it is recommended to get the host from npm.
-For details, refer to [Host setup from npm](#host-setup-from-npm).
+Refer to [Host setup from npm](#host-setup-from-npm) below.
 
 When setting up the host, disable withExEditor installed in the browser.
 
