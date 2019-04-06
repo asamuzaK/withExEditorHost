@@ -112,13 +112,19 @@
 ホストを設定するときは、ブラウザにインストールされているwithExEditorを無効化してください。
 
 ホストは[withexeditorhost - npm](https://www.npmjs.com/package/withexeditorhost)から入手できます。
-ホストをグローバルにインストールした後に、インストール先に移動して（例：`C:\Users\XXX\AppData\Roaming\npm\node_modules\withexeditorhost`）、設定のためのコマンドを実行します。
-
-備考：設定のコマンドは`node index setup`です。
+ホストをグローバルにインストールした後に、インストール先に移動してください（例：`C:\Users\XXX\AppData\Roaming\npm\node_modules\withexeditorhost`）。
+なお、npmのグローバルインストールパスは`npm root -g`で取得できます。
 
 ```
 > npm i -g withexeditorhost
 > cd path/to/npm/node_modules/withexeditorhost
+```
+
+ホストを設定するためのコマンドを実行します。
+
+備考：設定のコマンドは`node index setup`です。`npm run setup`ではありませんのでご注意ください。
+
+```
 > node index setup
 ```
 
