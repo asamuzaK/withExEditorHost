@@ -102,7 +102,7 @@
     "max-len": [
       "error",
       {
-        "ignorePattern": "^.+/(?:[^\\s]|\\ )+/.+$"
+        "ignorePattern": "^.+/(?:[^\\s]| )+/.+$"
       }
     ],
     "max-nested-callbacks": ["error", 3],
