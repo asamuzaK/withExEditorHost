@@ -309,11 +309,11 @@ const initPrivateTmpDir = async bool => {
 
 /**
  * get temporary file from file data
- * @param {Object} data - temporary file data
+ * @param {Object} fileData - temporary file data
  * @returns {Promise.<Array>} - results of each handler
  */
-const getTmpFileFromFileData = async (data = {}) => {
-  const {dataId, dir, host, tabId, windowId} = data;
+const getTmpFileFromFileData = async (fileData = {}) => {
+  const {dataId, dir, host, tabId, windowId} = fileData;
   const func = [];
   let msg;
   if (dataId && dir && host && tabId && windowId && fileMap[dir]) {
@@ -322,7 +322,9 @@ const getTmpFileFromFileData = async (data = {}) => {
       const {filePath} = fileMap[dir].get(fileId);
       if (isFile(filePath)) {
         const value = await readFile(filePath, {encoding: CHAR, flag: "r"});
-        data.timestamp = await getFileTimestamp(filePath);
+        const timestamp = await getFileTimestamp(filePath);
+        const data = fileData;
+        data.timestamp = timestamp;
         msg = {
           [TMP_FILE_RES]: {data, value},
         };
@@ -333,6 +335,7 @@ const getTmpFileFromFileData = async (data = {}) => {
     }
   }
   if (!msg) {
+    const data = fileData;
     data.timestamp = FILE_NOT_FOUND_TIMESTAMP;
     msg = {
       [TMP_FILE_DATA_REMOVE]: {data},
