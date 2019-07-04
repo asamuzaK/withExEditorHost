@@ -76,8 +76,7 @@ describe("handleEditorPathInput", () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const stubRlPath =
-      sinon.stub(readline, "questionPath").returns(editorPath);
+    const stubRlPath = sinon.stub(readline, "question").returns(editorPath);
     const res = await handleEditorPathInput(editorPath);
     assert.isFalse(stubRlPath.called);
     assert.strictEqual(res, editorPath);
@@ -90,8 +89,7 @@ describe("handleEditorPathInput", () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const stubRlPath =
-      sinon.stub(readline, "questionPath").returns(editorPath);
+    const stubRlPath = sinon.stub(readline, "question").returns(editorPath);
     const res = await handleEditorPathInput();
     assert.isTrue(stubRlPath.calledOnce);
     assert.strictEqual(res, editorPath);
@@ -110,7 +108,7 @@ describe("handleEditorPathInput", () => {
     }
     const unexecutablePath =
       path.resolve(path.join("test", "file", "test.txt"));
-    const stubRlPath = sinon.stub(readline, "questionPath");
+    const stubRlPath = sinon.stub(readline, "question");
     const i = stubRlPath.callCount;
     stubRlPath.onFirstCall().returns(unexecutablePath);
     stubRlPath.onSecondCall().returns(editorPath);
@@ -215,9 +213,9 @@ describe("handleSetupCallback", () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const stubRlPath =
-      sinon.stub(readline, "questionPath").returns(editorPath);
-    const stubRlQues = sinon.stub(readline, "question").returns("");
+    const stubRl = sinon.stub(readline, "question");
+    stubRl.onFirstCall().returns(editorPath);
+    stubRl.onSecondCall().returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, "withexeditorhost-test")
@@ -229,16 +227,13 @@ describe("handleSetupCallback", () => {
     stubInfo.restore();
     stubExit.restore();
     assert.strictEqual(setupOpts.get("configPath"), configDirPath);
-    assert.isTrue(stubRlPath.calledOnce);
-    assert.isTrue(stubRlQues.calledOnce);
     assert.isFalse(stubRlKey.called);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
     assert.strictEqual(info, `Created: ${filePath}`);
     assert.isTrue(isFile(filePath));
     assert.strictEqual(res, filePath);
-    stubRlPath.restore();
-    stubRlQues.restore();
+    stubRl.restore();
     stubRlKey.restore();
   });
 
@@ -253,9 +248,9 @@ describe("handleSetupCallback", () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const stubRlPath =
-      sinon.stub(readline, "questionPath").returns(editorPath);
-    const stubRlQues = sinon.stub(readline, "question").returns("");
+    const stubRl = sinon.stub(readline, "question");
+    stubRl.onFirstCall().returns(editorPath);
+    stubRl.onSecondCall().returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(false);
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, "withexeditorhost-test")
@@ -272,16 +267,13 @@ describe("handleSetupCallback", () => {
     stubInfo.restore();
     stubExit.restore();
     assert.strictEqual(setupOpts.get("configPath"), configDirPath);
-    assert.isFalse(stubRlPath.called);
-    assert.isFalse(stubRlQues.called);
     assert.isTrue(stubRlKey.calledOnce);
     assert.isTrue(infoCalled);
     assert.isTrue(exitCalled);
     assert.strictEqual(info, `Setup aborted: ${filePath} already exists.`);
     assert.isTrue(isFile(filePath));
     assert.isNull(res);
-    stubRlPath.restore();
-    stubRlQues.restore();
+    stubRl.restore();
     stubRlKey.restore();
   });
 
@@ -296,9 +288,9 @@ describe("handleSetupCallback", () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const stubRlPath =
-      sinon.stub(readline, "questionPath").returns(editorPath);
-    const stubRlQues = sinon.stub(readline, "question").returns("");
+    const stubRl = sinon.stub(readline, "question");
+    stubRl.onFirstCall().returns(editorPath);
+    stubRl.onSecondCall().returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, "withexeditorhost-test")
@@ -315,16 +307,13 @@ describe("handleSetupCallback", () => {
     stubInfo.restore();
     stubExit.restore();
     assert.strictEqual(setupOpts.get("configPath"), configDirPath);
-    assert.isTrue(stubRlPath.calledOnce);
-    assert.isTrue(stubRlQues.calledOnce);
     assert.isTrue(stubRlKey.calledOnce);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
     assert.strictEqual(info, `Created: ${filePath}`);
     assert.isTrue(isFile(filePath));
     assert.strictEqual(res, filePath);
-    stubRlPath.restore();
-    stubRlQues.restore();
+    stubRl.restore();
     stubRlKey.restore();
   });
 
@@ -339,9 +328,9 @@ describe("handleSetupCallback", () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const stubRlPath =
-      sinon.stub(readline, "questionPath").returns(editorPath);
-    const stubRlQues = sinon.stub(readline, "question").returns("");
+    const stubRl = sinon.stub(readline, "question");
+    stubRl.onFirstCall().returns(editorPath);
+    stubRl.onSecondCall().returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, "withexeditorhost-test")
@@ -363,16 +352,13 @@ describe("handleSetupCallback", () => {
     assert.strictEqual(setupOpts.get("configPath"), configDirPath);
     assert.strictEqual(setupOpts.get("editorFilePath"), editorPath);
     assert.deepEqual(setupOpts.get("editorCmdArgs"), ["foo", "bar", "baz"]);
-    assert.isFalse(stubRlPath.called);
-    assert.isFalse(stubRlQues.called);
     assert.isFalse(stubRlKey.called);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
     assert.strictEqual(info, `Created: ${filePath}`);
     assert.isTrue(isFile(filePath));
     assert.strictEqual(res, filePath);
-    stubRlPath.restore();
-    stubRlQues.restore();
+    stubRl.restore();
     stubRlKey.restore();
   });
 });
