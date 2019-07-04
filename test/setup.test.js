@@ -328,7 +328,7 @@ describe("handleSetupCallback", () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const stubRl = sinon.stub(readline, "question")
+    const stubRl = sinon.stub(readline, "question");
     stubRl.onFirstCall().returns(editorPath);
     stubRl.onSecondCall().returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
