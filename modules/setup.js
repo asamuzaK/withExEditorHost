@@ -58,9 +58,7 @@ const handleEditorPathInput = async editorFilePath => {
   if (isFile(editorFilePath) && isExecutable(editorFilePath)) {
     editorPath = editorFilePath;
   } else {
-    const ans = readline.questionPath("Input editor path: ", {
-      isFile: true,
-    });
+    const ans = readline.question("Input editor path: ");
     if (isExecutable(ans)) {
       editorPath = ans;
     } else {
