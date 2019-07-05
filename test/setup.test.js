@@ -214,6 +214,7 @@ describe("handleSetupCallback", () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     const stubRl = sinon.stub(readline, "question");
+    const i = stubRl.callCount;
     stubRl.onFirstCall().returns(editorPath);
     stubRl.onSecondCall().returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
@@ -227,6 +228,7 @@ describe("handleSetupCallback", () => {
     stubInfo.restore();
     stubExit.restore();
     assert.strictEqual(setupOpts.get("configPath"), configDirPath);
+    assert.strictEqual(stubRl.callCount, i + 2);
     assert.isFalse(stubRlKey.called);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
@@ -249,6 +251,7 @@ describe("handleSetupCallback", () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     const stubRl = sinon.stub(readline, "question");
+    const i = stubRl.callCount;
     stubRl.onFirstCall().returns(editorPath);
     stubRl.onSecondCall().returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(false);
@@ -267,6 +270,7 @@ describe("handleSetupCallback", () => {
     stubInfo.restore();
     stubExit.restore();
     assert.strictEqual(setupOpts.get("configPath"), configDirPath);
+    assert.strictEqual(stubRl.callCount, i);
     assert.isTrue(stubRlKey.calledOnce);
     assert.isTrue(infoCalled);
     assert.isTrue(exitCalled);
@@ -289,6 +293,7 @@ describe("handleSetupCallback", () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     const stubRl = sinon.stub(readline, "question");
+    const i = stubRl.callCount;
     stubRl.onFirstCall().returns(editorPath);
     stubRl.onSecondCall().returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
@@ -307,6 +312,7 @@ describe("handleSetupCallback", () => {
     stubInfo.restore();
     stubExit.restore();
     assert.strictEqual(setupOpts.get("configPath"), configDirPath);
+    assert.strictEqual(stubRl.callCount, i + 2);
     assert.isTrue(stubRlKey.calledOnce);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
@@ -329,6 +335,7 @@ describe("handleSetupCallback", () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     const stubRl = sinon.stub(readline, "question");
+    const i = stubRl.callCount;
     stubRl.onFirstCall().returns(editorPath);
     stubRl.onSecondCall().returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
@@ -352,6 +359,7 @@ describe("handleSetupCallback", () => {
     assert.strictEqual(setupOpts.get("configPath"), configDirPath);
     assert.strictEqual(setupOpts.get("editorFilePath"), editorPath);
     assert.deepEqual(setupOpts.get("editorCmdArgs"), ["foo", "bar", "baz"]);
+    assert.strictEqual(stubRl.callCount, i);
     assert.isFalse(stubRlKey.called);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
