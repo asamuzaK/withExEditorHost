@@ -5,8 +5,8 @@ const {
   editorConfig, fileMap,
   addProcessListeners, createTmpFile, createTmpFileResMsg, deleteKeyFromFileMap,
   exportAppStatus, exportEditorConfig, exportFileData, exportHostVersion,
-  getEditorConfig, getFileIdFromFilePath, getTmpFileFromFileData,
-  getTmpFileFromWatcherFileName,
+  getEditorConfig, getFileIdFromFilePath,
+  getTmpFileFromFileData, getTmpFileFromWatcherFileName,
   handleChildProcessErr, handleChildProcessStderr, handleChildProcessStdout,
   handleCreatedTmpFile, handleExit, handleMsg, handleReject, hostMsg,
   initPrivateTmpDir, readStdin, removeTmpFileData, spawnChildProcess,
@@ -27,9 +27,9 @@ const {afterEach, beforeEach, describe, it} = require("mocha");
 const childProcess = require("child_process");
 const fs = require("fs");
 const os = require("os");
-const packageJson = require("package-json");
 const path = require("path");
 const process = require("process");
+const rewiremock = require("rewiremock/node");
 const sinon = require("sinon");
 
 /* constant */
@@ -259,6 +259,125 @@ describe("exportFileData", () => {
   });
 });
 
+describe("getLatestHostVersion", () => {
+  it("should get result", async () => {
+    const stubWrite = sinon.stub(process.stdout, "write");
+    const {
+      major, minor, patch,
+    } = await parseSemVer(hostVersion);
+    const stubCreateAgent = sinon.stub().resolves({});
+    const stubGlobalAgent = {
+      createGlobalProxyAgent: stubCreateAgent,
+    };
+    const stubPackageJson = sinon.stub();
+    stubPackageJson.withArgs(hostName).resolves({
+      version: `${major}.${minor}.${patch + 1}`,
+    });
+    stubPackageJson.withArgs(hostName, {
+      agent: {},
+    }).resolves({
+      version: `${major}.${minor}.${patch + 2}`,
+    });
+    rewiremock("global-agent").with(stubGlobalAgent);
+    rewiremock("package-json").with(stubPackageJson);
+    rewiremock.enable();
+    const mainJs = require("../modules/main");
+    const res = await mainJs.getLatestHostVersion();
+    const {calledOnce: createCalled} = stubCreateAgent;
+    const {calledOnce: pjCalled} = stubPackageJson;
+    const {called: writeCalled} = stubWrite;
+    stubWrite.restore();
+    rewiremock.disable();
+    if (process.env.HTTP_PROXY || process.env.http_proxy ||
+        process.env.HTTPS_PROXY || process.env.https_proxy) {
+      assert.isTrue(createCalled);
+      assert.isTrue(pjCalled);
+      assert.strictEqual(res, `${major}.${minor}.${patch + 2}`);
+    } else {
+      assert.isFalse(createCalled);
+      assert.isTrue(pjCalled);
+      assert.strictEqual(res, `${major}.${minor}.${patch + 1}`);
+    }
+    assert.isFalse(writeCalled);
+  });
+
+  it("should write stdout", async () => {
+    let msg;
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => {
+      msg = buf;
+      return buf;
+    });
+    const stubPackageJson = sinon.stub().rejects(new Error("error"));
+    rewiremock("package-json").with(stubPackageJson);
+    rewiremock.enable();
+    const mainJs = require("../modules/main");
+    const res = await mainJs.getLatestHostVersion();
+    rewiremock.disable();
+    const {calledOnce: writeCalled} = stubWrite;
+    stubWrite.restore();
+    const [obj] = (new Input()).decode(msg);
+    assert.isTrue(stubPackageJson.calledOnce);
+    assert.isNull(res);
+    assert.isTrue(writeCalled);
+    assert.deepEqual(obj, {
+      [hostName]: {
+        message: "error",
+        status: "error",
+      },
+    });
+  });
+});
+
+describe("getLatestHostVersion, proxy", () => {
+  let proxy;
+  beforeEach(() => {
+    if (process.env.HTTP_PROXY) {
+      proxy = process.env.HTTP_PROXY;
+    } else {
+      process.env.HTTP_PROXY = "http://localhost:8080";
+    }
+  });
+  afterEach(() => {
+    if (proxy) {
+      process.env.HTTP_PROXY = proxy;
+    } else {
+      delete process.env.HTTP_PROXY;
+    }
+  });
+
+  it("should get result", async () => {
+    assert.strictEqual(process.env.HTTP_PROXY, "http://localhost:8080");
+    const stubWrite = sinon.stub(process.stdout, "write");
+    const {
+      major, minor, patch,
+    } = await parseSemVer(hostVersion);
+    const latest = `${major}.${minor}.${patch + 1}`;
+    const stubCreateAgent = sinon.stub().resolves({});
+    const stubGlobalAgent = {
+      createGlobalProxyAgent: stubCreateAgent,
+    };
+    const stubPackageJson = sinon.stub().withArgs(hostName, {
+      agent: {},
+    }).resolves({
+      version: latest,
+    });
+    rewiremock("global-agent").with(stubGlobalAgent);
+    rewiremock("package-json").with(stubPackageJson);
+    rewiremock.enable();
+    const mainJs = require("../modules/main");
+    const res = await mainJs.getLatestHostVersion();
+    const {calledOnce: createCalled} = stubCreateAgent;
+    const {calledOnce: pjCalled} = stubPackageJson;
+    const {called: writeCalled} = stubWrite;
+    stubWrite.restore();
+    rewiremock.disable();
+    assert.isTrue(createCalled);
+    assert.isTrue(pjCalled);
+    assert.strictEqual(res, latest);
+    assert.isFalse(writeCalled);
+  });
+});
+
 describe("exportHostVersion", () => {
   it("should throw", async () => {
     await exportHostVersion().catch(e => {
@@ -284,13 +403,22 @@ describe("exportHostVersion", () => {
       major, minor, patch,
     } = await parseSemVer(hostVersion);
     const ver = `${major > 0 && major - 1 || 0}.${minor}.${patch}`;
-    const {version: latest} = await packageJson(hostName);
+    const latest = `${major}.${minor}.${patch + 1}`;
     const currentResult = await compareSemVer(hostVersion, latest);
     const isLatest = currentResult >= 0;
-    const res = await exportHostVersion(ver);
+    const stubPackageJson = sinon.stub().resolves({
+      version: latest,
+    });
+    rewiremock("package-json").with(stubPackageJson);
+    rewiremock.enable();
+    const mainJs = require("../modules/main");
+    const res = await mainJs.exportHostVersion(ver);
+    const {calledOnce: pjCalled} = stubPackageJson;
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
+    rewiremock.disable();
     const [obj] = (new Input()).decode(msg);
+    assert.isTrue(pjCalled);
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
     assert.isAbove(obj.hostVersion.result, 0);
@@ -308,13 +436,22 @@ describe("exportHostVersion", () => {
       major, minor, patch,
     } = await parseSemVer(hostVersion);
     const ver = `${major}.${minor}.${patch + 1}`;
-    const {version: latest} = await packageJson(hostName);
+    const latest = `${major}.${minor}.${patch + 1}`;
     const currentResult = await compareSemVer(hostVersion, latest);
     const isLatest = currentResult >= 0;
-    const res = await exportHostVersion(ver);
+    const stubPackageJson = sinon.stub().resolves({
+      version: latest,
+    });
+    rewiremock("package-json").with(stubPackageJson);
+    rewiremock.enable();
+    const mainJs = require("../modules/main");
+    const res = await mainJs.exportHostVersion(ver);
+    const {calledOnce: pjCalled} = stubPackageJson;
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
+    rewiremock.disable();
     const [obj] = (new Input()).decode(msg);
+    assert.isTrue(pjCalled);
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
     assert.isBelow(obj.hostVersion.result, 0);
@@ -328,18 +465,54 @@ describe("exportHostVersion", () => {
       msg = buf;
       return buf;
     });
-    const {version: latest} = await packageJson(hostName);
+    const {
+      major, minor, patch,
+    } = await parseSemVer(hostVersion);
+    const latest = `${major}.${minor}.${patch + 1}`;
     const currentResult = await compareSemVer(hostVersion, latest);
     const isLatest = currentResult >= 0;
-    const res = await exportHostVersion(hostVersion);
+    const stubPackageJson = sinon.stub().resolves({
+      version: latest,
+    });
+    rewiremock("package-json").with(stubPackageJson);
+    rewiremock.enable();
+    const mainJs = require("../modules/main");
+    const res = await mainJs.exportHostVersion(hostVersion);
+    const {calledOnce: pjCalled} = stubPackageJson;
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
+    rewiremock.disable();
     const [obj] = (new Input()).decode(msg);
+    assert.isTrue(pjCalled);
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
     assert.strictEqual(obj.hostVersion.result, 0);
     assert.strictEqual(obj.hostVersion.latest, latest);
     assert.strictEqual(obj.hostVersion.isLatest, isLatest);
+  });
+
+  it("should call function", async () => {
+    let msg;
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => {
+      msg = buf;
+      return buf;
+    });
+    const stubPackageJson = sinon.stub().resolves({});
+    rewiremock("package-json").with(stubPackageJson);
+    rewiremock.enable();
+    const mainJs = require("../modules/main");
+    const res = await mainJs.exportHostVersion(hostVersion);
+    const {calledOnce: pjCalled} = stubPackageJson;
+    const {calledOnce: writeCalled} = stubWrite;
+    stubWrite.restore();
+    rewiremock.disable();
+    const [obj] = (new Input()).decode(msg);
+    assert.isTrue(pjCalled);
+    assert.isTrue(writeCalled);
+    assert.isTrue(Buffer.isBuffer(res));
+    assert.strictEqual(obj.hostVersion.result, 0);
+    assert.isNull(obj.hostVersion.latest);
+    assert.isUndefined(obj.hostVersion.isLatest);
   });
 });
 
@@ -1695,7 +1868,10 @@ describe("handleMsg", () => {
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const {version: latest} = await packageJson(hostName);
+    const {
+      major, minor, patch,
+    } = await parseSemVer(hostVersion);
+    const latest = `${major}.${minor}.${patch + 1}`;
     const currentResult = await compareSemVer(hostVersion, latest);
     const isLatest = currentResult >= 0;
     const msg = (new Output()).encode({
@@ -1705,11 +1881,20 @@ describe("handleMsg", () => {
         result: 0,
       },
     });
-    const res = await handleMsg({
+    const stubPackageJson = sinon.stub().resolves({
+      version: latest,
+    });
+    rewiremock("package-json").with(stubPackageJson);
+    rewiremock.enable();
+    const mainJs = require("../modules/main");
+    const res = await mainJs.handleMsg({
       [HOST_VERSION_CHECK]: hostVersion,
     });
+    const {calledOnce: pjCalled} = stubPackageJson;
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
+    rewiremock.disable();
+    assert.isTrue(pjCalled);
     assert.isTrue(writeCalled);
     assert.deepEqual(res, [msg]);
   });

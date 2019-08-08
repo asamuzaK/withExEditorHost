@@ -14,6 +14,7 @@ const {
   compareSemVer, isValidSemVer,
 } = require("semver-parser");
 const {getType, isObjectNotEmpty, isString} = require("./common");
+const {createGlobalProxyAgent} = require("global-agent");
 const {name: hostName, version: hostVersion} = require("../package.json");
 const {watch} = require("fs");
 const os = require("os");
@@ -155,7 +156,32 @@ const exportFileData = async (obj = {}) => {
   return func || null;
 };
 
-/* export host version
+/**
+ * get latest host version
+ * @returns {?string} - latest version string
+ */
+const getLatestHostVersion = async () => {
+  let latest;
+  try {
+    let opt;
+    if (process.env.HTTPS_PROXY || process.env.https_proxy ||
+        process.env.HTTP_PROXY || process.env.http_proxy) {
+      const agent = await createGlobalProxyAgent();
+      opt = {
+        agent,
+      };
+    }
+    const {version: latestVersion} = await packageJson(hostName, opt);
+    latest = latestVersion;
+  } catch (e) {
+    const msg = (new Output()).encode(hostMsg(e.message, "error"));
+    process.stdout.write(msg);
+  }
+  return latest || null;
+};
+
+/**
+ * export host version
  * @param {string} minVer - required min version
  * @returns {AsyncFunction} - writeStdout()
  */
@@ -166,10 +192,13 @@ const exportHostVersion = async minVer => {
   if (!isValidSemVer(minVer)) {
     throw new Error(`${minVer} is not valid SemVer.`);
   }
-  const {version: latest} = await packageJson(hostName);
   const result = await compareSemVer(hostVersion, minVer);
-  const currentResult = await compareSemVer(hostVersion, latest);
-  const isLatest = currentResult >= 0;
+  const latest = await getLatestHostVersion();
+  let isLatest;
+  if (latest) {
+    const currentResult = await compareSemVer(hostVersion, latest);
+    isLatest = currentResult >= 0;
+  }
   const msg = {
     [HOST_VERSION]: {
       isLatest,
@@ -670,8 +699,8 @@ module.exports = {
   editorConfig, fileMap,
   addProcessListeners, createTmpFile, createTmpFileResMsg, deleteKeyFromFileMap,
   exportAppStatus, exportEditorConfig, exportFileData, exportHostVersion,
-  getEditorConfig, getFileIdFromFilePath, getTmpFileFromFileData,
-  getTmpFileFromWatcherFileName,
+  getEditorConfig, getFileIdFromFilePath, getLatestHostVersion,
+  getTmpFileFromFileData, getTmpFileFromWatcherFileName,
   handleChildProcessErr, handleChildProcessStderr, handleChildProcessStdout,
   handleCreatedTmpFile, handleExit, handleMsg, handleReject, hostMsg,
   initPrivateTmpDir, readStdin, removeTmpFileData, spawnChildProcess,
