@@ -40,12 +40,12 @@
     "zippackage:win64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
   "dependencies": {
-    "commander": "^2.20.0",
+    "commander": "^3.0.0",
     "global-agent": "^2.0.1",
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
-    "semver-parser": "^3.0.1",
-    "web-ext-native-msg": "^4.2.2"
+    "semver-parser": "^3.0.2",
+    "web-ext-native-msg": "^4.2.3"
   },
   "devDependencies": {
     "chai": "^4.2.0",
@@ -57,7 +57,7 @@
     "nyc": "^14.1.1",
     "rewiremock": "^3.13.7",
     "rimraf": "^2.6.3",
-    "sinon": "^7.4.0"
+    "sinon": "^7.4.1"
   },
-  "version": "5.1.5-a.2"
+  "version": "5.1.5"
 }
