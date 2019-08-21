@@ -662,6 +662,36 @@ describe("spawnChildProcess", () => {
     stubSpawn.restore();
     assert.isFalse(writeCalled);
     assert.isTrue(spawnCalled);
+    assert.deepEqual(editorConfig.cmdArgs, []);
+    assert.isObject(res);
+  });
+
+  it("should call function", async () => {
+    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const stubSpawn = sinon.stub(childProcess, "spawn").returns({
+      on: a => a,
+      stderr: {
+        on: a => a,
+      },
+      stdout: {
+        on: a => a,
+      },
+    });
+    const filePath = path.resolve(path.join("test", "file", "test.txt"));
+    const app = IS_WIN && "test.cmd" || "test.sh";
+    const editorPath = path.resolve(path.join("test", "file", app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    editorConfig.cmdArgs = "";
+    const res = await spawnChildProcess(filePath, editorPath);
+    const {called: writeCalled} = stubWrite;
+    const {calledOnce: spawnCalled} = stubSpawn;
+    stubWrite.restore();
+    stubSpawn.restore();
+    assert.isFalse(writeCalled);
+    assert.isTrue(spawnCalled);
+    assert.deepEqual(editorConfig.cmdArgs, "");
     assert.isObject(res);
   });
 
