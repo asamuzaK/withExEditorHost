@@ -271,7 +271,13 @@ const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
   if (!isExecutable(app)) {
     throw new Error("Application is not executable.");
   }
-  const args = (new CmdArgs(editorConfig.cmdArgs)).toArray();
+  const {cmdArgs} = editorConfig;
+  let args;
+  if (Array.isArray(cmdArgs)) {
+    args = cmdArgs.slice();
+  } else {
+    args = (new CmdArgs(cmdArgs)).toArray();
+  }
   const opt = {
     cwd: null,
     encoding: CHAR,
