@@ -40,7 +40,7 @@
     "zippackage:win64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
   "dependencies": {
-    "commander": "^3.0.0",
+    "commander": "^3.0.1",
     "global-agent": "^2.0.2",
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "eslint": "^6.2.1",
+    "eslint": "^6.3.0",
     "jszip-cli": "^1.4.24",
     "mocha": "^6.2.0",
     "nexe": "^3.3.2",
