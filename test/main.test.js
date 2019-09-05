@@ -1767,6 +1767,36 @@ describe("viewLocalFile", () => {
     assert.isTrue(spawnCalled);
     assert.isObject(res);
   });
+
+  it("should get null if file does not exist", async () => {
+    const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const stubSpawn = sinon.stub(childProcess, "spawn").returns({
+      on: a => a,
+      stderr: {
+        on: a => a,
+      },
+      stdout: {
+        on: a => a,
+      },
+    });
+    const filePath = path.resolve(path.join("test", "file", "foo.txt"));
+    const filePathname = filePath.split(path.sep).join("/");
+    const fileUrl = `file://${IS_WIN && "/" || ""}${filePathname}`;
+    const app = IS_WIN && "test.cmd" || "test.sh";
+    const editorPath = path.resolve(path.join("test", "file", app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    editorConfig.editorPath = editorPath;
+    const res = await viewLocalFile(fileUrl);
+    const {called: writeCalled} = stubWrite;
+    const {calledOnce: spawnCalled} = stubSpawn;
+    stubWrite.restore();
+    stubSpawn.restore();
+    assert.isFalse(writeCalled);
+    assert.isFalse(spawnCalled);
+    assert.isNull(res);
+  });
 });
 
 describe("handleCreatedTmpFile", () => {
@@ -1981,38 +2011,6 @@ describe("handleMsg", () => {
     assert.isFalse(writeCalled);
     assert.isTrue(spawnCalled);
     assert.isObject(res);
-  });
-
-  it("should not call function", async () => {
-    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const stubSpawn = sinon.stub(childProcess, "spawn").returns({
-      on: a => a,
-      stderr: {
-        on: a => a,
-      },
-      stdout: {
-        on: a => a,
-      },
-    });
-    const filePath = path.resolve(path.join("test", "file", "foo.txt"));
-    const filePathname = filePath.split(path.sep).join("/");
-    const fileUrl = `file://${IS_WIN && "/" || ""}${filePathname}`;
-    const app = IS_WIN && "test.cmd" || "test.sh";
-    const editorPath = path.resolve(path.join("test", "file", app));
-    if (!IS_WIN) {
-      fs.chmodSync(editorPath, PERM_APP);
-    }
-    editorConfig.editorPath = editorPath;
-    const [res] = await handleMsg({
-      [LOCAL_FILE_VIEW]: fileUrl,
-    });
-    const {called: writeCalled} = stubWrite;
-    const {called: spawnCalled} = stubSpawn;
-    stubWrite.restore();
-    stubSpawn.restore();
-    assert.isFalse(writeCalled);
-    assert.isFalse(spawnCalled);
-    assert.isNull(res);
   });
 
   it("should call function", async () => {
