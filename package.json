@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "commander": "^3.0.1",
-    "global-agent": "^2.0.2",
+    "global-agent": "^2.1.0",
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
     "semver-parser": "^3.0.3",
@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "eslint": "^6.3.0",
+    "eslint": "^6.4.0",
     "jszip-cli": "^1.4.24",
     "mocha": "^6.2.0",
     "nexe": "^3.3.2",
