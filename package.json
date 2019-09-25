@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "commander": "^3.0.1",
-    "global-agent": "^2.1.0",
+    "global-agent": "^2.1.1",
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
     "semver-parser": "^3.0.3",
@@ -57,7 +57,7 @@
     "nyc": "^14.1.1",
     "rewiremock": "^3.13.7",
     "rimraf": "^3.0.0",
-    "sinon": "^7.4.2"
+    "sinon": "^7.5.0"
   },
   "version": "5.1.8"
 }
