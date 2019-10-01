@@ -43,7 +43,7 @@ const handleCmdArgsInput = async editorArgs => {
     cmdArgs = editorArgs;
   } else {
     const ans = readline.question("Input command line options: ");
-    cmdArgs = (new CmdArgs(ans.trim())).toArray();
+    cmdArgs = new CmdArgs(ans.trim()).toArray();
   }
   return cmdArgs;
 };
@@ -112,7 +112,7 @@ const handleSetupCallback = (info = {}) => {
     setupOpts.set("editorFilePath", editorPath.trim());
   }
   if (isString(editorArgs)) {
-    setupOpts.set("editorCmdArgs", (new CmdArgs(editorArgs.trim())).toArray());
+    setupOpts.set("editorCmdArgs", new CmdArgs(editorArgs.trim()).toArray());
   }
   if (isFile(file) && !overwriteEditorConfig) {
     const ans = readline.keyInYNStrict(`${file} already exists.\nOverwrite?`);

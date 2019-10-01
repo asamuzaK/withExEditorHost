@@ -69,12 +69,12 @@ const handleReject = e => {
   let msg;
   if (e) {
     if (e.message) {
-      msg = (new Output()).encode(e.message);
+      msg = new Output().encode(e.message);
     } else {
-      msg = (new Output()).encode(e);
+      msg = new Output().encode(e);
     }
   } else {
-    msg = (new Output()).encode("unknown error.");
+    msg = new Output().encode("unknown error.");
   }
   process.stderr.write(msg);
   return false;
@@ -87,7 +87,7 @@ const handleReject = e => {
  */
 const writeStdout = async msg => {
   let func;
-  msg = (new Output()).encode(msg);
+  msg = new Output().encode(msg);
   if (msg) {
     func = process.stdout.write(msg);
   }
@@ -125,7 +125,7 @@ const exportEditorConfig = async (data, editorConfigPath) => {
         editorConfig[key] = value;
       }
       if (key === "cmdArgs") {
-        editorConfig[key] = (new CmdArgs(value)).toArray();
+        editorConfig[key] = new CmdArgs(value).toArray();
       }
     }
     const msg = {
@@ -174,7 +174,7 @@ const getLatestHostVersion = async () => {
     const {version: latestVersion} = await packageJson(hostName, opt);
     latest = latestVersion;
   } catch (e) {
-    const msg = (new Output()).encode(hostMsg(e.message, "error"));
+    const msg = new Output().encode(hostMsg(e.message, "error"));
     process.stdout.write(msg);
   }
   return latest || null;
@@ -220,12 +220,12 @@ const handleChildProcessErr = e => {
   let msg;
   if (e) {
     if (e.message) {
-      msg = (new Output()).encode(e.message);
+      msg = new Output().encode(e.message);
     } else {
-      msg = (new Output()).encode(e);
+      msg = new Output().encode(e);
     }
   } else {
-    msg = (new Output()).encode("unknown error");
+    msg = new Output().encode("unknown error");
   }
   process.stderr.write(msg);
 };
@@ -237,7 +237,7 @@ const handleChildProcessErr = e => {
  */
 const handleChildProcessStderr = data => {
   if (data) {
-    const msg = (new Output()).encode(
+    const msg = new Output().encode(
       hostMsg(data.toString(), `${PROCESS_CHILD}_stderr`)
     );
     process.stdout.write(msg);
@@ -251,7 +251,7 @@ const handleChildProcessStderr = data => {
  */
 const handleChildProcessStdout = data => {
   if (data) {
-    const msg = (new Output()).encode(
+    const msg = new Output().encode(
       hostMsg(data.toString(), `${PROCESS_CHILD}_stdout`)
     );
     process.stdout.write(msg);
@@ -276,14 +276,14 @@ const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
   if (Array.isArray(cmdArgs)) {
     args = cmdArgs.slice();
   } else {
-    args = (new CmdArgs(cmdArgs)).toArray();
+    args = new CmdArgs(cmdArgs).toArray();
   }
   const opt = {
     cwd: null,
     encoding: CHAR,
     env: process.env,
   };
-  const proc = await (new ChildProcess(app, args, opt)).spawn(file, true);
+  const proc = await new ChildProcess(app, args, opt).spawn(file, true);
   proc.on("error", handleChildProcessErr);
   proc.stderr.on("data", handleChildProcessStderr);
   proc.stdout.on("data", handleChildProcessStdout);
@@ -676,7 +676,7 @@ const handleExit = code => {
     removeDir(TMPDIR_APP, TMPDIR);
   }
   if (code) {
-    const msg = (new Output()).encode(hostMsg(`exit ${code}`, "exit"));
+    const msg = new Output().encode(hostMsg(`exit ${code}`, "exit"));
     msg && process.stdout.write(msg);
   }
 };

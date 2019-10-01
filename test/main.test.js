@@ -71,7 +71,7 @@ describe("handleReject", () => {
     const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => {
       err = buf;
     });
-    const msg = (new Output()).encode("unknown error.");
+    const msg = new Output().encode("unknown error.");
     const res = handleReject();
     const {called: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -86,7 +86,7 @@ describe("handleReject", () => {
       err = buf;
     });
     const e = "error";
-    const msg = (new Output()).encode("error");
+    const msg = new Output().encode("error");
     const res = handleReject(e);
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -101,7 +101,7 @@ describe("handleReject", () => {
       err = buf;
     });
     const e = new Error("error");
-    const msg = (new Output()).encode("error");
+    const msg = new Output().encode("error");
     const res = handleReject(e);
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -116,7 +116,7 @@ describe("handleReject", () => {
       err = buf;
     });
     const e = new TypeError("type error");
-    const msg = (new Output()).encode("type error");
+    const msg = new Output().encode("type error");
     const res = handleReject(e);
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -134,7 +134,7 @@ describe("writeStdout", () => {
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const msg = (new Output()).encode("foo");
+    const msg = new Output().encode("foo");
     const res = await writeStdout("foo");
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -146,7 +146,7 @@ describe("writeStdout", () => {
 describe("exportAppStatus", () => {
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       withexeditorhost: {
         message: EDITOR_CONFIG_GET,
         status: "ready",
@@ -200,7 +200,7 @@ describe("exportEditorConfig", () => {
       cmdArgs: ["--foo", "--bar"],
     };
     const value = `${JSON.stringify(editorConfigData)}\n`;
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [EDITOR_CONFIG_RES]: {
         editorName: "test",
         executable: true,
@@ -240,7 +240,7 @@ describe("exportFileData", () => {
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [TMP_FILE_DATA_PORT]: {
         data: {
           foo: "bar",
@@ -315,7 +315,7 @@ describe("getLatestHostVersion", () => {
     rewiremock.disable();
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
-    const [obj] = (new Input()).decode(msg);
+    const [obj] = new Input().decode(msg);
     assert.isTrue(stubPackageJson.calledOnce);
     assert.isNull(res);
     assert.isTrue(writeCalled);
@@ -417,7 +417,7 @@ describe("exportHostVersion", () => {
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
     rewiremock.disable();
-    const [obj] = (new Input()).decode(msg);
+    const [obj] = new Input().decode(msg);
     assert.isTrue(pjCalled);
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
@@ -450,7 +450,7 @@ describe("exportHostVersion", () => {
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
     rewiremock.disable();
-    const [obj] = (new Input()).decode(msg);
+    const [obj] = new Input().decode(msg);
     assert.isTrue(pjCalled);
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
@@ -482,7 +482,7 @@ describe("exportHostVersion", () => {
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
     rewiremock.disable();
-    const [obj] = (new Input()).decode(msg);
+    const [obj] = new Input().decode(msg);
     assert.isTrue(pjCalled);
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
@@ -506,7 +506,7 @@ describe("exportHostVersion", () => {
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
     rewiremock.disable();
-    const [obj] = (new Input()).decode(msg);
+    const [obj] = new Input().decode(msg);
     assert.isTrue(pjCalled);
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
@@ -522,7 +522,7 @@ describe("handleChildProcessErr", () => {
     const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => {
       info = buf;
     });
-    const msg = (new Output()).encode("unknown error");
+    const msg = new Output().encode("unknown error");
     await handleChildProcessErr();
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -535,7 +535,7 @@ describe("handleChildProcessErr", () => {
     const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => {
       info = buf;
     });
-    const msg = (new Output()).encode("error");
+    const msg = new Output().encode("error");
     await handleChildProcessErr("error");
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -548,7 +548,7 @@ describe("handleChildProcessErr", () => {
     const stubWrite = sinon.stub(process.stderr, "write").callsFake(buf => {
       info = buf;
     });
-    const msg = (new Output()).encode("error");
+    const msg = new Output().encode("error");
     await handleChildProcessErr(new Error("error"));
     const {calledOnce: writeCalled} = stubWrite;
     stubWrite.restore();
@@ -571,7 +571,7 @@ describe("handleChildProcessStderr", () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => {
       info = buf;
     });
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       withexeditorhost: {
         message: "foo",
         status: "childProcess_stderr",
@@ -599,7 +599,7 @@ describe("handleChildProcessStdout", () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => {
       info = buf;
     });
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       withexeditorhost: {
         message: "foo",
         status: "childProcess_stdout",
@@ -930,7 +930,7 @@ describe("getTmpFileFromFileData", () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const stubErrWrite =
       sinon.stub(process.stderr, "write").callsFake(buf => buf);
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [TMP_FILE_DATA_REMOVE]: {
         data: {
           timestamp: -1,
@@ -951,7 +951,7 @@ describe("getTmpFileFromFileData", () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const stubErrWrite =
       sinon.stub(process.stderr, "write").callsFake(buf => buf);
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [TMP_FILE_DATA_REMOVE]: {
         data: {
           timestamp: -1,
@@ -970,7 +970,7 @@ describe("getTmpFileFromFileData", () => {
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [TMP_FILE_DATA_REMOVE]: {
         data: {
           dataId: "foo",
@@ -978,7 +978,7 @@ describe("getTmpFileFromFileData", () => {
         },
       },
     });
-    const err = (new Output()).encode({
+    const err = new Output().encode({
       withexeditorhost: {
         message: "Failed to get temporary file. ID: foo",
         status: "warn",
@@ -1003,7 +1003,7 @@ describe("getTmpFileFromFileData", () => {
       tabId: "tabId",
       windowId: "windowId",
     };
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [TMP_FILE_DATA_REMOVE]: {
         data: {
           dataId: "foo",
@@ -1015,7 +1015,7 @@ describe("getTmpFileFromFileData", () => {
         },
       },
     });
-    const err = (new Output()).encode({
+    const err = new Output().encode({
       withexeditorhost: {
         message: "Failed to get temporary file. ID: foo",
         status: "warn",
@@ -1040,7 +1040,7 @@ describe("getTmpFileFromFileData", () => {
     };
     const filePath = path.resolve(path.join("test", "file", "foo.txt"));
     fileMap[TMP_FILES].set("windowId_tabId_host_foo", {filePath});
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [TMP_FILE_DATA_REMOVE]: {
         data: {
           dataId: "foo",
@@ -1052,7 +1052,7 @@ describe("getTmpFileFromFileData", () => {
         },
       },
     });
-    const err = (new Output()).encode({
+    const err = new Output().encode({
       withexeditorhost: {
         message: "Failed to get temporary file. ID: foo",
         status: "warn",
@@ -1079,7 +1079,7 @@ describe("getTmpFileFromFileData", () => {
     const filePath = path.resolve(path.join("test", "file", "test.txt"));
     const fileTimestamp = await getFileTimestamp(filePath);
     fileMap[TMP_FILES].set("windowId_tabId_host_foo", {filePath});
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [TMP_FILE_RES]: {
         data: {
           dataId: "foo",
@@ -1112,7 +1112,7 @@ describe("getTmpFileFromFileData", () => {
     const filePath = path.resolve(path.join("test", "file", "test.txt"));
     const fileTimestamp = await getFileTimestamp(filePath);
     fileMap[TMP_FILES_PB].set("windowId_tabId_host_foo", {filePath});
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [TMP_FILE_RES]: {
         data: {
           dataId: "foo",
@@ -1259,7 +1259,7 @@ describe("createTmpFileResMsg", () => {
                        {encoding: CHAR, flag: "w", mode: PERM_FILE});
     const timestamp = await getFileTimestamp(filePath);
     data.timestamp = timestamp;
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [TMP_FILE_RES]: {
         data, value,
       },
@@ -1335,7 +1335,7 @@ describe("getTmpFileFromWatcherFileName", () => {
     const filePath2 =
       path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "qux", "test.txt");
     data.timestamp = timestamp;
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [TMP_FILE_RES]: {
         data, value,
       },
@@ -1661,13 +1661,13 @@ describe("removeTmpFileData", () => {
 describe("getEditorConfig", () => {
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const err = (new Output()).encode({
+    const err = new Output().encode({
       withexeditorhost: {
         message: "No such file: undefined",
         status: "warn",
       },
     });
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [EDITOR_CONFIG_RES]: null,
     });
     const res = await getEditorConfig();
@@ -1681,13 +1681,13 @@ describe("getEditorConfig", () => {
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const editorConfigPath = path.resolve(path.join(".", "foo.json"));
-    const err = (new Output()).encode({
+    const err = new Output().encode({
       withexeditorhost: {
         message: `No such file: ${editorConfigPath}`,
         status: "warn",
       },
     });
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [EDITOR_CONFIG_RES]: null,
     });
     const res = await getEditorConfig(editorConfigPath);
@@ -1842,7 +1842,7 @@ describe("handleCreatedTmpFile", () => {
     const obj = {
       filePath, data,
     };
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [TMP_FILE_DATA_PORT]: {
         data,
       },
@@ -1871,7 +1871,7 @@ describe("handleMsg", () => {
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       withexeditorhost: {
         message: "No handler found for undefined.",
         status: "warn",
@@ -1888,7 +1888,7 @@ describe("handleMsg", () => {
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       withexeditorhost: {
         message: "No handler found for foo.",
         status: "warn",
@@ -1905,7 +1905,7 @@ describe("handleMsg", () => {
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       withexeditorhost: {
         message: "No handler found for foo.",
         status: "warn",
@@ -1939,7 +1939,7 @@ describe("handleMsg", () => {
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [TMP_FILE_DATA_REMOVE]: {
         data: {
           timestamp: -1,
@@ -2021,7 +2021,7 @@ describe("handleMsg", () => {
     const latest = `${major}.${minor}.${patch + 1}`;
     const currentResult = await compareSemVer(hostVersion, latest);
     const isLatest = currentResult >= 0;
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [HOST_VERSION]: {
         isLatest,
         latest,
@@ -2049,13 +2049,13 @@ describe("handleMsg", () => {
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const editorConfigPath = path.resolve(path.join(".", EDITOR_CONFIG_FILE));
-    const err = (new Output()).encode({
+    const err = new Output().encode({
       withexeditorhost: {
         message: `No such file: ${editorConfigPath}`,
         status: "warn",
       },
     });
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       [EDITOR_CONFIG_RES]: null,
     });
     const res = await handleMsg({
@@ -2071,17 +2071,17 @@ describe("handleMsg", () => {
 
 describe("readStdin", () => {
   it("should get null", async () => {
-    const chunk = (new Output()).encode("");
+    const chunk = new Output().encode("");
     const res = await readStdin(chunk);
     assert.isNull(res);
   });
 
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
-    const chunk = (new Output()).encode({
+    const chunk = new Output().encode({
       foo: "bar",
     });
-    const msg = (new Output()).encode({
+    const msg = new Output().encode({
       withexeditorhost: {
         message: "No handler found for foo.",
         status: "warn",
