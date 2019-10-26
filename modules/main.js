@@ -238,7 +238,7 @@ const handleChildProcessErr = e => {
 const handleChildProcessStderr = data => {
   if (data) {
     const msg = new Output().encode(
-      hostMsg(data.toString(), `${PROCESS_CHILD}_stderr`)
+      hostMsg(data.toString(), `${PROCESS_CHILD}_stderr`),
     );
     process.stdout.write(msg);
   }
@@ -252,7 +252,7 @@ const handleChildProcessStderr = data => {
 const handleChildProcessStdout = data => {
   if (data) {
     const msg = new Output().encode(
-      hostMsg(data.toString(), `${PROCESS_CHILD}_stdout`)
+      hostMsg(data.toString(), `${PROCESS_CHILD}_stdout`),
     );
     process.stdout.write(msg);
   }
@@ -378,7 +378,7 @@ const getTmpFileFromFileData = async (fileData = {}) => {
     func.push(writeStdout(msg));
     if (dataId) {
       func.push(writeStdout(
-        hostMsg(`Failed to get temporary file. ID: ${dataId}`, "warn")
+        hostMsg(`Failed to get temporary file. ID: ${dataId}`, "warn"),
       ));
     }
   }
@@ -480,7 +480,7 @@ const createTmpFile = async (obj = {}) => {
     } = data;
     if (dataId && dir && extType && host && tabId && windowId) {
       const dirPath = await createDirectory(
-        path.join(TMPDIR_APP, dir, windowId, tabId, host), PERM_DIR
+        path.join(TMPDIR_APP, dir, windowId, tabId, host), PERM_DIR,
       );
       const fileId = [windowId, tabId, host, dataId].join("_");
       const fileName = dataId && encodeURIComponent(dataId);
@@ -637,7 +637,7 @@ const handleMsg = async msg => {
           break;
         default:
           func.push(
-            writeStdout(hostMsg(`No handler found for ${key}.`, "warn"))
+            writeStdout(hostMsg(`No handler found for ${key}.`, "warn")),
           );
       }
     }

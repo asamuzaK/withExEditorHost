@@ -1198,7 +1198,7 @@ describe("createTmpFileResMsg", () => {
 
   it("should get null", async () => {
     const res = await createTmpFileResMsg(
-      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar.txt")
+      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar.txt"),
     );
     assert.isNull(res);
   });
@@ -1217,7 +1217,7 @@ describe("createTmpFileResMsg", () => {
   it("should get null", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const dir = await createDirectory(
-      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz")
+      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz"),
     );
     const value = "";
     const filePath =
@@ -1233,7 +1233,7 @@ describe("createTmpFileResMsg", () => {
   it("should get null", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const dir = await createDirectory(
-      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz")
+      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz"),
     );
     const value = "";
     const filePath =
@@ -1250,7 +1250,7 @@ describe("createTmpFileResMsg", () => {
   it("should call function", async () => {
     const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
     const dir = await createDirectory(
-      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz")
+      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz"),
     );
     const data = {};
     const value = "";
@@ -1305,7 +1305,7 @@ describe("getTmpFileFromWatcherFileName", () => {
   it("should get empty array", async () => {
     const stubClose = sinon.stub();
     const dir = await createDirectory(
-      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz")
+      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz"),
     );
     const value = "";
     const filePath =
@@ -1324,7 +1324,7 @@ describe("getTmpFileFromWatcherFileName", () => {
     const stubClose = sinon.stub();
     const stubClose2 = sinon.stub();
     const dir = await createDirectory(
-      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz")
+      path.join(TMPDIR_APP, TMP_FILES, "foo", "bar", "baz"),
     );
     const data = {};
     const value = "";

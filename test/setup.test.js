@@ -153,7 +153,7 @@ describe("createEditorConfig", () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     const configPath = await createDirectory(
-      path.join(DIR_TMP, "withexeditorhost-test")
+      path.join(DIR_TMP, "withexeditorhost-test"),
     );
     const filePath = path.join(configPath, EDITOR_CONFIG_FILE);
     setupOpts.set("configPath", configPath);
@@ -219,7 +219,7 @@ describe("handleSetupCallback", () => {
     stubRl.onSecondCall().returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
     const configDirPath = await createDirectory(
-      path.join(DIR_TMP, "withexeditorhost-test")
+      path.join(DIR_TMP, "withexeditorhost-test"),
     );
     const filePath = path.join(configDirPath, EDITOR_CONFIG_FILE);
     const res = await handleSetupCallback({configDirPath});
@@ -256,7 +256,7 @@ describe("handleSetupCallback", () => {
     stubRl.onSecondCall().returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(false);
     const configDirPath = await createDirectory(
-      path.join(DIR_TMP, "withexeditorhost-test")
+      path.join(DIR_TMP, "withexeditorhost-test"),
     );
     const filePath = path.join(configDirPath, EDITOR_CONFIG_FILE);
     const content = `${JSON.stringify({}, null, INDENT)}\n`;
@@ -298,7 +298,7 @@ describe("handleSetupCallback", () => {
     stubRl.onSecondCall().returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
     const configDirPath = await createDirectory(
-      path.join(DIR_TMP, "withexeditorhost-test")
+      path.join(DIR_TMP, "withexeditorhost-test"),
     );
     const filePath = path.join(configDirPath, EDITOR_CONFIG_FILE);
     const content = `${JSON.stringify({}, null, INDENT)}\n`;
@@ -340,7 +340,7 @@ describe("handleSetupCallback", () => {
     stubRl.onSecondCall().returns("");
     const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
     const configDirPath = await createDirectory(
-      path.join(DIR_TMP, "withexeditorhost-test")
+      path.join(DIR_TMP, "withexeditorhost-test"),
     );
     const filePath = path.join(configDirPath, EDITOR_CONFIG_FILE);
     const content = `${JSON.stringify({}, null, INDENT)}\n`;
