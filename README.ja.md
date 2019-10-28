@@ -15,18 +15,18 @@
 
 ## ブラウザサポート状況
 
-|Browser      |Windows|Linux  |Mac    |
-|:------------|:-----:|:-----:|:-----:|
-|Firefox      |   ✓   |   ✓   |   ✓   |
-|Waterfox     |   ✓ *1|       |       |
-|Chrome       |   ✓   |   ✓   |   ✓   |
-|Chrome Canary|   ✓ *2|       |   ✓   |
-|Chromium     |       |   ✓   |   ✓   |
-|Brave        |   ✓ *2|   ✓   |       |
-|CentBrowser  |   ✓ *2|       |       |
-|Kinza        |   ✓ *2|       |       |
-|Opera        |   ✓ *2|       |   ✓ *2|
-|Vivaldi      |   ✓ *2|   ✓   |   ✓   |
+|Browser         |Windows|Linux  |Mac    |
+|:---------------|:-----:|:-----:|:-----:|
+|Firefox         |   ✓   |   ✓   |   ✓   |
+|Waterfox Current|   ✓   |   ✓   |   ✓   |
+|Chrome          |   ✓   |   ✓   |   ✓   |
+|Chrome Canary   |   ✓ *2|       |   ✓   |
+|Chromium        |       |   ✓   |   ✓   |
+|Brave           |   ✓ *2|   ✓   |       |
+|CentBrowser     |   ✓ *2|       |       |
+|Kinza           |   ✓ *2|       |       |
+|Opera           |   ✓ *2|       |   ✓ *2|
+|Vivaldi         |   ✓ *2|   ✓   |   ✓   |
 
 *1: Firefoxとホストを共有。
 *2: Chromeとホストを共有。

@@ -15,18 +15,18 @@ The browser interacts with the host via messages, and the editor is executed by 
 
 ## Supported browsers
 
-|Browser      |Windows|Linux  |Mac    |
-|:------------|:-----:|:-----:|:-----:|
-|Firefox      |   ✓   |   ✓   |   ✓   |
-|Waterfox     |   ✓ *1|       |       |
-|Chrome       |   ✓   |   ✓   |   ✓   |
-|Chrome Canary|   ✓ *2|       |   ✓   |
-|Chromium     |       |   ✓   |   ✓   |
-|Brave        |   ✓ *2|   ✓   |       |
-|CentBrowser  |   ✓ *2|       |       |
-|Kinza        |   ✓ *2|       |       |
-|Opera        |   ✓ *2|       |   ✓ *2|
-|Vivaldi      |   ✓ *2|   ✓   |   ✓   |
+|Browser         |Windows|Linux  |Mac    |
+|:---------------|:-----:|:-----:|:-----:|
+|Firefox         |   ✓   |   ✓   |   ✓   |
+|Waterfox Current|   ✓   |   ✓   |   ✓   |
+|Chrome          |   ✓   |   ✓   |   ✓   |
+|Chrome Canary   |   ✓ *2|       |   ✓   |
+|Chromium        |       |   ✓   |   ✓   |
+|Brave           |   ✓ *2|   ✓   |       |
+|CentBrowser     |   ✓ *2|       |       |
+|Kinza           |   ✓ *2|       |       |
+|Opera           |   ✓ *2|       |   ✓ *2|
+|Vivaldi         |   ✓ *2|   ✓   |   ✓   |
 
 *1: Shares host with Firefox.
 *2: Shares host with Chrome.
