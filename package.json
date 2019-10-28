@@ -44,7 +44,7 @@
     "global-agent": "^2.1.5",
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
-    "semver-parser": "^3.0.3",
+    "semver-parser": "^3.0.4",
     "web-ext-native-msg": "^4.4.0"
   },
   "devDependencies": {
