@@ -38,7 +38,7 @@ deploy:
     - dest/linux-x86.zip
   on:
     tags: true
-    node: "10"
+    node: "12"
     condition: "$TRAVIS_OS_NAME = linux"
 
 after_deploy:
