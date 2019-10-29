@@ -147,6 +147,11 @@ const runSetup = (cmdOpts = {}) => {
   const setup = new Setup(opt);
   if (isString(browser) && browser.length) {
     setup.browser = browser.trim();
+  } else {
+    const excludedBrowsers = ["thunderbird"];
+    setup.supportedBrowsers = setup.supportedBrowsers.filter(item =>
+      !excludedBrowsers.includes(item.toLowerCase()),
+    );
   }
   if (isString(configPath) && configPath.length) {
     setup.configPath = configPath.trim();
