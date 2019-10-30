@@ -22,7 +22,7 @@ The browser interacts with the host via messages, and the editor is executed by 
 |Chrome          |   ✓   |   ✓   |   ✓   |
 |Chrome Canary   |   ✓ *2|       |   ✓   |
 |Chromium        |       |   ✓   |   ✓   |
-|Brave           |   ✓ *2|   ✓   |       |
+|Brave           |   ✓ *2|   ✓   |   ✓   |
 |CentBrowser     |   ✓ *2|       |       |
 |Kinza           |   ✓ *2|       |       |
 |Opera           |   ✓ *2|       |   ✓ *2|
