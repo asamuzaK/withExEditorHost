@@ -28,7 +28,8 @@ const {
   FILE_WATCH, HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL,
   LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
   TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
-  TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES,
+  TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_PLACEHOLDER,
+  TMP_FILE_RES,
 } = require("./constant");
 const APP = `${process.pid}`;
 const CHAR = "utf8";
@@ -45,6 +46,7 @@ const TMPDIR_FILES_PB = path.join(TMPDIR_APP, TMP_FILES_PB);
 const editorConfig = {
   editorPath: "",
   cmdArgs: [],
+  hasPlaceholder: false,
 };
 
 /* output */
@@ -118,6 +120,8 @@ const exportEditorConfig = async (data, editorConfigPath) => {
     const editorName = await getFileNameFromFilePath(editorPath);
     const executable = isExecutable(editorPath);
     const timestamp = await getFileTimestamp(editorConfigPath);
+    const reg =
+      new RegExp(`\\$(?:${TMP_FILE_PLACEHOLDER}|{${TMP_FILE_PLACEHOLDER}})`);
     const keys = Object.keys(editorConfig);
     for (const key of keys) {
       const value = data[key];
@@ -126,6 +130,7 @@ const exportEditorConfig = async (data, editorConfigPath) => {
       }
       if (key === "cmdArgs") {
         editorConfig[key] = new CmdArgs(value).toArray();
+        editorConfig.hasPlaceholder = reg.test(value);
       }
     }
     const msg = {

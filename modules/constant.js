@@ -63,6 +63,7 @@ const TMP_FILE_CREATE = "createTmpFile";
 const TMP_FILE_DATA_PORT = "portTmpFileData";
 const TMP_FILE_DATA_REMOVE = "removeTmpFileData";
 const TMP_FILE_GET = "getTmpFile";
+const TMP_FILE_PLACEHOLDER = "file";
 const TMP_FILE_RES = "resTmpFile";
 const VARS_SET = "setVars";
 
@@ -127,6 +128,7 @@ module.exports = {
   TMP_FILE_DATA_PORT,
   TMP_FILE_DATA_REMOVE,
   TMP_FILE_GET,
+  TMP_FILE_PLACEHOLDER,
   TMP_FILE_RES,
   VARS_SET,
 };

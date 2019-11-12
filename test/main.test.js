@@ -1,4 +1,6 @@
-/* eslint-disable no-await-in-loop, no-magic-numbers */
+/*
+  eslint-disable no-await-in-loop, no-magic-numbers, no-template-curly-in-string
+*/
 "use strict";
 /* api */
 const {
@@ -164,10 +166,12 @@ describe("exportEditorConfig", () => {
   beforeEach(() => {
     editorConfig.editorPath = "";
     editorConfig.cmdArgs = [];
+    editorConfig.hasPlaceholder = false;
   });
   afterEach(() => {
     editorConfig.editorPath = "";
     editorConfig.cmdArgs = [];
+    editorConfig.hasPlaceholder = false;
   });
 
   it("should throw", async () => {
@@ -216,6 +220,118 @@ describe("exportEditorConfig", () => {
     assert.isFalse(errWriteCalled);
     assert.strictEqual(editorConfig.editorPath, editorPath);
     assert.deepEqual(editorConfig.cmdArgs, ["--foo", "--bar"]);
+    assert.isFalse(editorConfig.hasPlaceholder);
+    assert.deepEqual(res, msg);
+  });
+
+  it("should call function", async () => {
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
+    const stubErrWrite =
+      sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const editorConfigPath =
+      path.resolve(path.join("test", "file", "editorconfig.json"));
+    const timestamp = getFileTimestamp(editorConfigPath);
+    const app = IS_WIN && "test.cmd" || "test.sh";
+    const editorPath = path.resolve(path.join("test", "file", app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const editorConfigData = {
+      editorPath,
+      cmdArgs: ["--foo", "$file"],
+    };
+    const value = `${JSON.stringify(editorConfigData)}\n`;
+    const msg = new Output().encode({
+      [EDITOR_CONFIG_RES]: {
+        editorName: "test",
+        executable: true,
+        [EDITOR_CONFIG_TS]: timestamp,
+      },
+    });
+    const res = await exportEditorConfig(value, editorConfigPath);
+    const {calledOnce: writeCalled} = stubWrite;
+    const {called: errWriteCalled} = stubErrWrite;
+    stubWrite.restore();
+    stubErrWrite.restore();
+    assert.isTrue(writeCalled);
+    assert.isFalse(errWriteCalled);
+    assert.strictEqual(editorConfig.editorPath, editorPath);
+    assert.deepEqual(editorConfig.cmdArgs, ["--foo", "$file"]);
+    assert.isTrue(editorConfig.hasPlaceholder);
+    assert.deepEqual(res, msg);
+  });
+
+  it("should call function", async () => {
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
+    const stubErrWrite =
+      sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const editorConfigPath =
+      path.resolve(path.join("test", "file", "editorconfig.json"));
+    const timestamp = getFileTimestamp(editorConfigPath);
+    const app = IS_WIN && "test.cmd" || "test.sh";
+    const editorPath = path.resolve(path.join("test", "file", app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const editorConfigData = {
+      editorPath,
+      cmdArgs: ["--foo=\"bar baz\""],
+    };
+    const value = `${JSON.stringify(editorConfigData)}\n`;
+    const msg = new Output().encode({
+      [EDITOR_CONFIG_RES]: {
+        editorName: "test",
+        executable: true,
+        [EDITOR_CONFIG_TS]: timestamp,
+      },
+    });
+    const res = await exportEditorConfig(value, editorConfigPath);
+    const {calledOnce: writeCalled} = stubWrite;
+    const {called: errWriteCalled} = stubErrWrite;
+    stubWrite.restore();
+    stubErrWrite.restore();
+    assert.isTrue(writeCalled);
+    assert.isFalse(errWriteCalled);
+    assert.strictEqual(editorConfig.editorPath, editorPath);
+    assert.deepEqual(editorConfig.cmdArgs, ["--foo=\"bar baz\""]);
+    assert.isFalse(editorConfig.hasPlaceholder);
+    assert.deepEqual(res, msg);
+  });
+
+  it("should call function", async () => {
+    const stubWrite = sinon.stub(process.stdout, "write").callsFake(buf => buf);
+    const stubErrWrite =
+      sinon.stub(process.stderr, "write").callsFake(buf => buf);
+    const editorConfigPath =
+      path.resolve(path.join("test", "file", "editorconfig.json"));
+    const timestamp = getFileTimestamp(editorConfigPath);
+    const app = IS_WIN && "test.cmd" || "test.sh";
+    const editorPath = path.resolve(path.join("test", "file", app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const editorConfigData = {
+      editorPath,
+      cmdArgs: ["--foo", "${file}"],
+    };
+    const value = `${JSON.stringify(editorConfigData)}\n`;
+    const msg = new Output().encode({
+      [EDITOR_CONFIG_RES]: {
+        editorName: "test",
+        executable: true,
+        [EDITOR_CONFIG_TS]: timestamp,
+      },
+    });
+    const res = await exportEditorConfig(value, editorConfigPath);
+    const {calledOnce: writeCalled} = stubWrite;
+    const {called: errWriteCalled} = stubErrWrite;
+    stubWrite.restore();
+    stubErrWrite.restore();
+    assert.isTrue(writeCalled);
+    assert.isFalse(errWriteCalled);
+    assert.strictEqual(editorConfig.editorPath, editorPath);
+    assert.deepEqual(editorConfig.cmdArgs, ["--foo", "${file}"]);
+    assert.isTrue(editorConfig.hasPlaceholder);
     assert.deepEqual(res, msg);
   });
 });
@@ -617,10 +733,12 @@ describe("spawnChildProcess", () => {
   beforeEach(() => {
     editorConfig.editorPath = "";
     editorConfig.cmdArgs = [];
+    editorConfig.hasPlaceholder = false;
   });
   afterEach(() => {
     editorConfig.editorPath = "";
     editorConfig.cmdArgs = [];
+    editorConfig.hasPlaceholder = false;
   });
 
   it("should throw", async () => {
