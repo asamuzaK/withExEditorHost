@@ -40,8 +40,8 @@
     "zippackage:win64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
   "dependencies": {
-    "commander": "^4.0.0",
-    "global-agent": "^2.1.5",
+    "commander": "^4.0.1",
+    "global-agent": "^2.1.6",
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
     "semver-parser": "^3.0.4",
