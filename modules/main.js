@@ -10,11 +10,9 @@ const {
   removeDir, removeDirectory, readFile,
 } = require("web-ext-native-msg");
 const {URL} = require("url");
-const {
-  compareSemVer, isValidSemVer,
-} = require("semver-parser");
-const {getType, isObjectNotEmpty, isString} = require("./common");
+const {compareSemVer, isValidSemVer} = require("semver-parser");
 const {createGlobalProxyAgent} = require("global-agent");
+const {escapeChar, getType, isObjectNotEmpty, isString} = require("./common");
 const {name: hostName, version: hostVersion} = require("../package.json");
 const {watch} = require("fs");
 const os = require("os");
@@ -276,19 +274,33 @@ const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
   if (!isExecutable(app)) {
     throw new Error("Application is not executable.");
   }
-  const {cmdArgs} = editorConfig;
-  let args;
-  if (Array.isArray(cmdArgs)) {
-    args = cmdArgs.slice();
-  } else {
-    args = new CmdArgs(cmdArgs).toArray();
-  }
+  const {cmdArgs, hasPlaceholder} = editorConfig;
   const opt = {
     cwd: null,
     encoding: CHAR,
     env: process.env,
   };
-  const proc = await new ChildProcess(app, args, opt).spawn(file, true);
+  let args, proc;
+  if (Array.isArray(cmdArgs)) {
+    args = cmdArgs.slice();
+  } else {
+    args = new CmdArgs(cmdArgs).toArray();
+  }
+  if (hasPlaceholder) {
+    const reg =
+      new RegExp(`\\$(?:${TMP_FILE_PLACEHOLDER}|{${TMP_FILE_PLACEHOLDER}})`);
+    const l = args.length;
+    let i = 0;
+    while (i < l) {
+      const arg = args[i];
+      const newArg = arg.replace(reg, file);
+      args.splice(i, 1, newArg);
+      i++;
+    }
+    proc = await new ChildProcess(app, args, opt).spawn(null, true);
+  } else {
+    proc = await new ChildProcess(app, args, opt).spawn(file, true);
+  }
   proc.on("error", handleChildProcessErr);
   proc.stderr.on("data", handleChildProcessStderr);
   proc.stdout.on("data", handleChildProcessStdout);
