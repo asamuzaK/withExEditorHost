@@ -294,15 +294,12 @@ const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
     let i = 0;
     while (i < l) {
       const arg = args[i];
-      if (reg.test(arg)) {
-        const newArg = arg.replace(reg, filePath);
-        args.splice(i, 1, newArg);
-      }
+      reg.test(arg) && args.splice(i, 1, arg.replace(reg, filePath));
       i++;
     }
-    proc = await new ChildProcess(app, args, opt).spawn(null, true);
+    proc = await new ChildProcess(app, args, opt).spawn();
   } else {
-    proc = await new ChildProcess(app, args, opt).spawn(file, true);
+    proc = await new ChildProcess(app, args, opt).spawn(file);
   }
   proc.on("error", handleChildProcessErr);
   proc.stderr.on("data", handleChildProcessStderr);
