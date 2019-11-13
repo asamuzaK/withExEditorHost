@@ -12,7 +12,7 @@ const {
 const {URL} = require("url");
 const {compareSemVer, isValidSemVer} = require("semver-parser");
 const {createGlobalProxyAgent} = require("global-agent");
-const {escapeChar, getType, isObjectNotEmpty, isString} = require("./common");
+const {getType, isObjectNotEmpty, isString} = require("./common");
 const {name: hostName, version: hostVersion} = require("../package.json");
 const {watch} = require("fs");
 const os = require("os");
