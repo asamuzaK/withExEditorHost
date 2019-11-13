@@ -80,6 +80,18 @@ const stringifyPositiveInt = (i, zero = false) =>
   Number.isSafeInteger(i) && (zero && i >= 0 || i > 0) && `${i}` || null;
 
 /**
+ * quote arg
+ * @param {string} arg - argument
+ * @returns {string} - argument
+ */
+const quoteArg = arg => {
+  if (isString(arg) && arg.includes(" ")) {
+    arg = `"${escapeChar(arg, /(")/g)}"`;
+  }
+  return arg;
+};
+
+/**
  * escape matching char
  * @param {string} str - argument
  * @param {RegExp} re - RegExp
@@ -106,5 +118,5 @@ const stripHtmlTags = v => {
 
 module.exports = {
   escapeChar, getType, isObjectNotEmpty, isString, logErr, logMsg, logWarn,
-  stringifyPositiveInt, stripHtmlTags, throwErr,
+  quoteArg, stringifyPositiveInt, stripHtmlTags, throwErr,
 };

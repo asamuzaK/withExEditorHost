@@ -2,7 +2,7 @@
 /* api */
 const {
   escapeChar, getType, isObjectNotEmpty, isString, logErr, logMsg, logWarn,
-  stringifyPositiveInt, stripHtmlTags, throwErr,
+  quoteArg, stringifyPositiveInt, stripHtmlTags, throwErr,
 } = require("../modules/common");
 const {assert} = require("chai");
 const {describe, it} = require("mocha");
@@ -145,6 +145,20 @@ describe("stringifyPositiveInt", () => {
 
   it("should treat 0 as positive integer if second argument is true", () => {
     assert.strictEqual(stringifyPositiveInt(0, true), "0");
+  });
+});
+
+describe("quoteArg", () => {
+  it("should be quoted if arg contains spaces", () => {
+    assert.strictEqual(quoteArg("a b"), "\"a b\"");
+  });
+
+  it("should be quoted if arg contains spaces", () => {
+    assert.strictEqual(quoteArg("a b \"c d\""), "\"a b \\\"c d\\\"\"");
+  });
+
+  it("should not be quoted if arg does not contain any space", () => {
+    assert.strictEqual(quoteArg("abc"), "abc");
   });
 });
 

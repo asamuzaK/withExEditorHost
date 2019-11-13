@@ -12,7 +12,7 @@ const {
 const {URL} = require("url");
 const {compareSemVer, isValidSemVer} = require("semver-parser");
 const {createGlobalProxyAgent} = require("global-agent");
-const {getType, isObjectNotEmpty, isString} = require("./common");
+const {getType, quoteArg, isObjectNotEmpty, isString} = require("./common");
 const {name: hostName, version: hostVersion} = require("../package.json");
 const {watch} = require("fs");
 const os = require("os");
@@ -287,14 +287,17 @@ const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
     args = new CmdArgs(cmdArgs).toArray();
   }
   if (hasPlaceholder) {
+    const [filePath] = new CmdArgs(quoteArg(file)).toArray();
     const reg =
       new RegExp(`\\$(?:${TMP_FILE_PLACEHOLDER}|{${TMP_FILE_PLACEHOLDER}})`);
     const l = args.length;
     let i = 0;
     while (i < l) {
       const arg = args[i];
-      const newArg = arg.replace(reg, file);
-      args.splice(i, 1, newArg);
+      if (reg.test(arg)) {
+        const newArg = arg.replace(reg, filePath);
+        args.splice(i, 1, newArg);
+      }
       i++;
     }
     proc = await new ChildProcess(app, args, opt).spawn(null, true);
