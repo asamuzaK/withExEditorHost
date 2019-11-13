@@ -45,7 +45,7 @@
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
     "semver-parser": "^3.0.4",
-    "web-ext-native-msg": "^4.5.0"
+    "web-ext-native-msg": "^4.5.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
