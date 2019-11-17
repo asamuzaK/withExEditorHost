@@ -45,6 +45,7 @@ const editorConfig = {
   editorPath: "",
   cmdArgs: [],
   hasPlaceholder: false,
+  shell: false,
 };
 
 /* output */
@@ -274,8 +275,9 @@ const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
   if (!isExecutable(app)) {
     throw new Error("Application is not executable.");
   }
-  const {cmdArgs, hasPlaceholder} = editorConfig;
+  const {cmdArgs, hasPlaceholder, shell} = editorConfig;
   const opt = {
+    shell,
     cwd: null,
     encoding: CHAR,
     env: process.env,

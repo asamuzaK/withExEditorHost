@@ -33,6 +33,15 @@ const abortSetup = msg => {
 };
 
 /**
+ * handle exec shell input
+ * @returns {boolean} - run command inside of a shell or not
+ */
+const handleExecShellInput = async () => {
+  const ans = readline.keyInYNStrict("Run command inside of a shell?");
+  return !!ans;
+};
+
+/**
  * handle editor cmd args input
  * @param {Array} editorArgs - editor cmd args
  * @returns {Array} - cmd args in array
@@ -82,7 +91,9 @@ const createEditorConfig = async () => {
   const editorPath =
     await handleEditorPathInput(setupOpts.get("editorFilePath"));
   const cmdArgs = await handleCmdArgsInput(setupOpts.get("editorCmdArgs"));
-  const content = `${JSON.stringify({editorPath, cmdArgs}, null, INDENT)}\n`;
+  const shell = await handleExecShellInput();
+  const content =
+    `${JSON.stringify({editorPath, cmdArgs, shell}, null, INDENT)}\n`;
   await createFile(filePath, content, {
     encoding: CHAR,
     flag: "w",
@@ -170,6 +181,7 @@ module.exports = {
   createEditorConfig,
   handleCmdArgsInput,
   handleEditorPathInput,
+  handleExecShellInput,
   handleSetupCallback,
   runSetup,
   setupOpts,
