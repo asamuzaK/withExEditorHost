@@ -3,7 +3,7 @@
 /* api */
 const {
   abortSetup, createEditorConfig, handleCmdArgsInput, handleEditorPathInput,
-  handleExecShellInput, handleSetupCallback, runSetup, setupOpts,
+  handleSetupCallback, runSetup, setupOpts,
 } = require("../modules/setup");
 const {
   Setup, createDirectory, createFile, isFile, removeDir,
@@ -41,22 +41,6 @@ describe("abortSetup", () => {
     assert.isTrue(infoCalled);
     assert.isTrue(exitCalled);
     assert.strictEqual(info, "Setup aborted: foo");
-  });
-});
-
-describe("handleExecShellInput", () => {
-  it("should get result", async () => {
-    const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
-    const res = await handleExecShellInput();
-    assert.isTrue(res);
-    stubRlKey.restore();
-  });
-
-  it("should get result", async () => {
-    const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(false);
-    const res = await handleExecShellInput();
-    assert.isFalse(res);
-    stubRlKey.restore();
   });
 });
 
@@ -175,7 +159,6 @@ describe("createEditorConfig", () => {
     const stubInfo = sinon.stub(console, "info").callsFake(msg => {
       info = msg;
     });
-    const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(false);
     const app = IS_WIN && "test.cmd" || "test.sh";
     const editorPath = path.resolve(path.join("test", "file", app));
     if (!IS_WIN) {
@@ -204,48 +187,7 @@ describe("createEditorConfig", () => {
     assert.deepEqual(parsedFile, {
       editorPath,
       cmdArgs: [],
-      shell: false,
     });
-    stubRlKey.restore();
-  });
-
-  it("should call function", async () => {
-    let info;
-    const stubInfo = sinon.stub(console, "info").callsFake(msg => {
-      info = msg;
-    });
-    const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
-    const app = IS_WIN && "test.cmd" || "test.sh";
-    const editorPath = path.resolve(path.join("test", "file", app));
-    if (!IS_WIN) {
-      fs.chmodSync(editorPath, PERM_APP);
-    }
-    const configPath = await createDirectory(
-      path.join(DIR_TMP, "withexeditorhost-test"),
-    );
-    const filePath = path.join(configPath, EDITOR_CONFIG_FILE);
-    setupOpts.set("configPath", configPath);
-    setupOpts.set("editorFilePath", editorPath);
-    setupOpts.set("editorCmdArgs", []);
-    const res = await createEditorConfig();
-    const file = fs.readFileSync(filePath, {
-      encoding: "utf8",
-      flag: "r",
-    });
-    const parsedFile = JSON.parse(file);
-    const {calledOnce: infoCalled} = stubInfo;
-    stubInfo.restore();
-    assert.isTrue(infoCalled);
-    assert.strictEqual(info, `Created: ${filePath}`);
-    assert.isTrue(isFile(filePath));
-    assert.strictEqual(res, filePath);
-    assert.isTrue(file.endsWith("\n"));
-    assert.deepEqual(parsedFile, {
-      editorPath,
-      cmdArgs: [],
-      shell: true,
-    });
-    stubRlKey.restore();
   });
 });
 
@@ -299,7 +241,7 @@ describe("handleSetupCallback", () => {
     stubExit.restore();
     assert.strictEqual(setupOpts.get("configPath"), configDirPath);
     assert.strictEqual(stubRl.callCount, i + 2);
-    assert.isTrue(stubRlKey.called);
+    assert.isFalse(stubRlKey.called);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
     assert.strictEqual(info, `Created: ${filePath}`);
@@ -363,11 +305,10 @@ describe("handleSetupCallback", () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     const stubRl = sinon.stub(readline, "question");
-    const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
     const i = stubRl.callCount;
-    const j = stubRlKey.callCount;
     stubRl.onFirstCall().returns(editorPath);
     stubRl.onSecondCall().returns("");
+    const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, "withexeditorhost-test"),
     );
@@ -384,7 +325,7 @@ describe("handleSetupCallback", () => {
     stubExit.restore();
     assert.strictEqual(setupOpts.get("configPath"), configDirPath);
     assert.strictEqual(stubRl.callCount, i + 2);
-    assert.strictEqual(stubRlKey.callCount, j + 2);
+    assert.isTrue(stubRlKey.calledOnce);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
     assert.strictEqual(info, `Created: ${filePath}`);
@@ -406,11 +347,10 @@ describe("handleSetupCallback", () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     const stubRl = sinon.stub(readline, "question");
-    const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
     const i = stubRl.callCount;
-    const j = stubRlKey.callCount;
     stubRl.onFirstCall().returns(editorPath);
     stubRl.onSecondCall().returns("");
+    const stubRlKey = sinon.stub(readline, "keyInYNStrict").returns(true);
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, "withexeditorhost-test"),
     );
@@ -432,7 +372,7 @@ describe("handleSetupCallback", () => {
     assert.strictEqual(setupOpts.get("editorFilePath"), editorPath);
     assert.deepEqual(setupOpts.get("editorCmdArgs"), ["foo", "bar", "baz"]);
     assert.strictEqual(stubRl.callCount, i);
-    assert.strictEqual(stubRlKey.callCount, j + 1);
+    assert.isFalse(stubRlKey.called);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
     assert.strictEqual(info, `Created: ${filePath}`);
