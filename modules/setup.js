@@ -82,8 +82,7 @@ const createEditorConfig = async () => {
   const editorPath =
     await handleEditorPathInput(setupOpts.get("editorFilePath"));
   const cmdArgs = await handleCmdArgsInput(setupOpts.get("editorCmdArgs"));
-  const content =
-    `${JSON.stringify({editorPath, cmdArgs}, null, INDENT)}\n`;
+  const content = `${JSON.stringify({editorPath, cmdArgs}, null, INDENT)}\n`;
   await createFile(filePath, content, {
     encoding: CHAR,
     flag: "w",

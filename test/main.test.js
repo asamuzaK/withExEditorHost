@@ -985,7 +985,7 @@ describe("spawnChildProcess", () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    editorConfig.cmdArgs = ["foo", "bar=\"baz ${file}\""];
+    editorConfig.cmdArgs = ["foo", "bar=baz ${file}"];
     editorConfig.hasPlaceholder = true;
     const res = await spawnChildProcess(filePath, editorPath);
     const {called: writeCalled} = stubWrite;
@@ -995,7 +995,7 @@ describe("spawnChildProcess", () => {
     assert.isFalse(writeCalled);
     assert.isTrue(spawnCalled);
     assert.strictEqual(spawnArgs[0][0], editorPath);
-    assert.deepEqual(spawnArgs[0][1], ["foo", `bar="baz ${filePath}"`]);
+    assert.deepEqual(spawnArgs[0][1], ["foo", `bar=baz ${filePath}`]);
     assert.isObject(res);
   });
 
@@ -1017,7 +1017,7 @@ describe("spawnChildProcess", () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    editorConfig.cmdArgs = ["foo", "bar=\"baz ${file}\""];
+    editorConfig.cmdArgs = ["foo", "bar=baz ${file}"];
     editorConfig.hasPlaceholder = true;
     const res = await spawnChildProcess(filePath, editorPath);
     const {called: writeCalled} = stubWrite;
@@ -1027,7 +1027,7 @@ describe("spawnChildProcess", () => {
     assert.isFalse(writeCalled);
     assert.isTrue(spawnCalled);
     assert.strictEqual(spawnArgs[0][0], editorPath);
-    assert.deepEqual(spawnArgs[0][1], ["foo", `bar="baz ${filePath}"`]);
+    assert.deepEqual(spawnArgs[0][1], ["foo", `bar=baz ${filePath}`]);
     assert.isObject(res);
   });
 });
