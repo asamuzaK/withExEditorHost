@@ -58,6 +58,8 @@ After that, you will be prompted for the following, please input as appropriate.
 * Enter command line options
   * NOTE: Quote the argument if it contains spaces or backslashes.
     For example: `-a -b "C:\Program Files"`
+  * NOTE: You can use the temporary file placeholder `${file}` in the arguments.
+    For example: `-a ${file} -b`
 
 If config files are created successfully, enable withExEditor again.
 The browser and the host get connected and the editor will be ready to use.

@@ -67,6 +67,18 @@ describe("handleCmdArgsInput", () => {
     ]);
     stubRlQues.restore();
   });
+
+  it("should call function and get array", async () => {
+    const stubRlQues =
+      sinon.stub(readline, "question").returns("foo bar=\"baz qux\"");
+    const res = await handleCmdArgsInput();
+    assert.isTrue(stubRlQues.calledOnce);
+    assert.deepEqual(res, [
+      "foo",
+      "bar=baz qux",
+    ]);
+    stubRlQues.restore();
+  });
 });
 
 describe("handleEditorPathInput", () => {

@@ -10,11 +10,9 @@ const {
   removeDir, removeDirectory, readFile,
 } = require("web-ext-native-msg");
 const {URL} = require("url");
-const {
-  compareSemVer, isValidSemVer,
-} = require("semver-parser");
-const {getType, isObjectNotEmpty, isString} = require("./common");
+const {compareSemVer, isValidSemVer} = require("semver-parser");
 const {createGlobalProxyAgent} = require("global-agent");
+const {getType, quoteArg, isObjectNotEmpty, isString} = require("./common");
 const {name: hostName, version: hostVersion} = require("../package.json");
 const {watch} = require("fs");
 const os = require("os");
@@ -28,7 +26,8 @@ const {
   FILE_WATCH, HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL,
   LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
   TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
-  TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES,
+  TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_PLACEHOLDER,
+  TMP_FILE_RES,
 } = require("./constant");
 const APP = `${process.pid}`;
 const CHAR = "utf8";
@@ -45,6 +44,7 @@ const TMPDIR_FILES_PB = path.join(TMPDIR_APP, TMP_FILES_PB);
 const editorConfig = {
   editorPath: "",
   cmdArgs: [],
+  hasPlaceholder: false,
 };
 
 /* output */
@@ -118,6 +118,8 @@ const exportEditorConfig = async (data, editorConfigPath) => {
     const editorName = await getFileNameFromFilePath(editorPath);
     const executable = isExecutable(editorPath);
     const timestamp = await getFileTimestamp(editorConfigPath);
+    const reg =
+      new RegExp(`\\$(?:${TMP_FILE_PLACEHOLDER}|{${TMP_FILE_PLACEHOLDER}})`);
     const keys = Object.keys(editorConfig);
     for (const key of keys) {
       const value = data[key];
@@ -126,6 +128,7 @@ const exportEditorConfig = async (data, editorConfigPath) => {
       }
       if (key === "cmdArgs") {
         editorConfig[key] = new CmdArgs(value).toArray();
+        editorConfig.hasPlaceholder = reg.test(value);
       }
     }
     const msg = {
@@ -271,19 +274,33 @@ const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
   if (!isExecutable(app)) {
     throw new Error("Application is not executable.");
   }
-  const {cmdArgs} = editorConfig;
-  let args;
-  if (Array.isArray(cmdArgs)) {
-    args = cmdArgs.slice();
-  } else {
-    args = new CmdArgs(cmdArgs).toArray();
-  }
+  const {cmdArgs, hasPlaceholder} = editorConfig;
   const opt = {
     cwd: null,
     encoding: CHAR,
     env: process.env,
   };
-  const proc = await new ChildProcess(app, args, opt).spawn(file, true);
+  let args, proc;
+  if (Array.isArray(cmdArgs)) {
+    args = cmdArgs.slice();
+  } else {
+    args = new CmdArgs(cmdArgs).toArray();
+  }
+  if (hasPlaceholder) {
+    const [filePath] = new CmdArgs(quoteArg(file)).toArray();
+    const reg =
+      new RegExp(`\\$(?:${TMP_FILE_PLACEHOLDER}|{${TMP_FILE_PLACEHOLDER}})`);
+    const l = args.length;
+    let i = 0;
+    while (i < l) {
+      const arg = args[i];
+      reg.test(arg) && args.splice(i, 1, arg.replace(reg, filePath));
+      i++;
+    }
+    proc = await new ChildProcess(app, args, opt).spawn();
+  } else {
+    proc = await new ChildProcess(app, args, opt).spawn(file);
+  }
   proc.on("error", handleChildProcessErr);
   proc.stderr.on("data", handleChildProcessStderr);
   proc.stdout.on("data", handleChildProcessStdout);

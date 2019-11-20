@@ -90,6 +90,18 @@ const escapeChar = (str, re) =>
   str.replace(re, (m, c) => `\\${c}`) || null;
 
 /**
+ * quote arg
+ * @param {string} arg - argument
+ * @returns {string} - argument
+ */
+const quoteArg = arg => {
+  if (isString(arg) && arg.includes(" ")) {
+    arg = `"${escapeChar(arg, /(")/g)}"`;
+  }
+  return arg;
+};
+
+/**
  * strip HTML tags and decode HTML entities
  * @param {string} v - value
  * @returns {string} - converted value
@@ -106,5 +118,5 @@ const stripHtmlTags = v => {
 
 module.exports = {
   escapeChar, getType, isObjectNotEmpty, isString, logErr, logMsg, logWarn,
-  stringifyPositiveInt, stripHtmlTags, throwErr,
+  quoteArg, stringifyPositiveInt, stripHtmlTags, throwErr,
 };
