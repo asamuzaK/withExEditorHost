@@ -111,7 +111,7 @@ Enable withExEditor after the upgrade.
 
 Executing the following script (requires [cURL](https://curl.haxx.se/), [7-Zip](https://www.7-zip.org/), and [jq](https://stedolan.github.io/jq/)) will download and install the latest host version:
 
- ```
+```
 #! /usr/bin/env bash
 
 # Install the host for withExEditor that allows editing text in Firefox using a text editor like Vim.
