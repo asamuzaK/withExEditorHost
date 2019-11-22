@@ -105,6 +105,46 @@ To upgrade, just overwrite binary files, that's all.
 There is no need to run the setup script again after the upgrade.
 Enable withExEditor after the upgrade.
 
+### Automated installation
+
+#### Linux
+
+Executing the following script (requires [cURL](https://curl.haxx.se/), [7-Zip](https://www.7-zip.org/), and [jq](https://stedolan.github.io/jq/)) will download and install the latest host version:
+
+ ```
+#! /usr/bin/env bash
+
+# Install the host for withExEditor that allows editing text in Firefox using a text editor like Vim.
+# After executing this script, reload the Firefox plugin.
+
+# See https://github.com/asamuzaK/withExEditorHost/releases for supported operating systems
+os="linux-x86_64"
+# Allowed tags: "latest" and "next" (pre-release)
+versionTag="latest"
+# The host's version number
+version=$(curl --silent https://registry.npmjs.org/withexeditorhost | jq --raw-output ".\"dist-tags\".\"${versionTag}\"")
+
+withExEditorHostRemoteFile="https://github.com/asamuzaK/withExEditorHost/releases/download/v"${version}"/"${os}".zip"
+withExEditorHostLocalZipFile="/tmp/withExEditorHost.zip"
+withExEditorHostDir="${HOME}/.local/bin/withExEditorHost"
+
+echo "Downloading withExEditorHost "${version}""
+
+# Create the dir for the host's index file, download the archive and unzip it
+mkdir --parents "${withExEditorHostDir}"
+# If the URL returns 404, make cURL fail. This prevents 7z from unzipping an HTML error page
+curl --fail -L -o "${withExEditorHostLocalZipFile}" "${withExEditorHostRemoteFile}"\
+&& 7z x "${withExEditorHostLocalZipFile}" -o"${withExEditorHostDir}"
+
+indexFile="${withExEditorHostDir}/index"
+hostScript="${HOME}/.config/withexeditorhost/config/firefox/withexeditorhost.sh"
+
+# The Firefox plugin will use this shell script to call the host's index file
+printf "#! /usr/bin/env bash\n'${indexFile}'\n" > "${hostScript}"
+
+chmod +x "${indexFile}" "${hostScript}"
+```
+
 ***
 
 ## Host setup from npm
