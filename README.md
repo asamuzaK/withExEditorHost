@@ -126,7 +126,7 @@ version=$(curl --silent https://registry.npmjs.org/withexeditorhost | jq --raw-o
 
 withExEditorHostRemoteFile="https://github.com/asamuzaK/withExEditorHost/releases/download/v"${version}"/"${os}".zip"
 withExEditorHostLocalZipFile="/tmp/withExEditorHost.zip"
-withExEditorHostDir="$HOME/.local/bin/withExEditorHost"
+withExEditorHostDir="${HOME}/.local/bin/withExEditorHost"
 
 echo "Downloading withExEditorHost "${version}""
 
@@ -137,7 +137,7 @@ curl --fail -L -o "${withExEditorHostLocalZipFile}" "${withExEditorHostRemoteFil
 && 7z x "${withExEditorHostLocalZipFile}" -o"${withExEditorHostDir}"
 
 indexFile="${withExEditorHostDir}/index"
-hostScript=""${HOME}"/.config/withexeditorhost/config/firefox/withexeditorhost.sh"
+hostScript="${HOME}/.config/withexeditorhost/config/firefox/withexeditorhost.sh"
 
 # The Firefox plugin will use this shell script to call the host's index file
 printf "#! /usr/bin/env bash\n'${indexFile}'\n" > "${hostScript}"
