@@ -25,11 +25,11 @@
     "clean:dest": "rimraf ./dest",
     "clean:pkg": "rimraf ./pkg",
     "lint": "eslint .",
-    "package:linux32": "nexe ./index.js -t linux-x86-12.14.0 -o ./pkg/linux32/index",
-    "package:linux64": "nexe ./index.js -t linux-x64-12.14.0 -o ./pkg/linux64/index",
-    "package:macos": "nexe ./index.js -t mac-x64-12.14.0 -o ./pkg/macos/index",
-    "package:win32": "nexe ./index.js -t win-x86-12.14.0 -o ./pkg/win32/index.exe",
-    "package:win64": "nexe ./index.js -t win-x64-12.14.0 -o ./pkg/win64/index.exe",
+    "package:linux32": "nexe ./index.js -t linux-x86-12.15.0 -o ./pkg/linux32/index",
+    "package:linux64": "nexe ./index.js -t linux-x64-12.15.0 -o ./pkg/linux64/index",
+    "package:macos": "nexe ./index.js -t mac-x64-12.15.0 -o ./pkg/macos/index",
+    "package:win32": "nexe ./index.js -t win-x86-12.15.0 -o ./pkg/win32/index.exe",
+    "package:win64": "nexe ./index.js -t win-x64-12.15.0 -o ./pkg/win64/index.exe",
     "setup": "npm install --production && node ./index.js setup",
     "start": "node ./index.js",
     "test": "nyc --reporter=text mocha test/*.test.js --exit",
@@ -59,5 +59,5 @@
     "rimraf": "^3.0.1",
     "sinon": "^8.1.1"
   },
-  "version": "5.3.4"
+  "version": "5.3.5"
 }
