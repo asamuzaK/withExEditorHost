@@ -114,23 +114,27 @@
 （[cURL](https://curl.haxx.se/)、[7-Zip](https://www.7-zip.org/)、[jq](https://stedolan.github.io/jq/)が必要です)
 
 ```
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
-# Install the host for withExEditor that allows editing text in Firefox using a text editor like Vim.
-# After executing this script, reload the Firefox plugin.
+# Install the host for withExEditor that allows editing text in the browser using an editor like Vim
+# After executing this script, reload the browser plugin
 
 # See https://github.com/asamuzaK/withExEditorHost/releases for supported operating systems
 os="linux-x86_64"
+
+# Possible values: firefox, waterfoxcurrent, chrome, chromebeta, chromium, brave, vivaldi
+browser="firefox"
+
 # Allowed tags: "latest" and "next" (pre-release)
 versionTag="latest"
 # The host's version number
 version=$(curl --silent https://registry.npmjs.org/withexeditorhost | jq --raw-output ".\"dist-tags\".\"${versionTag}\"")
 
-withExEditorHostRemoteFile="https://github.com/asamuzaK/withExEditorHost/releases/download/v"${version}"/"${os}".zip"
+withExEditorHostRemoteFile="https://github.com/asamuzaK/withExEditorHost/releases/download/v${version}/${os}.zip"
 withExEditorHostLocalZipFile="/tmp/withExEditorHost.zip"
 withExEditorHostDir="${HOME}/.local/bin/withExEditorHost"
 
-echo "Downloading withExEditorHost "${version}""
+echo "Downloading withExEditorHost ${version} for ${browser}"
 
 # Create the dir for the host's index file, download the archive and unzip it
 mkdir --parents "${withExEditorHostDir}"
@@ -139,10 +143,10 @@ curl --fail -L -o "${withExEditorHostLocalZipFile}" "${withExEditorHostRemoteFil
 && 7z x "${withExEditorHostLocalZipFile}" -o"${withExEditorHostDir}"
 
 indexFile="${withExEditorHostDir}/index"
-hostScript="${HOME}/.config/withexeditorhost/config/firefox/withexeditorhost.sh"
+hostScript="${HOME}/.config/withexeditorhost/config/${browser}/withexeditorhost.sh"
 
-# The Firefox plugin will use this shell script to call the host's index file
-printf "#! /usr/bin/env bash\n'${indexFile}'\n" > "${hostScript}"
+# The browser plugin will use this shell script to call the host's index file
+printf "#! /usr/bin/env bash\n%s\n" "${indexFile}" > "${hostScript}"
 
 chmod +x "${indexFile}" "${hostScript}"
 ```
