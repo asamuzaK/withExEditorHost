@@ -110,7 +110,7 @@ Enable withExEditor after the upgrade.
 
 #### Linux
 
-Executing the following script (requires [cURL](https://curl.haxx.se/), [7-Zip](https://www.7-zip.org/), and [jq](https://stedolan.github.io/jq/)) will download and install the latest host version:
+Executing the following script (requires [cURL](https://curl.haxx.se/), [7-Zip](https://www.7-zip.org/), and [jq](https://stedolan.github.io/jq/)) will download and install the latest host version for Firefox:
 
 ```
 #! /usr/bin/env bash
