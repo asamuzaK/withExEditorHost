@@ -1,9 +1,11 @@
 language: node_js
 dist: trusty
+
 os:
   - windows
   - osx
   - linux
+
 node_js:
   - "10"
   - "12"
@@ -18,11 +20,11 @@ script:
 
 jobs:
   fast_finish: true
-
   include:
     - stage: deploy linux and mac binaries
-      node: "12"
       os: "linux"
+      node_js: "12"
+      script: skip
       before_deploy:
         - npm install
         - mkdir ./pkg
@@ -36,20 +38,22 @@ jobs:
         api_key:
           secure: Aj79TxQLaAdYi0IWY67aDpIMTTJ116EYgN2q4xob1DLG5qLmeSz8dtCGy23DVVjqhI+9z3w95GPFUqvWiStIj+N+r85eHzuMqGOynfY0E8/eChMMGsSjvU3EHLEyIyxHOs/fgo1wK+syaOrHb6A5ruJqZpnas3fcaNKJukaP4UHWtZyvLd+3w/6C1x1oGlJhfFuH7JQo/JXepz8hYS65dStAWtkd/kEy8305vALVXSIYCkuIDf+k0rx13/wDIiDWvE4XASE5U6y0pdpq+1xm+Dtx2rjb89rupnStHegmQce4Az9zrlTOnLc0jnKEdIAhat6wY7Mtv/hln5vAE8/ikbESUg8fQ7/G0/nBhwMk+NYugXkOdIjXmj6/Al3ckiahA9iIlDzo1ubXhJ72oGsBpik5DMY85N7msCzQO1xWYBVodGas6iHaHHuFkJcdBPhj5RT0lqPzj5grMddOFbp8iugwiD7FMKwsbjxVo2hXKfxx9IWsZf2JSZzODQOWQtXThynfsN0QfWBeJGN8Otwrww8PfKQzZO2htolXIrRmYUSjmTZZXQ7T+9MClE3rs1Qj/kJBDN4jFjsHErkpoq2ANar62jJDjXGzdk0XHyX4lwZGkcbCvzPXxHe0mNpgrpCx3TxeBrBa+9WDY9eOBAkMM6S1IjNIr5UGVW1vTS5DSUE=
         file:
-          - dest/macos.zip
+          - dest/linux-x86.zip
           - dest/linux-x86_64.zip
+          - dest/macos.zip
         on:
           tags: true
         after_deploy:
           - npm run clean:pkg
     - stage: deploy windows binaries
-      node: "12"
       os: "windows"
+      node_js: "12"
+      script: skip
       before_deploy:
         - npm install
         - mkdir ./pkg
-        - mkdir ./pkg/win64 && npm run package:win64 && npm run zippackage:win64
         - mkdir ./pkg/win32 && npm run package:win32 && npm run zippackage:win32
+        - mkdir ./pkg/win64 && npm run package:win64 && npm run zippackage:win64
       deploy:
         provider: releases
         skip_cleanup: true
@@ -57,8 +61,8 @@ jobs:
         api_key:
           secure: Aj79TxQLaAdYi0IWY67aDpIMTTJ116EYgN2q4xob1DLG5qLmeSz8dtCGy23DVVjqhI+9z3w95GPFUqvWiStIj+N+r85eHzuMqGOynfY0E8/eChMMGsSjvU3EHLEyIyxHOs/fgo1wK+syaOrHb6A5ruJqZpnas3fcaNKJukaP4UHWtZyvLd+3w/6C1x1oGlJhfFuH7JQo/JXepz8hYS65dStAWtkd/kEy8305vALVXSIYCkuIDf+k0rx13/wDIiDWvE4XASE5U6y0pdpq+1xm+Dtx2rjb89rupnStHegmQce4Az9zrlTOnLc0jnKEdIAhat6wY7Mtv/hln5vAE8/ikbESUg8fQ7/G0/nBhwMk+NYugXkOdIjXmj6/Al3ckiahA9iIlDzo1ubXhJ72oGsBpik5DMY85N7msCzQO1xWYBVodGas6iHaHHuFkJcdBPhj5RT0lqPzj5grMddOFbp8iugwiD7FMKwsbjxVo2hXKfxx9IWsZf2JSZzODQOWQtXThynfsN0QfWBeJGN8Otwrww8PfKQzZO2htolXIrRmYUSjmTZZXQ7T+9MClE3rs1Qj/kJBDN4jFjsHErkpoq2ANar62jJDjXGzdk0XHyX4lwZGkcbCvzPXxHe0mNpgrpCx3TxeBrBa+9WDY9eOBAkMM6S1IjNIr5UGVW1vTS5DSUE=
         file:
-          - dest/win64.zip
           - dest/win32.zip
+          - dest/win64.zip
         on:
           tags: true
         after_deploy:
