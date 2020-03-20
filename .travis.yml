@@ -45,7 +45,7 @@ jobs:
           - dest/macos.zip
           - dest/win64.zip
         after_deploy:
-          - npm run clean:pkg
+          - npm run clean
     - stage: deploy 32bit binaries
       os: linux
       before_install:
@@ -74,4 +74,4 @@ jobs:
           - dest/linux-x86.zip
           - dest/win32.zip
         after_deploy:
-          - npm run clean:pkg
+          - npm run clean
