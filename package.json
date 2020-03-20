@@ -18,6 +18,7 @@
     "build:local": "npm run clean:local && npm-run-all -p package:* && npm-run-all -p zippackage:*",
     "build:32": "npm run clean:32 && npm-run-all -p package:linux32 package:win32 && npm-run-all -p zippackage:linux32 zippackage:win32",
     "build:64": "npm run clean:64 && npm-run-all -p package:linux64 package:macos package:win64 && npm-run-all -p zippackage:linux64 zippackage:macos zippackage:win64",
+    "build:linux32": "npm run clean && npm run package:linux32 && npm run zippackage:linux32",
     "clean": "rimraf ./dest/* ./pkg/*",
     "clean:local": "rimraf ./dest/* ./pkg/linux32/* ./pkg/linux64/* ./pkg/macos/* ./pkg/win32/* ./pkg/win64/*",
     "clean:32": "rimraf ./dest/* ./pkg/linux32/* ./pkg/win32/*",
