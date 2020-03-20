@@ -19,6 +19,7 @@ const {
 } = require("./modules/constant");
 
 /* commands */
+commander.exitOverride();
 commander.version(hostVersion, "-v, --version");
 commander.command(CMD_SETUP).alias(CMD_SETUP_ALIAS).description(CMD_SETUP_DESC)
   .option(CMD_BROWSER, CMD_BROWSER_DESC)
@@ -28,7 +29,11 @@ commander.command(CMD_SETUP).alias(CMD_SETUP_ALIAS).description(CMD_SETUP_DESC)
   .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
   .option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
   .action(runSetup);
-commander.parse(process.argv);
+try {
+  commander.parse(process.argv);
+} catch (e) {
+  // fail through
+}
 
 /* process */
 process.on("uncaughtException", throwErr);
