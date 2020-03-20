@@ -2,9 +2,9 @@ language: node_js
 dist: trusty
 
 os:
-  - windows
-  - osx
   - linux
+  - osx
+  - windows
 
 node_js:
   - "10"
@@ -22,7 +22,7 @@ jobs:
   fast_finish: true
   include:
     - stage: deploy 64bit binaries
-      os: "linux"
+      os: linux
       node_js: "12"
       script: skip
       before_deploy:
@@ -46,7 +46,7 @@ jobs:
         after_deploy:
           - npm run clean:pkg
     - stage: deploy 32bit binaries
-      os: "linux"
+      os: linux
       addons:
         apt:
           packages:
