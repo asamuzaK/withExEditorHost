@@ -25,6 +25,7 @@
 |Chromium        |       |   ✓   |   ✓   |
 |Brave           |   ✓ *2|   ✓   |   ✓   |
 |CentBrowser     |   ✓ *2|       |       |
+|Edge            |   ✓ *2|       |   ✓   |
 |Kinza           |   ✓ *2|       |       |
 |Opera           |   ✓ *2|       |   ✓ *2|
 |Vivaldi         |   ✓ *2|   ✓   |   ✓   |
