@@ -3,7 +3,7 @@ dist: trusty
 
 os:
   - linux
-#  - osx
+  - osx
   - windows
 
 node_js:
