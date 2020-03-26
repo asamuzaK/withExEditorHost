@@ -6,7 +6,6 @@
 const {runSetup} = require("./setup");
 const {version: hostVersion} = require("../package.json");
 const commander = require("commander");
-const process = require("process");
 
 /* constants */
 const {
@@ -17,28 +16,33 @@ const {
 } = require("./constant");
 
 /**
- * run commander
+ * parse command
+ * @param {Array} args - process.argv
  * @returns {void}
  */
-const runCommander = () => {
-  commander.exitOverride();
-  commander.version(hostVersion, "-v, --version");
-  commander.command(CMD_SETUP).alias(CMD_SETUP_ALIAS)
-    .description(CMD_SETUP_DESC)
-    .option(CMD_BROWSER, CMD_BROWSER_DESC)
-    .option(CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC)
-    .option(CMD_OVERWRITE_CONFIG, CMD_OVERWRITE_CONFIG_DESC)
-    .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC)
-    .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
-    .option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
-    .action(runSetup);
-  try {
-    commander.parse(process.argv);
-  } catch (e) {
-    // fail through
+const parseCommand = args => {
+  const reg = /^(?:(?:--)?help|-[h|v]|--version|s(?:etup)?)$/;
+  if (Array.isArray(args) && args.some(arg => reg.test(arg))) {
+    commander.exitOverride();
+    commander.version(hostVersion, "-v, --version");
+    commander.command(CMD_SETUP).alias(CMD_SETUP_ALIAS)
+      .description(CMD_SETUP_DESC)
+      .option(CMD_BROWSER, CMD_BROWSER_DESC)
+      .option(CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC)
+      .option(CMD_OVERWRITE_CONFIG, CMD_OVERWRITE_CONFIG_DESC)
+      .option(CMD_OVERWRITE_EDITOR_CONFIG, CMD_OVERWRITE_EDITOR_CONFIG_DESC)
+      .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
+      .option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
+      .action(runSetup);
+    try {
+      commander.parse(args);
+    } catch (e) {
+      // fail through
+    }
   }
 };
 
 module.exports = {
-  runCommander,
+  commander,
+  parseCommand,
 };
