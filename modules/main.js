@@ -50,9 +50,10 @@ const editorConfig = {
 /* output */
 /**
  * host message
+ *
  * @param {*} message - message
  * @param {string} status - status
- * @returns {Object} - host message object
+ * @returns {object} - host message object
  */
 const hostMsg = (message, status) => ({
   [HOST]: {
@@ -62,6 +63,7 @@ const hostMsg = (message, status) => ({
 
 /**
  * handle rejection
+ *
  * @param {*} e - Error or any
  * @returns {boolean} - false
  */
@@ -82,6 +84,7 @@ const handleReject = e => {
 
 /**
  * write stdout
+ *
  * @param {*} msg - message
  * @returns {?Function} - write message to the Writable stream
  */
@@ -96,16 +99,18 @@ const writeStdout = async msg => {
 
 /**
  * export app status
- * @returns {AsyncFunction} - writeStdout()
+ *
+ * @returns {Function} - writeStdout()
  */
 const exportAppStatus = async () =>
   writeStdout(hostMsg(EDITOR_CONFIG_GET, "ready"));
 
 /**
  * export editor config
+ *
  * @param {string} data - editor config
  * @param {string} editorConfigPath - editor config file path
- * @returns {?AsyncFunction} - writeStdout()
+ * @returns {?Function} - writeStdout()
  */
 const exportEditorConfig = async (data, editorConfigPath) => {
   if (!isString(data)) {
@@ -144,8 +149,9 @@ const exportEditorConfig = async (data, editorConfigPath) => {
 
 /**
  * export file data
- * @param {Object} obj - file data
- * @returns {?AsyncFunction} - writeStdout()
+ *
+ * @param {object} obj - file data
+ * @returns {?Function} - writeStdout()
  */
 const exportFileData = async (obj = {}) => {
   const {data} = obj;
@@ -161,6 +167,7 @@ const exportFileData = async (obj = {}) => {
 
 /**
  * get latest host version
+ *
  * @returns {?string} - latest version string
  */
 const getLatestHostVersion = async () => {
@@ -185,8 +192,9 @@ const getLatestHostVersion = async () => {
 
 /**
  * export host version
+ *
  * @param {string} minVer - required min version
- * @returns {AsyncFunction} - writeStdout()
+ * @returns {Function} - writeStdout()
  */
 const exportHostVersion = async minVer => {
   if (!isString(minVer)) {
@@ -216,7 +224,8 @@ const exportHostVersion = async minVer => {
 /* child process */
 /**
  * handle child process error
- * @param {!Object} e - Error
+ *
+ * @param {!object} e - Error
  * @returns {void}
  */
 const handleChildProcessErr = e => {
@@ -235,6 +244,7 @@ const handleChildProcessErr = e => {
 
 /**
  * handle child process stderr
+ *
  * @param {*} data - data
  * @returns {void}
  */
@@ -249,6 +259,7 @@ const handleChildProcessStderr = data => {
 
 /**
  * handle child process stdout
+ *
  * @param {*} data - data
  * @returns {void}
  */
@@ -263,9 +274,10 @@ const handleChildProcessStdout = data => {
 
 /**
  * spawn child process
+ *
  * @param {string} file - file path
  * @param {string} app - app path
- * @returns {ChildProcess|AsyncFunction} - child process / writeStderr()
+ * @returns {ChildProcess|Function} - child process / writeStderr()
  */
 const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
   if (!isFile(file)) {
@@ -316,6 +328,7 @@ const fileMap = {
 
 /**
  * delete key from fileMap
+ *
  * @param {string} prop - fileMap property
  * @param {string} key - key
  * @returns {boolean} - result, true if deleted
@@ -331,8 +344,9 @@ const deleteKeyFromFileMap = async (prop, key) => {
 
 /**
  * unwatch file
+ *
  * @param {string} key - key
- * @param {Object} [fsWatcher] - fs.FSWatcher
+ * @param {object} [fsWatcher] - fs.FSWatcher
  * @returns {void}
  */
 const unwatchFile = async (key, fsWatcher) => {
@@ -348,6 +362,7 @@ const unwatchFile = async (key, fsWatcher) => {
 /* temporary files */
 /**
  * initialize private temporary directory
+ *
  * @param {boolean} bool - remove
  * @returns {void}
  */
@@ -361,7 +376,8 @@ const initPrivateTmpDir = async bool => {
 
 /**
  * get temporary file from file data
- * @param {Object} fileData - temporary file data
+ *
+ * @param {object} fileData - temporary file data
  * @returns {Promise.<Array>} - results of each handler
  */
 const getTmpFileFromFileData = async (fileData = {}) => {
@@ -404,6 +420,7 @@ const getTmpFileFromFileData = async (fileData = {}) => {
 
 /**
  * get file ID from file path
+ *
  * @param {string} filePath - file path
  * @returns {?string} - file ID
  */
@@ -424,8 +441,9 @@ const getFileIdFromFilePath = async filePath => {
 
 /**
  * create tmp file res message
+ *
  * @param {string} key - key
- * @returns {?AsyncFunction} - writeStdout()
+ * @returns {?Function} - writeStdout()
  */
 const createTmpFileResMsg = async key => {
   let func;
@@ -453,6 +471,7 @@ const createTmpFileResMsg = async key => {
 
 /**
  * get temporary file from given file name
+ *
  * @param {string} evtType - event type
  * @param {string} fileName - file name
  * @returns {Promise.<Array>} - results of each handler
@@ -475,17 +494,19 @@ const getTmpFileFromWatcherFileName = async (evtType, fileName) => {
 
 /**
  * watch temporary file
+ *
  * @param {string} evtType - event type
  * @param {string} fileName - file name
- * @returns {AsyncFunction} - getTempFileFromFileName()
+ * @returns {Function} - getTempFileFromFileName()
  */
 const watchTmpFile = (evtType, fileName) =>
   getTmpFileFromWatcherFileName(evtType, fileName).catch(handleReject);
 
 /**
  * create temporary file
- * @param {Object} obj - temporary file data object
- * @returns {Object} - temporary file data
+ *
+ * @param {object} obj - temporary file data object
+ * @returns {object} - temporary file data
  */
 const createTmpFile = async (obj = {}) => {
   const {data, value} = obj;
@@ -525,7 +546,8 @@ const createTmpFile = async (obj = {}) => {
 
 /**
  * remove temporary file data
- * @param {Object} data - temporary file data
+ *
+ * @param {object} data - temporary file data
  * @returns {Promise.<Array>} - results of each handler
  */
 const removeTmpFileData = async (data = {}) => {
@@ -563,6 +585,7 @@ const removeTmpFileData = async (data = {}) => {
 /* local files */
 /**
  * get editor config
+ *
  * @param {string} editorConfigPath - editor config file path
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -584,8 +607,9 @@ const getEditorConfig = async editorConfigPath => {
 
 /**
  * view local file
+ *
  * @param {string} uri - local file uri
- * @returns {?AsyncFunction} - spawnChildProcess()
+ * @returns {?Function} - spawnChildProcess()
  */
 const viewLocalFile = async uri => {
   if (!isString(uri)) {
@@ -605,7 +629,8 @@ const viewLocalFile = async uri => {
 /* handlers */
 /**
  * handle created temporary file
- * @param {Object} obj - temporary file data
+ *
+ * @param {object} obj - temporary file data
  * @returns {Promise.<Array>} - results of each handler
  */
 const handleCreatedTmpFile = async (obj = {}) => {
@@ -619,6 +644,7 @@ const handleCreatedTmpFile = async (obj = {}) => {
 
 /**
  * handle message
+ *
  * @param {*} msg - message
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -669,8 +695,9 @@ const input = new Input();
 
 /**
  * read stdin
+ *
  * @param {string|Buffer} chunk - chunk
- * @returns {?AsyncFunction} - Promise chain
+ * @returns {?Function} - promise chain
  */
 const readStdin = chunk => {
   const func = [];
@@ -685,6 +712,7 @@ const readStdin = chunk => {
 
 /**
  * handle exit
+ *
  * @param {number} code - exit code
  * @returns {void}
  */
@@ -700,6 +728,7 @@ const handleExit = code => {
 
 /**
  * add process listeners
+ *
  * @returns {void}
  */
 const addProcessListeners = () => {
@@ -710,7 +739,8 @@ const addProcessListeners = () => {
 
 /**
  * handle startup
- * @returns {AsyncFunction} - Promise chain
+ *
+ * @returns {Function} - promise chain
  */
 const startup = () => Promise.all([
   addProcessListeners(),

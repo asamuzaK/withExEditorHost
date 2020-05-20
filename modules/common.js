@@ -8,7 +8,8 @@ const TYPE_TO = -1;
 
 /**
  * throw error
- * @param {!Object} e - Error
+ *
+ * @param {!object} e - Error
  * @throws - Error
  */
 const throwErr = e => {
@@ -17,7 +18,8 @@ const throwErr = e => {
 
 /**
  * log error
- * @param {!Object} e - Error
+ *
+ * @param {!object} e - Error
  * @returns {boolean} - false
  */
 const logErr = e => {
@@ -27,6 +29,7 @@ const logErr = e => {
 
 /**
  * log warn
+ *
  * @param {*} msg - message
  * @returns {boolean} - false
  */
@@ -37,6 +40,7 @@ const logWarn = msg => {
 
 /**
  * log message
+ *
  * @param {*} msg - message
  * @returns {*} - message
  */
@@ -47,6 +51,7 @@ const logMsg = msg => {
 
 /**
  * get type
+ *
  * @param {*} o - object to check
  * @returns {string} - type of object
  */
@@ -55,6 +60,7 @@ const getType = o =>
 
 /**
  * is object, and not an empty object
+ *
  * @param {*} o - object to check;
  * @returns {boolean} - result
  */
@@ -65,6 +71,7 @@ const isObjectNotEmpty = o => {
 
 /**
  * is string
+ *
  * @param {*} o - object to check
  * @returns {boolean} - result
  */
@@ -72,6 +79,7 @@ const isString = o => typeof o === "string" || o instanceof String;
 
 /**
  * stringify positive integer
+ *
  * @param {number} i - integer
  * @param {boolean} [zero] - treat 0 as a positive integer
  * @returns {?string} - stringified integer
@@ -81,6 +89,7 @@ const stringifyPositiveInt = (i, zero = false) =>
 
 /**
  * escape matching char
+ *
  * @param {string} str - argument
  * @param {RegExp} re - RegExp
  * @returns {?string} - string
@@ -91,6 +100,7 @@ const escapeChar = (str, re) =>
 
 /**
  * quote arg
+ *
  * @param {string} arg - argument
  * @returns {string} - argument
  */
@@ -103,6 +113,7 @@ const quoteArg = arg => {
 
 /**
  * strip HTML tags and decode HTML entities
+ *
  * @param {string} v - value
  * @returns {string} - converted value
  */

@@ -5,11 +5,15 @@
     "webextensions": true,
     "es6": true
   },
-  "extends": "eslint:recommended",
+  "extends": [
+    "eslint:recommended",
+    "plugin:jsdoc/recommended"
+  ],
   "parserOptions": {
     "ecmaVersion": 2019
   },
   "plugins": [
+    "jsdoc"
   ],
   "reportUnusedDisableDirectives": true,
   "rules": {
@@ -313,7 +317,7 @@
         "preferType": {
           "Boolean": "boolean",
           "Number": "number",
-          "object": "Object",
+          "Object": "object",
           "String": "string"
         },
         "requireParamDescription": true,

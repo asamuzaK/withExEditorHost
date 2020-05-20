@@ -43,11 +43,12 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "eslint": "^7.0.0",
+    "eslint-plugin-jsdoc": "^25.4.2",
     "jszip-cli": "^1.4.24",
     "mocha": "^7.1.2",
     "nexe": "^3.3.2",
     "nyc": "^15.0.1",
-    "rewiremock": "^3.14.1",
+    "rewiremock": "^3.14.2",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.2"
   },
