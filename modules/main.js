@@ -697,7 +697,7 @@ const input = new Input();
  * read stdin
  *
  * @param {string|Buffer} chunk - chunk
- * @returns {?Function} - promise chain
+ * @returns {?Promise.<Array|Error>} - promise chain
  */
 const readStdin = chunk => {
   const func = [];
@@ -740,7 +740,7 @@ const addProcessListeners = () => {
 /**
  * handle startup
  *
- * @returns {Function} - promise chain
+ * @returns {Promise.<Array|Error>} - promise chain
  */
 const startup = () => Promise.all([
   addProcessListeners(),
