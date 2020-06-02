@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "commander": "^5.1.0",
-    "global-agent": "^2.1.8",
+    "global-agent": "^2.1.12",
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
     "semver-parser": "^3.0.5",
@@ -43,11 +43,11 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "eslint": "^7.1.0",
-    "eslint-plugin-jsdoc": "^26.0.0",
+    "eslint-plugin-jsdoc": "^26.0.2",
     "jszip-cli": "^1.4.24",
     "mocha": "^7.2.0",
     "nexe": "^3.3.2",
-    "nyc": "^15.0.1",
+    "nyc": "^15.1.0",
     "rewiremock": "^3.14.2",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.2"
