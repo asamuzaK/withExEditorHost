@@ -43,7 +43,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "eslint": "^7.2.0",
-    "eslint-plugin-jsdoc": "^27.0.6",
+    "eslint-plugin-jsdoc": "^27.1.1",
     "jszip-cli": "^1.4.24",
     "mocha": "^8.0.1",
     "nexe": "^3.3.2",
