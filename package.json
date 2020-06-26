@@ -20,7 +20,7 @@
     "lint": "eslint .",
     "package:linux32": "nexe ./index.js -t linux-x86-12.16.2 -o ./pkg/linux32/index",
     "package:linux64": "nexe ./index.js -t linux-x64-12.16.2 -o ./pkg/linux64/index",
-    "package:macos": "nexe ./index.js -t mac-x64-12.15.0 -o ./pkg/macos/index",
+    "package:macos": "nexe ./index.js -t mac-x64-12.18.1 -o ./pkg/macos/index",
     "package:win32": "nexe ./index.js -t win-x86-12.18.1 -o ./pkg/win32/index.exe",
     "package:win64": "nexe ./index.js -t win-x64-12.18.1 -o ./pkg/win64/index.exe",
     "setup": "npm install --production && node ./index.js setup",
@@ -48,7 +48,7 @@
     "mocha": "^8.0.1",
     "nexe": "^3.3.3",
     "nyc": "^15.1.0",
-    "rewiremock": "^3.14.2",
+    "rewiremock": "^3.14.3",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.2"
   },
