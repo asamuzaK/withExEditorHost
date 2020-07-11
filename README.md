@@ -66,6 +66,8 @@ After that, you will be prompted for the following, please input as appropriate.
 If config files are created successfully, enable withExEditor again.
 The browser and the host get connected and the editor will be ready to use.
 
+NOTE: If you have enabled Mandatory Access Control (for example, AppArmor) for your web-browser, ensure the profile allows the `withexeditorhost.sh` script to be executed.
+
 ### Options
 
 In the setup script you can specify some options.
@@ -187,6 +189,8 @@ After that, you will be prompted for the following, please input as appropriate.
 
 If config files are created successfully, enable withExEditor again.
 The browser and the host get connected and the editor will be ready to use.
+
+NOTE: If you have enabled Mandatory Access Control (for example, AppArmor) for your web-browser, ensure the profile allows the `withexeditorhost.sh` script to be executed.
 
 ### Options
 
