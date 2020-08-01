@@ -42,10 +42,10 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "eslint": "^7.5.0",
-    "eslint-plugin-jsdoc": "^30.0.0",
+    "eslint": "^7.6.0",
+    "eslint-plugin-jsdoc": "^30.1.0",
     "jszip-cli": "^1.4.24",
-    "mocha": "^8.0.1",
+    "mocha": "^8.1.0",
     "nexe": "^3.3.7",
     "nyc": "^15.1.0",
     "rewiremock": "^3.14.3",
