@@ -7,9 +7,9 @@ os:
   - windows
 
 node_js:
+  - "node"
+  - "lts/*"
   - "10"
-  - "12"
-  - "14"
 
 before_script:
   - npm install
@@ -23,7 +23,7 @@ jobs:
   include:
     - stage: deploy 64bit binaries
       os: linux
-      node_js: "12"
+      node_js: "lts/*"
       script: skip
       before_deploy:
         - npm install
@@ -54,7 +54,7 @@ jobs:
       install:
         - sudo apt-get install -y gcc-multilib
         - sudo apt-get install -y zlib1g-dev:i386
-      node_js: "12"
+      node_js: "lts/*"
       script: skip
       before_deploy:
         - npm install
