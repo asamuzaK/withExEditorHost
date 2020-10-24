@@ -28,7 +28,6 @@ jobs:
       before_deploy:
         - npm install
         - mkdir -p ./{bundle,cache,dest,pkg/{linux64,macos,win64}}
-        - npm run nodebuild && ls ./cache
         - npm run bundle && npm run package
         - mv ./index-linux-x64 ./pkg/linux64/index && chmod 755 ./pkg/linux64/index && npm run zippackage:linux64
         - mv ./index-darwin-x64 ./pkg/macos/index && chmod 755 ./pkg/macos/index && npm run zippackage:macos
