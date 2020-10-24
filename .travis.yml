@@ -27,11 +27,11 @@ jobs:
       script: skip
       before_deploy:
         - npm install
-        - mkdir ./dest
-        - mkdir ./pkg
-        - mkdir ./pkg/linux64 && npm run package:linux64 && chmod 755 ./pkg/linux64/index && npm run zippackage:linux64
-        - mkdir ./pkg/macos && npm run package:macos && chmod 755 ./pkg/macos/index && npm run zippackage:macos
-        - mkdir ./pkg/win64 && npm run package:win64 && npm run zippackage:win64
+        - mkdir -p ./{bundle,cache,dest,pkg/{linux64,macos,win64}}
+        - npm run bundle && npm run package
+        - mv ./index-linux-x64 ./pkg/linux64/index && chmod 755 ./pkg/linux64/index && npm run zippackage:linux64
+        - mv ./index-darwin-x64 ./pkg/macos/index && chmod 755 ./pkg/macos/index && npm run zippackage:macos
+        - mv .index-windows-x64 ./pkg/win64/index.exe && npm run zippackage:win64
       deploy:
         on:
           tags: true
@@ -58,10 +58,9 @@ jobs:
       script: skip
       before_deploy:
         - npm install
-        - mkdir ./dest
-        - mkdir ./pkg
-        - mkdir ./pkg/linux32 && npm run package:linux32 && chmod 755 ./pkg/linux32/index && npm run zippackage:linux32
-        - mkdir ./pkg/win32 && npm run package:win32 && npm run zippackage:win32
+        - mkdir -p ./{dest,pkg/{linux32,win32}}
+        - npm run package:linux32 && chmod 755 ./pkg/linux32/index && npm run zippackage:linux32
+        - npm run package:win32 && npm run zippackage:win32
       deploy:
         on:
           tags: true
