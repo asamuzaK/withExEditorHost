@@ -21,6 +21,7 @@
     "clean:dest": "rimraf ./dest",
     "clean:pkg": "rimraf ./pkg",
     "lint": "eslint .",
+    "buildnode": "js2bin --ci --cache --size=2MB",
     "package": "js2bin --build --cache --platform=linux --platform=darwin --platform=windows --app=./bundle/index.js --name=./pkg/index",
     "package:linux32": "nexe ./index.js -t linux-x86-12.16.2 -o ./pkg/linux32/index",
     "package:win32": "nexe ./index.js -t win-x86-12.18.2 -o ./pkg/win32/index.exe",
@@ -55,5 +56,5 @@
     "rimraf": "^3.0.2",
     "sinon": "^9.2.0"
   },
-  "version": "5.5.0-a.8"
+  "version": "5.5.0-a.9"
 }

@@ -22,13 +22,16 @@ jobs:
   fast_finish: true
   include:
     - stage: deploy 64bit binaries
+      env:
+        - NODE_VER = "12.18.4"
       os: linux
       node_js: "lts/*"
       script: skip
       before_deploy:
         - npm install
         - mkdir -p ./{bundle,cache,dest,pkg/{linux64,macos,win64}}
-        - npm run bundle && npm run package -- --node=12.18.4
+        - npm run buildnode -- --node=NODE_VER
+        - npm run bundle && npm run package -- --node=NODE_VER
         - mv ./pkg/index-linux-x64 ./pkg/linux64/index && chmod 755 ./pkg/linux64/index && npm run zippackage:linux64
         - mv ./pkg/index-darwin-x64 ./pkg/macos/index && chmod 755 ./pkg/macos/index && npm run zippackage:macos
         - mv ./pkg/index-windows-x64 ./pkg/win64/index.exe && npm run zippackage:win64
