@@ -14,7 +14,7 @@
   },
   "main": "./index.js",
   "scripts": {
-    "bundle": "ncc build ./index.js -o bundle",
+    "bundle": "ncc build ./index.js -m -o bundle",
     "clean": "rimraf ./bundle ./cache ./dest ./pkg",
     "clean:bundle": "rimraf ./bundle",
     "clean:cache": "rimraf ./cache",
@@ -55,5 +55,5 @@
     "rimraf": "^3.0.2",
     "sinon": "^9.2.0"
   },
-  "version": "5.5.0-a.7"
+  "version": "5.5.0-a.8"
 }
