@@ -1,9 +1,9 @@
+/* eslint-disable array-bracket-newline, no-magic-numbers */
 "use strict";
 const {fetchJson, getJs2binAssetVersion} = require("../modules/js2bin-helper");
 const {assert} = require("chai");
 const {describe, it} = require("mocha");
 const fetch = require("node-fetch");
-const process = require("process");
 const sinon = require("sinon");
 
 describe("fetch JSON", () => {
