@@ -114,44 +114,76 @@
 #### Linux
 
 以下のスクリプトを実行すると、最新のホストをダウンロードした上でインストールします。
-（[cURL](https://curl.haxx.se/)、[7-Zip](https://www.7-zip.org/)、[jq](https://stedolan.github.io/jq/)が必要です)
+（[cURL](https://curl.haxx.se/)、[jq](https://stedolan.github.io/jq/)が必要です)
 
 ```
 #!/usr/bin/env bash
 
-# Install the host for withExEditor that allows editing text in the browser using an editor like Vim
-# After executing this script, reload the browser plugin
+function main {
+  # Install the host for withExEditor that allows editing text in the browser using an editor like Vim
+  # After executing this script, reload the browser plugin
 
-# See https://github.com/asamuzaK/withExEditorHost/releases for supported operating systems
-os="linux-x86_64"
+  # See https://github.com/asamuzaK/withExEditorHost/releases for supported operating systems
+  os="linux-x86_64"
 
-# Possible values: firefox, waterfoxcurrent, chrome, chromebeta, chromium, brave, vivaldi
-browser="firefox"
+  # Possible values: firefox, waterfoxcurrent, chrome, chromebeta, chromium, brave, vivaldi
+  browser="firefox"
 
-# Allowed tags: "latest" and "next" (pre-release)
-versionTag="latest"
-# The host's version number
-version=$(curl --silent https://registry.npmjs.org/withexeditorhost | jq --raw-output ".\"dist-tags\".\"${versionTag}\"")
+  # Allowed tags: "latest" and "next" (pre-release)
+  versionTag="latest"
+  # The host's version number
+  version=$(curl --silent https://registry.npmjs.org/withexeditorhost | jq --raw-output ".\"dist-tags\".\"${versionTag}\"")
 
-withExEditorHostRemoteFile="https://github.com/asamuzaK/withExEditorHost/releases/download/v${version}/${os}.zip"
-withExEditorHostLocalZipFile="/tmp/withExEditorHost.zip"
-withExEditorHostDir="${HOME}/.local/bin/withExEditorHost"
+  withExEditorHostRemoteFile="https://github.com/asamuzaK/withExEditorHost/releases/download/v${version}/${os}.zip"
+  withExEditorHostLocalZipFile="/tmp/withExEditorHost.zip"
+  withExEditorHostDir="${HOME}/.local/bin/withExEditorHost"
 
-echo "Downloading withExEditorHost ${version} for ${browser}"
+  echo "Downloading withExEditorHost ${version} for ${browser}"
 
-# Create the dir for the host's index file, download the archive and unzip it
-mkdir --parents "${withExEditorHostDir}"
-# If the URL returns 404, make cURL fail. This prevents 7z from unzipping an HTML error page
-curl --fail -L -o "${withExEditorHostLocalZipFile}" "${withExEditorHostRemoteFile}"\
-&& 7z x "${withExEditorHostLocalZipFile}" -o"${withExEditorHostDir}"
+  # Create the dir for the host's index file, download the archive and unzip it
+  mkdir --parents "${withExEditorHostDir}"
+  # If the URL returns 404, make cURL fail. This prevents the archive extractor from unzipping an HTML error page
+  if curl --fail -L -o "${withExEditorHostLocalZipFile}" "${withExEditorHostRemoteFile}"\
+  && extractZip "${withExEditorHostLocalZipFile}" "${withExEditorHostDir}"; then
 
-indexFile="${withExEditorHostDir}/index"
-hostScript="${HOME}/.config/withexeditorhost/config/${browser}/withexeditorhost.sh"
+    indexFile="${withExEditorHostDir}/index"
+    hostScript="${HOME}/.config/withexeditorhost/config/${browser}/withexeditorhost.sh"
 
-# The browser plugin will use this shell script to call the host's index file
-printf "#! /usr/bin/env bash\n%s\n" "${indexFile}" > "${hostScript}"
+    # The browser plugin will use this shell script to call the host's index file
+    printf "#!/usr/bin/env bash\n%s\n" "${indexFile}" > "${hostScript}"
 
-chmod +x "${indexFile}" "${hostScript}"
+    chmod +x "${indexFile}" "${hostScript}"
+  fi
+}
+
+# Extracts the files of a zip archive (first parameter) to a destination directory (second parameter).
+# Uses either bsdtar (from libarchive), 7z, unzip, or unzzip (from zziplib) to extract the archive.
+function extractZip {
+
+  if hash bsdtar 2>/dev/null; then
+    echo "Extracting with bsdtar to $2"
+    bsdtar -xf "$1" --directory "$2"
+
+  elif hash unzip 2>/dev/null;then
+    echo "Extracting with unzip to $2"
+    unzip "$1" -d "$2"
+
+  elif hash unzzip 2>/dev/null; then
+    echo "Extracting with unzzip to $2"
+
+    cd "$2" || (echo "Couldn't change directory to $2"; exit)
+    unzzip "$1"
+
+  elif hash 7z 2>/dev/null; then
+    echo "Extracting with 7z to $2"
+    7z x "$1" -o"$2"
+
+  else
+    echo "No program to extract a zip file found. Please install bsdtar, 7z, unzip, or unzzip."
+  fi
+}
+main
+
 ```
 
 ***
