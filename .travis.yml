@@ -18,7 +18,7 @@ before_script:
 script:
   - npm run lint
   - npm run test
-  - npm run prebuild | (read v; echo $v;)
+  - npm run prebuild | xargs -I @ npm run package -- @
 
 jobs:
   fast_finish: true
@@ -31,7 +31,7 @@ jobs:
         - npm install
         - mkdir -p ./{bundle,cache,dest,pkg/{linux64,macos,win64}}
         - npm run bundle
-        - npm run prebuild | { v=${cat}; npm run package -- $v }
+        - npm run prebuild | xargs -I @ npm run package -- @
         - mv ./pkg/index-linux-x64 ./pkg/linux64/index && chmod 755 ./pkg/linux64/index && npm run zippackage:linux64
         - mv ./pkg/index-darwin-x64 ./pkg/macos/index && chmod 755 ./pkg/macos/index && npm run zippackage:macos
         - mv ./pkg/index-windows-x64 ./pkg/win64/index.exe && npm run zippackage:win64
