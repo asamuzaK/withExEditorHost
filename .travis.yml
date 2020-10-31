@@ -18,7 +18,7 @@ before_script:
 script:
   - npm run lint
   - npm run test
-  - npm run prebuild | { v=${cat}; echo $v }
+  - npm run prebuild | (read v; echo $v;)
 
 jobs:
   fast_finish: true
