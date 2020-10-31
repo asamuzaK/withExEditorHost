@@ -21,10 +21,9 @@
     "clean:dest": "rimraf ./dest",
     "clean:pkg": "rimraf ./pkg",
     "lint": "eslint .",
-    "package": "js2bin --build --cache --platform=linux --platform=darwin --platform=windows --app=./bundle/index.js --name=./pkg/index",
+    "package": "js2bin --build --cache --node=14.15.0 --platform=linux --platform=darwin --platform=windows --app=./bundle/index.js --name=./pkg/index",
     "package:linux32": "nexe ./index.js -t linux-x86-12.16.2 -o ./pkg/linux32/index",
     "package:win32": "nexe ./index.js -t win-x86-12.18.2 -o ./pkg/win32/index.exe",
-    "prebuild": "node ./modules/js2bin-helper.js prebuild",
     "setup": "npm install --production && node ./index.js setup",
     "start": "node ./index.js",
     "test": "nyc --reporter=text mocha test/*.test.js --exit",
@@ -37,7 +36,6 @@
   "dependencies": {
     "commander": "^6.1.0",
     "global-agent": "^2.1.12",
-    "node-fetch": "^2.6.1",
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
     "semver-parser": "^3.0.5",
@@ -57,5 +55,5 @@
     "rimraf": "^3.0.2",
     "sinon": "^9.2.0"
   },
-  "version": "5.5.0-b.6"
+  "version": "5.5.0-b.7"
 }
