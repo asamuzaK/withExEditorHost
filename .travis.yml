@@ -18,7 +18,7 @@ before_script:
 script:
   - npm run lint
   - npm run test
-  - npm run prebuild | xargs -I @ echo @
+  - npm run prebuild | xargs -I @ echo --node="$@"
 
 jobs:
   fast_finish: true
