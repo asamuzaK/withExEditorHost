@@ -34,7 +34,7 @@
     "zippackage:win64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
   },
   "dependencies": {
-    "commander": "^6.1.0",
+    "commander": "^6.2.0",
     "global-agent": "^2.1.12",
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
@@ -44,8 +44,8 @@
   "devDependencies": {
     "@zeit/ncc": "^0.22.3",
     "chai": "^4.2.0",
-    "eslint": "^7.11.0",
-    "eslint-plugin-jsdoc": "^30.6.5",
+    "eslint": "^7.12.1",
+    "eslint-plugin-jsdoc": "^30.7.5",
     "js2bin": "^1.0.6",
     "jszip-cli": "^1.4.24",
     "mocha": "^8.2.0",
@@ -55,5 +55,5 @@
     "rimraf": "^3.0.2",
     "sinon": "^9.2.0"
   },
-  "version": "5.5.0-b.7"
+  "version": "5.5.0"
 }
