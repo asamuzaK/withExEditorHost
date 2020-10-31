@@ -4,6 +4,7 @@ const {fetchJson, getJs2binAssetVersion} = require("../modules/js2bin-helper");
 const {assert} = require("chai");
 const {describe, it} = require("mocha");
 const fetch = require("node-fetch");
+const process = require("process");
 const sinon = require("sinon");
 
 describe("fetch JSON", () => {
@@ -56,8 +57,12 @@ describe("get latest asset version of js2bin", () => {
       status: 200,
       json: () => "",
     });
+    const stubWrite = sinon.stub(process.stdout, "write");
     const res = await getJs2binAssetVersion();
+    const {called} = stubWrite;
     stubFetch.restore();
+    stubWrite.restore();
+    assert.isFalse(called, "not called");
     assert.isNull(res, "result");
   });
 
@@ -67,8 +72,12 @@ describe("get latest asset version of js2bin", () => {
       status: 200,
       json: () => [],
     });
+    const stubWrite = sinon.stub(process.stdout, "write");
     const res = await getJs2binAssetVersion();
+    const {called} = stubWrite;
     stubFetch.restore();
+    stubWrite.restore();
+    assert.isFalse(called, "not called");
     assert.isNull(res, "result");
   });
 
@@ -78,8 +87,12 @@ describe("get latest asset version of js2bin", () => {
       status: 200,
       json: () => [{}],
     });
+    const stubWrite = sinon.stub(process.stdout, "write");
     const res = await getJs2binAssetVersion();
+    const {called} = stubWrite;
     stubFetch.restore();
+    stubWrite.restore();
+    assert.isFalse(called, "not called");
     assert.isNull(res, "result");
   });
 
@@ -91,8 +104,12 @@ describe("get latest asset version of js2bin", () => {
         assets: [],
       }],
     });
+    const stubWrite = sinon.stub(process.stdout, "write");
     const res = await getJs2binAssetVersion();
+    const {called} = stubWrite;
     stubFetch.restore();
+    stubWrite.restore();
+    assert.isFalse(called, "not called");
     assert.isNull(res, "result");
   });
 
@@ -104,8 +121,12 @@ describe("get latest asset version of js2bin", () => {
         assets: [{}],
       }],
     });
+    const stubWrite = sinon.stub(process.stdout, "write");
     const res = await getJs2binAssetVersion();
+    const {called} = stubWrite;
     stubFetch.restore();
+    stubWrite.restore();
+    assert.isFalse(called, "not called");
     assert.isNull(res, "result");
   });
 
@@ -117,12 +138,16 @@ describe("get latest asset version of js2bin", () => {
         assets: [{name: "foo"}, {name: "bar"}],
       }],
     });
+    const stubWrite = sinon.stub(process.stdout, "write");
     const res = await getJs2binAssetVersion();
+    const {called} = stubWrite;
     stubFetch.restore();
+    stubWrite.restore();
+    assert.isFalse(called, "not called");
     assert.isNull(res, "result");
   });
 
-  it("should get null", async () => {
+  it("should get result", async () => {
     const stubFetch = sinon.stub(fetch, "Promise").resolves({
       ok: true,
       status: 200,
@@ -134,8 +159,12 @@ describe("get latest asset version of js2bin", () => {
         ],
       }],
     });
+    const stubWrite = sinon.stub(process.stdout, "write");
     const res = await getJs2binAssetVersion();
+    const {calledOnce} = stubWrite;
     stubFetch.restore();
+    stubWrite.restore();
+    assert.isTrue(calledOnce, "called");
     assert.strictEqual(res, "1.2.3", "result");
   });
 });
