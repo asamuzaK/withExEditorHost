@@ -81,7 +81,8 @@ const runJs2bin = async (args = process.argv) => {
   if (Array.isArray(args) && args.includes("prebuild")) {
     const latest = await getJs2binAssetVersion();
     if (latest) {
-      process.stdout.write(`--node=${latest}`);
+      //process.stdout.write(`--node=${latest}`);
+      console.log(`--node=${latest}`);
     }
   }
 };
