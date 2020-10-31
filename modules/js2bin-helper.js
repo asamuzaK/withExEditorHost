@@ -4,6 +4,7 @@
 "use strict";
 const {getType, isString, throwErr} = require("./common");
 const {compareSemVer} = require("semver-parser");
+const {exec} = require("child_process");
 const fetch = require("node-fetch");
 const process = require("process");
 
@@ -68,11 +69,34 @@ const getJs2binAssetVersion = async () => {
       }
     }
   }
-  //latest && process.stdout.write(`--node=${latest}`);
   return latest || null;
 };
 
-process.argv.includes("prebuild") && getJs2binAssetVersion().catch(throwErr);
+const runJs2bin = async args => {
+  if (!Array.isArray(args)) {
+    throw new TypeError(`Expected Array but got ${getType(args)}.`);
+  }
+  let res;
+  if (args.includes("prebuild")) {
+    const latest = await getJs2binAssetVersion();
+    if (latest) {
+      const cmd = `npm run package -- --node=${latest}`;
+      res = exec(cmd, (err, stdout, stderr) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        if (stderr) {
+          console.log(stderr);
+        }
+        console.log(stdout);
+      });
+    }
+  }
+  return res || null;
+};
+
+process.argv.includes("prebuild") && runJs2bin(process.argv).catch(throwErr);
 
 module.exports = {
   fetchJson,
