@@ -18,7 +18,7 @@ before_script:
 script:
   - npm run lint
   - npm run test
-  - npm run prebuild | xargs -I @ npm run package -- @
+  - npm run prebuild | (read v; npm run package -- $v;)
 
 jobs:
   fast_finish: true

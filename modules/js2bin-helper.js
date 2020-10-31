@@ -68,7 +68,7 @@ const getJs2binAssetVersion = async () => {
       }
     }
   }
-  latest && process.stdout.write(`--node=${latest}`);
+  //latest && process.stdout.write(`--node=${latest}`);
   return latest || null;
 };
 
