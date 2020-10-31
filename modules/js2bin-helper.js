@@ -4,11 +4,11 @@
 "use strict";
 const {getType, isString, throwErr} = require("./common");
 const {compareSemVer} = require("semver-parser");
+const commander = require("commander");
 const fetch = require("node-fetch");
 const process = require("process");
 
 /* constants */
-//const URL_NODE = "https://nodejs.org/dist/index.json";
 const URL_JS2BIN = "https://api.github.com/repos/criblio/js2bin/releases";
 
 /**
@@ -49,7 +49,6 @@ const getJs2binAssetVersion = async () => {
       const versionReg = /[^.]((?:0|[1-9]?\d+)(?:\.(?:0|[1-9]?\d+)){2})[^.]/;
       for (const asset of assets) {
         const {name} = asset;
-        console.log(name);
         if (versionReg.test(name)) {
           const [, version] = versionReg.exec(name);
           versions.add(version);
@@ -69,6 +68,11 @@ const getJs2binAssetVersion = async () => {
         }
       }
     }
+  }
+  if (latest) {
+    process.stdout.write(latest);
+  } else {
+    process.stderr.write("Failed to fetch version.");
   }
   return latest || null;
 };
