@@ -69,15 +69,10 @@ const getJs2binAssetVersion = async () => {
       }
     }
   }
-  if (latest) {
-    process.stdout.write(latest);
-  } else {
-    process.stderr.write("Failed to fetch version.");
-  }
+  latest && process.stdout.write(`--node=${latest}`);
   return latest || null;
 };
 
-console.log(process.argv)
 process.argv.includes("prebuild") && getJs2binAssetVersion().catch(throwErr);
 
 module.exports = {
