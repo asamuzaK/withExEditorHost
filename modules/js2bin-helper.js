@@ -77,6 +77,7 @@ const getJs2binAssetVersion = async () => {
   return latest || null;
 };
 
+console.log(process.argv)
 process.argv.includes("prebuild") && getJs2binAssetVersion().catch(throwErr);
 
 module.exports = {
