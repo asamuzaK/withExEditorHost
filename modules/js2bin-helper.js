@@ -4,7 +4,6 @@
 "use strict";
 const {getType, isString, throwErr} = require("./common");
 const {compareSemVer} = require("semver-parser");
-const commander = require("commander");
 const fetch = require("node-fetch");
 const process = require("process");
 
