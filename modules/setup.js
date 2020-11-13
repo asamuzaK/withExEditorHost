@@ -1,21 +1,21 @@
 /**
  * setup.js
  */
-"use strict";
+'use strict';
 /* api */
 const {
-  CmdArgs, Setup, createFile, isDir, isExecutable, isFile,
-} = require("web-ext-native-msg");
-const {isString, throwErr} = require("./common");
-const path = require("path");
-const process = require("process");
-const readline = require("readline-sync");
+  CmdArgs, Setup, createFile, isDir, isExecutable, isFile
+} = require('web-ext-native-msg');
+const { isString, throwErr } = require('./common');
+const path = require('path');
+const process = require('process');
+const readline = require('readline-sync');
 
 /* constants */
 const {
-  EDITOR_CONFIG_FILE, EXT_CHROME_ID, EXT_WEB_ID, HOST, HOST_DESC,
-} = require("./constant");
-const CHAR = "utf8";
+  EDITOR_CONFIG_FILE, EXT_CHROME_ID, EXT_WEB_ID, HOST, HOST_DESC
+} = require('./constant');
+const CHAR = 'utf8';
 const INDENT = 2;
 const PERM_FILE = 0o600;
 
@@ -44,7 +44,7 @@ const handleCmdArgsInput = async editorArgs => {
   if (Array.isArray(editorArgs)) {
     cmdArgs = editorArgs;
   } else {
-    const ans = readline.question("Input command line options: ");
+    const ans = readline.question('Input command line options: ');
     cmdArgs = new CmdArgs(ans.trim()).toArray();
   }
   return cmdArgs;
@@ -61,7 +61,7 @@ const handleEditorPathInput = async editorFilePath => {
   if (isFile(editorFilePath) && isExecutable(editorFilePath)) {
     editorPath = editorFilePath;
   } else {
-    const ans = readline.question("Input editor path: ");
+    const ans = readline.question('Input editor path: ');
     if (isExecutable(ans)) {
       editorPath = ans;
     } else {
@@ -78,19 +78,19 @@ const handleEditorPathInput = async editorFilePath => {
  * @returns {string} - editor config path
  */
 const createEditorConfig = async () => {
-  const configPath = setupOpts.get("configPath");
+  const configPath = setupOpts.get('configPath');
   if (!isDir(configPath)) {
     throw new Error(`No such directory: ${configPath}`);
   }
   const filePath = path.join(configPath, EDITOR_CONFIG_FILE);
   const editorPath =
-    await handleEditorPathInput(setupOpts.get("editorFilePath"));
-  const cmdArgs = await handleCmdArgsInput(setupOpts.get("editorCmdArgs"));
-  const content = `${JSON.stringify({editorPath, cmdArgs}, null, INDENT)}\n`;
+    await handleEditorPathInput(setupOpts.get('editorFilePath'));
+  const cmdArgs = await handleCmdArgsInput(setupOpts.get('editorCmdArgs'));
+  const content = `${JSON.stringify({ editorPath, cmdArgs }, null, INDENT)}\n`;
   await createFile(filePath, content, {
     encoding: CHAR,
-    flag: "w",
-    mode: PERM_FILE,
+    flag: 'w',
+    mode: PERM_FILE
   });
   console.info(`Created: ${filePath}`);
   return filePath;
@@ -103,21 +103,21 @@ const createEditorConfig = async () => {
  * @returns {Function} - handleEditorPathInput() / abortSetup()
  */
 const handleSetupCallback = (info = {}) => {
-  const {configDirPath: configPath} = info;
+  const { configDirPath: configPath } = info;
   if (!isDir(configPath)) {
     throw new Error(`No such directory: ${configPath}.`);
   }
-  const editorArgs = setupOpts.get("editorArgs");
-  const editorPath = setupOpts.get("editorPath");
-  const overwriteEditorConfig = setupOpts.get("overwriteEditorConfig");
+  const editorArgs = setupOpts.get('editorArgs');
+  const editorPath = setupOpts.get('editorPath');
+  const overwriteEditorConfig = setupOpts.get('overwriteEditorConfig');
   const file = path.join(configPath, EDITOR_CONFIG_FILE);
   let func;
-  setupOpts.set("configPath", configPath);
+  setupOpts.set('configPath', configPath);
   if (isString(editorPath)) {
-    setupOpts.set("editorFilePath", editorPath.trim());
+    setupOpts.set('editorFilePath', editorPath.trim());
   }
   if (isString(editorArgs)) {
-    setupOpts.set("editorCmdArgs", new CmdArgs(editorArgs.trim()).toArray());
+    setupOpts.set('editorCmdArgs', new CmdArgs(editorArgs.trim()).toArray());
   }
   if (isFile(file) && !overwriteEditorConfig) {
     const ans = readline.keyInYNStrict(`${file} already exists.\nOverwrite?`);
@@ -141,22 +141,22 @@ const handleSetupCallback = (info = {}) => {
 const runSetup = (cmdOpts = {}) => {
   const {
     browser, configPath, editorArgs, editorPath, overwriteConfig,
-    overwriteEditorConfig,
+    overwriteEditorConfig
   } = cmdOpts;
   const opt = {
     hostDescription: HOST_DESC,
     hostName: HOST,
     chromeExtensionIds: [EXT_CHROME_ID],
     webExtensionIds: [EXT_WEB_ID],
-    callback: handleSetupCallback,
+    callback: handleSetupCallback
   };
   const setup = new Setup(opt);
   if (isString(browser) && browser.length) {
     setup.browser = browser.trim();
   } else {
-    const excludedBrowsers = ["thunderbird"];
+    const excludedBrowsers = ['thunderbird'];
     setup.supportedBrowsers = setup.supportedBrowsers.filter(item =>
-      !excludedBrowsers.includes(item.toLowerCase()),
+      !excludedBrowsers.includes(item.toLowerCase())
     );
   }
   if (isString(configPath) && configPath.length) {
@@ -165,9 +165,9 @@ const runSetup = (cmdOpts = {}) => {
   if (overwriteConfig) {
     setup.overwriteConfig = !!overwriteConfig;
   }
-  setupOpts.set("editorArgs", editorArgs);
-  setupOpts.set("editorPath", editorPath);
-  setupOpts.set("overwriteEditorConfig", overwriteEditorConfig);
+  setupOpts.set('editorArgs', editorArgs);
+  setupOpts.set('editorPath', editorPath);
+  setupOpts.set('overwriteEditorConfig', overwriteEditorConfig);
   return setup.run();
 };
 
@@ -178,5 +178,5 @@ module.exports = {
   handleEditorPathInput,
   handleSetupCallback,
   runSetup,
-  setupOpts,
+  setupOpts
 };

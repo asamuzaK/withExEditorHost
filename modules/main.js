@@ -1,24 +1,24 @@
 /**
  * main.js
  */
-"use strict";
+'use strict';
 /* api */
 const {
   ChildProcess, CmdArgs, Input, Output,
   convertUriToFilePath, createDirectory, createFile,
   getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
-  removeDir, removeDirectory, readFile,
-} = require("web-ext-native-msg");
-const {URL} = require("url");
-const {compareSemVer, isValidSemVer} = require("semver-parser");
-const {createGlobalProxyAgent} = require("global-agent");
-const {getType, quoteArg, isObjectNotEmpty, isString} = require("./common");
-const {name: hostName, version: hostVersion} = require("../package.json");
-const {watch} = require("fs");
-const os = require("os");
-const packageJson = require("package-json");
-const path = require("path");
-const process = require("process");
+  removeDir, removeDirectory, readFile
+} = require('web-ext-native-msg');
+const { URL } = require('url');
+const { compareSemVer, isValidSemVer } = require('semver-parser');
+const { createGlobalProxyAgent } = require('global-agent');
+const { getType, quoteArg, isObjectNotEmpty, isString } = require('./common');
+const { name: hostName, version: hostVersion } = require('../package.json');
+const { watch } = require('fs');
+const os = require('os');
+const packageJson = require('package-json');
+const path = require('path');
+const process = require('process');
 
 /* constants */
 const {
@@ -27,10 +27,10 @@ const {
   LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
   TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
   TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_PLACEHOLDER,
-  TMP_FILE_RES,
-} = require("./constant");
+  TMP_FILE_RES
+} = require('./constant');
 const APP = `${process.pid}`;
-const CHAR = "utf8";
+const CHAR = 'utf8';
 const FILE_NOT_FOUND_TIMESTAMP = -1;
 const PERM_DIR = 0o700;
 const PERM_FILE = 0o600;
@@ -42,9 +42,9 @@ const TMPDIR_FILES_PB = path.join(TMPDIR_APP, TMP_FILES_PB);
 
 /* editor config */
 const editorConfig = {
-  editorPath: "",
+  editorPath: '',
   cmdArgs: [],
-  hasPlaceholder: false,
+  hasPlaceholder: false
 };
 
 /* output */
@@ -57,8 +57,8 @@ const editorConfig = {
  */
 const hostMsg = (message, status) => ({
   [HOST]: {
-    message, status,
-  },
+    message, status
+  }
 });
 
 /**
@@ -76,7 +76,7 @@ const handleReject = e => {
       msg = new Output().encode(e);
     }
   } else {
-    msg = new Output().encode("unknown error.");
+    msg = new Output().encode('unknown error.');
   }
   process.stderr.write(msg);
   return false;
@@ -103,7 +103,7 @@ const writeStdout = async msg => {
  * @returns {Function} - writeStdout()
  */
 const exportAppStatus = async () =>
-  writeStdout(hostMsg(EDITOR_CONFIG_GET, "ready"));
+  writeStdout(hostMsg(EDITOR_CONFIG_GET, 'ready'));
 
 /**
  * export editor config
@@ -119,7 +119,7 @@ const exportEditorConfig = async (data, editorConfigPath) => {
   let func;
   data = data && JSON.parse(data);
   if (isObjectNotEmpty(data)) {
-    const {editorPath} = data;
+    const { editorPath } = data;
     const editorName = await getFileNameFromFilePath(editorPath);
     const executable = isExecutable(editorPath);
     const timestamp = await getFileTimestamp(editorConfigPath);
@@ -128,19 +128,20 @@ const exportEditorConfig = async (data, editorConfigPath) => {
     const keys = Object.keys(editorConfig);
     for (const key of keys) {
       const value = data[key];
-      if (key === "editorPath") {
+      if (key === 'editorPath') {
         editorConfig[key] = value;
       }
-      if (key === "cmdArgs") {
+      if (key === 'cmdArgs') {
         editorConfig[key] = new CmdArgs(value).toArray();
         editorConfig.hasPlaceholder = reg.test(value);
       }
     }
     const msg = {
       [EDITOR_CONFIG_RES]: {
-        editorName, executable,
-        [EDITOR_CONFIG_TS]: timestamp,
-      },
+        editorName,
+        executable,
+        [EDITOR_CONFIG_TS]: timestamp
+      }
     };
     func = writeStdout(msg);
   }
@@ -154,11 +155,11 @@ const exportEditorConfig = async (data, editorConfigPath) => {
  * @returns {?Function} - writeStdout()
  */
 const exportFileData = async (obj = {}) => {
-  const {data} = obj;
+  const { data } = obj;
   let func;
   if (isObjectNotEmpty(data)) {
     const msg = {
-      [TMP_FILE_DATA_PORT]: {data},
+      [TMP_FILE_DATA_PORT]: { data }
     };
     func = writeStdout(msg);
   }
@@ -178,13 +179,13 @@ const getLatestHostVersion = async () => {
         process.env.HTTP_PROXY || process.env.http_proxy) {
       const agent = await createGlobalProxyAgent();
       opt = {
-        agent,
+        agent
       };
     }
-    const {version: latestVersion} = await packageJson(hostName, opt);
+    const { version: latestVersion } = await packageJson(hostName, opt);
     latest = latestVersion;
   } catch (e) {
-    const msg = new Output().encode(hostMsg(e.message, "error"));
+    const msg = new Output().encode(hostMsg(e.message, 'error'));
     process.stdout.write(msg);
   }
   return latest || null;
@@ -214,8 +215,8 @@ const exportHostVersion = async minVer => {
     [HOST_VERSION]: {
       isLatest,
       latest,
-      result,
-    },
+      result
+    }
   };
   const func = writeStdout(msg);
   return func;
@@ -237,7 +238,7 @@ const handleChildProcessErr = e => {
       msg = new Output().encode(e);
     }
   } else {
-    msg = new Output().encode("unknown error");
+    msg = new Output().encode('unknown error');
   }
   process.stderr.write(msg);
 };
@@ -251,7 +252,7 @@ const handleChildProcessErr = e => {
 const handleChildProcessStderr = data => {
   if (data) {
     const msg = new Output().encode(
-      hostMsg(data.toString(), `${PROCESS_CHILD}_stderr`),
+      hostMsg(data.toString(), `${PROCESS_CHILD}_stderr`)
     );
     process.stdout.write(msg);
   }
@@ -266,7 +267,7 @@ const handleChildProcessStderr = data => {
 const handleChildProcessStdout = data => {
   if (data) {
     const msg = new Output().encode(
-      hostMsg(data.toString(), `${PROCESS_CHILD}_stdout`),
+      hostMsg(data.toString(), `${PROCESS_CHILD}_stdout`)
     );
     process.stdout.write(msg);
   }
@@ -284,13 +285,13 @@ const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
     throw new Error(`No such file: ${file}`);
   }
   if (!isExecutable(app)) {
-    throw new Error("Application is not executable.");
+    throw new Error('Application is not executable.');
   }
-  const {cmdArgs, hasPlaceholder} = editorConfig;
+  const { cmdArgs, hasPlaceholder } = editorConfig;
   const opt = {
     cwd: null,
     encoding: CHAR,
-    env: process.env,
+    env: process.env
   };
   let args, proc;
   if (Array.isArray(cmdArgs)) {
@@ -313,9 +314,9 @@ const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
   } else {
     proc = await new ChildProcess(app, args, opt).spawn(file);
   }
-  proc.on("error", handleChildProcessErr);
-  proc.stderr.on("data", handleChildProcessStderr);
-  proc.stdout.on("data", handleChildProcessStdout);
+  proc.on('error', handleChildProcessErr);
+  proc.stderr.on('data', handleChildProcessStderr);
+  proc.stdout.on('data', handleChildProcessStdout);
   return proc;
 };
 
@@ -323,7 +324,7 @@ const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
 const fileMap = {
   [FILE_WATCH]: new Map(),
   [TMP_FILES]: new Map(),
-  [TMP_FILES_PB]: new Map(),
+  [TMP_FILES_PB]: new Map()
 };
 
 /**
@@ -381,20 +382,20 @@ const initPrivateTmpDir = async bool => {
  * @returns {Promise.<Array>} - results of each handler
  */
 const getTmpFileFromFileData = async (fileData = {}) => {
-  const {dataId, dir, host, tabId, windowId} = fileData;
+  const { dataId, dir, host, tabId, windowId } = fileData;
   const func = [];
   let msg;
   if (dataId && dir && host && tabId && windowId && fileMap[dir]) {
-    const fileId = [windowId, tabId, host, dataId].join("_");
+    const fileId = [windowId, tabId, host, dataId].join('_');
     if (fileMap[dir].has(fileId)) {
-      const {filePath} = fileMap[dir].get(fileId);
+      const { filePath } = fileMap[dir].get(fileId);
       if (isFile(filePath)) {
-        const value = await readFile(filePath, {encoding: CHAR, flag: "r"});
+        const value = await readFile(filePath, { encoding: CHAR, flag: 'r' });
         const timestamp = await getFileTimestamp(filePath);
         const data = fileData;
         data.timestamp = timestamp;
         msg = {
-          [TMP_FILE_RES]: {data, value},
+          [TMP_FILE_RES]: { data, value }
         };
         func.push(writeStdout(msg));
       } else {
@@ -406,12 +407,12 @@ const getTmpFileFromFileData = async (fileData = {}) => {
     const data = fileData;
     data.timestamp = FILE_NOT_FOUND_TIMESTAMP;
     msg = {
-      [TMP_FILE_DATA_REMOVE]: {data},
+      [TMP_FILE_DATA_REMOVE]: { data }
     };
     func.push(writeStdout(msg));
     if (dataId) {
       func.push(writeStdout(
-        hostMsg(`Failed to get temporary file. ID: ${dataId}`, "warn"),
+        hostMsg(`Failed to get temporary file. ID: ${dataId}`, 'warn')
       ));
     }
   }
@@ -427,12 +428,12 @@ const getTmpFileFromFileData = async (fileData = {}) => {
 const getFileIdFromFilePath = async filePath => {
   let fileId;
   if (isString(filePath)) {
-    const {dir, name} = path.parse(filePath);
+    const { dir, name } = path.parse(filePath);
     if (dir.startsWith(TMPDIR_APP)) {
       const [, , windowId, tabId, host] =
-        dir.replace(TMPDIR_APP, "").split(path.sep);
+        dir.replace(TMPDIR_APP, '').split(path.sep);
       if (windowId && tabId && host && name) {
-        fileId = [windowId, tabId, host, name].join("_");
+        fileId = [windowId, tabId, host, name].join('_');
       }
     }
   }
@@ -452,15 +453,15 @@ const createTmpFileResMsg = async key => {
     if (fileId) {
       const obj = fileMap[TMP_FILES].get(fileId);
       if (obj) {
-        const {data} = obj;
+        const { data } = obj;
         if (data) {
           const value =
-            await readFile(key, {encoding: CHAR, flag: "r"}) || "";
+            await readFile(key, { encoding: CHAR, flag: 'r' }) || '';
           data.timestamp = await getFileTimestamp(key);
           func = writeStdout({
             [TMP_FILE_RES]: {
-              data, value,
-            },
+              data, value
+            }
           });
         }
       }
@@ -478,7 +479,7 @@ const createTmpFileResMsg = async key => {
  */
 const getTmpFileFromWatcherFileName = async (evtType, fileName) => {
   const func = [];
-  if (evtType === "change" && isString(fileName)) {
+  if (evtType === 'change' && isString(fileName)) {
     fileMap[FILE_WATCH].forEach((fsWatcher, key) => {
       if (isString(key) && key.endsWith(fileName)) {
         if (isFile(key)) {
@@ -509,29 +510,29 @@ const watchTmpFile = (evtType, fileName) =>
  * @returns {object} - temporary file data
  */
 const createTmpFile = async (obj = {}) => {
-  const {data, value} = obj;
+  const { data, value } = obj;
   let filePath;
   if (data) {
     const {
       dataId, dir, extType, host, incognito, mode, syncAuto, tabId,
-      windowId,
+      windowId
     } = data;
     if (dataId && dir && extType && host && tabId && windowId) {
       const dirPath = await createDirectory(
-        path.join(TMPDIR_APP, dir, windowId, tabId, host), PERM_DIR,
+        path.join(TMPDIR_APP, dir, windowId, tabId, host), PERM_DIR
       );
-      const fileId = [windowId, tabId, host, dataId].join("_");
+      const fileId = [windowId, tabId, host, dataId].join('_');
       const fileName = dataId && encodeURIComponent(dataId);
       filePath = dirPath && fileName && extType &&
         await createFile(path.join(dirPath, fileName + extType), value,
-                         {encoding: CHAR, flag: "w", mode: PERM_FILE});
+          { encoding: CHAR, flag: 'w', mode: PERM_FILE });
       filePath && dir && fileMap[dir] &&
-        fileMap[dir].set(fileId, {data, filePath});
+        fileMap[dir].set(fileId, { data, filePath });
       if (!incognito && mode === MODE_EDIT && syncAuto) {
         const opt = {
           persistent: true,
           recursive: false,
-          encoding: CHAR,
+          encoding: CHAR
         };
         fileMap[FILE_WATCH].set(filePath, watch(filePath, opt, watchTmpFile));
       } else {
@@ -540,7 +541,7 @@ const createTmpFile = async (obj = {}) => {
     }
   }
   return {
-    data, filePath,
+    data, filePath
   };
 };
 
@@ -551,13 +552,13 @@ const createTmpFile = async (obj = {}) => {
  * @returns {Promise.<Array>} - results of each handler
  */
 const removeTmpFileData = async (data = {}) => {
-  const {dataId, dir, host, tabId, windowId} = data;
+  const { dataId, dir, host, tabId, windowId } = data;
   const func = [];
   if (dir && fileMap[dir]) {
     if (dataId) {
-      const fileId = [windowId, tabId, host, dataId].join("_");
+      const fileId = [windowId, tabId, host, dataId].join('_');
       if (fileMap[dir].has(fileId)) {
-        const {filePath} = fileMap[dir].get(fileId);
+        const { filePath } = fileMap[dir].get(fileId);
         if (fileMap[FILE_WATCH].has(filePath)) {
           func.push(unwatchFile(filePath));
         } else {
@@ -565,11 +566,12 @@ const removeTmpFileData = async (data = {}) => {
         }
       }
     } else {
-      const keyPart = host && [windowId, tabId, host].join("_") ||
-                      `${[windowId, tabId].join("_")}_`;
+      const keyPart = host
+        ? [windowId, tabId, host].join('_')
+        : `${[windowId, tabId].join('_')}_`;
       fileMap[dir].forEach((value, key) => {
         if (key.startsWith(keyPart)) {
-          const {filePath} = value;
+          const { filePath } = value;
           if (fileMap[FILE_WATCH].has(filePath)) {
             func.push(unwatchFile(filePath));
           } else {
@@ -593,13 +595,13 @@ const getEditorConfig = async editorConfigPath => {
   const func = [];
   if (isFile(editorConfigPath)) {
     const data = await readFile(editorConfigPath, {
-      encoding: CHAR, flag: "r",
+      encoding: CHAR, flag: 'r'
     });
     func.push(exportEditorConfig(data, editorConfigPath));
   } else {
     func.push(
-      writeStdout(hostMsg(`No such file: ${editorConfigPath}`, "warn")),
-      writeStdout({[EDITOR_CONFIG_RES]: null}),
+      writeStdout(hostMsg(`No such file: ${editorConfigPath}`, 'warn')),
+      writeStdout({ [EDITOR_CONFIG_RES]: null })
     );
   }
   return Promise.all(func);
@@ -616,8 +618,8 @@ const viewLocalFile = async uri => {
     throw new TypeError(`Expected String but got ${getType(uri)}.`);
   }
   let func;
-  const {protocol} = new URL(uri);
-  if (protocol === "file:") {
+  const { protocol } = new URL(uri);
+  if (protocol === 'file:') {
     const file = await convertUriToFilePath(uri);
     if (file && isFile(file)) {
       func = spawnChildProcess(file);
@@ -634,7 +636,7 @@ const viewLocalFile = async uri => {
  * @returns {Promise.<Array>} - results of each handler
  */
 const handleCreatedTmpFile = async (obj = {}) => {
-  const {filePath} = obj;
+  const { filePath } = obj;
   const func = [];
   if (isFile(filePath)) {
     func.push(spawnChildProcess(filePath), exportFileData(obj));
@@ -656,7 +658,7 @@ const handleMsg = async msg => {
       switch (key) {
         case EDITOR_CONFIG_GET: {
           const editorConfigPath =
-            path.resolve(path.join(".", EDITOR_CONFIG_FILE));
+            path.resolve(path.join('.', EDITOR_CONFIG_FILE));
           func.push(getEditorConfig(editorConfigPath));
           break;
         }
@@ -680,12 +682,12 @@ const handleMsg = async msg => {
           break;
         default:
           func.push(
-            writeStdout(hostMsg(`No handler found for ${key}.`, "warn")),
+            writeStdout(hostMsg(`No handler found for ${key}.`, 'warn'))
           );
       }
     }
   } else {
-    func.push(writeStdout(hostMsg(`No handler found for ${msg}.`, "warn")));
+    func.push(writeStdout(hostMsg(`No handler found for ${msg}.`, 'warn')));
   }
   return Promise.all(func);
 };
@@ -707,7 +709,7 @@ const readStdin = chunk => {
       msg && func.push(handleMsg(msg));
     }
   }
-  return func.length && Promise.all(func).catch(handleReject) || null;
+  return func.length ? Promise.all(func).catch(handleReject) : null;
 };
 
 /**
@@ -721,7 +723,7 @@ const handleExit = code => {
     removeDir(TMPDIR_APP, TMPDIR);
   }
   if (code) {
-    const msg = new Output().encode(hostMsg(`exit ${code}`, "exit"));
+    const msg = new Output().encode(hostMsg(`exit ${code}`, 'exit'));
     msg && process.stdout.write(msg);
   }
 };
@@ -732,9 +734,9 @@ const handleExit = code => {
  * @returns {void}
  */
 const addProcessListeners = () => {
-  process.on("exit", handleExit);
-  process.on("unhandledRejection", handleReject);
-  process.stdin.on("data", readStdin);
+  process.on('exit', handleExit);
+  process.on('unhandledRejection', handleReject);
+  process.stdin.on('data', readStdin);
 };
 
 /**
@@ -745,17 +747,40 @@ const addProcessListeners = () => {
 const startup = () => Promise.all([
   addProcessListeners(),
   createDirectory(TMPDIR_FILES, PERM_DIR),
-  createDirectory(TMPDIR_FILES_PB, PERM_DIR),
+  createDirectory(TMPDIR_FILES_PB, PERM_DIR)
 ]).then(exportAppStatus).catch(handleReject);
 
 module.exports = {
-  editorConfig, fileMap,
-  addProcessListeners, createTmpFile, createTmpFileResMsg, deleteKeyFromFileMap,
-  exportAppStatus, exportEditorConfig, exportFileData, exportHostVersion,
-  getEditorConfig, getFileIdFromFilePath, getLatestHostVersion,
-  getTmpFileFromFileData, getTmpFileFromWatcherFileName,
-  handleChildProcessErr, handleChildProcessStderr, handleChildProcessStdout,
-  handleCreatedTmpFile, handleExit, handleMsg, handleReject, hostMsg,
-  initPrivateTmpDir, readStdin, removeTmpFileData, spawnChildProcess,
-  startup, unwatchFile, viewLocalFile, watchTmpFile, writeStdout,
+  editorConfig,
+  fileMap,
+  addProcessListeners,
+  createTmpFile,
+  createTmpFileResMsg,
+  deleteKeyFromFileMap,
+  exportAppStatus,
+  exportEditorConfig,
+  exportFileData,
+  exportHostVersion,
+  getEditorConfig,
+  getFileIdFromFilePath,
+  getLatestHostVersion,
+  getTmpFileFromFileData,
+  getTmpFileFromWatcherFileName,
+  handleChildProcessErr,
+  handleChildProcessStderr,
+  handleChildProcessStdout,
+  handleCreatedTmpFile,
+  handleExit,
+  handleMsg,
+  handleReject,
+  hostMsg,
+  initPrivateTmpDir,
+  readStdin,
+  removeTmpFileData,
+  spawnChildProcess,
+  startup,
+  unwatchFile,
+  viewLocalFile,
+  watchTmpFile,
+  writeStdout
 };
