@@ -21,10 +21,20 @@ script:
 
 jobs:
   fast_finish: true
+  exclude:
+    - os: osx
+      node_js: "12"
+    - os: windows
+      node_js: "12"
+    - os: osx
+      node_js: "10"
+    - os: windows
+      node_js: "10"
   include:
     - stage: deploy 64bit binaries
       os: linux
       node_js: "lts/*"
+      before_script: skip
       script: skip
       before_deploy:
         - npm install
@@ -56,6 +66,7 @@ jobs:
         - sudo apt-get install -y gcc-multilib
         - sudo apt-get install -y zlib1g-dev:i386
       node_js: "lts/*"
+      before_script: skip
       script: skip
       before_deploy:
         - npm install
