@@ -40,8 +40,8 @@
   "devDependencies": {
     "@zeit/ncc": "^0.22.3",
     "chai": "^4.2.0",
-    "eslint": "^7.13.0",
-    "eslint-config-standard": "^16.0.1",
+    "eslint": "^7.14.0",
+    "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsdoc": "^30.7.8",
     "eslint-plugin-node": "^11.1.0",
@@ -49,7 +49,6 @@
     "js2bin": "^1.0.6",
     "jszip-cli": "^1.4.24",
     "mocha": "^8.2.1",
-    "nexe": "^3.3.7",
     "nyc": "^15.1.0",
     "rewiremock": "^3.14.3",
     "rimraf": "^3.0.2",
