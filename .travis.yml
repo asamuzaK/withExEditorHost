@@ -31,7 +31,7 @@ jobs:
     - os: windows
       node_js: "10"
   include:
-    - stage: deploy 64bit binaries
+    - stage: deploy binaries
       os: linux
       node_js: "lts/*"
       before_script: skip
@@ -55,34 +55,5 @@ jobs:
           - dest/linux-x86_64.zip
           - dest/macos.zip
           - dest/win64.zip
-        after_deploy:
-          - npm run clean
-    - stage: deploy 32bit binaries
-      os: linux
-      before_install:
-        - sudo dpkg --add-architecture i386
-        - sudo apt-get update -qq
-      install:
-        - sudo apt-get install -y gcc-multilib
-        - sudo apt-get install -y zlib1g-dev:i386
-      node_js: "lts/*"
-      before_script: skip
-      script: skip
-      before_deploy:
-        - npm install
-        - mkdir -p ./{dest,pkg/{linux32,win32}}
-        - npm run package:linux32 && chmod 755 ./pkg/linux32/index && npm run zippackage:linux32
-        - npm run package:win32 && npm run zippackage:win32
-      deploy:
-        on:
-          tags: true
-        provider: releases
-        skip_cleanup: true
-        overwrite: true
-        api_key:
-          secure: Aj79TxQLaAdYi0IWY67aDpIMTTJ116EYgN2q4xob1DLG5qLmeSz8dtCGy23DVVjqhI+9z3w95GPFUqvWiStIj+N+r85eHzuMqGOynfY0E8/eChMMGsSjvU3EHLEyIyxHOs/fgo1wK+syaOrHb6A5ruJqZpnas3fcaNKJukaP4UHWtZyvLd+3w/6C1x1oGlJhfFuH7JQo/JXepz8hYS65dStAWtkd/kEy8305vALVXSIYCkuIDf+k0rx13/wDIiDWvE4XASE5U6y0pdpq+1xm+Dtx2rjb89rupnStHegmQce4Az9zrlTOnLc0jnKEdIAhat6wY7Mtv/hln5vAE8/ikbESUg8fQ7/G0/nBhwMk+NYugXkOdIjXmj6/Al3ckiahA9iIlDzo1ubXhJ72oGsBpik5DMY85N7msCzQO1xWYBVodGas6iHaHHuFkJcdBPhj5RT0lqPzj5grMddOFbp8iugwiD7FMKwsbjxVo2hXKfxx9IWsZf2JSZzODQOWQtXThynfsN0QfWBeJGN8Otwrww8PfKQzZO2htolXIrRmYUSjmTZZXQ7T+9MClE3rs1Qj/kJBDN4jFjsHErkpoq2ANar62jJDjXGzdk0XHyX4lwZGkcbCvzPXxHe0mNpgrpCx3TxeBrBa+9WDY9eOBAkMM6S1IjNIr5UGVW1vTS5DSUE=
-        file:
-          - dest/linux-x86.zip
-          - dest/win32.zip
         after_deploy:
           - npm run clean
