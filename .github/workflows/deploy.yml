@@ -31,6 +31,12 @@ jobs:
     node-version: 14.x
     runs-on: windows-latest
     steps:
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: set upload url
+        run: |
+          upload_url=$(curl -sL https://api.github.com/repos/asamuzaK/withExEditorHost/releases/latest | jq -r '.upload_url')
+          echo ::set-env name=UPLOAD_URL::$upload_url
       - uses: actions/checkout@v2
       - name: bundle and zip app
         run: |
@@ -40,11 +46,6 @@ jobs:
           npm run package -- -t ./pkg/win64/index.exe
           npm run zippackage:win64
       - name: deploy asset
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          upload_url=$(curl -sL https://api.github.com/repos/asamuzaK/withExEditorHost/releases/latest | jq -r '.upload_url')
-          echo ::set-env name=UPLOAD_URL::$upload_url
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ env.UPLOAD_URL }}
