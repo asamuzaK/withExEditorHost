@@ -12,7 +12,7 @@ jobs:
   build:
     strategy:
       matrix:
-        node-version: [ 14.x, 15.x ]
+        node-version: [ 14.x ]
         os: [ ubuntu-latest, macos-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
@@ -25,33 +25,41 @@ jobs:
       - run: npm run lint
       - run: npm test
 
-  deploy_windows:
-    name: bundle and deploy windows app
+  deploy:
+    name: deploy asset
     needs: [ build ]
     strategy:
       matrix:
         include:
-          - node-version: 14.x
-    runs-on: windows-latest
+          - os: windows-latest
+            node-version: 14.x
+            app-name: win64.zip
+            target: ./pkg/win64/index.exe
+            zip-file: ./dist/win64.zip
+    runs-on: ${{ matrix.os }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: set upload url
-        run: |
-          upload_url=$(curl -sL https://api.github.com/repos/asamuzaK/withExEditorHost/releases/latest | jq -r '.upload_url')
-          echo ::set-env name=UPLOAD_URL::$upload_url
       - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
       - name: bundle and zip app
         run: |
           npm install
           mkdir -p ./{bundle,dist,pkg/win64}
           npm run bundle
-          npm run package -- -t ./pkg/win64/index.exe
+          npm run package -- -t ${{ matrix.target }}
           npm run zippackage:win64
-      - name: deploy asset
+      - name: set upload url
+        run: |
+          upload_url=$(curl -sL https://api.github.com/repos/asamuzaK/withExEditorHost/releases/latest | jq -r '.upload_url')
+          echo 'UPLOAD_URL=$upload_url' >> $GITHUB_ENV
+      - name: upload asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: ./dist/win64.zip
-          asset_name: win64.zip
+          asset_path: ${{ matrix.zip-file }}
+          asset_name: ${{ matrix.app-name }}
           asset_content_type: application/zip
