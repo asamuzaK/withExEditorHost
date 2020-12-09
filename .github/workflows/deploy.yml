@@ -15,7 +15,7 @@ jobs:
       matrix:
         include:
           - node-version: 14.x
-            os: linux-latest
+            os: ubuntu-latest
             app-name: linux-x86_64.zip
             target: ./pkg/linux/index
             zip-cmd: zippkg:linux
