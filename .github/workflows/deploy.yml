@@ -28,7 +28,10 @@ jobs:
   deploy_windows:
     name: bundle and deploy windows app
     needs: [ build ]
-    node-version: 14.x
+    strategy:
+      matrix:
+        include:
+          - node-version: 14.x
     runs-on: windows-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
