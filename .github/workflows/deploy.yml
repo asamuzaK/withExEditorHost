@@ -15,10 +15,22 @@ jobs:
       matrix:
         include:
           - node-version: 14.x
+            os: linux-latest
+            app-name: linux-x86_64.zip
+            target: ./pkg/linux/index
+            zip-cmd: zippkg:linux
+            zip-file: ./dist/linux-x86_64.zip
+          - node-version: 14.x
+            os: macos-latest
+            app-name: macos.zip
+            target: ./pkg/macos/index
+            zip-cmd: zippkg:macos
+            zip-file: ./dist/macos.zip
+          - node-version: 14.x
             os: windows-latest
             app-name: win64.zip
-            target: ./pkg/win64/index.exe
-            zip-cmd: zippackage:win64
+            target: ./pkg/win/index.exe
+            zip-cmd: zippkg:win
             zip-file: ./dist/win64.zip
     runs-on: ${{ matrix.os }}
     env:
@@ -39,7 +51,7 @@ jobs:
           npm test
       - name: build binary
         run: |
-          mkdir -p ./{bundle,dist,pkg/{linux64,macos,win64}}
+          # mkdir -p ./{bundle,dist,pkg/{linux64,macos,win64}}
           npm run bundle
           npm run package -- -t ${{ matrix.target }}
           npm run ${{ matrix.zip-cmd }}
