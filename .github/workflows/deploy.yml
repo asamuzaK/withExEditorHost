@@ -51,7 +51,7 @@ jobs:
           npm test
       - name: build binary
         run: |
-          # mkdir -p ./{bundle,dist,pkg/{linux64,macos,win64}}
+          mkdir -p ./{bundle,dist,pkg/{linux,macos,win}}
           npm run bundle
           npm run package -- -t ${{ matrix.target }}
           npm run ${{ matrix.zip-cmd }}
