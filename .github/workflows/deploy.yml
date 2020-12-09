@@ -1,40 +1,24 @@
 name: deploy
 
 on:
-  push:
-    tags: [ 'v*' ]
+  release:
+    types: [ created ]
 
 defaults:
   run:
     shell: bash
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        node-version: [ 14.x ]
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm install
-      - run: npm run lint
-      - run: npm test
-
   deploy:
-    name: deploy asset
-    needs: [ build ]
+    name: deploy binaries
     strategy:
       matrix:
         include:
-          - os: windows-latest
-            node-version: 14.x
+          - node-version: 14.x
+            os: windows-latest
             app-name: win64.zip
             target: ./pkg/win64/index.exe
+            zip-cmd: zippackage:win64
             zip-file: ./dist/win64.zip
     runs-on: ${{ matrix.os }}
     env:
@@ -47,21 +31,22 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Set up NASM
         uses: ilammy/setup-nasm@v1
-      - name: bundle and zip app
+      - name: install dependencies
+        run: npm install
+      - name: test
         run: |
-          npm install
-          mkdir -p ./{bundle,dist,pkg/win64}
+          npm run lint
+          npm test
+      - name: build binary
+        run: |
+          mkdir -p ./{bundle,dist,pkg/{linux64,macos,win64}}
           npm run bundle
           npm run package -- -t ${{ matrix.target }}
-          npm run zippackage:win64
-      - name: set upload url
-        run: |
-          upload_url=$(curl -sL https://api.github.com/repos/asamuzaK/withExEditorHost/releases/latest | jq -r '.upload_url')
-          echo 'UPLOAD_URL=$upload_url' >> $GITHUB_ENV
-      - name: upload asset
+          npm run ${{ matrix.zip-cmd }}
+      - name: deploy binary
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
+          upload_url: ${{ github.event.release.upload_url }}
           asset_path: ${{ matrix.zip-file }}
           asset_name: ${{ matrix.app-name }}
           asset_content_type: application/zip
