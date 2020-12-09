@@ -1,0 +1,53 @@
+name: deploy
+
+on:
+  push:
+    tags: [ 'v*' ]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        node-version: [ 14.x, 15.x ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm run lint
+      - run: npm test
+
+  deploy_windows:
+    name: bundle and deploy windows app
+    needs: [ build ]
+    node-version: 14.x
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: bundle and zip app
+        run: |
+          npm install
+          mkdir -p ./{bundle,dist,pkg/win64}
+          npm run bundle
+          npm run package -- -t ./pkg/win64/index.exe
+          npm run zippackage:win64
+      - name: deploy asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          upload_url=$(curl -sL https://api.github.com/repos/asamuzaK/withExEditorHost/releases/latest | jq -r '.upload_url')
+          echo ::set-env name=UPLOAD_URL::$upload_url
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ env.UPLOAD_URL }}
+          asset_path: ./dist/win64.zip
+          asset_name: win64.zip
+          asset_content_type: application/zip
