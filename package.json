@@ -35,12 +35,12 @@
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
     "semver-parser": "^3.1.0",
-    "web-ext-native-msg": "^4.8.0"
+    "web-ext-native-msg": "^4.8.1"
   },
   "devDependencies": {
     "@zeit/ncc": "^0.22.3",
     "chai": "^4.2.0",
-    "eslint": "^7.14.0",
+    "eslint": "^7.15.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsdoc": "^30.7.8",
