@@ -54,12 +54,12 @@ jobs:
           npm test
       - name: build binary
         run: |
-          sudo mkdir -p ./{bundle,dist,download,pkg/{linux,macos,win}}
+          mkdir -p ./{bundle,dist,download,pkg/{linux,macos,win}}
           npm run bundle
           npm run package -- -t ${{ matrix.target }} ${{ matrix.make-args }}
-          sudo chmod 755 ${{ matrix.target }}
+          chmod 755 ${{ matrix.target }}
           npm run ${{ matrix.zip-cmd }}
-          sudo zipinfo ${{ matrix.zipfile }}
+          zipinfo ${{ matrix.zipfile }}
       - name: deploy binary
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -71,4 +71,4 @@ jobs:
       - name: release asset info
         run: |
           curl ${{ steps.upload-release-asset.outputs.browser_download_url }} -o ./download/${{ matrix.app-name }}
-          sudo zipinfo ./download/${{ matrix.app-name }}
+          zipinfo ./download/${{ matrix.app-name }}
