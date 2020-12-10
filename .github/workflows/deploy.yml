@@ -17,18 +17,21 @@ jobs:
           - node-version: 14.x
             os: ubuntu-latest
             app-name: linux-x86_64.zip
+            make-args: '-M "-j4"'
             target: ./pkg/linux/index
             zip-cmd: zippkg:linux
             zip-file: ./dist/linux-x86_64.zip
           - node-version: 14.x
             os: macos-latest
             app-name: macos.zip
+            make-args: '-M "-j4"'
             target: ./pkg/macos/index
             zip-cmd: zippkg:macos
             zip-file: ./dist/macos.zip
           - node-version: 14.x
             os: windows-latest
             app-name: win64.zip
+            make-args: ''
             target: ./pkg/win/index.exe
             zip-cmd: zippkg:win
             zip-file: ./dist/win64.zip
@@ -53,7 +56,8 @@ jobs:
         run: |
           mkdir -p ./{bundle,dist,pkg/{linux,macos,win}}
           npm run bundle
-          npm run package -- -t ${{ matrix.target }}
+          npm run package -- -t ${{ matrix.target }} ${{ matrix.make-args }}
+          chmod 755 ${{ matrix.target }}
           npm run ${{ matrix.zip-cmd }}
       - name: deploy binary
         uses: actions/upload-release-asset@v1
