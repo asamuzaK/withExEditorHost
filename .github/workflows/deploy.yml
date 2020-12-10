@@ -17,14 +17,14 @@ jobs:
           - node-version: 14.x
             os: ubuntu-latest
             app-name: linux-x86_64.zip
-            make-args: '-M "-j4"'
+            make-args: --make-args="-j4"
             target: ./pkg/linux/index
             zip-cmd: zippkg:linux
             zip-file: ./dist/linux-x86_64.zip
           - node-version: 14.x
             os: macos-latest
             app-name: macos.zip
-            make-args: '-M "-j4"'
+            make-args: --make-args="-j4"
             target: ./pkg/macos/index
             zip-cmd: zippkg:macos
             zip-file: ./dist/macos.zip
@@ -54,15 +54,21 @@ jobs:
           npm test
       - name: build binary
         run: |
-          mkdir -p ./{bundle,dist,pkg/{linux,macos,win}}
+          sudo mkdir -p ./{bundle,dist,download,pkg/{linux,macos,win}}
           npm run bundle
           npm run package -- -t ${{ matrix.target }} ${{ matrix.make-args }}
-          chmod 755 ${{ matrix.target }}
+          sudo chmod 755 ${{ matrix.target }}
           npm run ${{ matrix.zip-cmd }}
+          sudo zipinfo ${{ matrix.zipfile }}
       - name: deploy binary
+        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ${{ matrix.zip-file }}
           asset_name: ${{ matrix.app-name }}
           asset_content_type: application/zip
+      - name: release asset info
+        run: |
+          curl ${{ steps.upload-release-asset.outputs.browser_download_url }} -o ./download/${{ matrix.app-name }}
+          sudo zipinfo ./download/${{ matrix.app-name }}
