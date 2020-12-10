@@ -56,10 +56,8 @@ jobs:
         run: |
           mkdir -p ./{bundle,dist,download,pkg/{linux,macos,win}}
           npm run bundle
-          npm run package -- -t ${{ matrix.target }} ${{ matrix.make-args }}
-          chmod 755 ${{ matrix.target }}
-          npm run ${{ matrix.zip-cmd }}
-          zipinfo ${{ matrix.zipfile }}
+          npm run package -- -t ${{ matrix.target }} ${{ matrix.make-args }} && chmod 755 ${{ matrix.target }}
+          npm run ${{ matrix.zip-cmd }} && zipinfo ${{ matrix.zipfile }}
       - name: deploy binary
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -70,5 +68,4 @@ jobs:
           asset_content_type: application/zip
       - name: release asset info
         run: |
-          curl ${{ steps.upload-release-asset.outputs.browser_download_url }} -o ./download/${{ matrix.app-name }}
-          zipinfo ./download/${{ matrix.app-name }}
+          curl ${{ steps.upload-release-asset.outputs.browser_download_url }} -o ./download/${{ matrix.app-name }} && zipinfo ./download/${{ matrix.app-name }}
