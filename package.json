@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@vercel/ncc": "^0.25.1",
-    "boxednode": "^1.7.1",
+    "boxednode": "^1.8.0",
     "chai": "^4.2.0",
     "eslint": "^7.15.0",
     "eslint-config-standard": "^16.0.2",
@@ -45,7 +45,7 @@
     "nyc": "^15.1.0",
     "rewiremock": "^3.14.3",
     "rimraf": "^3.0.2",
-    "sinon": "^9.2.0"
+    "sinon": "^9.2.2"
   },
-  "version": "6.0.0-a.29"
+  "version": "6.0.0-a.30"
 }
