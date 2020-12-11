@@ -34,7 +34,7 @@ jobs:
             os: windows-latest
             make-args: ''
             pkg-dir: ./pkg/win
-            target: index.exe
+            target: ./pkg/win/index.exe
             zip-cmd: npm run zippkg:win
             zip-file: win64.zip
             zip-mime: application/zip
