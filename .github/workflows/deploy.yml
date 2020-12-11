@@ -16,26 +16,23 @@ jobs:
         include:
           - node-version: 14.x
             os: ubuntu-latest
-            app-name: linux-x86_64.tar.gz
             make-args: --make-args="-j4"
             target: ./pkg/linux/index
-            zip-cmd: tar -cvzf linux-x86_64.tar.gz ./LICENSE ./README.md ./README.ja.md -C ./pkg/linux index
+            zip-cmd: tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md -C ./pkg/linux index && tar -tv linux-x86_64.tar.gz
             zip-file: linux-x86_64.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
             os: macos-latest
-            app-name: macos.tar.gz
             make-args: --make-args="-j4"
             target: ./pkg/macos/index
-            zip-cmd: tar -cvzf macos.tar.gz ./LICENSE ./README.md ./README.ja.md -C ./pkg/macos index
+            zip-cmd: tar -cvzf macos.tar.gz LICENSE README.md README.ja.md -C ./pkg/macos index && tar -tv macos.tar.gz
             zip-file: macos.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
             os: windows-latest
-            app-name: win64.zip
             make-args: ''
             target: ./pkg/win/index.exe
-            zip-cmd: npm run zippkg:win
+            zip-cmd: npm run zippkg:win && zipinfo ./win64.zip
             zip-file: win64.zip
             zip-mime: application/zip
     runs-on: ${{ matrix.os }}
@@ -57,7 +54,7 @@ jobs:
           npm test
       - name: build binary
         run: |
-          mkdir -p ./{bundle,dist,download,pkg/{linux,macos,win}}
+          mkdir -p ./{bundle,pkg/{linux,macos,win}}
           npm run bundle
           npm run package -- -t ${{ matrix.target }} ${{ matrix.make-args }}
       - name: zip package
@@ -69,6 +66,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ${{ matrix.zip-file }}
-          asset_name: ${{ matrix.app-name }}
+          asset_path: ./${{ matrix.zip-file }}
+          asset_name: ${{ matrix.zip-file }}
           asset_content_type: ${{ matrix.zip-mime }}
