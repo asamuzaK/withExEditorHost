@@ -20,8 +20,6 @@
     "setup": "npm install --production && node ./index.js setup",
     "start": "node ./index.js",
     "test": "nyc --reporter=text mocha test/*.test.js --exit",
-    "zippkg:linux": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/linux/index -o ./dist/linux-x86_64.zip",
-    "zippkg:macos": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/macos/index -o ./dist/macos.zip",
     "zippkg:win": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win/index.exe -o ./win64.zip"
   },
   "dependencies": {
@@ -49,5 +47,5 @@
     "rimraf": "^3.0.2",
     "sinon": "^9.2.0"
   },
-  "version": "6.0.0-a.21"
+  "version": "6.0.0-a.22"
 }
