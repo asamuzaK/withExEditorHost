@@ -14,9 +14,9 @@
   },
   "main": "./index.js",
   "scripts": {
-    "bundle": "ncc build ./index.js -m -o bundle",
+    "bundle:js": "ncc build ./index.js -m -o bundle",
+    "bundle:bin": "boxednode -n lts -s ./bundle/index.js",
     "lint": "eslint --fix .",
-    "package": "boxednode -n lts -s ./bundle/index.js",
     "setup": "npm install --production && node ./index.js setup",
     "start": "node ./index.js",
     "test": "nyc --reporter=text mocha test/*.test.js --exit",
@@ -47,5 +47,5 @@
     "rimraf": "^3.0.2",
     "sinon": "^9.2.0"
   },
-  "version": "6.0.0-a.23"
+  "version": "6.0.0-a.24"
 }
