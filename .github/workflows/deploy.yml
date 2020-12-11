@@ -17,24 +17,24 @@ jobs:
           - node-version: 14.x
             os: ubuntu-latest
             make-args: --make-args="-j4"
-            target: ./pkg/linux/index
             pkg-dir: ./pkg/linux
+            target: ./pkg/linux/index
             zip-cmd: tar -cvzf linux-x86_64.tar.gz -C ./pkg/linux LICENSE README.md README.ja.md index
             zip-file: linux-x86_64.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
             os: macos-latest
             make-args: --make-args="-j4"
-            target: ./pkg/macos/index
             pkg-dir: ./pkg/macos
+            target: ./pkg/macos/index
             zip-cmd: tar -cvzf macos.tar.gz -C ./pkg/macos LICENSE README.md README.ja.md index
             zip-file: macos.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
             os: windows-latest
             make-args: ''
-            target: ./pkg/win/index.exe
             pkg-dir: ./pkg/win
+            target: ./pkg/win/index.exe
             zip-cmd: zip -r win64.zip ./pkg/win
             zip-file: win64.zip
             zip-mime: application/zip
@@ -51,19 +51,19 @@ jobs:
         uses: ilammy/setup-nasm@v1
       - name: install dependencies
         run: npm install
-      - name: run test
+      - name: run tests
         run: |
           npm run lint
           npm test
       - name: build binary
         run: |
           mkdir -p ./{bundle,pkg/{linux,macos,win}}
-          npm run bundle
-          npm run package -- -t ${{ matrix.target }} ${{ matrix.make-args }}
+          npm run bundle:js
+          npm run bundle:bin -- -t ${{ matrix.target }} ${{ matrix.make-args }}
       - name: zip package
         run: |
           chmod 755 ${{ matrix.target }}
-          copy ./LICENSE ./README.md ./README.ja.md ${{ matrix.pkg-dir }}
+          cp ./LICENSE ./README.md ./README.ja.md ${{ matrix.pkg-dir }}
           ${{ matrix.zip-cmd }}
       - name: upload release asset
         id: upload-release-asset
