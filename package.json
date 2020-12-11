@@ -14,20 +14,13 @@
   },
   "main": "./index.js",
   "scripts": {
-    "bundle": "ncc build ./index.js -m -o bundle",
-    "clean": "rimraf ./bundle ./cache ./dest ./pkg",
-    "clean:bundle": "rimraf ./bundle",
-    "clean:cache": "rimraf ./cache",
-    "clean:dest": "rimraf ./dest",
-    "clean:pkg": "rimraf ./pkg",
+    "bundle:js": "ncc build ./index.js -m -o bundle",
+    "bundle:bin": "boxednode -n lts -s ./bundle/index.js",
     "lint": "eslint --fix .",
-    "package": "js2bin --build --cache --node=14.15.0 --platform=linux --platform=darwin --platform=windows --app=./bundle/index.js --name=./pkg/index",
     "setup": "npm install --production && node ./index.js setup",
     "start": "node ./index.js",
     "test": "nyc --reporter=text mocha test/*.test.js --exit",
-    "zippackage:linux64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/linux64/index -o ./dest/linux-x86_64.zip",
-    "zippackage:macos": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/macos/index -o ./dest/macos.zip",
-    "zippackage:win64": "jszip ./LICENSE ./README.md ./README.ja.md ./pkg/win64/index.exe -o ./dest/win64.zip"
+    "zip:jszip": "jszip"
   },
   "dependencies": {
     "commander": "^6.2.0",
@@ -38,7 +31,8 @@
     "web-ext-native-msg": "^4.8.1"
   },
   "devDependencies": {
-    "@zeit/ncc": "^0.22.3",
+    "@vercel/ncc": "^0.25.1",
+    "boxednode": "^1.8.0",
     "chai": "^4.2.0",
     "eslint": "^7.15.0",
     "eslint-config-standard": "^16.0.2",
@@ -46,13 +40,12 @@
     "eslint-plugin-jsdoc": "^30.7.8",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "js2bin": "^1.0.6",
     "jszip-cli": "^1.4.24",
     "mocha": "^8.2.1",
     "nyc": "^15.1.0",
     "rewiremock": "^3.14.3",
     "rimraf": "^3.0.2",
-    "sinon": "^9.2.0"
+    "sinon": "^9.2.2"
   },
-  "version": "5.5.0"
+  "version": "6.0.0-a.30"
 }
