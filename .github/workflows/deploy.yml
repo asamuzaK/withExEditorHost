@@ -19,16 +19,16 @@ jobs:
             app-name: linux-x86_64.tar.gz
             make-args: --make-args="-j4"
             target: ./pkg/linux/index
-            zip-cmd: tar -cpzf ./dist/linux-x86_64.tar.gz ./LICENSE ./README.md ./README.ja.md ./pkg/linux/index && tar -tv ./dist/linux-x86_64.tar.gz
-            zip-file: ./dist/linux-x86_64.tar.gz
+            zip-cmd: tar -cpzf linux-x86_64.tar.gz ./LICENSE ./README.md ./README.ja.md -C ./pkg/linux index && tar -tv linux-x86_64.tar.gz
+            zip-file: linux-x86_64.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
             os: macos-latest
             app-name: macos.tar.gz
             make-args: --make-args="-j4"
             target: ./pkg/macos/index
-            zip-cmd: tar -cpzf ./dist/macos.tar.gz ./LICENSE ./README.md ./README.ja.md ./pkg/macos/index && tar -tv ./dist/macos.tar.gz
-            zip-file: ./dist/macos.tar.gz
+            zip-cmd: tar -zcvf macos.tar.gz ./LICENSE ./README.md ./README.ja.md -C ./pkg/macos index && tar -tv macos.tar.gz
+            zip-file: macos.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
             os: windows-latest
@@ -36,7 +36,7 @@ jobs:
             make-args: ''
             target: ./pkg/win/index.exe
             zip-cmd: npm run zippkg:win
-            zip-file: ./dist/win64.zip
+            zip-file: win64.zip
             zip-mime: application/zip
     runs-on: ${{ matrix.os }}
     env:
