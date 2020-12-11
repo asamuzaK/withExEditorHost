@@ -19,7 +19,7 @@ jobs:
             app-name: linux-x86_64.tar.gz
             make-args: --make-args="-j4"
             target: ./pkg/linux/index
-            zip-cmd: tar -cptvzf ./dist/linux-x86_64.tar.gz ./LICENSE ./README.md ./README.ja.md ./pkg/linux/index
+            zip-cmd: tar -cpzf ./dist/linux-x86_64.tar.gz ./LICENSE ./README.md ./README.ja.md ./pkg/linux/index && tar -tv ./dist/linux-x86_64.tar.gz
             zip-file: ./dist/linux-x86_64.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
@@ -27,7 +27,7 @@ jobs:
             app-name: macos.tar.gz
             make-args: --make-args="-j4"
             target: ./pkg/macos/index
-            zip-cmd: tar -cptvzf ./dist/macos.tar.gz ./LICENSE ./README.md ./README.ja.md ./pkg/macos/index
+            zip-cmd: tar -cpzf ./dist/macos.tar.gz ./LICENSE ./README.md ./README.ja.md ./pkg/macos/index && tar -tv ./dist/macos.tar.gz
             zip-file: ./dist/macos.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
