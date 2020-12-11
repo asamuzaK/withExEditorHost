@@ -19,7 +19,7 @@ jobs:
             make-args: --make-args="-j4"
             pkg-dir: ./pkg/linux
             target: ./pkg/linux/index
-            zip-cmd: cd ./pkg/linux && tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md index && tar -tv linux-x86_64.tar.gz && cd ../../
+            zip-cmd: cd ./pkg/linux && tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-file: linux-x86_64.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
@@ -27,7 +27,7 @@ jobs:
             make-args: --make-args="-j4"
             pkg-dir: ./pkg/macos
             target: ./pkg/macos/index
-            zip-cmd: cd ./pkg/macos && tar -cvzf macos.tar.gz LICENSE README.md README.ja.md index && tar -tv macos.tar.gz && cd ../../
+            zip-cmd: cd ./pkg/macos && tar -cvzf macos.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-file: macos.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
@@ -35,7 +35,7 @@ jobs:
             make-args: ''
             pkg-dir: ./pkg/win
             target: index.exe
-            zip-cmd: npm run zippkg:win && zipinfo ./pkg/win/win64.zip
+            zip-cmd: npm run zippkg:win
             zip-file: win64.zip
             zip-mime: application/zip
     runs-on: ${{ matrix.os }}
