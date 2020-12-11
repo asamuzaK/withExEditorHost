@@ -16,18 +16,19 @@ jobs:
         include:
           - node-version: 14.x
             os: ubuntu-latest
-            app-name: linux-x86_64.zip
+            app-name: linux-x86_64.tar.gz
             make-args: --make-args="-j4"
             target: ./pkg/linux/index
-            zip-cmd: zippkg:linux
-            zip-file: ./dist/linux-x86_64.zip
+            zip-cmd: tar -cptvzf ./dist/linux-x86_64.tar.gz ./LICENSE ./README.md ./README.ja.md ./pkg/linux/index
+            zip-file: ./dist/linux-x86_64.tar.gz
           - node-version: 14.x
             os: macos-latest
-            app-name: macos.zip
+            app-name: macos.tar.gz
             make-args: --make-args="-j4"
             target: ./pkg/macos/index
-            zip-cmd: zippkg:macos
-            zip-file: ./dist/macos.zip
+            zip-cmd: tar -cptvzf ./dist/macos.tar.gz ./LICENSE ./README.md ./README.ja.md ./pkg/macos/index
+            zip-file: ./dist/macos.tar.gz
+            zip-mime: application/gzip
           - node-version: 14.x
             os: windows-latest
             app-name: win64.zip
@@ -35,6 +36,7 @@ jobs:
             target: ./pkg/win/index.exe
             zip-cmd: zippkg:win
             zip-file: ./dist/win64.zip
+            zip-mime: application/zip
     runs-on: ${{ matrix.os }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -61,7 +63,6 @@ jobs:
         run: |
           chmod 755 ${{ matrix.target }}
           npm run ${{ matrix.zip-cmd }}
-          zipinfo ${{ matrix.zip-file }}
       - name: upload release asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -69,8 +70,4 @@ jobs:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ${{ matrix.zip-file }}
           asset_name: ${{ matrix.app-name }}
-          asset_content_type: application/zip
-      - name: release asset info
-        run: |
-          curl ${{ steps.upload-release-asset.outputs.browser_download_url }} -o ./download/${{ matrix.app-name }}
-          zipinfo ./download/${{ matrix.app-name }}
+          asset_content_type: ${{ matrix.zip-mime }}
