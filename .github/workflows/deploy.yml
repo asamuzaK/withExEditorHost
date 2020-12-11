@@ -21,6 +21,7 @@ jobs:
             target: ./pkg/linux/index
             zip-cmd: tar -cptvzf ./dist/linux-x86_64.tar.gz ./LICENSE ./README.md ./README.ja.md ./pkg/linux/index
             zip-file: ./dist/linux-x86_64.tar.gz
+            zip-mime: application/gzip
           - node-version: 14.x
             os: macos-latest
             app-name: macos.tar.gz
@@ -34,7 +35,7 @@ jobs:
             app-name: win64.zip
             make-args: ''
             target: ./pkg/win/index.exe
-            zip-cmd: zippkg:win
+            zip-cmd: npm run zippkg:win
             zip-file: ./dist/win64.zip
             zip-mime: application/zip
     runs-on: ${{ matrix.os }}
@@ -62,7 +63,7 @@ jobs:
       - name: zip package
         run: |
           chmod 755 ${{ matrix.target }}
-          npm run ${{ matrix.zip-cmd }}
+          ${{ matrix.zip-cmd }}
       - name: upload release asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
