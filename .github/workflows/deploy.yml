@@ -18,21 +18,24 @@ jobs:
             os: ubuntu-latest
             make-args: --make-args="-j4"
             target: ./pkg/linux/index
-            zip-cmd: tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md -C ./pkg/linux index && tar -tv linux-x86_64.tar.gz
+            pkg-dir: ./pkg/linux
+            zip-cmd: tar -cvzf linux-x86_64.tar.gz -C ./pkg/linux LICENSE README.md README.ja.md index
             zip-file: linux-x86_64.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
             os: macos-latest
             make-args: --make-args="-j4"
             target: ./pkg/macos/index
-            zip-cmd: tar -cvzf macos.tar.gz LICENSE README.md README.ja.md -C ./pkg/macos index && tar -tv macos.tar.gz
+            pkg-dir: ./pkg/macos
+            zip-cmd: tar -cvzf macos.tar.gz -C ./pkg/macos LICENSE README.md README.ja.md index
             zip-file: macos.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
             os: windows-latest
             make-args: ''
             target: ./pkg/win/index.exe
-            zip-cmd: npm run zippkg:win && zipinfo ./win64.zip
+            pkg-dir: ./pkg/win
+            zip-cmd: zip -r win64.zip ./pkg/win
             zip-file: win64.zip
             zip-mime: application/zip
     runs-on: ${{ matrix.os }}
@@ -60,6 +63,7 @@ jobs:
       - name: zip package
         run: |
           chmod 755 ${{ matrix.target }}
+          copy ./LICENSE ./README.md ./README.ja.md ${{ matrix.pkg-dir }}
           ${{ matrix.zip-cmd }}
       - name: upload release asset
         id: upload-release-asset
