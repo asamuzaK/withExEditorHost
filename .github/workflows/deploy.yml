@@ -40,15 +40,15 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Set up NASM
+      - name: set up NASM
         uses: ilammy/setup-nasm@v1
       - name: install dependencies
         run: npm install
-      - name: test
+      - name: run test
         run: |
           npm run lint
           npm test
@@ -57,8 +57,9 @@ jobs:
           mkdir -p ./{bundle,dist,download,pkg/{linux,macos,win}}
           npm run bundle
           npm run package -- -t ${{ matrix.target }} ${{ matrix.make-args }} && chmod 755 ${{ matrix.target }}
-          npm run ${{ matrix.zip-cmd }} && zipinfo ${{ matrix.zipfile }}
-      - name: deploy binary
+      - name: zip package
+        run: npm run ${{ matrix.zip-cmd }} && zipinfo ${{ matrix.zip-file }}
+      - name: upload release asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         with:
