@@ -10,33 +10,33 @@ defaults:
 
 jobs:
   deploy:
-    name: deploy binaries
+    name: deploy release assets
     strategy:
       matrix:
         include:
           - node-version: 14.x
             os: ubuntu-latest
+            asset-name: linux-x86_64.tar.gz
+            pkg-dir: pkg/linux
+            bin-file: ./pkg/linux/index
             make-args: --make-args="-j4"
-            pkg-dir: ./pkg/linux
-            target: ./pkg/linux/index
             zip-cmd: cd ./pkg/linux && tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md index && cd ../../
-            zip-file: linux-x86_64.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
             os: macos-latest
+            asset-name: macos.tar.gz
+            pkg-dir: pkg/macos
+            bin-file: ./pkg/macos/index
             make-args: --make-args="-j4"
-            pkg-dir: ./pkg/macos
-            target: ./pkg/macos/index
             zip-cmd: cd ./pkg/macos && tar -cvzf macos.tar.gz LICENSE README.md README.ja.md index && cd ../../
-            zip-file: macos.tar.gz
             zip-mime: application/gzip
           - node-version: 14.x
             os: windows-latest
+            asset-name: win64.zip
+            pkg-dir: pkg/win
+            bin-file: ./pkg/win/index.exe
             make-args: ''
-            pkg-dir: ./pkg/win
-            target: ./pkg/win/index.exe
             zip-cmd: npm run zip:jszip -- -o ./pkg/win/win64.zip ./pkg/win/LICENSE ./pkg/win/README.md ./pkg/win/README.ja.md ./pkg/win/index.exe
-            zip-file: win64.zip
             zip-mime: application/zip
     runs-on: ${{ matrix.os }}
     env:
@@ -57,18 +57,18 @@ jobs:
           npm test
       - name: build binary
         run: |
-          mkdir -p ./{bundle,pkg/{linux,macos,win}}
+          mkdir -p ./{bundle,${{ matrix.pkg-dir }}}
           npm run bundle:js
-          npm run bundle:bin -- -t ${{ matrix.target }} ${{ matrix.make-args }}
+          npm run bundle:bin -- -t ${{ matrix.bin-file }} ${{ matrix.make-args }}
       - name: zip package
         run: |
-          chmod 755 ${{ matrix.target }}
-          cp ./LICENSE ./README.md ./README.ja.md ${{ matrix.pkg-dir }}
+          chmod 755 ${{ matrix.bin-file }}
+          cp ./LICENSE ./README.md ./README.ja.md ./${{ matrix.pkg-dir }}
           ${{ matrix.zip-cmd }}
       - name: upload release asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ${{ matrix.pkg-dir}}/${{ matrix.zip-file }}
-          asset_name: ${{ matrix.zip-file }}
+          asset_path: ./${{ matrix.pkg-dir}}/${{ matrix.asset-name }}
+          asset_name: ${{ matrix.asset-name }}
           asset_content_type: ${{ matrix.zip-mime }}
