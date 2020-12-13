@@ -63,7 +63,6 @@ jobs:
           stat ${{ matrix.bin-file }}
       - name: zip package
         run: |
-          chmod 755 ${{ matrix.bin-file }}
           cp ./LICENSE ./README.md ./README.ja.md ./${{ matrix.pkg-dir }}
           ${{ matrix.zip-cmd }}
           stat ./${{ matrix.pkg-dir}}/${{ matrix.asset-name }}
