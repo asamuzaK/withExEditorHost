@@ -23,16 +23,16 @@
     "zip:jszip": "jszip"
   },
   "dependencies": {
-    "commander": "^6.2.0",
+    "commander": "^6.2.1",
     "global-agent": "^2.1.12",
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
     "semver-parser": "^3.1.0",
-    "web-ext-native-msg": "^4.8.1"
+    "web-ext-native-msg": "^4.8.2"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.25.1",
-    "boxednode": "^1.8.0",
+    "@vercel/ncc": "^0.26.0",
+    "boxednode": "^1.9.0",
     "chai": "^4.2.0",
     "eslint": "^7.15.0",
     "eslint-config-standard": "^16.0.2",
