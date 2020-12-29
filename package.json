@@ -17,7 +17,7 @@
     "bundle:js": "ncc build ./index.js -m -o bundle",
     "bundle:bin": "boxednode -n lts -s ./bundle/index.js",
     "lint": "eslint --fix .",
-    "setup": "npm install --production && node ./index.js setup",
+    "setup": "node ./index.js setup",
     "start": "node ./index.js",
     "test": "nyc --reporter=text mocha test/*.test.js --exit",
     "zip:jszip": "jszip"
@@ -31,13 +31,13 @@
     "web-ext-native-msg": "^4.8.2"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.26.0",
+    "@vercel/ncc": "^0.26.1",
     "boxednode": "^1.9.0",
     "chai": "^4.2.0",
-    "eslint": "^7.15.0",
+    "eslint": "^7.16.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsdoc": "^30.7.8",
+    "eslint-plugin-jsdoc": "^30.7.9",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "jszip-cli": "^1.4.24",

@@ -191,12 +191,10 @@ You can get the global installation path of npm with `npm root -g`.
 > cd path/to/npm/node_modules/withexeditorhost
 ```
 
-Run the setup command.
-
-NOTE: The setup command is `node index setup`, NOT `npm run setup`.
+Run the setup command `npm run setup`.
 
 ```
-> node index setup
+> npm run setup
 ```
 
 Then you will be asked which browser you want to setup the host for, so please select from the browsers listed.

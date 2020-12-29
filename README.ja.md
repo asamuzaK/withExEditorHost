@@ -252,12 +252,10 @@ main
 > cd path/to/npm/node_modules/withexeditorhost
 ```
 
-ホストを設定するためのコマンドを実行します。
-
-備考：設定のコマンドは`node index setup`です。`npm run setup`ではありませんのでご注意ください。
+ホストを設定するためのコマンド`npm run setup`を実行します。
 
 ```
-> node index setup
+> npm run setup
 ```
 
 どのブラウザ向けにホストを設定するのか尋ねられますので、リストに表示されたブラウザから選択してください。
