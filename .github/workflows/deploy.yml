@@ -61,6 +61,7 @@ jobs:
           npm run bundle:js
           npm run bundle:bin -- -t ${{ matrix.bin-file }} ${{ matrix.make-args }}
           stat ${{ matrix.bin-file }}
+          ${{ matrix.bin-file}} -v | (read v; [[ -n $v ]] && [[ $v =~ (0|[1-9][0-9]*\.){2}(0|[1-9][0-9]*)(-.+)?(:.+)? ]]; echo "$v $?")
       - name: zip package
         run: |
           cp ./LICENSE ./README.md ./README.ja.md ./${{ matrix.pkg-dir }}
