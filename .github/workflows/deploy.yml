@@ -12,6 +12,7 @@ jobs:
   deploy:
     name: deploy release assets
     strategy:
+      fail-fast: false
       matrix:
         include:
           - node-version: 14.x
