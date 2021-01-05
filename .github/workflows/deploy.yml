@@ -62,6 +62,8 @@ jobs:
           npm run lint
           npm test
       - name: build binary
+        env:
+          DEBUG_HELPER: 1
         run: |
           mkdir -p ./{bundle,${{ matrix.pkg-dir }}}
           npm run bundle:js
