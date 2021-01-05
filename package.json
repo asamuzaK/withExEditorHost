@@ -37,7 +37,7 @@
     "eslint": "^7.17.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsdoc": "^30.7.11",
+    "eslint-plugin-jsdoc": "^30.7.13",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "jszip-cli": "^1.4.24",
@@ -47,5 +47,5 @@
     "rimraf": "^3.0.2",
     "sinon": "^9.2.2"
   },
-  "version": "6.0.2-a.11"
+  "version": "6.0.2-a.12"
 }
