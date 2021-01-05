@@ -44,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: set up NASM
-        if: ${{ matrix.os == 'windows-latest'
+        if: ${{ matrix.os == 'windows-latest' }}
         run: |
           echo installing nasm
           choco install nasm
