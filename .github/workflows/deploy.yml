@@ -44,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: set up NASM
-        run |
+        run: |
           [[ ${{ matrix.os }} == windows-latest ]] && choco install nasm && echo ${{ matrix.os }}
       - name: use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
