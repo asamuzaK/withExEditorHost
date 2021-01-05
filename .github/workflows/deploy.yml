@@ -43,9 +43,12 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
-      - name: set up NASM
+      - name: set up dependencies
         if: ${{ matrix.os == 'windows-latest' }}
-        run: choco install nasm
+        run: |
+          choco list -l
+          choco install nasm
+          choco upgrade all
       - name: use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
