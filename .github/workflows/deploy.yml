@@ -30,7 +30,7 @@ jobs:
             make-args: --make-args="-j4"
             zip-cmd: cd ./pkg/macos && tar -cvzf macos.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
-          - node-version: 14.x
+          - node-version: 14.15.1
             os: windows-latest
             asset-name: win64.zip
             pkg-dir: pkg/win
