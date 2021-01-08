@@ -15,7 +15,7 @@
   "main": "./index.js",
   "scripts": {
     "bundle:js": "ncc build ./index.js -m -o bundle",
-    "bundle:bin": "boxednode -n v12 -s ./bundle/index.js",
+    "bundle:bin": "boxednode -n lts -s ./bundle/index.js",
     "lint": "eslint --fix .",
     "setup": "node ./index.js setup",
     "start": "node ./index.js",
