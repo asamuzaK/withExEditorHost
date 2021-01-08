@@ -28,10 +28,10 @@
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
     "semver-parser": "^3.1.0",
-    "web-ext-native-msg": "^4.8.2"
+    "web-ext-native-msg": "^4.9.0"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.26.1",
+    "@vercel/ncc": "^0.26.2",
     "boxednode": "^1.8.0",
     "chai": "^4.2.0",
     "eslint": "^7.17.0",
@@ -45,7 +45,7 @@
     "nyc": "^15.1.0",
     "rewiremock": "^3.14.3",
     "rimraf": "^3.0.2",
-    "sinon": "^9.2.2"
+    "sinon": "^9.2.3"
   },
   "version": "6.0.2-a.28"
 }

@@ -21,7 +21,7 @@
 |Waterfox Current|   ✓   |   ✓   |   ✓   |
 |Chrome          |   ✓   |   ✓   |   ✓   |
 |Chrome Canary   |   ✓ *2|       |   ✓   |
-|Chrome Beta     |   ✓ *2|   ✓   |       |
+|Chrome Beta     |   ✓ *2|   ✓   |   ✓   |
 |Chromium        |       |   ✓   |   ✓   |
 |Brave           |   ✓ *2|   ✓   |   ✓   |
 |CentBrowser     |   ✓ *2|       |       |
