@@ -73,9 +73,7 @@ jobs:
         shell: cmd
         run: npm run bundle:js && npm run bundle:bin -- -t ${{ matrix.bin-file }}
       - name: verify binary
-        run: |
-          stat ${{ matrix.bin-file }}
-          cd ./${{ matrix.pkg-dir }} && index -v && cd ../../
+        run: stat ${{ matrix.bin-file }}
       - name: zip package
         run: |
           cp ./LICENSE ./README.md ./README.ja.md ./${{ matrix.pkg-dir }}
