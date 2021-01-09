@@ -71,10 +71,11 @@ jobs:
       - name: build windows binary
         if: ${{ matrix.os == 'windows-latest' }}
         shell: cmd
+        run: npm run bundle:js && npm run bundle:bin -- -t ${{ matrix.bin-file }}
+      - name: verify binary
         run: |
-          npm run bundle:js && npm run bundle:bin -- -t ${{ matrix.bin-file }}
-      - name: stat binary
-        run: stat ${{ matrix.bin-file }}
+          stat ${{ matrix.bin-file }}
+          cd ./${{ matrix.pkg-dir }} && index -v && cd ../../
       - name: zip package
         run: |
           cp ./LICENSE ./README.md ./README.ja.md ./${{ matrix.pkg-dir }}
