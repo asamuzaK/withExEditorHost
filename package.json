@@ -28,7 +28,7 @@
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
     "semver-parser": "^3.1.0",
-    "web-ext-native-msg": "^4.9.0"
+    "web-ext-native-msg": "^4.9.2"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.27.0",
@@ -37,7 +37,7 @@
     "eslint": "^7.18.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsdoc": "^31.0.5",
+    "eslint-plugin-jsdoc": "^31.0.8",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "jszip-cli": "^1.4.24",
