@@ -117,17 +117,66 @@ describe('handleEditorPathInput', () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const unexecutablePath =
-      path.resolve(path.join('test', 'file', 'test.txt'));
+    const inputPath = path.resolve(path.join('test', 'file', 'test.txt'));
     const stubRlPath = sinon.stub(readline, 'question');
     const i = stubRlPath.callCount;
-    stubRlPath.onFirstCall().returns(unexecutablePath);
+    stubRlPath.onFirstCall().returns(inputPath);
     stubRlPath.onSecondCall().returns(editorPath);
     const res = await handleEditorPathInput();
     const { calledOnce: warnCalled } = stubWarn;
     stubWarn.restore();
     assert.isTrue(warnCalled);
-    assert.strictEqual(wrn, `${unexecutablePath} is not executable.`);
+    assert.strictEqual(wrn, `${inputPath} is not executable.`);
+    assert.strictEqual(stubRlPath.callCount, i + 2);
+    assert.strictEqual(res, editorPath);
+    stubRlPath.restore();
+  });
+
+  it('should call function and get string', async () => {
+    let wrn;
+    const stubWarn = sinon.stub(console, 'warn').callsFake(msg => {
+      wrn = msg;
+    });
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve(path.join('test', 'file', app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const inputPath = path.resolve(path.join('test', 'file'));
+    const stubRlPath = sinon.stub(readline, 'question');
+    const i = stubRlPath.callCount;
+    stubRlPath.onFirstCall().returns(inputPath);
+    stubRlPath.onSecondCall().returns(editorPath);
+    const res = await handleEditorPathInput();
+    const { calledOnce: warnCalled } = stubWarn;
+    stubWarn.restore();
+    assert.isTrue(warnCalled);
+    assert.strictEqual(wrn, `${inputPath} is not a file.`);
+    assert.strictEqual(stubRlPath.callCount, i + 2);
+    assert.strictEqual(res, editorPath);
+    stubRlPath.restore();
+  });
+
+  it('should call function and get string', async () => {
+    let wrn;
+    const stubWarn = sinon.stub(console, 'warn').callsFake(msg => {
+      wrn = msg;
+    });
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve(path.join('test', 'file', app));
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const inputPath = path.resolve(path.join('test', 'file', 'foo'));
+    const stubRlPath = sinon.stub(readline, 'question');
+    const i = stubRlPath.callCount;
+    stubRlPath.onFirstCall().returns(inputPath);
+    stubRlPath.onSecondCall().returns(editorPath);
+    const res = await handleEditorPathInput();
+    const { calledOnce: warnCalled } = stubWarn;
+    stubWarn.restore();
+    assert.isTrue(warnCalled);
+    assert.strictEqual(wrn, `${inputPath} not found.`);
     assert.strictEqual(stubRlPath.callCount, i + 2);
     assert.strictEqual(res, editorPath);
     stubRlPath.restore();

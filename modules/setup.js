@@ -4,7 +4,7 @@
 'use strict';
 /* api */
 const {
-  CmdArgs, Setup, createFile, isDir, isExecutable, isFile
+  CmdArgs, Setup, createFile, getStat, isDir, isExecutable, isFile
 } = require('web-ext-native-msg');
 const { isString, throwErr } = require('./common');
 const path = require('path');
@@ -62,13 +62,19 @@ const handleEditorPathInput = async editorFilePath => {
     editorPath = editorFilePath;
   } else {
     const ans = readline.question('Input editor path: ');
-    if (isExecutable(ans)) {
-      editorPath = ans;
-    } else if (isFile(ans)) {
-      console.warn(`${ans} is not executable.`);
-      editorPath = await handleEditorPathInput();
+    const stat = getStat(ans);
+    if (stat) {
+      if (isExecutable(ans)) {
+        editorPath = ans;
+      } else if (stat.isFile()) {
+        console.warn(`${ans} is not executable.`);
+        editorPath = await handleEditorPathInput();
+      } else {
+        console.warn(`${ans} is not a file.`);
+        editorPath = await handleEditorPathInput();
+      }
     } else {
-      console.warn(`${ans} is not a file.`);
+      console.warn(`${ans} not found.`);
       editorPath = await handleEditorPathInput();
     }
   }
