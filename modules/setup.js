@@ -72,7 +72,7 @@ const handleEditorPathInput = async editorFilePath => {
     if (stat) {
       if (isExecutable(ans)) {
         editorPath = ans;
-      } else if (stat.isFile()) {
+      } else if (stat.isFile() && !stat.isDirectory()) {
         console.warn(`${ans} is not executable.`);
         editorPath = await handleEditorPathInput();
       } else {
