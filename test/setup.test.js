@@ -185,9 +185,8 @@ describe('handleEditorPathInput', () => {
     stubRlPath.onFirstCall().returns(inputPath);
     stubRlPath.onSecondCall().returns(editorPath);
     const res = await handleEditorPathInput();
-    const { callCount: warnCallCount, calledOnce: warnCalled } = stubWarn;
+    const { calledOnce: warnCalled } = stubWarn;
     stubWarn.restore();
-    assert.strictEqual(warnCallCount, 1);
     assert.isTrue(warnCalled);
     assert.strictEqual(wrn, `${inputPath} is not a file.`);
     assert.strictEqual(stubRlPath.callCount, i + 2);
