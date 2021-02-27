@@ -120,7 +120,7 @@ describe('handleCmdArgsInput', () => {
 describe('handleEditorPathInput', () => {
   it('should get string', async () => {
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -133,7 +133,7 @@ describe('handleEditorPathInput', () => {
 
   it('should call function and get string', async () => {
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -150,11 +150,11 @@ describe('handleEditorPathInput', () => {
       wrn = msg;
     });
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const inputPath = path.resolve(path.join('test', 'file', 'test.txt'));
+    const inputPath = path.resolve('test', 'file', 'test.txt');
     const stubRlPath = sinon.stub(readline, 'question');
     const i = stubRlPath.callCount;
     stubRlPath.onFirstCall().returns(inputPath);
@@ -175,11 +175,11 @@ describe('handleEditorPathInput', () => {
       wrn = msg;
     });
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const inputPath = path.resolve(path.join('test', 'file'));
+    const inputPath = path.resolve('test', 'file');
     const stubRlPath = sinon.stub(readline, 'question');
     const i = stubRlPath.callCount;
     stubRlPath.onFirstCall().returns(inputPath);
@@ -200,11 +200,11 @@ describe('handleEditorPathInput', () => {
       wrn = msg;
     });
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const inputPath = path.resolve(path.join('test', 'file', 'foo'));
+    const inputPath = path.resolve('test', 'file', 'foo');
     const stubRlPath = sinon.stub(readline, 'question');
     const i = stubRlPath.callCount;
     stubRlPath.onFirstCall().returns(inputPath);
@@ -245,7 +245,7 @@ describe('createEditorConfig', () => {
       info = msg;
     });
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -306,7 +306,7 @@ describe('handleSetupCallback', () => {
     });
     const stubExit = sinon.stub(process, 'exit');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -343,7 +343,7 @@ describe('handleSetupCallback', () => {
     });
     const stubExit = sinon.stub(process, 'exit');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -385,7 +385,7 @@ describe('handleSetupCallback', () => {
     });
     const stubExit = sinon.stub(process, 'exit');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -430,7 +430,7 @@ describe('handleSetupCallback', () => {
     });
     const stubExit = sinon.stub(process, 'exit');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -493,14 +493,14 @@ describe('runSetup', () => {
   it('should call function', async () => {
     const stubRun = sinon.stub(Setup.prototype, 'run').callsFake(() => true);
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
     const res = await runSetup({
       editorPath,
       browser: 'firefox',
-      configPath: path.resolve(path.join('test', 'file')),
+      configPath: path.resolve('test', 'file'),
       overwriteConfig: true,
       editorArgs: 'foo bar baz',
       overwriteEditorConfig: true
