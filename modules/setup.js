@@ -44,8 +44,14 @@ const handleCmdArgsInput = async editorArgs => {
   if (Array.isArray(editorArgs)) {
     cmdArgs = editorArgs;
   } else {
-    const ans = readline.question('Input command line options: ');
-    cmdArgs = new CmdArgs(ans.trim()).toArray();
+    const useCmdArgs =
+      readline.keyInYNStrict('Execute editor with command line options?');
+    if (useCmdArgs) {
+      const ans = readline.question('Input command line options: ');
+      cmdArgs = new CmdArgs(ans.trim()).toArray();
+    } else {
+      cmdArgs = [];
+    }
   }
   return cmdArgs;
 };

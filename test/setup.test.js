@@ -45,37 +45,74 @@ describe('abortSetup', () => {
 
 describe('handleCmdArgsInput', () => {
   it('should get array', async () => {
+    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(true);
     const stubRlQues =
       sinon.stub(readline, 'question').returns('foo "bar baz" qux');
     const cmdArgs = ['foo', 'bar', 'baz'];
     const res = await handleCmdArgsInput(cmdArgs);
+    assert.isFalse(stubRlKey.called);
     assert.isFalse(stubRlQues.called);
     assert.deepEqual(res, cmdArgs);
+    stubRlKey.restore();
     stubRlQues.restore();
   });
 
   it('should call function and get array', async () => {
+    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(true);
+    const stubRlQues =
+      sinon.stub(readline, 'question').returns('foo bar baz');
+    const res = await handleCmdArgsInput();
+    assert.isTrue(stubRlKey.calledOnce);
+    assert.isTrue(stubRlQues.calledOnce);
+    assert.deepEqual(res, [
+      'foo',
+      'bar',
+      'baz'
+    ]);
+    stubRlKey.restore();
+    stubRlQues.restore();
+  });
+
+  it('should call function and get array', async () => {
+    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(true);
     const stubRlQues =
       sinon.stub(readline, 'question').returns('foo "bar baz" qux');
     const res = await handleCmdArgsInput();
+    assert.isTrue(stubRlKey.calledOnce);
     assert.isTrue(stubRlQues.calledOnce);
     assert.deepEqual(res, [
       'foo',
       'bar baz',
       'qux'
     ]);
+    stubRlKey.restore();
     stubRlQues.restore();
   });
 
   it('should call function and get array', async () => {
+    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(true);
     const stubRlQues =
       sinon.stub(readline, 'question').returns('foo bar="baz qux"');
     const res = await handleCmdArgsInput();
+    assert.isTrue(stubRlKey.calledOnce);
     assert.isTrue(stubRlQues.calledOnce);
     assert.deepEqual(res, [
       'foo',
       'bar=baz qux'
     ]);
+    stubRlKey.restore();
+    stubRlQues.restore();
+  });
+
+  it('should call function and get array', async () => {
+    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(false);
+    const stubRlQues =
+      sinon.stub(readline, 'question').returns('foo bar baz');
+    const res = await handleCmdArgsInput();
+    assert.isTrue(stubRlKey.calledOnce);
+    assert.isFalse(stubRlQues.calledOnce);
+    assert.deepEqual(res, []);
+    stubRlKey.restore();
     stubRlQues.restore();
   });
 });
@@ -289,7 +326,7 @@ describe('handleSetupCallback', () => {
     stubExit.restore();
     assert.strictEqual(setupOpts.get('configPath'), configDirPath);
     assert.strictEqual(stubRl.callCount, i + 2);
-    assert.isFalse(stubRlKey.called);
+    assert.isTrue(stubRlKey.calledOnce);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
     assert.strictEqual(info, `Created: ${filePath}`);
@@ -356,7 +393,10 @@ describe('handleSetupCallback', () => {
     const i = stubRl.callCount;
     stubRl.onFirstCall().returns(editorPath);
     stubRl.onSecondCall().returns('');
-    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(true);
+    const stubRlKey = sinon.stub(readline, 'keyInYNStrict');
+    const j = stubRlKey.callCount;
+    stubRlKey.onFirstCall().returns(true);
+    stubRlKey.onSecondCall().returns(true);
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, 'withexeditorhost-test')
     );
@@ -373,7 +413,7 @@ describe('handleSetupCallback', () => {
     stubExit.restore();
     assert.strictEqual(setupOpts.get('configPath'), configDirPath);
     assert.strictEqual(stubRl.callCount, i + 2);
-    assert.isTrue(stubRlKey.calledOnce);
+    assert.strictEqual(stubRlKey.callCount, j + 2);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
     assert.strictEqual(info, `Created: ${filePath}`);
@@ -398,7 +438,10 @@ describe('handleSetupCallback', () => {
     const i = stubRl.callCount;
     stubRl.onFirstCall().returns(editorPath);
     stubRl.onSecondCall().returns('');
-    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(true);
+    const stubRlKey = sinon.stub(readline, 'keyInYNStrict');
+    const j = stubRlKey.callCount;
+    stubRlKey.onFirstCall().returns(true);
+    stubRlKey.onSecondCall().returns(true);
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, 'withexeditorhost-test')
     );
@@ -420,7 +463,7 @@ describe('handleSetupCallback', () => {
     assert.strictEqual(setupOpts.get('editorFilePath'), editorPath);
     assert.deepEqual(setupOpts.get('editorCmdArgs'), ['foo', 'bar', 'baz']);
     assert.strictEqual(stubRl.callCount, i);
-    assert.isFalse(stubRlKey.called);
+    assert.strictEqual(stubRlKey.callCount, j);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
     assert.strictEqual(info, `Created: ${filePath}`);
