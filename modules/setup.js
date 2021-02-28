@@ -17,7 +17,7 @@ const {
 } = require('./constant');
 const CHAR = 'utf8';
 const INDENT = 2;
-const PERM_FILE = 0o600;
+const PERM_FILE = 0o644;
 
 /* setup command options */
 const setupOpts = new Map();
