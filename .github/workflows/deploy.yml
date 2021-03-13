@@ -63,15 +63,10 @@ jobs:
           npm test
       - name: make directories
         run: mkdir -p ./{bundle,${{ matrix.pkg-dir }}}
-      - name: build posix binary
-        if: ${{ matrix.os != 'windows-latest' }}
+      - name: build binary
         run: |
           npm run bundle:js
           npm run bundle:bin -- -t ${{ matrix.bin-file }} ${{ matrix.make-args }}
-      - name: build windows binary
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: cmd
-        run: npm run bundle:js && npm run bundle:bin -- -t ${{ matrix.bin-file }}
       - name: verify binary
         run: stat ${{ matrix.bin-file }}
       - name: zip package
