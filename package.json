@@ -23,7 +23,7 @@
     "zip:jszip": "jszip"
   },
   "dependencies": {
-    "commander": "^7.1.0",
+    "commander": "^7.2.0",
     "global-agent": "^2.1.12",
     "package-json": "^6.5.0",
     "readline-sync": "^1.4.10",
@@ -37,7 +37,7 @@
     "eslint": "^7.22.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsdoc": "^32.2.0",
+    "eslint-plugin-jsdoc": "^32.3.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
     "jszip-cli": "^1.4.24",
@@ -45,7 +45,7 @@
     "nyc": "^15.1.0",
     "rewiremock": "^3.14.3",
     "rimraf": "^3.0.2",
-    "sinon": "^9.2.4"
+    "sinon": "^10.0.0"
   },
   "version": "6.1.0-a.2"
 }
