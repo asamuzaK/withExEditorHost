@@ -239,7 +239,7 @@ main
 
 ## npm からのホストのセットアップ
 
-備考：[Node.js](https://nodejs.org/ja/ "Node.js") v10.x.x以上が必要です。
+備考：[Node.js](https://nodejs.org/ja/ "Node.js")が必要です。メンテナンスLTSかそれ以上のバージョンを使用してください。
 
 ホストを設定するときは、ブラウザにインストールされているwithExEditorを無効化してください。
 

@@ -180,7 +180,7 @@ main
 
 ## Host setup from npm
 
-NOTE: [Node.js](https://nodejs.org/en/ "Node.js") v10.x.x or higher is required.
+NOTE: [Node.js](https://nodejs.org/en/ "Node.js") is required. Use maintenance LTS or higher.
 
 When setting up the host, disable withExEditor installed in the browser.
 
