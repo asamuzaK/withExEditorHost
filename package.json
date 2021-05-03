@@ -9,9 +9,6 @@
     "url": "https://github.com/asamuzaK/withExEditorHost.git"
   },
   "license": "MIT",
-  "engines": {
-    "node": ">=10.0.0"
-  },
   "main": "./index.js",
   "scripts": {
     "bundle:js": "ncc build ./index.js -m -o bundle",
@@ -31,13 +28,13 @@
     "web-ext-native-msg": "^4.9.2"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.28.2",
+    "@vercel/ncc": "^0.28.5",
     "boxednode": "^1.10.1",
     "chai": "^4.3.4",
-    "eslint": "^7.24.0",
+    "eslint": "^7.25.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsdoc": "^32.3.0",
+    "eslint-plugin-jsdoc": "^33.0.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
     "jszip-cli": "^1.4.24",
