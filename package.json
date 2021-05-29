@@ -28,8 +28,8 @@
     "web-ext-native-msg": "^4.10.1"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.28.5",
-    "boxednode": "^1.10.1",
+    "@vercel/ncc": "^0.28.6",
+    "boxednode": "^1.10.2",
     "chai": "^4.3.4",
     "eslint": "^7.27.0",
     "eslint-config-standard": "^16.0.3",
@@ -42,7 +42,7 @@
     "nyc": "^15.1.0",
     "rewiremock": "^3.14.3",
     "rimraf": "^3.0.2",
-    "sinon": "^11.1.0"
+    "sinon": "^11.1.1"
   },
-  "version": "6.1.0"
+  "version": "6.1.1-a.1"
 }
