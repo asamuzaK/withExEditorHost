@@ -31,7 +31,7 @@
     "@vercel/ncc": "^0.29.0",
     "boxednode": "^1.10.2",
     "chai": "^4.3.4",
-    "eslint": "^7.31.0",
+    "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jsdoc": "^36.0.6",
@@ -44,5 +44,5 @@
     "rimraf": "^3.0.2",
     "sinon": "^11.1.2"
   },
-  "version": "6.1.1"
+  "version": "6.1.2"
 }
