@@ -20,7 +20,7 @@
     "zip:jszip": "jszip"
   },
   "dependencies": {
-    "commander": "^8.1.0",
+    "commander": "^8.2.0",
     "global-agent": "^3.0.0",
     "package-json": "^7.0.0",
     "readline-sync": "^1.4.10",
@@ -28,13 +28,13 @@
     "web-ext-native-msg": "^4.10.2"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.30.0",
+    "@vercel/ncc": "^0.31.0",
     "boxednode": "^1.10.2",
     "chai": "^4.3.4",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.24.2",
-    "eslint-plugin-jsdoc": "^36.0.8",
+    "eslint-plugin-jsdoc": "^36.1.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "jszip-cli": "^1.4.24",
