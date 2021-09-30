@@ -28,7 +28,7 @@
     "web-ext-native-msg": "^4.10.2"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.31.0",
+    "@vercel/ncc": "^0.31.1",
     "boxednode": "^1.10.2",
     "chai": "^4.3.4",
     "eslint": "^7.32.0",
@@ -38,7 +38,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "jszip-cli": "^1.4.24",
-    "mocha": "^9.1.1",
+    "mocha": "^9.1.2",
     "nyc": "^15.1.0",
     "rewiremock": "^3.14.3",
     "rimraf": "^3.0.2",
