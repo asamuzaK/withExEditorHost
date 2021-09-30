@@ -13,7 +13,6 @@ const { URL } = require('url');
 const { compareSemVer, isValidSemVer } = require('semver-parser');
 const { createGlobalProxyAgent } = require('global-agent');
 const { getType, quoteArg, isObjectNotEmpty, isString } = require('./common');
-const { name: hostName, version: hostVersion } = require('../package.json');
 const { watch } = require('fs');
 const os = require('os');
 const packageJson = require('package-json');
@@ -182,7 +181,9 @@ const getLatestHostVersion = async () => {
         agent
       };
     }
-    const { version: latestVersion } = await packageJson(hostName, opt);
+    const {
+      version: latestVersion
+    } = await packageJson(process.env.npm_package_name, opt);
     latest = latestVersion;
   } catch (e) {
     const msg = new Output().encode(hostMsg(e.message, 'error'));
@@ -204,6 +205,7 @@ const exportHostVersion = async minVer => {
   if (!isValidSemVer(minVer)) {
     throw new Error(`${minVer} is not valid SemVer.`);
   }
+  const hostVersion = process.env.npm_package_version;
   const result = await compareSemVer(hostVersion, minVer);
   const latest = await getLatestHostVersion();
   let isLatest;

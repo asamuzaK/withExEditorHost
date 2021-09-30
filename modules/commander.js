@@ -4,7 +4,6 @@
 'use strict';
 /* api */
 const { runSetup } = require('./setup');
-const { version: hostVersion } = require('../package.json');
 const commander = require('commander');
 
 /* constants */
@@ -25,7 +24,7 @@ const parseCommand = args => {
   const reg = /^(?:(?:--)?help|-[h|v]|--version|s(?:etup)?)$/;
   if (Array.isArray(args) && args.some(arg => reg.test(arg))) {
     commander.exitOverride();
-    commander.version(hostVersion, '-v, --version');
+    commander.version(process.env.npm_package_version, '-v, --version');
     commander.command(CMD_SETUP).alias(CMD_SETUP_ALIAS)
       .description(CMD_SETUP_DESC)
       .option(CMD_BROWSER, CMD_BROWSER_DESC)

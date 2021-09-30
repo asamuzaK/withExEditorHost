@@ -21,7 +21,6 @@ const {
     compareSemVer, parseSemVer
   }
 } = require('semver-parser');
-const { name: hostName, version: hostVersion } = require('../package.json');
 const { assert } = require('chai');
 const { afterEach, beforeEach, describe, it } = require('mocha');
 const childProcess = require('child_process');
@@ -376,6 +375,7 @@ describe('exportFileData', () => {
 describe('getLatestHostVersion', () => {
   it('should get result', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write');
+    const hostVersion = process.env.npm_package_version;
     const {
       major, minor, patch
     } = await parseSemVer(hostVersion);
@@ -384,6 +384,7 @@ describe('getLatestHostVersion', () => {
       createGlobalProxyAgent: stubCreateAgent
     };
     const stubPackageJson = sinon.stub();
+    const hostName = process.env.npm_package_name;
     stubPackageJson.withArgs(hostName).resolves({
       version: `${major}.${minor}.${patch + 1}`
     });
@@ -425,6 +426,7 @@ describe('getLatestHostVersion', () => {
     rewiremock('package-json').with(stubPackageJson);
     rewiremock.enable();
     const mainJs = require('../modules/main');
+    const hostName = process.env.npm_package_name;
     const res = await mainJs.getLatestHostVersion();
     rewiremock.disable();
     const { calledOnce: writeCalled } = stubWrite;
@@ -462,6 +464,8 @@ describe('getLatestHostVersion, proxy', () => {
   it('should get result', async () => {
     assert.strictEqual(process.env.HTTP_PROXY, 'http://localhost:8080');
     const stubWrite = sinon.stub(process.stdout, 'write');
+    const hostName = process.env.npm_package_name;
+    const hostVersion = process.env.npm_package_version;
     const {
       major, minor, patch
     } = await parseSemVer(hostVersion);
@@ -513,6 +517,7 @@ describe('exportHostVersion', () => {
       msg = buf;
       return buf;
     });
+    const hostVersion = process.env.npm_package_version;
     const {
       major, minor, patch
     } = await parseSemVer(hostVersion);
@@ -546,6 +551,7 @@ describe('exportHostVersion', () => {
       msg = buf;
       return buf;
     });
+    const hostVersion = process.env.npm_package_version;
     const {
       major, minor, patch
     } = await parseSemVer(hostVersion);
@@ -579,6 +585,7 @@ describe('exportHostVersion', () => {
       msg = buf;
       return buf;
     });
+    const hostVersion = process.env.npm_package_version;
     const {
       major, minor, patch
     } = await parseSemVer(hostVersion);
@@ -615,6 +622,7 @@ describe('exportHostVersion', () => {
     rewiremock('package-json').with(stubPackageJson);
     rewiremock.enable();
     const mainJs = require('../modules/main');
+    const hostVersion = process.env.npm_package_version;
     const res = await mainJs.exportHostVersion(hostVersion);
     const { calledOnce: pjCalled } = stubPackageJson;
     const { calledOnce: writeCalled } = stubWrite;
@@ -2291,6 +2299,7 @@ describe('handleMsg', () => {
 
   it('should call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
+    const hostVersion = process.env.npm_package_version;
     const {
       major, minor, patch
     } = await parseSemVer(hostVersion);
