@@ -641,6 +641,74 @@ describe('exportHostVersion', () => {
     assert.strictEqual(obj.hostVersion.latest, version);
     assert.isTrue(obj.hostVersion.isLatest);
   });
+
+  it('should call function', async () => {
+    let msg;
+    const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
+      msg = buf;
+      return buf;
+    });
+    const hostName = process.env.npm_package_name;
+    const hostVersion = process.env.npm_package_version;
+    const minVer = hostVersion;
+    const {
+      major
+    } = await parseSemVer(hostVersion);
+    const version = `${major + 1}.0.0-a.1`;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+      'dist-tags': {
+        latest: version
+      },
+      versions: {
+        [version]: {
+          version
+        }
+      }
+    });
+    const res = await exportHostVersion(minVer);
+    const { calledOnce: writeCalled } = stubWrite;
+    stubWrite.restore();
+    const [obj] = new Input().decode(msg);
+    assert.isTrue(writeCalled);
+    assert.isTrue(Buffer.isBuffer(res));
+    assert.strictEqual(obj.hostVersion.result, 0);
+    assert.strictEqual(obj.hostVersion.latest, version);
+    assert.isFalse(obj.hostVersion.isLatest);
+  });
+
+  it('should call function', async () => {
+    let msg;
+    const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
+      msg = buf;
+      return buf;
+    });
+    const hostName = process.env.npm_package_name;
+    const hostVersion = process.env.npm_package_version;
+    const {
+      major, minor, patch
+    } = await parseSemVer(hostVersion);
+    const minVer = `${major > 0 ? major - 1 : 0}.${minor}.${patch}`;
+    const version = `${major > 0 ? major - 1 : 0}.${minor}.${patch}`;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+      'dist-tags': {
+        latest: version
+      },
+      versions: {
+        [version]: {
+          version
+        }
+      }
+    });
+    const res = await exportHostVersion(minVer);
+    const { calledOnce: writeCalled } = stubWrite;
+    stubWrite.restore();
+    const [obj] = new Input().decode(msg);
+    assert.isTrue(writeCalled);
+    assert.isTrue(Buffer.isBuffer(res));
+    assert.isAbove(obj.hostVersion.result, 0);
+    assert.strictEqual(obj.hostVersion.latest, version);
+    assert.isTrue(obj.hostVersion.isLatest);
+  });
 });
 
 describe('handleChildProcessErr', () => {
