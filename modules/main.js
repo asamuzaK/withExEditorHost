@@ -1,33 +1,33 @@
 /**
  * main.js
  */
-'use strict';
+
 /* api */
-const {
+import {
   ChildProcess, CmdArgs, Input, Output,
   convertUriToFilePath, createDirectory, createFile,
   getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
   removeDir, removeDirectory, readFile
-} = require('web-ext-native-msg');
-const { URL } = require('url');
-const { compareSemVer, isValidSemVer } = require('semver-parser');
-const { createGlobalProxyAgent } = require('global-agent');
-const { getType, quoteArg, isObjectNotEmpty, isString } = require('./common');
-const { watch } = require('fs');
-const os = require('os');
-const packageJson = require('package-json');
-const path = require('path');
-const process = require('process');
-
-/* constants */
-const {
+} from 'web-ext-native-msg';
+import { URL } from 'url';
+import HttpsProxyAgent from 'https-proxy-agent';
+import { compareSemVer, isValidSemVer } from 'semver-parser';
+import { getType, quoteArg, isObjectNotEmpty, isString } from './common.js';
+import { watch } from 'fs';
+import os from 'os';
+import packageJson from 'package-json';
+import path from 'path';
+import process from 'process';
+import {
   EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
   FILE_WATCH, HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL,
   LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
   TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
   TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_PLACEHOLDER,
   TMP_FILE_RES
-} = require('./constant');
+} from './constant.js';
+
+/* constants */
 const APP = `${process.pid}`;
 const CHAR = 'utf8';
 const FILE_NOT_FOUND_TIMESTAMP = -1;
@@ -40,7 +40,7 @@ const TMPDIR_FILES = path.join(TMPDIR_APP, TMP_FILES);
 const TMPDIR_FILES_PB = path.join(TMPDIR_APP, TMP_FILES_PB);
 
 /* editor config */
-const editorConfig = {
+export const editorConfig = {
   editorPath: '',
   cmdArgs: [],
   hasPlaceholder: false
@@ -54,7 +54,7 @@ const editorConfig = {
  * @param {string} status - status
  * @returns {object} - host message object
  */
-const hostMsg = (message, status) => ({
+export const hostMsg = (message, status) => ({
   [HOST]: {
     message, status
   }
@@ -66,7 +66,7 @@ const hostMsg = (message, status) => ({
  * @param {*} e - Error or any
  * @returns {boolean} - false
  */
-const handleReject = e => {
+export const handleReject = e => {
   let msg;
   if (e) {
     if (e.message) {
@@ -87,7 +87,7 @@ const handleReject = e => {
  * @param {*} msg - message
  * @returns {?Function} - write message to the Writable stream
  */
-const writeStdout = async msg => {
+export const writeStdout = async msg => {
   let func;
   msg = new Output().encode(msg);
   if (msg) {
@@ -101,7 +101,7 @@ const writeStdout = async msg => {
  *
  * @returns {Function} - writeStdout()
  */
-const exportAppStatus = async () =>
+export const exportAppStatus = async () =>
   writeStdout(hostMsg(EDITOR_CONFIG_GET, 'ready'));
 
 /**
@@ -111,7 +111,7 @@ const exportAppStatus = async () =>
  * @param {string} editorConfigPath - editor config file path
  * @returns {?Function} - writeStdout()
  */
-const exportEditorConfig = async (data, editorConfigPath) => {
+export const exportEditorConfig = async (data, editorConfigPath) => {
   if (!isString(data)) {
     throw new TypeError(`Expected String but got ${getType(data)}.`);
   }
@@ -153,7 +153,7 @@ const exportEditorConfig = async (data, editorConfigPath) => {
  * @param {object} obj - file data
  * @returns {?Function} - writeStdout()
  */
-const exportFileData = async (obj = {}) => {
+export const exportFileData = async (obj = {}) => {
   const { data } = obj;
   let func;
   if (isObjectNotEmpty(data)) {
@@ -166,17 +166,35 @@ const exportFileData = async (obj = {}) => {
 };
 
 /**
+ * create proxy agent
+ *
+ * @returns {object} - agent
+ */
+export const createProxyAgent = async () => {
+  const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy;
+  const httpProxy = process.env.HTTP_PROXY || process.env.http_proxy;
+  const agent = {};
+  if (httpsProxy) {
+    agent.https = new HttpsProxyAgent(httpsProxy);
+  }
+  if (httpProxy) {
+    agent.http = new HttpsProxyAgent(httpProxy);
+  }
+  return agent;
+};
+
+/**
  * get latest host version
  *
  * @returns {?string} - latest version string
  */
-const getLatestHostVersion = async () => {
+export const getLatestHostVersion = async () => {
   let latest;
   try {
     let opt;
     if (process.env.HTTPS_PROXY || process.env.https_proxy ||
         process.env.HTTP_PROXY || process.env.http_proxy) {
-      const agent = await createGlobalProxyAgent();
+      const agent = await createProxyAgent();
       opt = {
         agent
       };
@@ -198,7 +216,7 @@ const getLatestHostVersion = async () => {
  * @param {string} minVer - required min version
  * @returns {Function} - writeStdout()
  */
-const exportHostVersion = async minVer => {
+export const exportHostVersion = async minVer => {
   if (!isString(minVer)) {
     throw new TypeError(`Expected String but got ${getType(minVer)}.`);
   }
@@ -231,7 +249,7 @@ const exportHostVersion = async minVer => {
  * @param {!object} e - Error
  * @returns {void}
  */
-const handleChildProcessErr = e => {
+export const handleChildProcessErr = e => {
   let msg;
   if (e) {
     if (e.message) {
@@ -251,7 +269,7 @@ const handleChildProcessErr = e => {
  * @param {*} data - data
  * @returns {void}
  */
-const handleChildProcessStderr = data => {
+export const handleChildProcessStderr = data => {
   if (data) {
     const msg = new Output().encode(
       hostMsg(data.toString(), `${PROCESS_CHILD}_stderr`)
@@ -266,7 +284,7 @@ const handleChildProcessStderr = data => {
  * @param {*} data - data
  * @returns {void}
  */
-const handleChildProcessStdout = data => {
+export const handleChildProcessStdout = data => {
   if (data) {
     const msg = new Output().encode(
       hostMsg(data.toString(), `${PROCESS_CHILD}_stdout`)
@@ -276,13 +294,13 @@ const handleChildProcessStdout = data => {
 };
 
 /**
- * spawn child process
+ * execute child process
  *
  * @param {string} file - file path
  * @param {string} app - app path
  * @returns {ChildProcess|Function} - child process / writeStderr()
  */
-const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
+export const execChildProcess = async (file, app = editorConfig.editorPath) => {
   if (!isFile(file)) {
     throw new Error(`No such file: ${file}`);
   }
@@ -323,7 +341,7 @@ const spawnChildProcess = async (file, app = editorConfig.editorPath) => {
 };
 
 /* file map */
-const fileMap = {
+export const fileMap = {
   [FILE_WATCH]: new Map(),
   [TMP_FILES]: new Map(),
   [TMP_FILES_PB]: new Map()
@@ -336,7 +354,7 @@ const fileMap = {
  * @param {string} key - key
  * @returns {boolean} - result, true if deleted
  */
-const deleteKeyFromFileMap = async (prop, key) => {
+export const deleteKeyFromFileMap = async (prop, key) => {
   let bool;
   if (isString(prop) && fileMap[prop] &&
       isString(key) && fileMap[prop].has(key)) {
@@ -352,7 +370,7 @@ const deleteKeyFromFileMap = async (prop, key) => {
  * @param {object} [fsWatcher] - fs.FSWatcher
  * @returns {void}
  */
-const unwatchFile = async (key, fsWatcher) => {
+export const unwatchFile = async (key, fsWatcher) => {
   if (isString(key)) {
     if (!fsWatcher) {
       fsWatcher = fileMap[FILE_WATCH].get(key);
@@ -369,7 +387,7 @@ const unwatchFile = async (key, fsWatcher) => {
  * @param {boolean} bool - remove
  * @returns {void}
  */
-const initPrivateTmpDir = async bool => {
+export const initPrivateTmpDir = async bool => {
   if (bool) {
     fileMap[TMP_FILES_PB].clear();
     await removeDirectory(TMPDIR_FILES_PB, TMPDIR);
@@ -383,7 +401,7 @@ const initPrivateTmpDir = async bool => {
  * @param {object} fileData - temporary file data
  * @returns {Promise.<Array>} - results of each handler
  */
-const getTmpFileFromFileData = async (fileData = {}) => {
+export const getTmpFileFromFileData = async (fileData = {}) => {
   const { dataId, dir, host, tabId, windowId } = fileData;
   const func = [];
   let msg;
@@ -427,7 +445,7 @@ const getTmpFileFromFileData = async (fileData = {}) => {
  * @param {string} filePath - file path
  * @returns {?string} - file ID
  */
-const getFileIdFromFilePath = async filePath => {
+export const getFileIdFromFilePath = async filePath => {
   let fileId;
   if (isString(filePath)) {
     const { dir, name } = path.parse(filePath);
@@ -448,7 +466,7 @@ const getFileIdFromFilePath = async filePath => {
  * @param {string} key - key
  * @returns {?Function} - writeStdout()
  */
-const createTmpFileResMsg = async key => {
+export const createTmpFileResMsg = async key => {
   let func;
   if (isString(key) && isFile(key)) {
     const fileId = await getFileIdFromFilePath(key);
@@ -479,7 +497,7 @@ const createTmpFileResMsg = async key => {
  * @param {string} fileName - file name
  * @returns {Promise.<Array>} - results of each handler
  */
-const getTmpFileFromWatcherFileName = async (evtType, fileName) => {
+export const getTmpFileFromWatcherFileName = async (evtType, fileName) => {
   const func = [];
   if (evtType === 'change' && isString(fileName)) {
     fileMap[FILE_WATCH].forEach((fsWatcher, key) => {
@@ -502,7 +520,7 @@ const getTmpFileFromWatcherFileName = async (evtType, fileName) => {
  * @param {string} fileName - file name
  * @returns {Function} - getTempFileFromFileName()
  */
-const watchTmpFile = (evtType, fileName) =>
+export const watchTmpFile = (evtType, fileName) =>
   getTmpFileFromWatcherFileName(evtType, fileName).catch(handleReject);
 
 /**
@@ -511,7 +529,7 @@ const watchTmpFile = (evtType, fileName) =>
  * @param {object} obj - temporary file data object
  * @returns {object} - temporary file data
  */
-const createTmpFile = async (obj = {}) => {
+export const createTmpFile = async (obj = {}) => {
   const { data, value } = obj;
   let filePath;
   if (data) {
@@ -553,7 +571,7 @@ const createTmpFile = async (obj = {}) => {
  * @param {object} data - temporary file data
  * @returns {Promise.<Array>} - results of each handler
  */
-const removeTmpFileData = async (data = {}) => {
+export const removeTmpFileData = async (data = {}) => {
   const { dataId, dir, host, tabId, windowId } = data;
   const func = [];
   if (dir && fileMap[dir]) {
@@ -593,7 +611,7 @@ const removeTmpFileData = async (data = {}) => {
  * @param {string} editorConfigPath - editor config file path
  * @returns {Promise.<Array>} - results of each handler
  */
-const getEditorConfig = async editorConfigPath => {
+export const getEditorConfig = async editorConfigPath => {
   const func = [];
   if (isFile(editorConfigPath)) {
     const data = await readFile(editorConfigPath, {
@@ -613,9 +631,9 @@ const getEditorConfig = async editorConfigPath => {
  * view local file
  *
  * @param {string} uri - local file uri
- * @returns {?Function} - spawnChildProcess()
+ * @returns {?Function} - execChildProcess()
  */
-const viewLocalFile = async uri => {
+export const viewLocalFile = async uri => {
   if (!isString(uri)) {
     throw new TypeError(`Expected String but got ${getType(uri)}.`);
   }
@@ -624,7 +642,7 @@ const viewLocalFile = async uri => {
   if (protocol === 'file:') {
     const file = await convertUriToFilePath(uri);
     if (file && isFile(file)) {
-      func = spawnChildProcess(file);
+      func = execChildProcess(file);
     }
   }
   return func || null;
@@ -637,11 +655,11 @@ const viewLocalFile = async uri => {
  * @param {object} obj - temporary file data
  * @returns {Promise.<Array>} - results of each handler
  */
-const handleCreatedTmpFile = async (obj = {}) => {
+export const handleCreatedTmpFile = async (obj = {}) => {
   const { filePath } = obj;
   const func = [];
   if (isFile(filePath)) {
-    func.push(spawnChildProcess(filePath), exportFileData(obj));
+    func.push(execChildProcess(filePath), exportFileData(obj));
   }
   return Promise.all(func);
 };
@@ -652,7 +670,7 @@ const handleCreatedTmpFile = async (obj = {}) => {
  * @param {*} msg - message
  * @returns {Promise.<Array>} - results of each handler
  */
-const handleMsg = async msg => {
+export const handleMsg = async msg => {
   const func = [];
   const items = isObjectNotEmpty(msg) && Object.entries(msg);
   if (items) {
@@ -695,7 +713,7 @@ const handleMsg = async msg => {
 };
 
 /* input */
-const input = new Input();
+export const input = new Input();
 
 /**
  * read stdin
@@ -703,7 +721,7 @@ const input = new Input();
  * @param {string|Buffer} chunk - chunk
  * @returns {?Promise.<Array|Error>} - promise chain
  */
-const readStdin = chunk => {
+export const readStdin = chunk => {
   const func = [];
   const arr = input.decode(chunk);
   if (Array.isArray(arr) && arr.length) {
@@ -720,7 +738,7 @@ const readStdin = chunk => {
  * @param {number} code - exit code
  * @returns {void}
  */
-const handleExit = code => {
+export const handleExit = code => {
   if (isDir(TMPDIR_APP)) {
     removeDir(TMPDIR_APP, TMPDIR);
   }
@@ -735,7 +753,7 @@ const handleExit = code => {
  *
  * @returns {void}
  */
-const addProcessListeners = () => {
+export const addProcessListeners = () => {
   process.on('exit', handleExit);
   process.on('unhandledRejection', handleReject);
   process.stdin.on('data', readStdin);
@@ -746,43 +764,8 @@ const addProcessListeners = () => {
  *
  * @returns {Promise.<Array|Error>} - promise chain
  */
-const startup = () => Promise.all([
+export const startup = () => Promise.all([
   addProcessListeners(),
   createDirectory(TMPDIR_FILES, PERM_DIR),
   createDirectory(TMPDIR_FILES_PB, PERM_DIR)
 ]).then(exportAppStatus).catch(handleReject);
-
-module.exports = {
-  editorConfig,
-  fileMap,
-  addProcessListeners,
-  createTmpFile,
-  createTmpFileResMsg,
-  deleteKeyFromFileMap,
-  exportAppStatus,
-  exportEditorConfig,
-  exportFileData,
-  exportHostVersion,
-  getEditorConfig,
-  getFileIdFromFilePath,
-  getLatestHostVersion,
-  getTmpFileFromFileData,
-  getTmpFileFromWatcherFileName,
-  handleChildProcessErr,
-  handleChildProcessStderr,
-  handleChildProcessStdout,
-  handleCreatedTmpFile,
-  handleExit,
-  handleMsg,
-  handleReject,
-  hostMsg,
-  initPrivateTmpDir,
-  readStdin,
-  removeTmpFileData,
-  spawnChildProcess,
-  startup,
-  unwatchFile,
-  viewLocalFile,
-  watchTmpFile,
-  writeStdout
-};

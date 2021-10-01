@@ -1,26 +1,26 @@
 /**
  * setup.js
  */
-'use strict';
+
 /* api */
-const {
+import {
   CmdArgs, Setup, createFile, getStat, isDir, isExecutable, isFile
-} = require('web-ext-native-msg');
-const { isString, throwErr } = require('./common');
-const path = require('path');
-const process = require('process');
-const readline = require('readline-sync');
+} from 'web-ext-native-msg';
+import { isString, throwErr } from './common.js';
+import path from 'path';
+import process from 'process';
+import readline from 'readline-sync';
+import {
+  EDITOR_CONFIG_FILE, EXT_CHROME_ID, EXT_WEB_ID, HOST, HOST_DESC
+} from './constant.js';
 
 /* constants */
-const {
-  EDITOR_CONFIG_FILE, EXT_CHROME_ID, EXT_WEB_ID, HOST, HOST_DESC
-} = require('./constant');
 const CHAR = 'utf8';
 const INDENT = 2;
 const PERM_FILE = 0o644;
 
 /* setup command options */
-const setupOpts = new Map();
+export const setupOpts = new Map();
 
 /**
  * abort setup
@@ -28,7 +28,7 @@ const setupOpts = new Map();
  * @param {string} msg - message
  * @returns {void}
  */
-const abortSetup = msg => {
+export const abortSetup = msg => {
   console.info(`Setup aborted: ${msg}`);
   process.exit();
 };
@@ -39,7 +39,7 @@ const abortSetup = msg => {
  * @param {Array} editorArgs - editor cmd args
  * @returns {Array} - cmd args in array
  */
-const handleCmdArgsInput = async editorArgs => {
+export const handleCmdArgsInput = async editorArgs => {
   let cmdArgs;
   if (Array.isArray(editorArgs)) {
     cmdArgs = editorArgs;
@@ -62,7 +62,7 @@ const handleCmdArgsInput = async editorArgs => {
  * @param {string} editorFilePath - editor path
  * @returns {string} - editor path
  */
-const handleEditorPathInput = async editorFilePath => {
+export const handleEditorPathInput = async editorFilePath => {
   let editorPath;
   if (isFile(editorFilePath) && isExecutable(editorFilePath)) {
     editorPath = editorFilePath;
@@ -94,7 +94,7 @@ const handleEditorPathInput = async editorFilePath => {
  *
  * @returns {string} - editor config path
  */
-const createEditorConfig = async () => {
+export const createEditorConfig = async () => {
   const configPath = setupOpts.get('configPath');
   if (!isDir(configPath)) {
     throw new Error(`No such directory: ${configPath}`);
@@ -119,7 +119,7 @@ const createEditorConfig = async () => {
  * @param {object} info - info
  * @returns {Function} - handleEditorPathInput() / abortSetup()
  */
-const handleSetupCallback = (info = {}) => {
+export const handleSetupCallback = (info = {}) => {
   const { configDirPath: configPath } = info;
   if (!isDir(configPath)) {
     throw new Error(`No such directory: ${configPath}.`);
@@ -155,7 +155,7 @@ const handleSetupCallback = (info = {}) => {
  * @param {object} cmdOpts - cmd options
  * @returns {Function} - setup.run()
  */
-const runSetup = (cmdOpts = {}) => {
+export const runSetup = (cmdOpts = {}) => {
   const {
     browser, configPath, editorArgs, editorPath, overwriteConfig,
     overwriteEditorConfig
@@ -186,14 +186,4 @@ const runSetup = (cmdOpts = {}) => {
   setupOpts.set('editorPath', editorPath);
   setupOpts.set('overwriteEditorConfig', overwriteEditorConfig);
   return setup.run();
-};
-
-module.exports = {
-  abortSetup,
-  createEditorConfig,
-  handleCmdArgsInput,
-  handleEditorPathInput,
-  handleSetupCallback,
-  runSetup,
-  setupOpts
 };

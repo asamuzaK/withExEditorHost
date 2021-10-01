@@ -1,12 +1,12 @@
 /**
  * index.js
  */
-'use strict';
+
 /* api */
-const { logErr, throwErr } = require('./modules/common');
-const { startup } = require('./modules/main');
-const { parseCommand } = require('./modules/commander');
-const process = require('process');
+import { logErr, throwErr } from './modules/common.js';
+import { startup } from './modules/main.js';
+import { parseCommand } from './modules/commander.js';
+import process from 'process';
 
 /* process */
 process.on('uncaughtException', throwErr);

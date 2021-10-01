@@ -1,11 +1,10 @@
-'use strict';
 /* api */
-const {
-  commander, parseCommand
-} = require('../modules/commander');
-const { assert } = require('chai');
-const { describe, it } = require('mocha');
-const sinon = require('sinon');
+import { assert } from 'chai';
+import { describe, it } from 'mocha';
+import sinon from 'sinon';
+
+/* test */
+import { commander, parseCommand } from '../modules/commander.js';
 
 describe('parse command', () => {
   const func = parseCommand;

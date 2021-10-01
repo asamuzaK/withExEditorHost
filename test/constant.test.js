@@ -1,8 +1,9 @@
-'use strict';
 /* api */
-const constants = require('../modules/constant');
-const { assert } = require('chai');
-const { describe, it } = require('mocha');
+import { assert } from 'chai';
+import { describe, it } from 'mocha';
+
+/* test */
+import * as constants from '../modules/constant.js';
 
 describe('constants', () => {
   const items = Object.keys(constants);

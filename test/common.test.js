@@ -1,12 +1,13 @@
-'use strict';
 /* api */
-const {
+import { assert } from 'chai';
+import { describe, it } from 'mocha';
+import sinon from 'sinon';
+
+/* test */
+import {
   escapeChar, getType, isObjectNotEmpty, isString, logErr, logMsg, logWarn,
   quoteArg, stringifyPositiveInt, stripHtmlTags, throwErr
-} = require('../modules/common');
-const { assert } = require('chai');
-const { describe, it } = require('mocha');
-const sinon = require('sinon');
+} from '../modules/common.js';
 
 describe('escapeChar', () => {
   it('should get escaped string', () => {
