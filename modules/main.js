@@ -10,12 +10,13 @@ import {
   removeDir, removeDirectory, readFile
 } from 'web-ext-native-msg';
 import { URL } from 'url';
-import HttpsProxyAgent from 'https-proxy-agent';
 import { compareSemVer, isValidSemVer } from 'semver-parser';
 import { getType, quoteArg, isObjectNotEmpty, isString } from './common.js';
+import { parsePackageJson } from './packageJson.js';
 import { watch } from 'fs';
+import fetch from 'node-fetch';
+import fetchProxy from 'node-fetch-with-proxy';
 import os from 'os';
-import packageJson from 'package-json';
 import path from 'path';
 import process from 'process';
 import {
@@ -166,48 +167,24 @@ export const exportFileData = async (obj = {}) => {
 };
 
 /**
- * create proxy agent
+ * fetch latest host version
  *
- * @returns {object} - agent
+ * @returns {?string} - latest host version string
  */
-export const createProxyAgent = async () => {
-  const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy;
-  const httpProxy = process.env.HTTP_PROXY || process.env.http_proxy;
-  const agent = {};
-  if (httpsProxy) {
-    agent.https = new HttpsProxyAgent(httpsProxy);
+export const fetchLatestHostVersion = async () => {
+  const proxy = process.env.HTTPS_PROXY || process.env.https_proxy ||
+                process.env.HTTP_PROXY || process.env.http_proxy;
+  const func = proxy ? fetchProxy : fetch;
+  const res = await func(`https://registry.npmjs.org/${HOST}`);
+  const { ok, status } = res;
+  if (!ok) {
+    const msg = `Network response was not ok. status: ${status}`;
+    throw new Error(msg);
   }
-  if (httpProxy) {
-    agent.http = new HttpsProxyAgent(httpProxy);
-  }
-  return agent;
-};
-
-/**
- * get latest host version
- *
- * @returns {?string} - latest version string
- */
-export const getLatestHostVersion = async () => {
-  let latest;
-  try {
-    let opt;
-    if (process.env.HTTPS_PROXY || process.env.https_proxy ||
-        process.env.HTTP_PROXY || process.env.http_proxy) {
-      const agent = await createProxyAgent();
-      opt = {
-        agent
-      };
-    }
-    const {
-      version: latestVersion
-    } = await packageJson(process.env.npm_package_name, opt);
-    latest = latestVersion;
-  } catch (e) {
-    const msg = new Output().encode(hostMsg(e.message, 'error'));
-    process.stdout.write(msg);
-  }
-  return latest || null;
+  const data = await res.json();
+  const { latest } = data['dist-tags'];
+  const { version } = data.versions[latest];
+  return version;
 };
 
 /**
@@ -223,9 +200,9 @@ export const exportHostVersion = async minVer => {
   if (!isValidSemVer(minVer)) {
     throw new Error(`${minVer} is not valid SemVer.`);
   }
-  const hostVersion = process.env.npm_package_version;
+  const { version: hostVersion } = await parsePackageJson();
   const result = await compareSemVer(hostVersion, minVer);
-  const latest = await getLatestHostVersion();
+  const latest = await fetchLatestHostVersion();
   let isLatest;
   if (latest) {
     const currentResult = await compareSemVer(hostVersion, latest);

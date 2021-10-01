@@ -23,11 +23,11 @@ import {
 
 /* test */
 import {
-  addProcessListeners, createProxyAgent, createTmpFile, createTmpFileResMsg,
+  addProcessListeners, createTmpFile, createTmpFileResMsg,
   deleteKeyFromFileMap, editorConfig, execChildProcess, exportAppStatus,
-  exportEditorConfig, exportFileData, exportHostVersion, fileMap,
-  getEditorConfig, getFileIdFromFilePath, getLatestHostVersion,
-  getTmpFileFromFileData, getTmpFileFromWatcherFileName,
+  exportEditorConfig, exportFileData, exportHostVersion, fetchLatestHostVersion,
+  fileMap, getEditorConfig, getFileIdFromFilePath, getTmpFileFromFileData,
+  getTmpFileFromWatcherFileName,
   handleChildProcessErr, handleChildProcessStderr, handleChildProcessStdout,
   handleCreatedTmpFile, handleExit, handleMsg, handleReject, hostMsg,
   initPrivateTmpDir, readStdin, removeTmpFileData, startup, unwatchFile,
@@ -368,61 +368,7 @@ describe('exportFileData', () => {
   });
 });
 
-describe('createProxyAgent', () => {
-  it('should get empty object', async () => {
-    const res = await createProxyAgent();
-    assert.deepEqual(res, {});
-  });
-
-  it('should get result', async () => {
-    process.env.HTTP_PROXY = 'http://localhost:9000';
-    const res = await createProxyAgent();
-    delete process.env.HTTP_PROXY;
-    assert.isObject(res);
-    assert.isDefined(res.http);
-    assert.isUndefined(res.https);
-  });
-
-  it('should get result', async () => {
-    process.env.http_proxy = 'http://localhost:9000';
-    const res = await createProxyAgent();
-    delete process.env.http_proxy;
-    assert.isObject(res);
-    assert.isDefined(res.http);
-    assert.isUndefined(res.https);
-  });
-
-  it('should get result', async () => {
-    process.env.HTTPS_PROXY = 'http://localhost:9000';
-    const res = await createProxyAgent();
-    delete process.env.HTTPS_PROXY;
-    assert.isObject(res);
-    assert.isDefined(res.https);
-    assert.isUndefined(res.http);
-  });
-
-  it('should get result', async () => {
-    process.env.https_proxy = 'http://localhost:9000';
-    const res = await createProxyAgent();
-    delete process.env.https_proxy;
-    assert.isObject(res);
-    assert.isDefined(res.https);
-    assert.isUndefined(res.http);
-  });
-
-  it('should get result', async () => {
-    process.env.HTTP_PROXY = 'http://localhost:9000';
-    process.env.HTTPS_PROXY = 'http://localhost:9000';
-    const res = await createProxyAgent();
-    delete process.env.HTTP_PROXY;
-    delete process.env.HTTPS_PROXY;
-    assert.isObject(res);
-    assert.isDefined(res.http);
-    assert.isDefined(res.https);
-  });
-});
-
-describe('getLatestHostVersion', () => {
+describe('fetchLatestHostVersion', () => {
   beforeEach(() => {
     nock.cleanAll();
   });
@@ -430,8 +376,16 @@ describe('getLatestHostVersion', () => {
     nock.cleanAll();
   });
 
+  it('should throw', async () => {
+    const hostName = process.env.npm_package_name;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(404);
+    await fetchLatestHostVersion().catch(e => {
+      assert.instanceOf(e, Error);
+      assert.strictEqual(e.message, 'Network response was not ok. status: 404');
+    });
+  });
+
   it('should get result', async () => {
-    const stubWrite = sinon.stub(process.stdout, 'write');
     const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
     const {
@@ -448,27 +402,58 @@ describe('getLatestHostVersion', () => {
         }
       }
     });
-    const res = await getLatestHostVersion();
-    const { called: writeCalled } = stubWrite;
-    stubWrite.restore();
-    assert.isFalse(writeCalled);
+    const res = await fetchLatestHostVersion();
     assert.strictEqual(res, version);
   });
 
-  it('should write stdout', async () => {
-    const stubWrite = sinon.stub(process.stdout, 'write');
+  it('should get result', async () => {
+    process.env.HTTPS_PROXY = 'http://localhost:9000';
+    const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(404);
-    const res = await getLatestHostVersion();
-    const { calledOnce: writeCalled } = stubWrite;
-    stubWrite.restore();
-    assert.isTrue(writeCalled);
-    assert.isNull(res);
+    const {
+      major, minor, patch
+    } = await parseSemVer(hostVersion);
+    const version = `${major}.${minor}.${patch + 1}`;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+      'dist-tags': {
+        latest: version
+      },
+      versions: {
+        [version]: {
+          version
+        }
+      }
+    });
+    const res = await fetchLatestHostVersion();
+    delete process.env.HTTPS_PROXY;
+    assert.strictEqual(res, version);
+  });
+
+  it('should get result', async () => {
+    process.env.https_proxy = 'http://localhost:9000';
+    const hostVersion = process.env.npm_package_version;
+    const hostName = process.env.npm_package_name;
+    const {
+      major, minor, patch
+    } = await parseSemVer(hostVersion);
+    const version = `${major}.${minor}.${patch + 1}`;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+      'dist-tags': {
+        latest: version
+      },
+      versions: {
+        [version]: {
+          version
+        }
+      }
+    });
+    const res = await fetchLatestHostVersion();
+    delete process.env.https_proxy;
+    assert.strictEqual(res, version);
   });
 
   it('should get result', async () => {
     process.env.HTTP_PROXY = 'http://localhost:9000';
-    const stubWrite = sinon.stub(process.stdout, 'write');
     const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
     const {
@@ -485,11 +470,31 @@ describe('getLatestHostVersion', () => {
         }
       }
     });
-    const res = await getLatestHostVersion();
-    const { called: writeCalled } = stubWrite;
-    stubWrite.restore();
-    delete process.env.https_proxy;
-    assert.isFalse(writeCalled);
+    const res = await fetchLatestHostVersion();
+    delete process.env.HTTP_PROXY;
+    assert.strictEqual(res, version);
+  });
+
+  it('should get result', async () => {
+    process.env.http_proxy = 'http://localhost:9000';
+    const hostVersion = process.env.npm_package_version;
+    const hostName = process.env.npm_package_name;
+    const {
+      major, minor, patch
+    } = await parseSemVer(hostVersion);
+    const version = `${major}.${minor}.${patch + 1}`;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+      'dist-tags': {
+        latest: version
+      },
+      versions: {
+        [version]: {
+          version
+        }
+      }
+    });
+    const res = await fetchLatestHostVersion();
+    delete process.env.http_proxy;
     assert.strictEqual(res, version);
   });
 });
