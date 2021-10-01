@@ -12,6 +12,7 @@ import {
 import { URL } from 'url';
 import { compareSemVer, isValidSemVer } from 'semver-parser';
 import { getType, quoteArg, isObjectNotEmpty, isString } from './common.js';
+import { parsePackageJson } from './packageJson.js';
 import { watch } from 'fs';
 import fetch from 'node-fetch';
 import fetchProxy from 'node-fetch-with-proxy';
@@ -176,18 +177,14 @@ export const fetchLatestHostVersion = async () => {
   const func = proxy ? fetchProxy : fetch;
   const res = await func(`https://registry.npmjs.org/${HOST}`);
   const { ok, status } = res;
-  let latest;
-  if (ok) {
-    const data = await res.json();
-    const { latest: latestVersion } = data['dist-tags'];
-    const { version } = data.versions[latestVersion];
-    latest = version;
-  } else {
+  if (!ok) {
     const msg = `Network response was not ok. status: ${status}`;
-    const encodedMsg = new Output().encode(hostMsg(msg, 'error'));
-    process.stdout.write(encodedMsg);
+    throw new Error(msg);
   }
-  return latest || null;
+  const data = await res.json();
+  const { latest } = data['dist-tags'];
+  const { version } = data.versions[latest];
+  return version;
 };
 
 /**
@@ -203,7 +200,7 @@ export const exportHostVersion = async minVer => {
   if (!isValidSemVer(minVer)) {
     throw new Error(`${minVer} is not valid SemVer.`);
   }
-  const hostVersion = process.env.npm_package_version;
+  const { version: hostVersion } = await parsePackageJson();
   const result = await compareSemVer(hostVersion, minVer);
   const latest = await fetchLatestHostVersion();
   let isLatest;

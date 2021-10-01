@@ -376,19 +376,16 @@ describe('fetchLatestHostVersion', () => {
     nock.cleanAll();
   });
 
-  it('should write stdout', async () => {
-    const stubWrite = sinon.stub(process.stdout, 'write');
+  it('should throw', async () => {
     const hostName = process.env.npm_package_name;
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(404);
-    const res = await fetchLatestHostVersion();
-    const { calledOnce: writeCalled } = stubWrite;
-    stubWrite.restore();
-    assert.isTrue(writeCalled);
-    assert.isNull(res);
+    await fetchLatestHostVersion().catch(e => {
+      assert.instanceOf(e, Error);
+      assert.strictEqual(e.message, 'Network response was not ok. status: 404');
+    });
   });
 
   it('should get result', async () => {
-    const stubWrite = sinon.stub(process.stdout, 'write');
     const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
     const {
@@ -406,15 +403,11 @@ describe('fetchLatestHostVersion', () => {
       }
     });
     const res = await fetchLatestHostVersion();
-    const { called: writeCalled } = stubWrite;
-    stubWrite.restore();
-    assert.isFalse(writeCalled);
     assert.strictEqual(res, version);
   });
 
   it('should get result', async () => {
     process.env.HTTPS_PROXY = 'http://localhost:9000';
-    const stubWrite = sinon.stub(process.stdout, 'write');
     const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
     const {
@@ -432,16 +425,12 @@ describe('fetchLatestHostVersion', () => {
       }
     });
     const res = await fetchLatestHostVersion();
-    const { called: writeCalled } = stubWrite;
-    stubWrite.restore();
     delete process.env.HTTPS_PROXY;
-    assert.isFalse(writeCalled);
     assert.strictEqual(res, version);
   });
 
   it('should get result', async () => {
     process.env.https_proxy = 'http://localhost:9000';
-    const stubWrite = sinon.stub(process.stdout, 'write');
     const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
     const {
@@ -459,16 +448,12 @@ describe('fetchLatestHostVersion', () => {
       }
     });
     const res = await fetchLatestHostVersion();
-    const { called: writeCalled } = stubWrite;
-    stubWrite.restore();
     delete process.env.https_proxy;
-    assert.isFalse(writeCalled);
     assert.strictEqual(res, version);
   });
 
   it('should get result', async () => {
     process.env.HTTP_PROXY = 'http://localhost:9000';
-    const stubWrite = sinon.stub(process.stdout, 'write');
     const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
     const {
@@ -486,16 +471,12 @@ describe('fetchLatestHostVersion', () => {
       }
     });
     const res = await fetchLatestHostVersion();
-    const { called: writeCalled } = stubWrite;
-    stubWrite.restore();
     delete process.env.HTTP_PROXY;
-    assert.isFalse(writeCalled);
     assert.strictEqual(res, version);
   });
 
   it('should get result', async () => {
     process.env.http_proxy = 'http://localhost:9000';
-    const stubWrite = sinon.stub(process.stdout, 'write');
     const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
     const {
@@ -513,10 +494,7 @@ describe('fetchLatestHostVersion', () => {
       }
     });
     const res = await fetchLatestHostVersion();
-    const { called: writeCalled } = stubWrite;
-    stubWrite.restore();
     delete process.env.http_proxy;
-    assert.isFalse(writeCalled);
     assert.strictEqual(res, version);
   });
 });
