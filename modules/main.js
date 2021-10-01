@@ -526,7 +526,7 @@ const createTmpFile = async (obj = {}) => {
       const fileId = [windowId, tabId, host, dataId].join('_');
       const fileName = dataId && encodeURIComponent(dataId);
       filePath = dirPath && fileName && extType &&
-        await createFile(path.join(dirPath, fileName + extType), value,
+        await createFile(path.join(dirPath, `${fileName}${extType}`), value,
           { encoding: CHAR, flag: 'w', mode: PERM_FILE });
       filePath && dir && fileMap[dir] &&
         fileMap[dir].set(fileId, { data, filePath });
