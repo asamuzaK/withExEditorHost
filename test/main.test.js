@@ -1,44 +1,40 @@
 /* eslint-disable no-template-curly-in-string */
-'use strict';
 /* api */
-const {
-  editorConfig, fileMap,
-  addProcessListeners, createTmpFile, createTmpFileResMsg, deleteKeyFromFileMap,
-  exportAppStatus, exportEditorConfig, exportFileData, exportHostVersion,
-  getEditorConfig, getFileIdFromFilePath,
+import {
+  Input, Output,
+  createDirectory, createFile, getFileTimestamp, isDir, isFile, removeDir
+} from 'web-ext-native-msg';
+import { compareSemVer, parseSemVer } from 'semver-parser';
+import { assert } from 'chai';
+import { afterEach, beforeEach, describe, it } from 'mocha';
+import childProcess from 'child_process';
+import fs from 'fs';
+import nock from 'nock';
+import os from 'os';
+import path from 'path';
+import process from 'process';
+import sinon from 'sinon';
+import {
+  EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
+  FILE_WATCH, HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW,
+  MODE_EDIT, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
+  TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES
+} from '../modules/constant.js';
+
+/* test */
+import {
+  addProcessListeners, createProxyAgent, createTmpFile, createTmpFileResMsg,
+  deleteKeyFromFileMap, editorConfig, execChildProcess, exportAppStatus,
+  exportEditorConfig, exportFileData, exportHostVersion, fileMap,
+  getEditorConfig, getFileIdFromFilePath, getLatestHostVersion,
   getTmpFileFromFileData, getTmpFileFromWatcherFileName,
   handleChildProcessErr, handleChildProcessStderr, handleChildProcessStdout,
   handleCreatedTmpFile, handleExit, handleMsg, handleReject, hostMsg,
-  initPrivateTmpDir, readStdin, removeTmpFileData, spawnChildProcess,
-  startup, unwatchFile, viewLocalFile, watchTmpFile, writeStdout
-} = require('../modules/main');
-const {
-  Input, Output,
-  createDirectory, createFile, getFileTimestamp, isDir, isFile, removeDir
-} = require('web-ext-native-msg');
-const {
-  promises: {
-    compareSemVer, parseSemVer
-  }
-} = require('semver-parser');
-const { assert } = require('chai');
-const { afterEach, beforeEach, describe, it } = require('mocha');
-const childProcess = require('child_process');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const process = require('process');
-const rewiremock = require('rewiremock/node');
-const sinon = require('sinon');
+  initPrivateTmpDir, readStdin, removeTmpFileData, startup, unwatchFile,
+  viewLocalFile, watchTmpFile, writeStdout
+} from '../modules/main.js';
 
 /* constant */
-const {
-  EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
-  FILE_WATCH,
-  HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT,
-  TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
-  TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES
-} = require('../modules/constant');
 const APP = `${process.pid}`;
 const CHAR = 'utf8';
 const IS_WIN = os.platform() === 'win32';
@@ -372,127 +368,129 @@ describe('exportFileData', () => {
   });
 });
 
-describe('getLatestHostVersion', () => {
-  it('should get result', async () => {
-    const stubWrite = sinon.stub(process.stdout, 'write');
-    const hostVersion = process.env.npm_package_version;
-    const {
-      major, minor, patch
-    } = await parseSemVer(hostVersion);
-    const stubCreateAgent = sinon.stub().resolves({});
-    const stubGlobalAgent = {
-      createGlobalProxyAgent: stubCreateAgent
-    };
-    const stubPackageJson = sinon.stub();
-    const hostName = process.env.npm_package_name;
-    stubPackageJson.withArgs(hostName).resolves({
-      version: `${major}.${minor}.${patch + 1}`
-    });
-    stubPackageJson.withArgs(hostName, {
-      agent: {}
-    }).resolves({
-      version: `${major}.${minor}.${patch + 2}`
-    });
-    rewiremock('global-agent').with(stubGlobalAgent);
-    rewiremock('package-json').with(stubPackageJson);
-    rewiremock.enable();
-    const mainJs = require('../modules/main');
-    const res = await mainJs.getLatestHostVersion();
-    const { calledOnce: createCalled } = stubCreateAgent;
-    const { calledOnce: pjCalled } = stubPackageJson;
-    const { called: writeCalled } = stubWrite;
-    stubWrite.restore();
-    rewiremock.disable();
-    if (process.env.HTTP_PROXY || process.env.http_proxy ||
-        process.env.HTTPS_PROXY || process.env.https_proxy) {
-      assert.isTrue(createCalled);
-      assert.isTrue(pjCalled);
-      assert.strictEqual(res, `${major}.${minor}.${patch + 2}`);
-    } else {
-      assert.isFalse(createCalled);
-      assert.isTrue(pjCalled);
-      assert.strictEqual(res, `${major}.${minor}.${patch + 1}`);
-    }
-    assert.isFalse(writeCalled);
+describe('createProxyAgent', () => {
+  it('should get empty object', async () => {
+    const res = await createProxyAgent();
+    assert.deepEqual(res, {});
   });
 
-  it('should write stdout', async () => {
-    let msg;
-    const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
-      msg = buf;
-      return buf;
-    });
-    const stubPackageJson = sinon.stub().rejects(new Error('error'));
-    rewiremock('package-json').with(stubPackageJson);
-    rewiremock.enable();
-    const mainJs = require('../modules/main');
-    const hostName = process.env.npm_package_name;
-    const res = await mainJs.getLatestHostVersion();
-    rewiremock.disable();
-    const { calledOnce: writeCalled } = stubWrite;
-    stubWrite.restore();
-    const [obj] = new Input().decode(msg);
-    assert.isTrue(stubPackageJson.calledOnce);
-    assert.isNull(res);
-    assert.isTrue(writeCalled);
-    assert.deepEqual(obj, {
-      [hostName]: {
-        message: 'error',
-        status: 'error'
-      }
-    });
+  it('should get result', async () => {
+    process.env.HTTP_PROXY = 'http://localhost:9000';
+    const res = await createProxyAgent();
+    delete process.env.HTTP_PROXY;
+    assert.isObject(res);
+    assert.isDefined(res.http);
+    assert.isUndefined(res.https);
+  });
+
+  it('should get result', async () => {
+    process.env.http_proxy = 'http://localhost:9000';
+    const res = await createProxyAgent();
+    delete process.env.http_proxy;
+    assert.isObject(res);
+    assert.isDefined(res.http);
+    assert.isUndefined(res.https);
+  });
+
+  it('should get result', async () => {
+    process.env.HTTPS_PROXY = 'http://localhost:9000';
+    const res = await createProxyAgent();
+    delete process.env.HTTPS_PROXY;
+    assert.isObject(res);
+    assert.isDefined(res.https);
+    assert.isUndefined(res.http);
+  });
+
+  it('should get result', async () => {
+    process.env.https_proxy = 'http://localhost:9000';
+    const res = await createProxyAgent();
+    delete process.env.https_proxy;
+    assert.isObject(res);
+    assert.isDefined(res.https);
+    assert.isUndefined(res.http);
+  });
+
+  it('should get result', async () => {
+    process.env.HTTP_PROXY = 'http://localhost:9000';
+    process.env.HTTPS_PROXY = 'http://localhost:9000';
+    const res = await createProxyAgent();
+    delete process.env.HTTP_PROXY;
+    delete process.env.HTTPS_PROXY;
+    assert.isObject(res);
+    assert.isDefined(res.http);
+    assert.isDefined(res.https);
   });
 });
 
-describe('getLatestHostVersion, proxy', () => {
-  let proxy;
+describe('getLatestHostVersion', () => {
   beforeEach(() => {
-    if (process.env.HTTP_PROXY) {
-      proxy = process.env.HTTP_PROXY;
-    } else {
-      process.env.HTTP_PROXY = 'http://localhost:8080';
-    }
+    nock.cleanAll();
   });
   afterEach(() => {
-    if (proxy) {
-      process.env.HTTP_PROXY = proxy;
-    } else {
-      delete process.env.HTTP_PROXY;
-    }
+    nock.cleanAll();
   });
 
   it('should get result', async () => {
-    assert.strictEqual(process.env.HTTP_PROXY, 'http://localhost:8080');
     const stubWrite = sinon.stub(process.stdout, 'write');
     const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
     const {
       major, minor, patch
     } = await parseSemVer(hostVersion);
-    const latest = `${major}.${minor}.${patch + 1}`;
-    const stubCreateAgent = sinon.stub().resolves({});
-    const stubGlobalAgent = {
-      createGlobalProxyAgent: stubCreateAgent
-    };
-    const stubPackageJson = sinon.stub().withArgs(hostName, {
-      agent: {}
-    }).resolves({
-      version: latest
+    const version = `${major}.${minor}.${patch + 1}`;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+      'dist-tags': {
+        latest: version
+      },
+      versions: {
+        [version]: {
+          version
+        }
+      }
     });
-    rewiremock('global-agent').with(stubGlobalAgent);
-    rewiremock('package-json').with(stubPackageJson);
-    rewiremock.enable();
-    const mainJs = require('../modules/main');
-    const res = await mainJs.getLatestHostVersion();
-    const { calledOnce: createCalled } = stubCreateAgent;
-    const { calledOnce: pjCalled } = stubPackageJson;
+    const res = await getLatestHostVersion();
     const { called: writeCalled } = stubWrite;
     stubWrite.restore();
-    rewiremock.disable();
-    assert.isTrue(createCalled);
-    assert.isTrue(pjCalled);
-    assert.strictEqual(res, latest);
     assert.isFalse(writeCalled);
+    assert.strictEqual(res, version);
+  });
+
+  it('should write stdout', async () => {
+    const stubWrite = sinon.stub(process.stdout, 'write');
+    const hostName = process.env.npm_package_name;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(404);
+    const res = await getLatestHostVersion();
+    const { calledOnce: writeCalled } = stubWrite;
+    stubWrite.restore();
+    assert.isTrue(writeCalled);
+    assert.isNull(res);
+  });
+
+  it('should get result', async () => {
+    process.env.HTTP_PROXY = 'http://localhost:9000';
+    const stubWrite = sinon.stub(process.stdout, 'write');
+    const hostVersion = process.env.npm_package_version;
+    const hostName = process.env.npm_package_name;
+    const {
+      major, minor, patch
+    } = await parseSemVer(hostVersion);
+    const version = `${major}.${minor}.${patch + 1}`;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+      'dist-tags': {
+        latest: version
+      },
+      versions: {
+        [version]: {
+          version
+        }
+      }
+    });
+    const res = await getLatestHostVersion();
+    const { called: writeCalled } = stubWrite;
+    stubWrite.restore();
+    delete process.env.https_proxy;
+    assert.isFalse(writeCalled);
+    assert.strictEqual(res, version);
   });
 });
 
@@ -517,32 +515,32 @@ describe('exportHostVersion', () => {
       msg = buf;
       return buf;
     });
+    const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
     const {
       major, minor, patch
     } = await parseSemVer(hostVersion);
-    const ver = `${major > 0 ? major - 1 : 0}.${minor}.${patch}`;
-    const latest = `${major}.${minor}.${patch + 1}`;
-    const currentResult = await compareSemVer(hostVersion, latest);
-    const isLatest = currentResult >= 0;
-    const stubPackageJson = sinon.stub().resolves({
-      version: latest
+    const minVer = `${major > 0 ? major - 1 : 0}.${minor}.${patch}`;
+    const version = hostVersion;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+      'dist-tags': {
+        latest: version
+      },
+      versions: {
+        [version]: {
+          version
+        }
+      }
     });
-    rewiremock('package-json').with(stubPackageJson);
-    rewiremock.enable();
-    const mainJs = require('../modules/main');
-    const res = await mainJs.exportHostVersion(ver);
-    const { calledOnce: pjCalled } = stubPackageJson;
+    const res = await exportHostVersion(minVer);
     const { calledOnce: writeCalled } = stubWrite;
     stubWrite.restore();
-    rewiremock.disable();
     const [obj] = new Input().decode(msg);
-    assert.isTrue(pjCalled);
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
     assert.isAbove(obj.hostVersion.result, 0);
-    assert.strictEqual(obj.hostVersion.latest, latest);
-    assert.strictEqual(obj.hostVersion.isLatest, isLatest);
+    assert.strictEqual(obj.hostVersion.latest, version);
+    assert.isTrue(obj.hostVersion.isLatest);
   });
 
   it('should call function', async () => {
@@ -551,32 +549,32 @@ describe('exportHostVersion', () => {
       msg = buf;
       return buf;
     });
+    const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
     const {
       major, minor, patch
     } = await parseSemVer(hostVersion);
-    const ver = `${major}.${minor}.${patch + 1}`;
-    const latest = `${major}.${minor}.${patch + 1}`;
-    const currentResult = await compareSemVer(hostVersion, latest);
-    const isLatest = currentResult >= 0;
-    const stubPackageJson = sinon.stub().resolves({
-      version: latest
+    const minVer = `${major > 0 ? major - 1 : 0}.${minor}.${patch}`;
+    const version = `${major}.${minor}.${patch + 1}`;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+      'dist-tags': {
+        latest: version
+      },
+      versions: {
+        [version]: {
+          version
+        }
+      }
     });
-    rewiremock('package-json').with(stubPackageJson);
-    rewiremock.enable();
-    const mainJs = require('../modules/main');
-    const res = await mainJs.exportHostVersion(ver);
-    const { calledOnce: pjCalled } = stubPackageJson;
+    const res = await exportHostVersion(minVer);
     const { calledOnce: writeCalled } = stubWrite;
     stubWrite.restore();
-    rewiremock.disable();
     const [obj] = new Input().decode(msg);
-    assert.isTrue(pjCalled);
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
-    assert.isBelow(obj.hostVersion.result, 0);
-    assert.strictEqual(obj.hostVersion.latest, latest);
-    assert.strictEqual(obj.hostVersion.isLatest, isLatest);
+    assert.isAbove(obj.hostVersion.result, 0);
+    assert.strictEqual(obj.hostVersion.latest, version);
+    assert.isFalse(obj.hostVersion.isLatest);
   });
 
   it('should call function', async () => {
@@ -585,31 +583,32 @@ describe('exportHostVersion', () => {
       msg = buf;
       return buf;
     });
+    const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
     const {
       major, minor, patch
     } = await parseSemVer(hostVersion);
-    const latest = `${major}.${minor}.${patch + 1}`;
-    const currentResult = await compareSemVer(hostVersion, latest);
-    const isLatest = currentResult >= 0;
-    const stubPackageJson = sinon.stub().resolves({
-      version: latest
+    const minVer = hostVersion;
+    const version = `${major}.${minor}.${patch + 1}`;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+      'dist-tags': {
+        latest: version
+      },
+      versions: {
+        [version]: {
+          version
+        }
+      }
     });
-    rewiremock('package-json').with(stubPackageJson);
-    rewiremock.enable();
-    const mainJs = require('../modules/main');
-    const res = await mainJs.exportHostVersion(hostVersion);
-    const { calledOnce: pjCalled } = stubPackageJson;
+    const res = await exportHostVersion(minVer);
     const { calledOnce: writeCalled } = stubWrite;
     stubWrite.restore();
-    rewiremock.disable();
     const [obj] = new Input().decode(msg);
-    assert.isTrue(pjCalled);
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
     assert.strictEqual(obj.hostVersion.result, 0);
-    assert.strictEqual(obj.hostVersion.latest, latest);
-    assert.strictEqual(obj.hostVersion.isLatest, isLatest);
+    assert.strictEqual(obj.hostVersion.latest, version);
+    assert.isFalse(obj.hostVersion.isLatest);
   });
 
   it('should call function', async () => {
@@ -618,23 +617,29 @@ describe('exportHostVersion', () => {
       msg = buf;
       return buf;
     });
-    const stubPackageJson = sinon.stub().resolves({});
-    rewiremock('package-json').with(stubPackageJson);
-    rewiremock.enable();
-    const mainJs = require('../modules/main');
+    const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
-    const res = await mainJs.exportHostVersion(hostVersion);
-    const { calledOnce: pjCalled } = stubPackageJson;
+    const minVer = hostVersion;
+    const version = hostVersion;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+      'dist-tags': {
+        latest: version
+      },
+      versions: {
+        [version]: {
+          version
+        }
+      }
+    });
+    const res = await exportHostVersion(minVer);
     const { calledOnce: writeCalled } = stubWrite;
     stubWrite.restore();
-    rewiremock.disable();
     const [obj] = new Input().decode(msg);
-    assert.isTrue(pjCalled);
     assert.isTrue(writeCalled);
     assert.isTrue(Buffer.isBuffer(res));
     assert.strictEqual(obj.hostVersion.result, 0);
-    assert.isNull(obj.hostVersion.latest);
-    assert.isUndefined(obj.hostVersion.isLatest);
+    assert.strictEqual(obj.hostVersion.latest, version);
+    assert.isTrue(obj.hostVersion.isLatest);
   });
 });
 
@@ -735,7 +740,7 @@ describe('handleChildProcessStdout', () => {
   });
 });
 
-describe('spawnChildProcess', () => {
+describe('execChildProcess', () => {
   beforeEach(() => {
     editorConfig.editorPath = '';
     editorConfig.cmdArgs = [];
@@ -748,7 +753,7 @@ describe('spawnChildProcess', () => {
   });
 
   it('should throw', async () => {
-    await spawnChildProcess().catch(e => {
+    await execChildProcess().catch(e => {
       assert.instanceOf(e, Error);
       assert.strictEqual(e.message, 'No such file: undefined');
     });
@@ -756,7 +761,7 @@ describe('spawnChildProcess', () => {
 
   it('should throw', async () => {
     const filePath = path.resolve(path.join('test', 'file', 'test.txt'));
-    await spawnChildProcess(filePath).catch(e => {
+    await execChildProcess(filePath).catch(e => {
       assert.instanceOf(e, Error);
       assert.strictEqual(e.message, 'Application is not executable.');
     });
@@ -779,7 +784,7 @@ describe('spawnChildProcess', () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const res = await spawnChildProcess(filePath, editorPath);
+    const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;
     const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
     stubWrite.restore();
@@ -809,7 +814,7 @@ describe('spawnChildProcess', () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const res = await spawnChildProcess(filePath, editorPath);
+    const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;
     const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
     stubWrite.restore();
@@ -839,7 +844,7 @@ describe('spawnChildProcess', () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     editorConfig.cmdArgs = '';
-    const res = await spawnChildProcess(filePath, editorPath);
+    const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;
     const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
     stubWrite.restore();
@@ -869,7 +874,7 @@ describe('spawnChildProcess', () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     editorConfig.cmdArgs = ['foo', 'bar'];
-    const res = await spawnChildProcess(filePath, editorPath);
+    const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;
     const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
     stubWrite.restore();
@@ -899,7 +904,7 @@ describe('spawnChildProcess', () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     editorConfig.cmdArgs = 'foo bar';
-    const res = await spawnChildProcess(filePath, editorPath);
+    const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;
     const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
     stubWrite.restore();
@@ -930,7 +935,7 @@ describe('spawnChildProcess', () => {
     }
     editorConfig.cmdArgs = ['foo ${file}', 'bar'];
     editorConfig.hasPlaceholder = true;
-    const res = await spawnChildProcess(filePath, editorPath);
+    const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;
     const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
     stubWrite.restore();
@@ -962,7 +967,7 @@ describe('spawnChildProcess', () => {
     }
     editorConfig.cmdArgs = ['foo ${file}', 'bar'];
     editorConfig.hasPlaceholder = true;
-    const res = await spawnChildProcess(filePath, editorPath);
+    const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;
     const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
     stubWrite.restore();
@@ -993,7 +998,7 @@ describe('spawnChildProcess', () => {
     }
     editorConfig.cmdArgs = ['foo', 'bar=baz ${file}'];
     editorConfig.hasPlaceholder = true;
-    const res = await spawnChildProcess(filePath, editorPath);
+    const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;
     const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
     stubWrite.restore();
@@ -1025,7 +1030,7 @@ describe('spawnChildProcess', () => {
     }
     editorConfig.cmdArgs = ['foo', 'bar=baz ${file}'];
     editorConfig.hasPlaceholder = true;
-    const res = await spawnChildProcess(filePath, editorPath);
+    const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;
     const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
     stubWrite.restore();
@@ -2299,34 +2304,36 @@ describe('handleMsg', () => {
 
   it('should call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
+    const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
     const {
       major, minor, patch
     } = await parseSemVer(hostVersion);
-    const latest = `${major}.${minor}.${patch + 1}`;
-    const currentResult = await compareSemVer(hostVersion, latest);
+    const version = `${major}.${minor}.${patch + 1}`;
+    const currentResult = await compareSemVer(hostVersion, version);
     const isLatest = currentResult >= 0;
     const msg = new Output().encode({
       [HOST_VERSION]: {
         isLatest,
-        latest,
+        latest: version,
         result: 0
       }
     });
-    const stubPackageJson = sinon.stub().resolves({
-      version: latest
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+      'dist-tags': {
+        latest: version
+      },
+      versions: {
+        [version]: {
+          version
+        }
+      }
     });
-    rewiremock('package-json').with(stubPackageJson);
-    rewiremock.enable();
-    const mainJs = require('../modules/main');
-    const res = await mainJs.handleMsg({
+    const res = await handleMsg({
       [HOST_VERSION_CHECK]: hostVersion
     });
-    const { calledOnce: pjCalled } = stubPackageJson;
     const { calledOnce: writeCalled } = stubWrite;
     stubWrite.restore();
-    rewiremock.disable();
-    assert.isTrue(pjCalled);
     assert.isTrue(writeCalled);
     assert.deepEqual(res, [msg]);
   });

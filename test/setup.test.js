@@ -1,23 +1,25 @@
 'use strict';
 /* api */
-const {
+import {
+  Setup, createDirectory, createFile, isFile, removeDir
+} from 'web-ext-native-msg';
+import { assert } from 'chai';
+import { afterEach, beforeEach, describe, it } from 'mocha';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import process from 'process';
+import readline from 'readline-sync';
+import sinon from 'sinon';
+import { EDITOR_CONFIG_FILE } from '../modules/constant.js';
+
+/* test */
+import {
   abortSetup, createEditorConfig, handleCmdArgsInput, handleEditorPathInput,
   handleSetupCallback, runSetup, setupOpts
-} = require('../modules/setup');
-const {
-  Setup, createDirectory, createFile, isFile, removeDir
-} = require('web-ext-native-msg');
-const { assert } = require('chai');
-const { afterEach, beforeEach, describe, it } = require('mocha');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const process = require('process');
-const readline = require('readline-sync');
-const sinon = require('sinon');
+} from '../modules/setup.js';
 
 /* constant */
-const { EDITOR_CONFIG_FILE } = require('../modules/constant');
 const CHAR = 'utf8';
 const DIR_TMP = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
                 os.tmpdir();
