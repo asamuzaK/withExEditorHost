@@ -376,23 +376,38 @@ describe('fetchLatestHostVersion', () => {
     nock.cleanAll();
   });
 
-  it('should throw', async () => {
+  it('should get null', async () => {
     const hostName = process.env.npm_package_name;
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(404);
-    await fetchLatestHostVersion().catch(e => {
-      assert.instanceOf(e, Error);
-      assert.strictEqual(e.message, 'Network response was not ok. status: 404');
-    });
+    const res = await fetchLatestHostVersion();
+    assert.isNull(res);
   });
 
-  it('should throw', async () => {
+  it('should get null', async () => {
     process.env.HTTPS_PROXY = 'http://localhost:9000';
     const hostName = process.env.npm_package_name;
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(404);
-    await fetchLatestHostVersion().catch(e => {
-      assert.instanceOf(e, Error);
-      assert.strictEqual(e.message, 'Network response was not ok. status: 404');
-    });
+    const res = await fetchLatestHostVersion();
+    delete process.env.HTTPS_PROXY;
+    assert.isNull(res);
+  });
+
+  it('should get null', async () => {
+    const hostName = process.env.npm_package_name;
+    nock('https://registry.npmjs.org').get(`/${hostName}`)
+      .replyWithError('Error');
+    const res = await fetchLatestHostVersion();
+    assert.isNull(res);
+  });
+
+  it('should get null', async () => {
+    process.env.HTTPS_PROXY = 'http://localhost:9000';
+    const hostName = process.env.npm_package_name;
+    nock('https://registry.npmjs.org').get(`/${hostName}`)
+      .replyWithError('Error');
+    const res = await fetchLatestHostVersion();
+    delete process.env.HTTPS_PROXY;
+    assert.isNull(res);
   });
 
   it('should get result', async () => {

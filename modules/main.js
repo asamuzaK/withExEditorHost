@@ -175,23 +175,26 @@ export const fetchLatestHostVersion = async () => {
   const url = `https://registry.npmjs.org/${HOST}`;
   const proxy = process.env.HTTPS_PROXY || process.env.https_proxy ||
                 process.env.HTTP_PROXY || process.env.http_proxy;
-  let res;
-  if (proxy) {
-    res = await fetch(url, {
-      agent: new HttpsProxyAgent(proxy)
-    });
-  } else {
-    res = await fetch(url);
+  let latestVersion;
+  try {
+    let res;
+    if (proxy) {
+      res = await fetch(url, {
+        agent: new HttpsProxyAgent(proxy)
+      });
+    } else {
+      res = await fetch(url);
+    }
+    if (res.ok) {
+      const data = await res.json();
+      const { latest } = data['dist-tags'];
+      const { version } = data.versions[latest];
+      latestVersion = version;
+    }
+  } catch (e) {
+    // fail through
   }
-  const { ok, status } = res;
-  if (!ok) {
-    const msg = `Network response was not ok. status: ${status}`;
-    throw new Error(msg);
-  }
-  const data = await res.json();
-  const { latest } = data['dist-tags'];
-  const { version } = data.versions[latest];
-  return version;
+  return latestVersion || null;
 };
 
 /**
