@@ -10,12 +10,12 @@ import {
   removeDir, removeDirectory, readFile
 } from 'web-ext-native-msg';
 import { URL } from 'url';
+import HttpsProxyAgent from 'https-proxy-agent';
 import { compareSemVer, isValidSemVer } from 'semver-parser';
 import { getType, quoteArg, isObjectNotEmpty, isString } from './common.js';
 import { parsePackageJson } from './packageJson.js';
 import { watch } from 'fs';
 import fetch from 'node-fetch';
-import fetchProxy from 'node-fetch-with-proxy';
 import os from 'os';
 import path from 'path';
 import process from 'process';
@@ -172,10 +172,17 @@ export const exportFileData = async (obj = {}) => {
  * @returns {?string} - latest host version string
  */
 export const fetchLatestHostVersion = async () => {
+  const url = `https://registry.npmjs.org/${HOST}`;
   const proxy = process.env.HTTPS_PROXY || process.env.https_proxy ||
                 process.env.HTTP_PROXY || process.env.http_proxy;
-  const func = proxy ? fetchProxy : fetch;
-  const res = await func(`https://registry.npmjs.org/${HOST}`);
+  let res;
+  if (proxy) {
+    res = await fetch(url, {
+      agent: new HttpsProxyAgent(proxy)
+    });
+  } else {
+    res = await fetch(url);
+  }
   const { ok, status } = res;
   if (!ok) {
     const msg = `Network response was not ok. status: ${status}`;

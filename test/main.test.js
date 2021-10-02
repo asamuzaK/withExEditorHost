@@ -385,6 +385,16 @@ describe('fetchLatestHostVersion', () => {
     });
   });
 
+  it('should throw', async () => {
+    process.env.HTTPS_PROXY = 'http://localhost:9000';
+    const hostName = process.env.npm_package_name;
+    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(404);
+    await fetchLatestHostVersion().catch(e => {
+      assert.instanceOf(e, Error);
+      assert.strictEqual(e.message, 'Network response was not ok. status: 404');
+    });
+  });
+
   it('should get result', async () => {
     const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;

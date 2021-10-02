@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "commander": "^8.2.0",
+    "https-proxy-agent": "^5.0.0",
     "node-fetch": "^3.0.0",
-    "node-fetch-with-proxy": "^0.1.6",
     "readline-sync": "^1.4.10",
     "semver-parser": "^3.1.1",
     "web-ext-native-msg": "^4.10.2"
