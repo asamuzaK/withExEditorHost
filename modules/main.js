@@ -175,7 +175,7 @@ export const fetchLatestHostVersion = async () => {
   const url = `https://registry.npmjs.org/${HOST}`;
   const proxy = process.env.HTTPS_PROXY || process.env.https_proxy ||
                 process.env.HTTP_PROXY || process.env.http_proxy;
-  let latestVersion;
+  let version;
   try {
     let res;
     if (proxy) {
@@ -188,13 +188,12 @@ export const fetchLatestHostVersion = async () => {
     if (res.ok) {
       const data = await res.json();
       const { latest } = data['dist-tags'];
-      const { version } = data.versions[latest];
-      latestVersion = version;
+      version = latest;
     }
   } catch (e) {
     // fail through
   }
-  return latestVersion || null;
+  return version || null;
 };
 
 /**

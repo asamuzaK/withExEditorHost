@@ -420,11 +420,6 @@ describe('fetchLatestHostVersion', () => {
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
       'dist-tags': {
         latest: version
-      },
-      versions: {
-        [version]: {
-          version
-        }
       }
     });
     const res = await fetchLatestHostVersion();
@@ -442,11 +437,6 @@ describe('fetchLatestHostVersion', () => {
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
       'dist-tags': {
         latest: version
-      },
-      versions: {
-        [version]: {
-          version
-        }
       }
     });
     const res = await fetchLatestHostVersion();
@@ -465,11 +455,6 @@ describe('fetchLatestHostVersion', () => {
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
       'dist-tags': {
         latest: version
-      },
-      versions: {
-        [version]: {
-          version
-        }
       }
     });
     const res = await fetchLatestHostVersion();
@@ -488,11 +473,6 @@ describe('fetchLatestHostVersion', () => {
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
       'dist-tags': {
         latest: version
-      },
-      versions: {
-        [version]: {
-          version
-        }
       }
     });
     const res = await fetchLatestHostVersion();
@@ -511,11 +491,6 @@ describe('fetchLatestHostVersion', () => {
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
       'dist-tags': {
         latest: version
-      },
-      versions: {
-        [version]: {
-          version
-        }
       }
     });
     const res = await fetchLatestHostVersion();
@@ -555,11 +530,6 @@ describe('exportHostVersion', () => {
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
       'dist-tags': {
         latest: version
-      },
-      versions: {
-        [version]: {
-          version
-        }
       }
     });
     const res = await exportHostVersion(minVer);
@@ -589,11 +559,6 @@ describe('exportHostVersion', () => {
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
       'dist-tags': {
         latest: version
-      },
-      versions: {
-        [version]: {
-          version
-        }
       }
     });
     const res = await exportHostVersion(minVer);
@@ -623,11 +588,6 @@ describe('exportHostVersion', () => {
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
       'dist-tags': {
         latest: version
-      },
-      versions: {
-        [version]: {
-          version
-        }
       }
     });
     const res = await exportHostVersion(minVer);
@@ -654,11 +614,6 @@ describe('exportHostVersion', () => {
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
       'dist-tags': {
         latest: version
-      },
-      versions: {
-        [version]: {
-          version
-        }
       }
     });
     const res = await exportHostVersion(minVer);
@@ -688,11 +643,6 @@ describe('exportHostVersion', () => {
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
       'dist-tags': {
         latest: version
-      },
-      versions: {
-        [version]: {
-          version
-        }
       }
     });
     const res = await exportHostVersion(minVer);
@@ -722,11 +672,6 @@ describe('exportHostVersion', () => {
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
       'dist-tags': {
         latest: version
-      },
-      versions: {
-        [version]: {
-          version
-        }
       }
     });
     const res = await exportHostVersion(minVer);
@@ -2420,11 +2365,6 @@ describe('handleMsg', () => {
     nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
       'dist-tags': {
         latest: version
-      },
-      versions: {
-        [version]: {
-          version
-        }
       }
     });
     const res = await handleMsg({
