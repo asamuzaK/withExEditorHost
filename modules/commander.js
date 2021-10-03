@@ -3,8 +3,8 @@
  */
 
 /* api */
-import { parsePackageJson } from './packageJson.js';
 import { runSetup } from './setup.js';
+import { version as hostVersion } from './version.js';
 import commander from 'commander';
 import {
   CMD_BROWSER, CMD_BROWSER_DESC, CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC,
@@ -22,9 +22,8 @@ import {
 export const parseCommand = args => {
   const reg = /^(?:(?:--)?help|-[h|v]|--version|s(?:etup)?)$/;
   if (Array.isArray(args) && args.some(arg => reg.test(arg))) {
-    const { version } = parsePackageJson();
     commander.exitOverride();
-    commander.version(version, '-v, --version');
+    commander.version(hostVersion, '-v, --version');
     commander.command(CMD_SETUP).alias(CMD_SETUP_ALIAS)
       .description(CMD_SETUP_DESC)
       .option(CMD_BROWSER, CMD_BROWSER_DESC)

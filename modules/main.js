@@ -9,12 +9,11 @@ import {
   getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
   removeDir, removeDirectory, readFile
 } from 'web-ext-native-msg';
-import { URL } from 'url';
 import HttpsProxyAgent from 'https-proxy-agent';
 import { compareSemVer, isValidSemVer } from 'semver-parser';
 import { getType, quoteArg, isObjectNotEmpty, isString } from './common.js';
-import { parsePackageJson } from './packageJson.js';
 import { watch } from 'fs';
+import { version as hostVersion } from './version.js';
 import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
@@ -209,7 +208,6 @@ export const exportHostVersion = async minVer => {
   if (!isValidSemVer(minVer)) {
     throw new Error(`${minVer} is not valid SemVer.`);
   }
-  const { version: hostVersion } = await parsePackageJson();
   const result = await compareSemVer(hostVersion, minVer);
   const latest = await fetchLatestHostVersion();
   let isLatest;
