@@ -13,7 +13,7 @@
   "type": "module",
   "scripts": {
     "bundle:js": "esbuild ./index.js --bundle --platform=node --outdir=./bundle --minify",
-    "bundle:bin": "boxednode -n lts -s ./bundle/index.js",
+    "bundle:bin": "boxednode -n v16 -s ./bundle/index.js",
     "genversion": "genversion --es6 --semi ./modules/version.js",
     "lint": "eslint --fix .",
     "setup": "node ./index.js setup",
