@@ -57,15 +57,12 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: install dependencies
         run: npm install
-      - name: run tests
-        run: |
-          npm run lint
-          npm test
+      - name: prepare build
+        run: npm run prebuild
       - name: make directories
         run: mkdir -p ./{bundle,${{ matrix.pkg-dir }}}
       - name: build binary
         run: |
-          npm run genversion
           npm run bundle:js
           npm run bundle:bin -- -t ${{ matrix.bin-file }} ${{ matrix.make-args }}
       - name: verify binary

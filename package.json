@@ -16,6 +16,7 @@
     "bundle:bin": "boxednode -n lts -s ./bundle/index.js",
     "genversion": "genversion --es6 --semi ./modules/version.js",
     "lint": "eslint --fix .",
+    "prebuild": "npm run genversion && npm run lint && npm run test",
     "setup": "node ./index.js setup",
     "start": "node ./index.js",
     "test": "c8 --reporter=text mocha test/*.test.js --exit",
