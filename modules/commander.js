@@ -33,7 +33,11 @@ export const parseCommand = args => {
       .option(CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC)
       .option(CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC)
       .action(runSetup);
-    commander.parse(args);
+    try {
+      commander.parse(args);
+    } catch (e) {
+      // fail through
+    }
   }
 };
 
