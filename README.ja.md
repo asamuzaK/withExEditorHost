@@ -179,64 +179,6 @@ function extractTarGz {
 }
 main
 
-
-#!/usr/bin/env bash
-
-function main {
-  # Install the host for withExEditor that allows editing text in the browser using an editor like Vim
-  # After executing this script, reload the browser plugin
-
-  # See https://github.com/asamuzaK/withExEditorHost/releases for supported operating systems
-  os="linux-x86_64"
-
-  # Possible values: firefox, waterfoxcurrent, chrome, chromebeta, chromium, brave, vivaldi
-  browser="firefox"
-
-  # Allowed tags: "latest" and "next" (pre-release)
-  versionTag="latest"
-  # The host's version number
-  version=$(curl --silent https://registry.npmjs.org/withexeditorhost | jq --raw-output ".\"dist-tags\".\"${versionTag}\"")
-
-  withExEditorHostRemoteFile="https://github.com/asamuzaK/withExEditorHost/releases/download/v${version}/${os}.tar.gz"
-  withExEditorHostLocalArchive="/tmp/withExEditorHost.tar.gz"
-  withExEditorHostDir="${HOME}/.local/bin/withExEditorHost"
-
-  echo "Downloading withExEditorHost ${version} for ${browser}"
-
-  # Create the dir for the host's index file, download the archive and extract it
-  mkdir --parents "${withExEditorHostDir}"
-  # If the URL returns 404, make cURL fail. This prevents the archive extractor from trying to extract an HTML error page
-  if curl --fail -L -o "${withExEditorHostLocalArchive}" "${withExEditorHostRemoteFile}"\
-  && extractTarGz "${withExEditorHostLocalArchive}" "${withExEditorHostDir}"; then
-
-    indexFile="${withExEditorHostDir}/index"
-    hostScript="${HOME}/.config/withexeditorhost/config/${browser}/withexeditorhost.sh"
-
-    # The browser plugin will use this shell script to call the host's index file
-    printf "#!/usr/bin/env bash\n%s\n" "${indexFile}" > "${hostScript}"
-
-    chmod +x "${indexFile}" "${hostScript}"
-  fi
-}
-
-# Extracts the files of a tar.gz archive (first parameter) to a destination directory (second parameter).
-# Uses either bsdtar (from libarchive) or 7z.
-function extractTarGz {
-
-  if hash bsdtar 2>/dev/null; then
-    echo "Extracting with bsdtar to $2"
-    bsdtar -xf "$1" --directory "$2"
-
-  elif hash 7z 2>/dev/null; then
-    echo "Extracting with 7z to $2"
-    7z x "$1" -o"$2"
-
-  else
-    echo "No program found to extract a tar.gz archive. Please install bsdtar or 7z."
-  fi
-}
-main
-
 ```
 
 ***
