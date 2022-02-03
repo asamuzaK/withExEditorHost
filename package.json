@@ -23,7 +23,7 @@
     "zip:jszip": "jszip"
   },
   "dependencies": {
-    "commander": "^8.3.0",
+    "commander": "^9.0.0",
     "https-proxy-agent": "^5.0.0",
     "node-fetch": "^3.2.0",
     "readline-sync": "^1.4.10",
@@ -33,12 +33,12 @@
   "devDependencies": {
     "boxednode": "^1.10.5",
     "c8": "^7.11.0",
-    "chai": "^4.3.4",
-    "esbuild": "^0.14.13",
+    "chai": "^4.3.6",
+    "esbuild": "^0.14.18",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jsdoc": "^37.6.3",
+    "eslint-plugin-jsdoc": "^37.7.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
     "genversion": "^3.0.2",

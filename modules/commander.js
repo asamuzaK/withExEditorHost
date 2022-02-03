@@ -5,7 +5,7 @@
 /* api */
 import { runSetup } from './setup.js';
 import { version as hostVersion } from './version.js';
-import commander from 'commander';
+import { program as commander } from 'commander';
 import {
   CMD_BROWSER, CMD_BROWSER_DESC, CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC,
   CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC, CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC,
