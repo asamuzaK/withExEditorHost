@@ -254,7 +254,7 @@ For other options, see help
 ### Upgrade
 
 Before upgrading the host, disable withExEditor installed in the browser.
-Run update command.
+Run install command.
 
 ```
 > npm i -g withexeditorhost
