@@ -190,8 +190,10 @@ main
 ホストを設定するときは、ブラウザにインストールされているwithExEditorを無効化してください。
 
 ホストは[withexeditorhost - npm](https://www.npmjs.com/package/withexeditorhost)から入手できます。
-ホストをグローバルにインストールした後に、インストール先に移動してください（例：`C:\Users\XXX\AppData\Roaming\npm\node_modules\withexeditorhost`）。
-なお、npmのグローバルインストールパスは`npm root -g`で取得できます。
+ホストをグローバルにインストールした後に、インストール先に移動してください。
+Windowsでのインストール先は基本的に`C:\Users\XXX\AppData\Roaming\npm\node_modules\withexeditorhost`で、macOSとLinuxでは`/usr/local/lib/node_modules/withexeditorhost`となっているはずです。
+もし見つからない場合、npmのグローバルインストールパスは`npm root -g`で取得できます。
+参照： [Where does npm install the packages?](https://nodejs.dev/learn/where-does-npm-install-the-packages)
 
 ```
 > npm i -g withexeditorhost

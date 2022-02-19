@@ -188,8 +188,11 @@ NOTE: [Node.js](https://nodejs.org/en/ "Node.js") is required. Use maintenance L
 
 When setting up the host, disable withExEditor installed in the browser.
 
-Get host from [withexeditorhost - npm](https://www.npmjs.com/package/withexeditorhost) and install globally, move to installed path (for example, `C:\Users\XXX\AppData\Roaming\npm\node_modules\withexeditorhost`).
-You can get the global installation path of npm with `npm root -g`.
+Get host from [withexeditorhost - npm](https://www.npmjs.com/package/withexeditorhost) and install globally, move to installed path.
+The installation path on Windows is basically `C:\Users\XXX\AppData\Roaming\npm\node_modules\withexeditorhost`, and on macOS and Linux it should be `/usr/local/lib/node_modules/withexeditorhost`.
+If you can't find it, you can get the global installation path for npm with `npm root -g`.
+Ref: [Where does npm install the packages?] (https://nodejs.dev/learn/where-does-npm-install-the-packages)
+
 ```
 > npm i -g withexeditorhost
 > cd path/to/npm/node_modules/withexeditorhost
