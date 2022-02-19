@@ -226,7 +226,7 @@ In the setup script you can specify some options.
 To specify the browser, please use `-b` or `--browser` option.
 
 ```
-> node index setup --browser=firefox
+> npm run setup -- --browser=firefox
 ```
 
 #### -c --config-path
@@ -240,7 +240,7 @@ If you want to save configuration files in different location, use `-c` or `--co
 Quote path if it contains spaces or backslashes.
 
 ```
-> node index setup --config-path="C:\Users\XXX\path\to\another\location"
+> npm run setup -- --config-path="C:\Users\XXX\path\to\another\location"
 ```
 
 #### Other options
@@ -248,7 +248,7 @@ Quote path if it contains spaces or backslashes.
 For other options, see help
 
 ```
-> node index setup --help
+> npm run setup -- --help
 ```
 
 ### Upgrade

@@ -229,7 +229,7 @@ main
 ブラウザをあらかじめ指定する場合には、`-b`または`--browser`オプションで指定してください。
 
 ```
-> node index setup --browser=firefox
+> npm run setup -- --browser=firefox
 ```
 
 #### -c --config-path
@@ -243,7 +243,7 @@ main
 パスに空白やバックスラッシュが含まれる場合は引用符で括ってください。
 
 ```
-> node index setup --config-path="C:\Users\XXX\path\to\another\location"
+> npm run setup -- --config-path="C:\Users\XXX\path\to\another\location"
 ```
 
 #### その他
@@ -251,7 +251,7 @@ main
 その他のオプションについては、ヘルプで確認してください
 
 ```
-> node index setup --help
+> npm run setup -- --help
 ```
 
 ### アップグレード
