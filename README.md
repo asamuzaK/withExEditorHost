@@ -257,7 +257,7 @@ Before upgrading the host, disable withExEditor installed in the browser.
 Run update command.
 
 ```
-> npm up -g
+> npm i -g withexeditorhost
 ```
 
 There is no need to run the setup script again after the upgrade.
