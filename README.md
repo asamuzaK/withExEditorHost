@@ -29,8 +29,7 @@ The browser interacts with the host via messages, and the editor is executed by 
 |Chrome Beta     |   ✓ *2|   ✓   |   ✓   |
 |Chromium        |       |   ✓   |   ✓   |
 |Brave           |   ✓ *2|   ✓   |   ✓   |
-|CentBrowser     |   ✓ *2|       |       |
-|Edge            |   ✓   |       |   ✓   |
+|Edge            |   ✓   |   ✓   |   ✓   |
 |Opera           |   ✓ *2|       |   ✓ *2|
 |Vivaldi         |   ✓ *2|   ✓   |   ✓   |
 

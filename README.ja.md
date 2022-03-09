@@ -29,8 +29,7 @@
 |Chrome Beta     |   ✓ *2|   ✓   |   ✓   |
 |Chromium        |       |   ✓   |   ✓   |
 |Brave           |   ✓ *2|   ✓   |   ✓   |
-|CentBrowser     |   ✓ *2|       |       |
-|Edge            |   ✓   |       |   ✓   |
+|Edge            |   ✓   |   ✓   |   ✓   |
 |Opera           |   ✓ *2|       |   ✓ *2|
 |Vivaldi         |   ✓ *2|   ✓   |   ✓   |
 
