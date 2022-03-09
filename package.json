@@ -25,25 +25,25 @@
   "dependencies": {
     "commander": "^9.0.0",
     "https-proxy-agent": "^5.0.0",
-    "node-fetch": "^3.2.0",
+    "node-fetch": "^3.2.2",
     "readline-sync": "^1.4.10",
     "semver-parser": "^4.0.0",
-    "web-ext-native-msg": "^5.2.1"
+    "web-ext-native-msg": "^5.3.0"
   },
   "devDependencies": {
-    "boxednode": "^1.10.5",
+    "boxednode": "^1.10.7",
     "c8": "^7.11.0",
     "chai": "^4.3.6",
-    "esbuild": "^0.14.23",
+    "esbuild": "^0.14.25",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jsdoc": "^37.9.4",
+    "eslint-plugin-jsdoc": "^37.9.7",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
     "genversion": "^3.0.2",
     "jszip-cli": "^1.4.24",
-    "mocha": "^9.2.0",
+    "mocha": "^9.2.1",
     "nock": "^13.2.4",
     "sinon": "^13.0.1"
   },
