@@ -55,6 +55,9 @@ jobs:
         with:
           check-latest: true
           node-version: ${{ matrix.node-version }}
+      - name: setup developer command prompt
+        if: ${{ matrix.os == 'windows-latest' }}
+        uses: ilammy/msvc-dev-cmd@v1
       - name: install dependencies
         run: npm install
       - name: prepare build
