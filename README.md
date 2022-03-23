@@ -25,8 +25,8 @@ The browser interacts with the host via messages, and the editor is executed by 
 |Waterfox Current|   ✓   |   ✓   |   ✓   |
 |LibreWolf       |   ✓ *1|   ✓   |       |
 |Chrome          |   ✓   |   ✓   |   ✓   |
-|Chrome Canary   |   ✓ *2|       |   ✓   |
 |Chrome Beta     |   ✓ *2|   ✓   |   ✓   |
+|Chrome Canary   |   ✓ *2|       |   ✓   |
 |Chromium        |       |   ✓   |   ✓   |
 |Brave           |   ✓ *2|   ✓   |   ✓   |
 |Edge            |   ✓   |   ✓   |   ✓   |
