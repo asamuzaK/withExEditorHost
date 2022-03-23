@@ -1746,6 +1746,7 @@ describe('createTmpFile', () => {
       const obj = {
         data: testData
       };
+      // eslint-disable-next-line no-await-in-loop
       const res = await createTmpFile(obj);
       assert.deepEqual(res, {
         data: testData,
