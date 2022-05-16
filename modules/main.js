@@ -356,10 +356,11 @@ export const deleteKeyFromFileMap = async (prop, key) => {
  */
 export const unwatchFile = async (key, fsWatcher) => {
   if (isString(key)) {
+    // TODO: switch to ??= operator when node v14 reaches EOL
     if (!fsWatcher) {
       fsWatcher = fileMap[FILE_WATCH].get(key);
     }
-    fsWatcher && fsWatcher.close();
+    fsWatcher?.close();
     await deleteKeyFromFileMap(FILE_WATCH, key);
   }
 };
