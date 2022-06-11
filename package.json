@@ -23,29 +23,29 @@
     "zip:jszip": "jszip"
   },
   "dependencies": {
-    "commander": "^9.2.0",
+    "commander": "^9.3.0",
     "https-proxy-agent": "^5.0.1",
-    "node-fetch": "^3.2.4",
+    "node-fetch": "^3.2.6",
     "readline-sync": "^1.4.10",
     "semver-parser": "^4.0.1",
     "web-ext-native-msg": "^6.0.1"
   },
   "devDependencies": {
     "boxednode": "^1.10.7",
-    "c8": "^7.11.2",
+    "c8": "^7.11.3",
     "chai": "^4.3.6",
-    "esbuild": "^0.14.39",
-    "eslint": "^8.15.0",
+    "esbuild": "^0.14.43",
+    "eslint": "^8.17.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsdoc": "^39.2.9",
-    "eslint-plugin-n": "^15.2.0",
+    "eslint-plugin-jsdoc": "^39.3.2",
+    "eslint-plugin-n": "^15.2.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
     "genversion": "^3.1.1",
     "jszip-cli": "^1.4.24",
     "mocha": "^10.0.0",
-    "nock": "^13.2.4",
+    "nock": "^13.2.6",
     "sinon": "^14.0.0"
   },
   "version": "7.0.6"
