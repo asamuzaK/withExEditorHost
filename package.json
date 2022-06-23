@@ -12,15 +12,15 @@
   "main": "./index.js",
   "type": "module",
   "scripts": {
-    "bundle:js": "esbuild --platform=node --outdir=./bundle --bundle --minify ./index.js",
-    "bundle:bin": "boxednode --node-version=lts --source=./bundle/index.js",
+    "bundle-js": "esbuild --platform=node --outdir=./bundle --bundle --minify ./index.js",
+    "bundle-bin": "boxednode --node-version=lts --source=./bundle/index.js",
     "genversion": "genversion --es6 --semi ./modules/version.js",
     "lint": "eslint --fix .",
     "prebuild": "npm run genversion && npm run lint && npm run test",
     "setup": "node ./index.js setup",
     "start": "node ./index.js",
     "test": "c8 --reporter=text mocha --exit test/*.test.js",
-    "zip:jszip": "jszip"
+    "zip-jszip": "jszip"
   },
   "dependencies": {
     "commander": "^9.3.0",
@@ -34,18 +34,18 @@
     "boxednode": "^1.10.7",
     "c8": "^7.11.3",
     "chai": "^4.3.6",
-    "esbuild": "^0.14.43",
-    "eslint": "^8.17.0",
+    "esbuild": "^0.14.47",
+    "eslint": "^8.18.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsdoc": "^39.3.2",
-    "eslint-plugin-n": "^15.2.2",
+    "eslint-plugin-jsdoc": "^39.3.3",
+    "eslint-plugin-n": "^15.2.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
     "genversion": "^3.1.1",
     "jszip-cli": "^1.4.24",
     "mocha": "^10.0.0",
-    "nock": "^13.2.6",
+    "nock": "^13.2.7",
     "sinon": "^14.0.0"
   },
   "version": "7.0.6"
