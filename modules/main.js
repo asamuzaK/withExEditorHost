@@ -311,7 +311,9 @@ export const execChildProcess = async (file, app = editorConfig.editorPath) => {
     let i = 0;
     while (i < l) {
       const arg = args[i];
-      reg.test(arg) && args.splice(i, 1, arg.replace(reg, filePath));
+      if (reg.test(arg)) {
+        args.splice(i, 1, arg.replace(reg, filePath));
+      }
       i++;
     }
     proc = await new ChildProcess(app, args, opt).spawn();
@@ -531,8 +533,9 @@ export const createTmpFile = async (obj = {}) => {
       filePath = dirPath && fileName && extType &&
         await createFile(path.join(dirPath, `${fileName}${extType}`), value,
           { encoding: CHAR, flag: 'w', mode: PERM_FILE });
-      filePath && dir && fileMap[dir] &&
+      if (filePath && dir && fileMap[dir]) {
         fileMap[dir].set(fileId, { data, filePath });
+      }
       if (!incognito && mode === MODE_EDIT && syncAuto) {
         const opt = {
           persistent: true,
@@ -540,13 +543,14 @@ export const createTmpFile = async (obj = {}) => {
           encoding: CHAR
         };
         fileMap[FILE_WATCH].set(filePath, watch(filePath, opt, watchTmpFile));
-      } else {
-        fileMap[FILE_WATCH].has(filePath) && await unwatchFile(filePath);
+      } else if (fileMap[FILE_WATCH].has(filePath)) {
+        await unwatchFile(filePath);
       }
     }
   }
   return {
-    data, filePath
+    data,
+    filePath
   };
 };
 
@@ -711,7 +715,9 @@ export const readStdin = chunk => {
   const arr = input.decode(chunk);
   if (Array.isArray(arr) && arr.length) {
     for (const msg of arr) {
-      msg && func.push(handleMsg(msg));
+      if (msg) {
+        func.push(handleMsg(msg));
+      }
     }
   }
   return func.length ? Promise.all(func).catch(handleReject) : null;
@@ -729,7 +735,9 @@ export const handleExit = code => {
   }
   if (code) {
     const msg = new Output().encode(hostMsg(`exit ${code}`, 'exit'));
-    msg && process.stdout.write(msg);
+    if (msg) {
+      process.stdout.write(msg);
+    }
   }
 };
 

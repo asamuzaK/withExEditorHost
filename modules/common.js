@@ -34,7 +34,9 @@ export const logErr = e => {
  * @returns {boolean} - false
  */
 export const logWarn = msg => {
-  msg && console.warn(msg);
+  if (msg) {
+    console.warn(msg);
+  }
   return false;
 };
 
@@ -45,7 +47,9 @@ export const logWarn = msg => {
  * @returns {*} - message
  */
 export const logMsg = msg => {
-  msg && console.log(msg);
+  if (msg) {
+    console.log(msg);
+  }
   return msg;
 };
 
