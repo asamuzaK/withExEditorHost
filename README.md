@@ -122,6 +122,9 @@ Executing the following script (requires [cURL](https://curl.haxx.se/) and [jq](
 ```
 #!/usr/bin/env bash
 
+# Make the script fail immediately when a command fails and don't allow unset variables
+set -euo pipefail
+
 function main {
   # Install the host for withExEditor that allows editing text in the browser using an editor like Vim
   # After executing this script, reload the browser plugin
@@ -160,23 +163,26 @@ function main {
 }
 
 # Extracts the files of a tar.gz archive (first parameter) to a destination directory (second parameter).
-# Uses either bsdtar (from libarchive) or 7z.
+# Uses either bsdtar (from libarchive), tar, or 7z.
 function extractTarGz {
 
   if hash bsdtar 2>/dev/null; then
     echo "Extracting with bsdtar to $2"
     bsdtar -xf "$1" --directory "$2"
 
+  elif hash tar 2>/dev/null; then
+    echo "Extracting with tar to $2"
+    tar -zxf "$1" --directory "$2"
+
   elif hash 7z 2>/dev/null; then
     echo "Extracting with 7z to $2"
     7z x "$1" -o"$2"
 
   else
-    echo "No program found to extract a tar.gz archive. Please install bsdtar or 7z."
+    echo "No program found to extract a tar.gz archive. Please install bsdtar, tar, or 7z."
   fi
 }
 main
-
 ```
 
 ***
