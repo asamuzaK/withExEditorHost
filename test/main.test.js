@@ -42,7 +42,7 @@ const PERM_APP = 0o755;
 const PERM_FILE = 0o644;
 const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
                os.tmpdir();
-const TMPDIR_APP = path.resolve(path.join(TMPDIR, LABEL, APP));
+const TMPDIR_APP = path.resolve(TMPDIR, LABEL, APP);
 const TMPDIR_FILES = path.join(TMPDIR_APP, TMP_FILES);
 const TMPDIR_FILES_PB = path.join(TMPDIR_APP, TMP_FILES_PB);
 
@@ -184,11 +184,10 @@ describe('exportEditorConfig', () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
     const stubErrWrite =
       sinon.stub(process.stderr, 'write').callsFake(buf => buf);
-    const editorConfigPath =
-      path.resolve(path.join('test', 'file', 'editorconfig.json'));
+    const editorConfigPath = path.resolve('test', 'file', 'editorconfig.json');
     const timestamp = getFileTimestamp(editorConfigPath);
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -221,11 +220,10 @@ describe('exportEditorConfig', () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
     const stubErrWrite =
       sinon.stub(process.stderr, 'write').callsFake(buf => buf);
-    const editorConfigPath =
-      path.resolve(path.join('test', 'file', 'editorconfig.json'));
+    const editorConfigPath = path.resolve('test', 'file', 'editorconfig.json');
     const timestamp = getFileTimestamp(editorConfigPath);
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -258,11 +256,10 @@ describe('exportEditorConfig', () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
     const stubErrWrite =
       sinon.stub(process.stderr, 'write').callsFake(buf => buf);
-    const editorConfigPath =
-      path.resolve(path.join('test', 'file', 'editorconfig.json'));
+    const editorConfigPath = path.resolve('test', 'file', 'editorconfig.json');
     const timestamp = getFileTimestamp(editorConfigPath);
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -295,11 +292,10 @@ describe('exportEditorConfig', () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
     const stubErrWrite =
       sinon.stub(process.stderr, 'write').callsFake(buf => buf);
-    const editorConfigPath =
-      path.resolve(path.join('test', 'file', 'editorconfig.json'));
+    const editorConfigPath = path.resolve('test', 'file', 'editorconfig.json');
     const timestamp = getFileTimestamp(editorConfigPath);
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -803,7 +799,7 @@ describe('execChildProcess', () => {
   });
 
   it('should throw', async () => {
-    const filePath = path.resolve(path.join('test', 'file', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'test.txt');
     await execChildProcess(filePath).catch(e => {
       assert.instanceOf(e, Error);
       assert.strictEqual(e.message, 'Application is not executable.');
@@ -821,9 +817,9 @@ describe('execChildProcess', () => {
         on: a => a
       }
     });
-    const filePath = path.resolve(path.join('test', 'file', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'test.txt');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -850,10 +846,9 @@ describe('execChildProcess', () => {
         on: a => a
       }
     });
-    const filePath =
-      path.resolve(path.join('test', 'file', 'sub dir', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'sub dir', 'test.txt');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -880,9 +875,9 @@ describe('execChildProcess', () => {
         on: a => a
       }
     });
-    const filePath = path.resolve(path.join('test', 'file', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'test.txt');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -910,9 +905,9 @@ describe('execChildProcess', () => {
         on: a => a
       }
     });
-    const filePath = path.resolve(path.join('test', 'file', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'test.txt');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -940,9 +935,9 @@ describe('execChildProcess', () => {
         on: a => a
       }
     });
-    const filePath = path.resolve(path.join('test', 'file', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'test.txt');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -970,9 +965,9 @@ describe('execChildProcess', () => {
         on: a => a
       }
     });
-    const filePath = path.resolve(path.join('test', 'file', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'test.txt');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -1001,10 +996,9 @@ describe('execChildProcess', () => {
         on: a => a
       }
     });
-    const filePath =
-      path.resolve(path.join('test', 'file', 'sub dir', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'sub dir', 'test.txt');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -1033,9 +1027,9 @@ describe('execChildProcess', () => {
         on: a => a
       }
     });
-    const filePath = path.resolve(path.join('test', 'file', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'test.txt');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -1064,10 +1058,9 @@ describe('execChildProcess', () => {
         on: a => a
       }
     });
-    const filePath =
-      path.resolve(path.join('test', 'file', 'sub dir', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'sub dir', 'test.txt');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -1370,7 +1363,7 @@ describe('getTmpFileFromFileData', () => {
       tabId: 'tabId',
       windowId: 'windowId'
     };
-    const filePath = path.resolve(path.join('test', 'file', 'foo.txt'));
+    const filePath = path.resolve('test', 'file', 'foo.txt');
     fileMap[TMP_FILES].set('windowId_tabId_host_foo', { filePath });
     const msg = new Output().encode({
       [TMP_FILE_DATA_REMOVE]: {
@@ -1408,7 +1401,7 @@ describe('getTmpFileFromFileData', () => {
       tabId: 'tabId',
       windowId: 'windowId'
     };
-    const filePath = path.resolve(path.join('test', 'file', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'test.txt');
     const fileTimestamp = await getFileTimestamp(filePath);
     fileMap[TMP_FILES].set('windowId_tabId_host_foo', { filePath });
     const msg = new Output().encode({
@@ -1441,7 +1434,7 @@ describe('getTmpFileFromFileData', () => {
       tabId: 'tabId',
       windowId: 'windowId'
     };
-    const filePath = path.resolve(path.join('test', 'file', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'test.txt');
     const fileTimestamp = await getFileTimestamp(filePath);
     fileMap[TMP_FILES_PB].set('windowId_tabId_host_foo', { filePath });
     const msg = new Output().encode({
@@ -2013,7 +2006,7 @@ describe('getEditorConfig', () => {
 
   it('should call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
-    const editorConfigPath = path.resolve(path.join('.', 'foo.json'));
+    const editorConfigPath = path.resolve('.', 'foo.json');
     const err = new Output().encode({
       withexeditorhost: {
         message: `No such file: ${editorConfigPath}`,
@@ -2032,8 +2025,7 @@ describe('getEditorConfig', () => {
   });
 
   it('should call function', async () => {
-    const editorConfigPath =
-      path.resolve(path.join('test', 'file', 'editorconfig.json'));
+    const editorConfigPath = path.resolve('test', 'file', 'editorconfig.json');
     const res = await getEditorConfig(editorConfigPath);
     assert.deepEqual(res, [null]);
   });
@@ -2082,11 +2074,11 @@ describe('viewLocalFile', () => {
         on: a => a
       }
     });
-    const filePath = path.resolve(path.join('test', 'file', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'test.txt');
     const filePathname = filePath.split(path.sep).join('/');
     const fileUrl = `file://${IS_WIN ? '/' : ''}${filePathname}`;
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -2112,11 +2104,11 @@ describe('viewLocalFile', () => {
         on: a => a
       }
     });
-    const filePath = path.resolve(path.join('test', 'file', 'foo.txt'));
+    const filePath = path.resolve('test', 'file', 'foo.txt');
     const filePathname = filePath.split(path.sep).join('/');
     const fileUrl = `file://${IS_WIN ? '/' : ''}${filePathname}`;
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -2163,9 +2155,9 @@ describe('handleCreatedTmpFile', () => {
         on: a => a
       }
     });
-    const filePath = path.resolve(path.join('test', 'file', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'test.txt');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -2325,11 +2317,11 @@ describe('handleMsg', () => {
         on: a => a
       }
     });
-    const filePath = path.resolve(path.join('test', 'file', 'test.txt'));
+    const filePath = path.resolve('test', 'file', 'test.txt');
     const filePathname = filePath.split(path.sep).join('/');
     const fileUrl = `file://${IS_WIN ? '/' : ''}${filePathname}`;
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve(path.join('test', 'file', app));
+    const editorPath = path.resolve('test', 'file', app);
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
@@ -2379,7 +2371,7 @@ describe('handleMsg', () => {
 
   it('should call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
-    const editorConfigPath = path.resolve(path.join('.', EDITOR_CONFIG_FILE));
+    const editorConfigPath = path.resolve('.', EDITOR_CONFIG_FILE);
     const err = new Output().encode({
       withexeditorhost: {
         message: `No such file: ${editorConfigPath}`,

@@ -35,7 +35,7 @@ const PERM_DIR = 0o700;
 const PERM_FILE = 0o600;
 const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
                os.tmpdir();
-const TMPDIR_APP = path.resolve(path.join(TMPDIR, LABEL, APP));
+const TMPDIR_APP = path.resolve(TMPDIR, LABEL, APP);
 const TMPDIR_FILES = path.join(TMPDIR_APP, TMP_FILES);
 const TMPDIR_FILES_PB = path.join(TMPDIR_APP, TMP_FILES_PB);
 
@@ -666,8 +666,7 @@ export const handleMsg = async msg => {
     for (const [key, value] of items) {
       switch (key) {
         case EDITOR_CONFIG_GET: {
-          const editorConfigPath =
-            path.resolve(path.join('.', EDITOR_CONFIG_FILE));
+          const editorConfigPath = path.resolve('.', EDITOR_CONFIG_FILE);
           func.push(getEditorConfig(editorConfigPath));
           break;
         }
