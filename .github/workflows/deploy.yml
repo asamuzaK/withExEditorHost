@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - node-version: 16.x
+          - node-version: 18.x
             os: ubuntu-latest
             asset-name: linux-x86_64.tar.gz
             pkg-dir: pkg/linux
@@ -22,7 +22,7 @@ jobs:
             make-args: --make-args="-j4"
             zip-cmd: cd ./pkg/linux && tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
-          - node-version: 16.x
+          - node-version: 18.x
             os: macos-latest
             asset-name: macos.tar.gz
             pkg-dir: pkg/macos
@@ -30,7 +30,7 @@ jobs:
             make-args: --make-args="-j4"
             zip-cmd: cd ./pkg/macos && tar -cvzf macos.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
-          - node-version: 16.x
+          - node-version: 18.x
             os: windows-latest
             asset-name: win64.zip
             pkg-dir: pkg/win
