@@ -190,7 +190,7 @@ export const fetchLatestHostVersion = async () => {
       version = latest;
     }
   } catch (e) {
-    // fail through
+    // fall through
   }
   return version || null;
 };

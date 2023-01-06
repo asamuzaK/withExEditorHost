@@ -36,7 +36,7 @@ export const parseCommand = args => {
     try {
       commander.parse(args);
     } catch (e) {
-      // fail through
+      // fall through
     }
   }
 };
