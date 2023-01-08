@@ -7,8 +7,8 @@ import {
   CmdArgs, Setup, createFile, getStat, isDir, isExecutable, isFile
 } from 'web-ext-native-msg';
 import { isString, throwErr } from './common.js';
-import path from 'path';
-import process from 'process';
+import path from 'node:path';
+import process from 'node:process';
 import readline from 'readline-sync';
 import {
   EDITOR_CONFIG_FILE, EXT_CHROME_ID, EXT_WEB_ID, HOST, HOST_DESC

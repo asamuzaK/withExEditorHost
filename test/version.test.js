@@ -1,7 +1,7 @@
 /* api */
 import { assert } from 'chai';
 import { describe, it } from 'mocha';
-import process from 'process';
+import process from 'node:process';
 
 /* test */
 import { version } from '../modules/version.js';

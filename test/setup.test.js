@@ -5,10 +5,10 @@ import {
 } from 'web-ext-native-msg';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import process from 'process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import process from 'node:process';
 import readline from 'readline-sync';
 import sinon from 'sinon';
 import { EDITOR_CONFIG_FILE } from '../modules/constant.js';

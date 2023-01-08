@@ -12,12 +12,12 @@ import {
 import HttpsProxyAgent from 'https-proxy-agent';
 import { compareSemVer, isValidSemVer } from 'semver-parser';
 import { getType, quoteArg, isObjectNotEmpty, isString } from './common.js';
-import { watch } from 'fs';
+import { watch } from 'node:fs';
 import { version as hostVersion } from './version.js';
 import fetch from 'node-fetch';
-import os from 'os';
-import path from 'path';
-import process from 'process';
+import os from 'node:os';
+import path from 'node:path';
+import process from 'node:process';
 import {
   EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
   FILE_WATCH, HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL,
