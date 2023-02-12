@@ -2,12 +2,8 @@ EN | [JA](./README.ja.md)
 
 [![build](https://github.com/asamuzaK/withExEditorHost/workflows/build/badge.svg)](https://github.com/asamuzaK/withExEditorHost/actions?query=workflow%3Abuild)
 [![CodeQL](https://github.com/asamuzaK/withExEditorHost/workflows/CodeQL/badge.svg)](https://github.com/asamuzaK/withExEditorHost/actions?query=workflow%3ACodeQL)
-<!--
-[![dependencies Status](https://david-dm.org/asamuzaK/withExEditorHost/status.svg)](https://david-dm.org/asamuzaK/withExEditorHost)
-[![devDependency Status](https://david-dm.org/asamuzaK/withExEditorHost/dev-status.svg)](https://david-dm.org/asamuzaK/withExEditorHost?type=dev)
--->
-[![npm version](https://badge.fury.io/js/withexeditorhost.svg)](https://badge.fury.io/js/withexeditorhost)
-[![GitHub release](https://img.shields.io/github/release/asamuzaK/withExEditorHost.svg)](https://github.com/asamuzaK/withExEditorHost/releases)
+[![npm](https://img.shields.io/npm/v/withexeditorhost)](https://www.npmjs.com/package/withexeditorhost)
+[![release](https://img.shields.io/github/v/release/asamuzaK/withExEditorHost)](https://github.com/asamuzaK/withExEditorHost/releases)
 
 # withExEditorHost
 
