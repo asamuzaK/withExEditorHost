@@ -1,5 +1,9 @@
-/**
- * index.js
+/*!
+ * withExEditorHost
+ *
+ * @license MIT
+ * @copyright asamuzaK (Kazz)
+ * @see {@link https://github.com/asamuzaK/withExEditorHost/blob/master/LICENSE}
  */
 
 /* api */
