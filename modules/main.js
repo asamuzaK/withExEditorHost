@@ -12,8 +12,8 @@ import {
 import HttpsProxyAgent from 'https-proxy-agent';
 import { compareSemVer, isValidSemVer } from 'semver-parser';
 import { getType, quoteArg, isObjectNotEmpty, isString } from './common.js';
-import { watch } from 'node:fs';
 import { version as hostVersion } from './version.js';
+import { watch } from 'node:fs';
 import fetch from 'node-fetch';
 import os from 'node:os';
 import path from 'node:path';
