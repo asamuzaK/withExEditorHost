@@ -2,15 +2,43 @@
   "name": "withexeditorhost",
   "description": "Native messaging host for withExEditor",
   "author": "asamuzaK",
+  "license": "MIT",
   "homepage": "https://github.com/asamuzaK/withExEditorHost",
   "bugs": "https://github.com/asamuzaK/withExEditorHost/issues",
   "repository": {
     "type": "git",
     "url": "https://github.com/asamuzaK/withExEditorHost.git"
   },
-  "license": "MIT",
-  "main": "./index.js",
   "type": "module",
+  "main": "./index.js",
+  "dependencies": {
+    "commander": "^10.0.0",
+    "https-proxy-agent": "^5.0.1",
+    "node-fetch": "^3.3.0",
+    "readline-sync": "^1.4.10",
+    "semver-parser": "^4.1.1",
+    "url-sanitizer": "^0.8.10",
+    "web-ext-native-msg": "^6.1.3"
+  },
+  "devDependencies": {
+    "boxednode": "^2.0.0",
+    "c8": "^7.13.0",
+    "chai": "^4.3.7",
+    "esbuild": "^0.17.8",
+    "eslint": "^8.34.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsdoc": "^40.0.0",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-unicorn": "^45.0.2",
+    "genversion": "^3.1.1",
+    "jszip-cli": "^1.4.24",
+    "mocha": "^10.2.0",
+    "nock": "^13.3.0",
+    "sinon": "^15.0.1"
+  },
   "scripts": {
     "bundle-js": "esbuild --platform=node --outdir=./bundle --bundle --minify ./index.js",
     "bundle-bin": "boxednode --node-version=lts --source=./bundle/index.js",
@@ -21,33 +49,6 @@
     "start": "node ./index.js",
     "test": "c8 --reporter=text mocha --exit test/*.test.js",
     "zip-jszip": "jszip"
-  },
-  "dependencies": {
-    "commander": "^9.4.1",
-    "https-proxy-agent": "^5.0.1",
-    "node-fetch": "^3.3.0",
-    "readline-sync": "^1.4.10",
-    "semver-parser": "^4.0.1",
-    "web-ext-native-msg": "^6.1.1"
-  },
-  "devDependencies": {
-    "boxednode": "^1.12.0",
-    "c8": "^7.12.0",
-    "chai": "^4.3.7",
-    "esbuild": "^0.16.14",
-    "eslint": "^8.31.0",
-    "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsdoc": "^39.6.4",
-    "eslint-plugin-n": "^15.6.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-unicorn": "^45.0.2",
-    "genversion": "^3.1.1",
-    "jszip-cli": "^1.4.24",
-    "mocha": "^10.2.0",
-    "nock": "^13.2.9",
-    "sinon": "^15.0.1"
   },
   "version": "7.1.1"
 }
