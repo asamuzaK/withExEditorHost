@@ -12,12 +12,12 @@ import {
 describe('escapeChar', () => {
   it('should get escaped string', () => {
     const c = 'abc';
-    const re = /(b)/ig;
+    const re = /(b)/gi;
     assert.strictEqual(escapeChar(c, re), 'a\\bc');
   });
 
   it('should get null if string is not given', () => {
-    const re = /(b)/ig;
+    const re = /(b)/gi;
     assert.isNull(escapeChar(1, re));
   });
 
