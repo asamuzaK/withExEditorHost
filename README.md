@@ -47,7 +47,7 @@ Download a zip file (a tar.gz file on Linux / Mac) for your OS from [Releases](h
 
 Next, open "cmd.exe" on Windows, "terminal" on Linux / Mac, change directory to where you saved withExEditorHost, execute the following command.
 
-```
+```console
 > cd path/to/withExEditorHost
 > index setup
 ```
@@ -76,7 +76,7 @@ In the setup script you can specify some options.
 
 To specify the browser, please use `-b` or `--browser` option.
 
-```
+```console
 > index setup --browser=firefox
 ```
 
@@ -90,7 +90,7 @@ By default, configuration files are saved under user's home directory.
 If you want to save configuration files in different location, use `--config-path` option.
 Quote path if it contains spaces or backslashes.
 
-```
+```console
 > index setup --config-path="C:\Users\XXX\path\to\another\location"
 ```
 
@@ -98,7 +98,7 @@ Quote path if it contains spaces or backslashes.
 
 See help for other options.
 
-```
+```console
 > index setup --help
 ```
 
@@ -115,7 +115,7 @@ Enable withExEditor after the upgrade.
 
 Executing the following script (requires [cURL](https://curl.haxx.se/) and [jq](https://stedolan.github.io/jq/)) will download and install the latest host version:
 
-```
+```bash
 #!/usr/bin/env bash
 
 # Make the script fail immediately when a command fails and don't allow unset variables
@@ -195,14 +195,14 @@ NOTE: The installation path on Windows is basically `C:\Users\XXX\AppData\Roamin
 If you can't find it, you can get the global installation path for npm with `npm root -g`.
 Ref: [Where does npm install the packages?](https://nodejs.dev/learn/where-does-npm-install-the-packages)
 
-```
+```console
 > npm i -g withexeditorhost
 > cd path/to/npm/node_modules/withexeditorhost
 ```
 
 Run the setup command `npm run setup`.
 
-```
+```console
 > npm run setup
 ```
 
@@ -230,7 +230,7 @@ In the setup script you can specify some options.
 
 To specify the browser, please use `-b` or `--browser` option.
 
-```
+```console
 > npm run setup -- --browser=firefox
 ```
 
@@ -244,7 +244,7 @@ By default, configuration files are saved under user's home directory.
 If you want to save configuration files in different location, use `-c` or `--config-path` option.
 Quote path if it contains spaces or backslashes.
 
-```
+```console
 > npm run setup -- --config-path="C:\Users\XXX\path\to\another\location"
 ```
 
@@ -252,7 +252,7 @@ Quote path if it contains spaces or backslashes.
 
 For other options, see help
 
-```
+```console
 > npm run setup -- --help
 ```
 
@@ -261,7 +261,7 @@ For other options, see help
 Before upgrading the host, disable withExEditor installed in the browser.
 Run install command.
 
-```
+```console
 > npm i -g withexeditorhost
 ```
 

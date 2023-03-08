@@ -47,7 +47,7 @@
 
 続いて、Windowsでは「cmd.exe」、Linux / Macでは「端末」（ターミナル）を開き、withExEditorHostの保存先に移動したうえで、下記コマンドを実行してホストの設定を行います。
 
-```
+```console
 > cd path/to/withExEditorHost
 > index setup
 ```
@@ -76,7 +76,7 @@
 
 ブラウザをあらかじめ指定する場合には、`-b`または`--browser`オプションで指定してください。
 
-```
+```console
 > index setup --browser=firefox
 ```
 
@@ -90,7 +90,7 @@
 設定ファイルの保存先を変更したい場合は、`-c`または`--config-path`オプションで指定してください。
 パスに空白やバックスラッシュが含まれる場合は引用符で括ってください。
 
-```
+```console
 > index setup --config-path="C:\Users\XXX\path\to\another\location"
 ```
 
@@ -98,7 +98,7 @@
 
 その他のオプションについては、ヘルプで確認してください
 
-```
+```console
 > index setup --help
 ```
 
@@ -116,7 +116,7 @@
 以下のスクリプトを実行すると、最新のホストをダウンロードした上でインストールします。
 （[cURL](https://curl.haxx.se/)、[jq](https://stedolan.github.io/jq/)が必要です)
 
-```
+```bash
 #!/usr/bin/env bash
 
 # Make the script fail immediately when a command fails and don't allow unset variables
@@ -197,14 +197,14 @@ main
 もし見つからない場合、npmのグローバルインストールパスは`npm root -g`で取得できます。
 参照： [Where does npm install the packages?](https://nodejs.dev/learn/where-does-npm-install-the-packages)
 
-```
+```console
 > npm i -g withexeditorhost
 > cd path/to/npm/node_modules/withexeditorhost
 ```
 
 ホストを設定するためのコマンド`npm run setup`を実行します。
 
-```
+```console
 > npm run setup
 ```
 
@@ -232,7 +232,7 @@ main
 
 ブラウザをあらかじめ指定する場合には、`-b`または`--browser`オプションで指定してください。
 
-```
+```console
 > npm run setup -- --browser=firefox
 ```
 
@@ -246,7 +246,7 @@ main
 設定ファイルの保存先を変更したい場合は、`-c`または`--config-path`オプションで指定してください。
 パスに空白やバックスラッシュが含まれる場合は引用符で括ってください。
 
-```
+```console
 > npm run setup -- --config-path="C:\Users\XXX\path\to\another\location"
 ```
 
@@ -254,7 +254,7 @@ main
 
 その他のオプションについては、ヘルプで確認してください
 
-```
+```console
 > npm run setup -- --help
 ```
 
@@ -263,7 +263,7 @@ main
 ホストをアップグレードする前に、ブラウザにインストールされているwithExEditorを無効にしてください。
 下記コマンドを実行します。
 
-```
+```console
 > npm i -g withexeditorhost
 ```
 
