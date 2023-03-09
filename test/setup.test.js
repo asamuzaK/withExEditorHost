@@ -1,23 +1,23 @@
 'use strict';
 /* api */
-import {
-  Setup, createDirectory, createFile, isFile, removeDir
-} from 'web-ext-native-msg';
-import { assert } from 'chai';
-import { afterEach, beforeEach, describe, it } from 'mocha';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import readline from 'readline-sync';
 import sinon from 'sinon';
-import { EDITOR_CONFIG_FILE } from '../modules/constant.js';
+import { assert } from 'chai';
+import { afterEach, beforeEach, describe, it } from 'mocha';
+import {
+  Setup, createDirectory, createFile, isFile, removeDir
+} from 'web-ext-native-msg';
 
 /* test */
 import {
   abortSetup, createEditorConfig, handleCmdArgsInput, handleEditorPathInput,
   handleSetupCallback, runSetup, setupOpts
 } from '../modules/setup.js';
+import { EDITOR_CONFIG_FILE } from '../modules/constant.js';
 
 /* constant */
 const CHAR = 'utf8';

@@ -1,25 +1,19 @@
 /* eslint-disable no-template-curly-in-string */
 /* api */
+import childProcess from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import process from 'node:process';
+import nock from 'nock';
+import sinon from 'sinon';
+import { assert } from 'chai';
+import { afterEach, beforeEach, describe, it } from 'mocha';
+import { compareSemVer, parseSemVer } from 'semver-parser';
 import {
   Input, Output,
   createDirectory, createFile, getFileTimestamp, isDir, isFile, removeDir
 } from 'web-ext-native-msg';
-import { compareSemVer, parseSemVer } from 'semver-parser';
-import { assert } from 'chai';
-import { afterEach, beforeEach, describe, it } from 'mocha';
-import childProcess from 'node:child_process';
-import fs from 'node:fs';
-import nock from 'nock';
-import os from 'node:os';
-import path from 'node:path';
-import process from 'node:process';
-import sinon from 'sinon';
-import {
-  EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
-  FILE_WATCH, HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW,
-  MODE_EDIT, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
-  TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES
-} from '../modules/constant.js';
 
 /* test */
 import {
@@ -33,6 +27,12 @@ import {
   initPrivateTmpDir, readStdin, removeTmpFileData, startup, unwatchFile,
   viewLocalFile, watchTmpFile, writeStdout
 } from '../modules/main.js';
+import {
+  EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
+  FILE_WATCH, HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW,
+  MODE_EDIT, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
+  TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES
+} from '../modules/constant.js';
 
 /* constant */
 const APP = `${process.pid}`;

@@ -20,6 +20,12 @@
   ],
   "reportUnusedDisableDirectives": true,
   "rules": {
+    "import/order": ["error", {
+      "alphabetize": {
+        "order": "ignore",
+        "caseInsensitive": false
+      }
+    }],
     "no-await-in-loop": "error",
     "semi": ["error", "always"],
     "space-before-function-paren": ["error", {
