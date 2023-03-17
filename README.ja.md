@@ -48,8 +48,8 @@
 続いて、Windowsでは「cmd.exe」、Linux / Macでは「端末」（ターミナル）を開き、withExEditorHostの保存先に移動したうえで、下記コマンドを実行してホストの設定を行います。
 
 ```console
-> cd path/to/withExEditorHost
-> index setup
+cd path/to/withExEditorHost
+index setup
 ```
 
 どのブラウザ向けにホストを設定するのか尋ねられますので、リストに表示されたブラウザから選択してください。
@@ -77,7 +77,7 @@
 ブラウザをあらかじめ指定する場合には、`-b`または`--browser`オプションで指定してください。
 
 ```console
-> index setup --browser=firefox
+index setup --browser=firefox
 ```
 
 #### -c --config-path
@@ -91,7 +91,7 @@
 パスに空白やバックスラッシュが含まれる場合は引用符で括ってください。
 
 ```console
-> index setup --config-path="C:\Users\XXX\path\to\another\location"
+index setup --config-path="C:\Users\XXX\path\to\another\location"
 ```
 
 #### その他
@@ -99,7 +99,7 @@
 その他のオプションについては、ヘルプで確認してください
 
 ```console
-> index setup --help
+index setup --help
 ```
 
 ### アップグレード
@@ -198,14 +198,14 @@ main
 参照： [Where does npm install the packages?](https://nodejs.dev/learn/where-does-npm-install-the-packages)
 
 ```console
-> npm i -g withexeditorhost
-> cd path/to/npm/node_modules/withexeditorhost
+npm i -g withexeditorhost
+cd path/to/npm/node_modules/withexeditorhost
 ```
 
 ホストを設定するためのコマンド`npm run setup`を実行します。
 
 ```console
-> npm run setup
+npm run setup
 ```
 
 どのブラウザ向けにホストを設定するのか尋ねられますので、リストに表示されたブラウザから選択してください。
@@ -233,7 +233,7 @@ main
 ブラウザをあらかじめ指定する場合には、`-b`または`--browser`オプションで指定してください。
 
 ```console
-> npm run setup -- --browser=firefox
+npm run setup -- --browser=firefox
 ```
 
 #### -c --config-path
@@ -247,7 +247,7 @@ main
 パスに空白やバックスラッシュが含まれる場合は引用符で括ってください。
 
 ```console
-> npm run setup -- --config-path="C:\Users\XXX\path\to\another\location"
+npm run setup -- --config-path="C:\Users\XXX\path\to\another\location"
 ```
 
 #### その他
@@ -255,7 +255,7 @@ main
 その他のオプションについては、ヘルプで確認してください
 
 ```console
-> npm run setup -- --help
+npm run setup -- --help
 ```
 
 ### アップグレード
@@ -264,7 +264,7 @@ main
 下記コマンドを実行します。
 
 ```console
-> npm i -g withexeditorhost
+npm i -g withexeditorhost
 ```
 
 アップグレード後にセットアップスクリプトを再度実行する必要はありません。
