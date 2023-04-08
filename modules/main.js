@@ -119,7 +119,7 @@ export const exportEditorConfig = async (data, editorConfigPath) => {
   data = data && JSON.parse(data);
   if (isObjectNotEmpty(data)) {
     const { editorPath } = data;
-    const editorName = await getFileNameFromFilePath(editorPath);
+    const editorName = getFileNameFromFilePath(editorPath);
     const executable = isExecutable(editorPath);
     const timestamp = await getFileTimestamp(editorConfigPath);
     const reg =
@@ -255,8 +255,10 @@ export const handleChildProcessErr = e => {
  */
 export const handleChildProcessClose = code => {
   if (Number.isInteger(code)) {
+    const { editorPath } = editorConfig;
+    const editorName = getFileNameFromFilePath(editorPath);
     const msg = new Output().encode(
-      hostMsg(`Child process close all stdio with code ${code}`, 'close')
+      hostMsg(`${editorName} close all stdio with code ${code}`, 'close')
     );
     process.stdout.write(msg);
   }
@@ -270,8 +272,10 @@ export const handleChildProcessClose = code => {
  */
 export const handleChildProcessExit = code => {
   if (Number.isInteger(code)) {
+    const { editorPath } = editorConfig;
+    const editorName = getFileNameFromFilePath(editorPath);
     const msg = new Output().encode(
-      hostMsg(`Child process exited with code ${code}`, 'exit')
+      hostMsg(`${editorName} exited with code ${code}`, 'exit')
     );
     process.stdout.write(msg);
   }

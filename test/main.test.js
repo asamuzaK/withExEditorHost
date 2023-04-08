@@ -724,6 +724,13 @@ describe('handleChildProcessErr', () => {
 });
 
 describe('handleChildProcessClose', () => {
+  beforeEach(() => {
+    editorConfig.editorPath = '';
+  });
+  afterEach(() => {
+    editorConfig.editorPath = '';
+  });
+
   it('should not call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
     await handleChildProcessClose();
@@ -737,9 +744,15 @@ describe('handleChildProcessClose', () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
       info = buf;
     });
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve('test', 'file', app);
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    editorConfig.editorPath = editorPath;
     const msg = new Output().encode({
       withexeditorhost: {
-        message: 'Child process close all stdio with code 0',
+        message: 'test close all stdio with code 0',
         status: 'close'
       }
     });
@@ -755,9 +768,15 @@ describe('handleChildProcessClose', () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
       info = buf;
     });
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve('test', 'file', app);
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    editorConfig.editorPath = editorPath;
     const msg = new Output().encode({
       withexeditorhost: {
-        message: 'Child process close all stdio with code 1',
+        message: 'test close all stdio with code 1',
         status: 'close'
       }
     });
@@ -770,6 +789,13 @@ describe('handleChildProcessClose', () => {
 });
 
 describe('handleChildProcessExit', () => {
+  beforeEach(() => {
+    editorConfig.editorPath = '';
+  });
+  afterEach(() => {
+    editorConfig.editorPath = '';
+  });
+
   it('should not call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
     await handleChildProcessExit();
@@ -783,9 +809,15 @@ describe('handleChildProcessExit', () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
       info = buf;
     });
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve('test', 'file', app);
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    editorConfig.editorPath = editorPath;
     const msg = new Output().encode({
       withexeditorhost: {
-        message: 'Child process exited with code 0',
+        message: 'test exited with code 0',
         status: 'exit'
       }
     });
@@ -801,9 +833,15 @@ describe('handleChildProcessExit', () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
       info = buf;
     });
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve('test', 'file', app);
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    editorConfig.editorPath = editorPath;
     const msg = new Output().encode({
       withexeditorhost: {
-        message: 'Child process exited with code 1',
+        message: 'test exited with code 1',
         status: 'exit'
       }
     });
