@@ -248,6 +248,36 @@ export const handleChildProcessErr = e => {
 };
 
 /**
+ * handle child process close
+ *
+ * @param {number} code - exit code
+ * @returns {void}
+ */
+export const handleChildProcessClose = code => {
+  if (Number.isInteger(code)) {
+    const msg = new Output().encode(
+      hostMsg(`Child process close all stdio with code ${code}`, 'close')
+    );
+    process.stdout.write(msg);
+  }
+};
+
+/**
+ * handle child process exit
+ *
+ * @param {number} code - exit code
+ * @returns {void}
+ */
+export const handleChildProcessExit = code => {
+  if (Number.isInteger(code)) {
+    const msg = new Output().encode(
+      hostMsg(`Child process exited with code ${code}`, 'exit')
+    );
+    process.stdout.write(msg);
+  }
+};
+
+/**
  * handle child process stderr
  *
  * @param {*} data - data

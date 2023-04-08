@@ -21,11 +21,11 @@ import {
   deleteKeyFromFileMap, editorConfig, execChildProcess, exportAppStatus,
   exportEditorConfig, exportFileData, exportHostVersion, fetchLatestHostVersion,
   fileMap, getEditorConfig, getFileIdFromFilePath, getTmpFileFromFileData,
-  getTmpFileFromWatcherFileName,
-  handleChildProcessErr, handleChildProcessStderr, handleChildProcessStdout,
-  handleCreatedTmpFile, handleExit, handleMsg, handleReject, hostMsg,
-  initPrivateTmpDir, readStdin, removeTmpFileData, startup, unwatchFile,
-  viewLocalFile, watchTmpFile, writeStdout
+  getTmpFileFromWatcherFileName, handleChildProcessClose,
+  handleChildProcessErr, handleChildProcessExit, handleChildProcessStderr,
+  handleChildProcessStdout, handleCreatedTmpFile, handleExit, handleMsg,
+  handleReject, hostMsg, initPrivateTmpDir, readStdin, removeTmpFileData,
+  startup, unwatchFile, viewLocalFile, watchTmpFile, writeStdout
 } from '../modules/main.js';
 import {
   EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
@@ -716,6 +716,98 @@ describe('handleChildProcessErr', () => {
     });
     const msg = new Output().encode('error');
     await handleChildProcessErr(new Error('error'));
+    const { calledOnce: writeCalled } = stubWrite;
+    stubWrite.restore();
+    assert.isTrue(writeCalled);
+    assert.deepEqual(info, msg);
+  });
+});
+
+describe('handleChildProcessClose', () => {
+  it('should not call function', async () => {
+    const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
+    await handleChildProcessClose();
+    const { called: writeCalled } = stubWrite;
+    stubWrite.restore();
+    assert.isFalse(writeCalled);
+  });
+
+  it('should call function', async () => {
+    let info;
+    const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
+      info = buf;
+    });
+    const msg = new Output().encode({
+      withexeditorhost: {
+        message: 'Child process close all stdio with code 0',
+        status: 'close'
+      }
+    });
+    await handleChildProcessClose(0);
+    const { calledOnce: writeCalled } = stubWrite;
+    stubWrite.restore();
+    assert.isTrue(writeCalled);
+    assert.deepEqual(info, msg);
+  });
+
+  it('should call function', async () => {
+    let info;
+    const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
+      info = buf;
+    });
+    const msg = new Output().encode({
+      withexeditorhost: {
+        message: 'Child process close all stdio with code 1',
+        status: 'close'
+      }
+    });
+    await handleChildProcessClose(1);
+    const { calledOnce: writeCalled } = stubWrite;
+    stubWrite.restore();
+    assert.isTrue(writeCalled);
+    assert.deepEqual(info, msg);
+  });
+});
+
+describe('handleChildProcessExit', () => {
+  it('should not call function', async () => {
+    const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
+    await handleChildProcessExit();
+    const { called: writeCalled } = stubWrite;
+    stubWrite.restore();
+    assert.isFalse(writeCalled);
+  });
+
+  it('should call function', async () => {
+    let info;
+    const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
+      info = buf;
+    });
+    const msg = new Output().encode({
+      withexeditorhost: {
+        message: 'Child process exited with code 0',
+        status: 'exit'
+      }
+    });
+    await handleChildProcessExit(0);
+    const { calledOnce: writeCalled } = stubWrite;
+    stubWrite.restore();
+    assert.isTrue(writeCalled);
+    assert.deepEqual(info, msg);
+  });
+
+  it('should call function', async () => {
+    let info;
+    const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
+      info = buf;
+    });
+    const msg = new Output().encode({
+      withexeditorhost: {
+        message: 'Child process exited with code 1',
+        status: 'exit'
+      }
+    });
+    await handleChildProcessExit(1);
     const { calledOnce: writeCalled } = stubWrite;
     stubWrite.restore();
     assert.isTrue(writeCalled);
