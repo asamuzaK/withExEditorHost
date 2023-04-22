@@ -1,4 +1,4 @@
 {
   "main": "./bundle/index.js",
-  "output": "./pkg/sea-index.blob"
+  "output": "./pkg/index.blob"
 }
