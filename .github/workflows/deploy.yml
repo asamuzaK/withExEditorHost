@@ -19,21 +19,21 @@ jobs:
             asset-name: linux-x86_64.tar.gz
             bin-file: ./pkg/index
             make-args: --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
-            zip-cmd: cd ./pkg/linux && tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md index && cd ../../
+            zip-cmd: cd ./pkg && tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md index && cd ../
             zip-mime: application/gzip
           - node-version: 20.x
             os: macos-latest
             asset-name: macos.tar.gz
             bin-file: ./pkg/index
             make-args: --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 --macho-segment-name NODE_SEA
-            zip-cmd: cd ./pkg/macos && tar -cvzf macos.tar.gz LICENSE README.md README.ja.md index && cd ../../
+            zip-cmd: cd ./pkg && tar -cvzf macos.tar.gz LICENSE README.md README.ja.md index && cd ../
             zip-mime: application/gzip
           - node-version: 20.x
             os: windows-latest
             asset-name: win64.zip
             bin-file: ./pkg/index.exe
             make-args: --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
-            zip-cmd: npm run zip-jszip -- -o ./pkg/win/win64.zip ./pkg/win/LICENSE ./pkg/win/README.md ./pkg/win/README.ja.md ./pkg/win/index.exe
+            zip-cmd: npm run zip-jszip -- -o ./pkg/win64.zip ./pkg/LICENSE ./pkg/README.md ./pkg/README.ja.md ./pkg/index.exe
             zip-mime: application/zip
     runs-on: ${{ matrix.os }}
     env:
