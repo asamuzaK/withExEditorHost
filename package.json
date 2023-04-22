@@ -12,22 +12,23 @@
   "type": "module",
   "main": "./index.js",
   "dependencies": {
-    "commander": "^10.0.0",
+    "commander": "^10.0.1",
     "https-proxy-agent": "^5.0.1",
     "node-fetch": "^3.3.1",
+    "nwsapi": "^2.2.4",
     "readline-sync": "^1.4.10",
-    "semver-parser": "^4.1.3",
-    "web-ext-native-msg": "^6.1.7"
+    "semver-parser": "^4.1.4",
+    "web-ext-native-msg": "^6.1.9"
   },
   "devDependencies": {
     "boxednode": "^2.0.1",
     "c8": "^7.13.0",
     "chai": "^4.3.7",
-    "esbuild": "^0.17.15",
-    "eslint": "^8.38.0",
+    "esbuild": "^0.17.17",
+    "eslint": "^8.39.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jsdoc": "^40.1.1",
+    "eslint-plugin-jsdoc": "^43.0.7",
     "eslint-plugin-n": "^15.7.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
@@ -37,7 +38,7 @@
     "jszip-cli": "^1.4.24",
     "mocha": "^10.2.0",
     "nock": "^13.3.0",
-    "sinon": "^15.0.3"
+    "sinon": "^15.0.4"
   },
   "scripts": {
     "bundle-js": "esbuild --platform=node --outdir=./bundle --bundle --minify ./index.js",
