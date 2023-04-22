@@ -49,7 +49,6 @@ export const editorConfig = {
 /* output */
 /**
  * host message
- *
  * @param {*} message - message
  * @param {string} status - status
  * @returns {object} - host message object
@@ -62,7 +61,6 @@ export const hostMsg = (message, status) => ({
 
 /**
  * handle rejection
- *
  * @param {*} e - Error or any
  * @returns {boolean} - false
  */
@@ -83,7 +81,6 @@ export const handleReject = e => {
 
 /**
  * write stdout
- *
  * @param {*} msg - message
  * @returns {?Function} - write message to the Writable stream
  */
@@ -98,7 +95,6 @@ export const writeStdout = async msg => {
 
 /**
  * export app status
- *
  * @returns {Function} - writeStdout()
  */
 export const exportAppStatus = async () =>
@@ -106,7 +102,6 @@ export const exportAppStatus = async () =>
 
 /**
  * export editor config
- *
  * @param {string} data - editor config
  * @param {string} editorConfigPath - editor config file path
  * @returns {?Function} - writeStdout()
@@ -149,7 +144,6 @@ export const exportEditorConfig = async (data, editorConfigPath) => {
 
 /**
  * export file data
- *
  * @param {object} obj - file data
  * @returns {?Function} - writeStdout()
  */
@@ -167,7 +161,6 @@ export const exportFileData = async (obj = {}) => {
 
 /**
  * fetch latest host version
- *
  * @returns {?string} - latest host version string
  */
 export const fetchLatestHostVersion = async () => {
@@ -197,7 +190,6 @@ export const fetchLatestHostVersion = async () => {
 
 /**
  * export host version
- *
  * @param {string} minVer - required min version
  * @returns {Function} - writeStdout()
  */
@@ -229,7 +221,6 @@ export const exportHostVersion = async minVer => {
 /* child process */
 /**
  * handle child process error
- *
  * @param {!object} e - Error
  * @returns {void}
  */
@@ -249,7 +240,6 @@ export const handleChildProcessErr = e => {
 
 /**
  * handle child process close
- *
  * @param {number} code - exit code
  * @returns {void}
  */
@@ -266,7 +256,6 @@ export const handleChildProcessClose = code => {
 
 /**
  * handle child process exit
- *
  * @param {number} code - exit code
  * @returns {void}
  */
@@ -283,7 +272,6 @@ export const handleChildProcessExit = code => {
 
 /**
  * handle child process stderr
- *
  * @param {*} data - data
  * @returns {void}
  */
@@ -298,7 +286,6 @@ export const handleChildProcessStderr = data => {
 
 /**
  * handle child process stdout
- *
  * @param {*} data - data
  * @returns {void}
  */
@@ -313,7 +300,6 @@ export const handleChildProcessStdout = data => {
 
 /**
  * execute child process
- *
  * @param {string} file - file path
  * @param {string} app - app path
  * @returns {ChildProcess|Function} - child process / writeStderr()
@@ -369,7 +355,6 @@ export const fileMap = {
 
 /**
  * delete key from fileMap
- *
  * @param {string} prop - fileMap property
  * @param {string} key - key
  * @returns {boolean} - result, true if deleted
@@ -385,7 +370,6 @@ export const deleteKeyFromFileMap = async (prop, key) => {
 
 /**
  * unwatch file
- *
  * @param {string} key - key
  * @param {object} [fsWatcher] - fs.FSWatcher
  * @returns {void}
@@ -404,7 +388,6 @@ export const unwatchFile = async (key, fsWatcher) => {
 /* temporary files */
 /**
  * initialize private temporary directory
- *
  * @param {boolean} bool - remove
  * @returns {void}
  */
@@ -418,7 +401,6 @@ export const initPrivateTmpDir = async bool => {
 
 /**
  * get temporary file from file data
- *
  * @param {object} fileData - temporary file data
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -462,7 +444,6 @@ export const getTmpFileFromFileData = async (fileData = {}) => {
 
 /**
  * get file ID from file path
- *
  * @param {string} filePath - file path
  * @returns {?string} - file ID
  */
@@ -483,7 +464,6 @@ export const getFileIdFromFilePath = async filePath => {
 
 /**
  * create tmp file res message
- *
  * @param {string} key - key
  * @returns {?Function} - writeStdout()
  */
@@ -513,7 +493,6 @@ export const createTmpFileResMsg = async key => {
 
 /**
  * get temporary file from given file name
- *
  * @param {string} evtType - event type
  * @param {string} fileName - file name
  * @returns {Promise.<Array>} - results of each handler
@@ -536,7 +515,6 @@ export const getTmpFileFromWatcherFileName = async (evtType, fileName) => {
 
 /**
  * watch temporary file
- *
  * @param {string} evtType - event type
  * @param {string} fileName - file name
  * @returns {Function} - getTempFileFromFileName()
@@ -546,7 +524,6 @@ export const watchTmpFile = (evtType, fileName) =>
 
 /**
  * create temporary file
- *
  * @param {object} obj - temporary file data object
  * @returns {object} - temporary file data
  */
@@ -590,7 +567,6 @@ export const createTmpFile = async (obj = {}) => {
 
 /**
  * remove temporary file data
- *
  * @param {object} data - temporary file data
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -630,7 +606,6 @@ export const removeTmpFileData = async (data = {}) => {
 /* local files */
 /**
  * get editor config
- *
  * @param {string} editorConfigPath - editor config file path
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -652,7 +627,6 @@ export const getEditorConfig = async editorConfigPath => {
 
 /**
  * view local file
- *
  * @param {string} uri - local file uri
  * @returns {?Function} - execChildProcess()
  */
@@ -674,7 +648,6 @@ export const viewLocalFile = async uri => {
 /* handlers */
 /**
  * handle created temporary file
- *
  * @param {object} obj - temporary file data
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -689,7 +662,6 @@ export const handleCreatedTmpFile = async (obj = {}) => {
 
 /**
  * handle message
- *
  * @param {*} msg - message
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -739,7 +711,6 @@ export const input = new Input();
 
 /**
  * read stdin
- *
  * @param {string|Buffer} chunk - chunk
  * @returns {?Promise.<Array|Error>} - promise chain
  */
@@ -758,7 +729,6 @@ export const readStdin = chunk => {
 
 /**
  * handle exit
- *
  * @param {number} code - exit code
  * @returns {void}
  */
@@ -776,7 +746,6 @@ export const handleExit = code => {
 
 /**
  * add process listeners
- *
  * @returns {void}
  */
 export const addProcessListeners = () => {
@@ -787,7 +756,6 @@ export const addProcessListeners = () => {
 
 /**
  * handle startup
- *
  * @returns {Promise.<Array|Error>} - promise chain
  */
 export const startup = () => Promise.all([

@@ -24,7 +24,6 @@ export const setupOpts = new Map();
 
 /**
  * abort setup
- *
  * @param {string} msg - message
  * @returns {void}
  */
@@ -35,7 +34,6 @@ export const abortSetup = msg => {
 
 /**
  * handle editor cmd args input
- *
  * @param {Array} editorArgs - editor cmd args
  * @returns {Array} - cmd args in array
  */
@@ -58,7 +56,6 @@ export const handleCmdArgsInput = async editorArgs => {
 
 /**
  * handle editor path input
- *
  * @param {string} editorFilePath - editor path
  * @returns {string} - editor path
  */
@@ -91,7 +88,6 @@ export const handleEditorPathInput = async editorFilePath => {
 
 /**
  * create editor config
- *
  * @returns {string} - editor config path
  */
 export const createEditorConfig = async () => {
@@ -115,7 +111,6 @@ export const createEditorConfig = async () => {
 
 /**
  * handle setup callback
- *
  * @param {object} info - info
  * @returns {Function} - handleEditorPathInput() / abortSetup()
  */
@@ -151,7 +146,6 @@ export const handleSetupCallback = (info = {}) => {
 
 /**
  * run setup
- *
  * @param {object} cmdOpts - cmd options
  * @returns {Function} - setup.run()
  */

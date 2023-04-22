@@ -15,7 +15,6 @@ import {
 
 /**
  * parse command
- *
  * @param {Array} args - process.argv
  * @returns {void}
  */

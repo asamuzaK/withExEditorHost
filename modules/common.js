@@ -8,7 +8,6 @@ const TYPE_TO = -1;
 
 /**
  * throw error
- *
  * @param {!object} e - Error
  * @throws - Error
  */
@@ -18,7 +17,6 @@ export const throwErr = e => {
 
 /**
  * log error
- *
  * @param {!object} e - Error
  * @returns {boolean} - false
  */
@@ -29,7 +27,6 @@ export const logErr = e => {
 
 /**
  * log warn
- *
  * @param {*} msg - message
  * @returns {boolean} - false
  */
@@ -42,7 +39,6 @@ export const logWarn = msg => {
 
 /**
  * log message
- *
  * @param {*} msg - message
  * @returns {*} - message
  */
@@ -55,7 +51,6 @@ export const logMsg = msg => {
 
 /**
  * get type
- *
  * @param {*} o - object to check
  * @returns {string} - type of object
  */
@@ -64,7 +59,6 @@ export const getType = o =>
 
 /**
  * is object, and not an empty object
- *
  * @param {*} o - object to check;
  * @returns {boolean} - result
  */
@@ -75,7 +69,6 @@ export const isObjectNotEmpty = o => {
 
 /**
  * is string
- *
  * @param {*} o - object to check
  * @returns {boolean} - result
  */
@@ -83,7 +76,6 @@ export const isString = o => typeof o === 'string' || o instanceof String;
 
 /**
  * escape matching char
- *
  * @param {string} str - argument
  * @param {RegExp} re - RegExp
  * @returns {?string} - string
@@ -93,7 +85,6 @@ export const escapeChar = (str, re) =>
 
 /**
  * quote arg
- *
  * @param {string} arg - argument
  * @returns {string} - argument
  */
