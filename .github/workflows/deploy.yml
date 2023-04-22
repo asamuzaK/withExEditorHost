@@ -20,7 +20,7 @@ jobs:
             asset-name: linux-x86_64.tar.gz
             pkg-dir: pkg/linux
             bin-file: ./pkg/linux/index
-            make-args: --make-args="-j4"
+            make-args: --sentinel-fuse NODE_JS_FUSE_fce680ab2cc467b6e072b8b5df1996b2
             zip-cmd: cd ./pkg/linux && tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
           - node-version: 18.x
@@ -29,7 +29,7 @@ jobs:
             asset-name: macos.tar.gz
             pkg-dir: pkg/macos
             bin-file: ./pkg/macos/index
-            make-args: --make-args="-j4"
+            make-args: --sentinel-fuse NODE_JS_FUSE_fce680ab2cc467b6e072b8b5df1996b2 --macho-segment-name NODE_JS
             zip-cmd: cd ./pkg/macos && tar -cvzf macos.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
           - node-version: 18.x
@@ -38,7 +38,7 @@ jobs:
             asset-name: win64.zip
             pkg-dir: pkg/win
             bin-file: ./pkg/win/index.exe
-            make-args: ''
+            make-args: --sentinel-fuse NODE_JS_FUSE_fce680ab2cc467b6e072b8b5df1996b2
             zip-cmd: npm run zip-jszip -- -o ./pkg/win/win64.zip ./pkg/win/LICENSE ./pkg/win/README.md ./pkg/win/README.ja.md ./pkg/win/index.exe
             zip-mime: application/zip
     runs-on: ${{ matrix.os }}
@@ -46,16 +46,6 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
-      - name: set up python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: set up nasm
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: choco install nasm
-      - name: set up developer command prompt
-        if: ${{ matrix.os == 'windows-latest' }}
-        uses: ilammy/msvc-dev-cmd@v1
       - name: use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -70,7 +60,9 @@ jobs:
       - name: build binary
         run: |
           npm run bundle-js
-          npm run bundle-bin -- -t ${{ matrix.bin-file }} ${{ matrix.make-args }}
+          cp ./bundle/index.js ${{ matrix.pkg-dir }}/index.js
+          cp $(command -v node) ${{ matrix.bin-file }}
+          npx postject ${{ matrix.bin-file }} NODE_JS_CODE ${{ matrix.pkg-dir }}/index.js ${{ matrix.make-args }}
       - name: verify binary
         run: stat ${{ matrix.bin-file }}
       - name: zip package
