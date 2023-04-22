@@ -14,31 +14,25 @@ jobs:
     strategy:
       matrix:
         include:
-          - node-version: 18.x
+          - node-version: 20.x
             os: ubuntu-latest
-            python-version: '3.x'
             asset-name: linux-x86_64.tar.gz
-            pkg-dir: pkg/linux
-            bin-file: ./pkg/linux/index
-            make-args: --sentinel-fuse NODE_JS_FUSE_fce680ab2cc467b6e072b8b5df1996b2
+            bin-file: ./pkg/index
+            make-args: --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
             zip-cmd: cd ./pkg/linux && tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
-          - node-version: 18.x
+          - node-version: 20.x
             os: macos-latest
-            python-version: '3.x'
             asset-name: macos.tar.gz
-            pkg-dir: pkg/macos
-            bin-file: ./pkg/macos/index
-            make-args: --sentinel-fuse NODE_JS_FUSE_fce680ab2cc467b6e072b8b5df1996b2 --macho-segment-name NODE_JS
+            bin-file: ./pkg/index
+            make-args: --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 --macho-segment-name NODE_SEA
             zip-cmd: cd ./pkg/macos && tar -cvzf macos.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
-          - node-version: 18.x
+          - node-version: 20.x
             os: windows-latest
-            python-version: '3.x'
             asset-name: win64.zip
-            pkg-dir: pkg/win
-            bin-file: ./pkg/win/index.exe
-            make-args: --sentinel-fuse NODE_JS_FUSE_fce680ab2cc467b6e072b8b5df1996b2
+            bin-file: ./pkg/index.exe
+            make-args: --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
             zip-cmd: npm run zip-jszip -- -o ./pkg/win/win64.zip ./pkg/win/LICENSE ./pkg/win/README.md ./pkg/win/README.ja.md ./pkg/win/index.exe
             zip-mime: application/zip
     runs-on: ${{ matrix.os }}
@@ -56,24 +50,24 @@ jobs:
       - name: prepare build
         run: npm run prebuild
       - name: make directories
-        run: mkdir -p ./{bundle,${{ matrix.pkg-dir }}}
+        run: mkdir -p ./{bundle,pkg}
       - name: build binary
         run: |
           npm run bundle-js
-          cp ./bundle/index.js ${{ matrix.pkg-dir }}/index.js
+          node --experimental-sea-config ./sea-config.json
           cp $(command -v node) ${{ matrix.bin-file }}
-          npx postject ${{ matrix.bin-file }} NODE_JS_CODE ${{ matrix.pkg-dir }}/index.js ${{ matrix.make-args }}
+          npx postject ${{ matrix.bin-file }} NODE_JS_CODE ./pkg/index.blob ${{ matrix.make-args }}
       - name: verify binary
         run: stat ${{ matrix.bin-file }}
       - name: zip package
         run: |
-          cp ./LICENSE ./README.md ./README.ja.md ./${{ matrix.pkg-dir }}
+          cp ./LICENSE ./README.md ./README.ja.md ./pkg
           ${{ matrix.zip-cmd }}
-          stat ./${{ matrix.pkg-dir}}/${{ matrix.asset-name }}
+          stat ./pkg/${{ matrix.asset-name }}
       - name: upload release asset
         uses: shogo82148/actions-upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./${{ matrix.pkg-dir}}/${{ matrix.asset-name }}
+          asset_path: ./pkg/${{ matrix.asset-name }}
           asset_name: ${{ matrix.asset-name }}
           asset_content_type: ${{ matrix.zip-mime }}
