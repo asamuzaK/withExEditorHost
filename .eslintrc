@@ -15,8 +15,9 @@
     "sourceType": "module"
   },
   "plugins": [
+    "eslint-plugin-import",
     "eslint-plugin-regexp",
-    "unicorn"
+    "eslint-plugin-unicorn"
   ],
   "reportUnusedDisableDirectives": true,
   "rules": {
