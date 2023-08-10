@@ -14,26 +14,26 @@
   "dependencies": {
     "commander": "^11.0.0",
     "https-proxy-agent": "^7.0.1",
-    "node-fetch": "^3.3.1",
+    "node-fetch": "^3.3.2",
     "readline-sync": "^1.4.10",
     "semver-parser": "^4.1.4",
     "web-ext-native-msg": "^6.1.10"
   },
   "devDependencies": {
-    "boxednode": "^2.0.1",
-    "c8": "^8.0.0",
+    "boxednode": "^2.1.1",
+    "c8": "^8.0.1",
     "chai": "^4.3.7",
-    "esbuild": "^0.18.11",
-    "eslint": "^8.44.0",
+    "esbuild": "^0.19.0",
+    "eslint": "^8.46.0",
     "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jsdoc": "^46.4.3",
+    "eslint-plugin-import": "^2.28.0",
+    "eslint-plugin-jsdoc": "^46.4.6",
     "eslint-plugin-regexp": "^1.15.0",
-    "eslint-plugin-unicorn": "^47.0.0",
+    "eslint-plugin-unicorn": "^48.0.1",
     "genversion": "^3.1.1",
     "jszip-cli": "^1.4.24",
     "mocha": "^10.2.0",
-    "nock": "^13.3.1",
+    "nock": "^13.3.2",
     "sinon": "^15.2.0"
   },
   "scripts": {
@@ -47,5 +47,5 @@
     "test": "c8 --reporter=text mocha --exit test/*.test.js",
     "zip-jszip": "jszip"
   },
-  "version": "7.1.4"
+  "version": "7.1.5"
 }
