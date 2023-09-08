@@ -13,7 +13,7 @@
   "main": "./index.js",
   "dependencies": {
     "commander": "^11.0.0",
-    "https-proxy-agent": "^7.0.1",
+    "https-proxy-agent": "^7.0.2",
     "node-fetch": "^3.3.2",
     "readline-sync": "^1.4.10",
     "semver-parser": "^4.1.4",
@@ -22,18 +22,18 @@
   "devDependencies": {
     "boxednode": "^2.1.1",
     "c8": "^8.0.1",
-    "chai": "^4.3.7",
-    "esbuild": "^0.19.0",
-    "eslint": "^8.46.0",
+    "chai": "^4.3.8",
+    "esbuild": "^0.19.2",
+    "eslint": "^8.48.0",
     "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.28.0",
-    "eslint-plugin-jsdoc": "^46.4.6",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jsdoc": "^46.5.1",
     "eslint-plugin-regexp": "^1.15.0",
     "eslint-plugin-unicorn": "^48.0.1",
     "genversion": "^3.1.1",
     "jszip-cli": "^1.4.24",
     "mocha": "^10.2.0",
-    "nock": "^13.3.2",
+    "nock": "^13.3.3",
     "sinon": "^15.2.0"
   },
   "scripts": {
