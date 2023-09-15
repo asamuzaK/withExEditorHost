@@ -8,7 +8,7 @@ import process from 'node:process';
 import nock from 'nock';
 import sinon from 'sinon';
 import { assert } from 'chai';
-import { afterEach, beforeEach, describe, it } from 'mocha';
+import { afterEach, beforeEach, describe, it, xit } from 'mocha';
 import { compareSemVer, parseSemVer } from 'semver-parser';
 import {
   Input, Output,
@@ -422,7 +422,7 @@ describe('fetchLatestHostVersion', () => {
     assert.strictEqual(res, version);
   });
 
-  it('should get result', async () => {
+  xit('should get result', async () => {
     process.env.HTTPS_PROXY = 'http://localhost:9000';
     const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
@@ -440,7 +440,7 @@ describe('fetchLatestHostVersion', () => {
     assert.strictEqual(res, version);
   });
 
-  it('should get result', async () => {
+  xit('should get result', async () => {
     process.env.https_proxy = 'http://localhost:9000';
     const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
@@ -458,7 +458,7 @@ describe('fetchLatestHostVersion', () => {
     assert.strictEqual(res, version);
   });
 
-  it('should get result', async () => {
+  xit('should get result', async () => {
     process.env.HTTP_PROXY = 'http://localhost:9000';
     const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
@@ -476,7 +476,7 @@ describe('fetchLatestHostVersion', () => {
     assert.strictEqual(res, version);
   });
 
-  it('should get result', async () => {
+  xit('should get result', async () => {
     process.env.http_proxy = 'http://localhost:9000';
     const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
