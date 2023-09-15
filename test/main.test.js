@@ -422,6 +422,7 @@ describe('fetchLatestHostVersion', () => {
     assert.strictEqual(res, version);
   });
 
+  // skip until Node.js v16 reaches EOL
   xit('should get result', async () => {
     process.env.HTTPS_PROXY = 'http://localhost:9000';
     const hostVersion = process.env.npm_package_version;
@@ -440,6 +441,7 @@ describe('fetchLatestHostVersion', () => {
     assert.strictEqual(res, version);
   });
 
+  // skip until Node.js v16 reaches EOL
   xit('should get result', async () => {
     process.env.https_proxy = 'http://localhost:9000';
     const hostVersion = process.env.npm_package_version;
@@ -458,6 +460,7 @@ describe('fetchLatestHostVersion', () => {
     assert.strictEqual(res, version);
   });
 
+  // skip until Node.js v16 reaches EOL
   xit('should get result', async () => {
     process.env.HTTP_PROXY = 'http://localhost:9000';
     const hostVersion = process.env.npm_package_version;
@@ -476,6 +479,7 @@ describe('fetchLatestHostVersion', () => {
     assert.strictEqual(res, version);
   });
 
+  // skip until Node.js v16 reaches EOL
   xit('should get result', async () => {
     process.env.http_proxy = 'http://localhost:9000';
     const hostVersion = process.env.npm_package_version;
