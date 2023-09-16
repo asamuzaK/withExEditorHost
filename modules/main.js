@@ -731,6 +731,16 @@ export const handleExit = code => {
 };
 
 /**
+ * add process listeners
+ * @returns {void}
+ */
+export const addProcessListeners = () => {
+  process.on('exit', handleExit);
+  process.on('unhandledRejection', handleReject);
+  process.stdin.on('data', readStdin);
+};
+
+/**
  * set dispatcher
  * @returns {void}
  */
@@ -741,16 +751,6 @@ export const setDispatcher = () => {
     const agent = new undici.ProxyAgent(proxy);
     undici.setGlobalDispatcher(agent);
   }
-};
-
-/**
- * add process listeners
- * @returns {void}
- */
-export const addProcessListeners = () => {
-  process.on('exit', handleExit);
-  process.on('unhandledRejection', handleReject);
-  process.stdin.on('data', readStdin);
 };
 
 /**
