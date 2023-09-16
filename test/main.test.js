@@ -9,7 +9,9 @@ import sinon from 'sinon';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { compareSemVer, parseSemVer } from 'semver-parser';
-import { getGlobalDispatcher, MockAgent, setGlobalDispatcher } from 'undici';
+import undici, {
+  getGlobalDispatcher, MockAgent, setGlobalDispatcher
+} from 'undici';
 import {
   Input, Output,
   createDirectory, createFile, getFileTimestamp, isDir, isFile, removeDir
@@ -25,7 +27,7 @@ import {
   handleChildProcessErr, handleChildProcessExit, handleChildProcessStderr,
   handleChildProcessStdout, handleCreatedTmpFile, handleExit, handleMsg,
   handleReject, hostMsg, initPrivateTmpDir, readStdin, removeTmpFileData,
-  startup, unwatchFile, viewLocalFile, watchTmpFile, writeStdout
+  setDispatcher, startup, unwatchFile, viewLocalFile, watchTmpFile, writeStdout
 } from '../modules/main.js';
 import {
   EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
@@ -386,17 +388,6 @@ describe('fetchLatestHostVersion', () => {
   });
 
   it('should get null', async () => {
-    process.env.HTTPS_PROXY = 'http://localhost:9000';
-    const hostName = process.env.npm_package_name;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(404);
-    const res = await fetchLatestHostVersion();
-    delete process.env.HTTPS_PROXY;
-    assert.isNull(res);
-  });
-
-  it('should get null', async () => {
     const hostName = process.env.npm_package_name;
     mockAgent.get('https://registry.npmjs.org').intercept({
       path: `/${hostName}`
@@ -405,17 +396,6 @@ describe('fetchLatestHostVersion', () => {
     assert.isNull(res);
   });
 
-  it('should get null', async () => {
-    process.env.HTTPS_PROXY = 'http://localhost:9000';
-    const hostName = process.env.npm_package_name;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).replyWithError(new Error('Error'));
-    const res = await fetchLatestHostVersion();
-    delete process.env.HTTPS_PROXY;
-    assert.isNull(res);
-  });
-
   it('should get result', async () => {
     const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
@@ -431,86 +411,6 @@ describe('fetchLatestHostVersion', () => {
       }
     });
     const res = await fetchLatestHostVersion();
-    assert.strictEqual(res, version);
-  });
-
-  it('should get result', async () => {
-    process.env.HTTPS_PROXY = 'http://localhost:9000';
-    const hostVersion = process.env.npm_package_version;
-    const hostName = process.env.npm_package_name;
-    const {
-      major, minor, patch
-    } = await parseSemVer(hostVersion);
-    const version = `${major}.${minor}.${patch + 1}`;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(200, {
-      'dist-tags': {
-        latest: version
-      }
-    });
-    const res = await fetchLatestHostVersion();
-    delete process.env.HTTPS_PROXY;
-    assert.strictEqual(res, version);
-  });
-
-  it('should get result', async () => {
-    process.env.https_proxy = 'http://localhost:9000';
-    const hostVersion = process.env.npm_package_version;
-    const hostName = process.env.npm_package_name;
-    const {
-      major, minor, patch
-    } = await parseSemVer(hostVersion);
-    const version = `${major}.${minor}.${patch + 1}`;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(200, {
-      'dist-tags': {
-        latest: version
-      }
-    });
-    const res = await fetchLatestHostVersion();
-    delete process.env.https_proxy;
-    assert.strictEqual(res, version);
-  });
-
-  it('should get result', async () => {
-    process.env.HTTP_PROXY = 'http://localhost:9000';
-    const hostVersion = process.env.npm_package_version;
-    const hostName = process.env.npm_package_name;
-    const {
-      major, minor, patch
-    } = await parseSemVer(hostVersion);
-    const version = `${major}.${minor}.${patch + 1}`;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(200, {
-      'dist-tags': {
-        latest: version
-      }
-    });
-    const res = await fetchLatestHostVersion();
-    delete process.env.HTTP_PROXY;
-    assert.strictEqual(res, version);
-  });
-
-  it('should get result', async () => {
-    process.env.http_proxy = 'http://localhost:9000';
-    const hostVersion = process.env.npm_package_version;
-    const hostName = process.env.npm_package_name;
-    const {
-      major, minor, patch
-    } = await parseSemVer(hostVersion);
-    const version = `${major}.${minor}.${patch + 1}`;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(200, {
-      'dist-tags': {
-        latest: version
-      }
-    });
-    const res = await fetchLatestHostVersion();
-    delete process.env.http_proxy;
     assert.strictEqual(res, version);
   });
 });
@@ -2691,6 +2591,57 @@ describe('addProcessListeners', () => {
     stubStdinOn.restore();
     assert.strictEqual(stubOnCallCount, i + 2);
     assert.strictEqual(stubStdinOnCallCount, j + 1);
+  });
+});
+
+describe('set dispatcher', () => {
+  it('should call function', () => {
+    const stubAgent = sinon.stub(undici, 'setGlobalDispatcher');
+    process.env.HTTPS_PROXY = 'http://localhost:3000';
+    setDispatcher();
+    const { calledOnce: agentCalled } = stubAgent;
+    stubAgent.restore();
+    delete process.env.HTTPS_PROXY;
+    assert.isTrue(agentCalled, 'called');
+  });
+
+  it('should call function', () => {
+    const stubAgent = sinon.stub(undici, 'setGlobalDispatcher');
+    process.env.https_proxy = 'http://localhost:3000';
+    setDispatcher();
+    const { calledOnce: agentCalled } = stubAgent;
+    stubAgent.restore();
+    delete process.env.https_proxy;
+    assert.isTrue(agentCalled, 'called');
+  });
+
+  it('should call function', () => {
+    const stubAgent = sinon.stub(undici, 'setGlobalDispatcher');
+    process.env.HTTP_PROXY = 'http://localhost:3000';
+    setDispatcher();
+    console.log(stubAgent.called);
+    const { calledOnce: agentCalled } = stubAgent;
+    stubAgent.restore();
+    delete process.env.HTTP_PROXY;
+    assert.isTrue(agentCalled, 'called');
+  });
+
+  it('should call function', () => {
+    const stubAgent = sinon.stub(undici, 'setGlobalDispatcher');
+    process.env.http_proxy = 'http://localhost:3000';
+    setDispatcher();
+    const { calledOnce: agentCalled } = stubAgent;
+    stubAgent.restore();
+    delete process.env.http_proxy;
+    assert.isTrue(agentCalled, 'called');
+  });
+
+  it('should not call function', () => {
+    const stubAgent = sinon.stub(undici, 'setGlobalDispatcher');
+    setDispatcher();
+    const { called: agentCalled } = stubAgent;
+    stubAgent.restore();
+    assert.isFalse(agentCalled, 'not called');
   });
 });
 
