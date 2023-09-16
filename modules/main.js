@@ -7,8 +7,7 @@ import { watch } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
-import HttpsProxyAgent from 'https-proxy-agent';
-import fetch from 'node-fetch';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { compareSemVer, isValidSemVer } from 'semver-parser';
 import {
   ChildProcess, CmdArgs, Input, Output,
