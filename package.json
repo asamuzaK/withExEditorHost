@@ -9,6 +9,9 @@
     "type": "git",
     "url": "https://github.com/asamuzaK/withExEditorHost.git"
   },
+  "engines": {
+    "node": ">=18"
+  },
   "type": "module",
   "main": "./index.js",
   "dependencies": {
