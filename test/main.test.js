@@ -5,11 +5,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
-import nock from 'nock';
 import sinon from 'sinon';
 import { assert } from 'chai';
-import { afterEach, beforeEach, describe, it, xit } from 'mocha';
+import { afterEach, beforeEach, describe, it } from 'mocha';
 import { compareSemVer, parseSemVer } from 'semver-parser';
+import { getGlobalDispatcher, MockAgent, setGlobalDispatcher } from 'undici';
 import {
   Input, Output,
   createDirectory, createFile, getFileTimestamp, isDir, isFile, removeDir
@@ -365,16 +365,22 @@ describe('exportFileData', () => {
 });
 
 describe('fetchLatestHostVersion', () => {
+  const globalDispatcher = getGlobalDispatcher();
+  const mockAgent = new MockAgent();
   beforeEach(() => {
-    nock.cleanAll();
+    setGlobalDispatcher(mockAgent);
+    mockAgent.disableNetConnect();
   });
   afterEach(() => {
-    nock.cleanAll();
+    mockAgent.enableNetConnect();
+    setGlobalDispatcher(globalDispatcher);
   });
 
   it('should get null', async () => {
     const hostName = process.env.npm_package_name;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(404);
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(404);
     const res = await fetchLatestHostVersion();
     assert.isNull(res);
   });
@@ -382,7 +388,9 @@ describe('fetchLatestHostVersion', () => {
   it('should get null', async () => {
     process.env.HTTPS_PROXY = 'http://localhost:9000';
     const hostName = process.env.npm_package_name;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(404);
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(404);
     const res = await fetchLatestHostVersion();
     delete process.env.HTTPS_PROXY;
     assert.isNull(res);
@@ -390,8 +398,9 @@ describe('fetchLatestHostVersion', () => {
 
   it('should get null', async () => {
     const hostName = process.env.npm_package_name;
-    nock('https://registry.npmjs.org').get(`/${hostName}`)
-      .replyWithError('Error');
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).replyWithError(new Error('Error'));
     const res = await fetchLatestHostVersion();
     assert.isNull(res);
   });
@@ -399,22 +408,24 @@ describe('fetchLatestHostVersion', () => {
   it('should get null', async () => {
     process.env.HTTPS_PROXY = 'http://localhost:9000';
     const hostName = process.env.npm_package_name;
-    nock('https://registry.npmjs.org').get(`/${hostName}`)
-      .replyWithError('Error');
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).replyWithError(new Error('Error'));
     const res = await fetchLatestHostVersion();
     delete process.env.HTTPS_PROXY;
     assert.isNull(res);
   });
 
-  // skip until Node.js v16 reaches EOL
-  xit('should get result', async () => {
+  it('should get result', async () => {
     const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
     const {
       major, minor, patch
     } = await parseSemVer(hostVersion);
     const version = `${major}.${minor}.${patch + 1}`;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(200, {
       'dist-tags': {
         latest: version
       }
@@ -423,8 +434,7 @@ describe('fetchLatestHostVersion', () => {
     assert.strictEqual(res, version);
   });
 
-  // skip until Node.js v16 reaches EOL
-  xit('should get result', async () => {
+  it('should get result', async () => {
     process.env.HTTPS_PROXY = 'http://localhost:9000';
     const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
@@ -432,7 +442,9 @@ describe('fetchLatestHostVersion', () => {
       major, minor, patch
     } = await parseSemVer(hostVersion);
     const version = `${major}.${minor}.${patch + 1}`;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(200, {
       'dist-tags': {
         latest: version
       }
@@ -442,8 +454,7 @@ describe('fetchLatestHostVersion', () => {
     assert.strictEqual(res, version);
   });
 
-  // skip until Node.js v16 reaches EOL
-  xit('should get result', async () => {
+  it('should get result', async () => {
     process.env.https_proxy = 'http://localhost:9000';
     const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
@@ -451,7 +462,9 @@ describe('fetchLatestHostVersion', () => {
       major, minor, patch
     } = await parseSemVer(hostVersion);
     const version = `${major}.${minor}.${patch + 1}`;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(200, {
       'dist-tags': {
         latest: version
       }
@@ -461,8 +474,7 @@ describe('fetchLatestHostVersion', () => {
     assert.strictEqual(res, version);
   });
 
-  // skip until Node.js v16 reaches EOL
-  xit('should get result', async () => {
+  it('should get result', async () => {
     process.env.HTTP_PROXY = 'http://localhost:9000';
     const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
@@ -470,7 +482,9 @@ describe('fetchLatestHostVersion', () => {
       major, minor, patch
     } = await parseSemVer(hostVersion);
     const version = `${major}.${minor}.${patch + 1}`;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(200, {
       'dist-tags': {
         latest: version
       }
@@ -480,8 +494,7 @@ describe('fetchLatestHostVersion', () => {
     assert.strictEqual(res, version);
   });
 
-  // skip until Node.js v16 reaches EOL
-  xit('should get result', async () => {
+  it('should get result', async () => {
     process.env.http_proxy = 'http://localhost:9000';
     const hostVersion = process.env.npm_package_version;
     const hostName = process.env.npm_package_name;
@@ -489,7 +502,9 @@ describe('fetchLatestHostVersion', () => {
       major, minor, patch
     } = await parseSemVer(hostVersion);
     const version = `${major}.${minor}.${patch + 1}`;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(200, {
       'dist-tags': {
         latest: version
       }
@@ -501,6 +516,17 @@ describe('fetchLatestHostVersion', () => {
 });
 
 describe('exportHostVersion', () => {
+  const globalDispatcher = getGlobalDispatcher();
+  const mockAgent = new MockAgent();
+  beforeEach(() => {
+    setGlobalDispatcher(mockAgent);
+    mockAgent.disableNetConnect();
+  });
+  afterEach(() => {
+    mockAgent.enableNetConnect();
+    setGlobalDispatcher(globalDispatcher);
+  });
+
   it('should throw', async () => {
     await exportHostVersion().catch(e => {
       assert.instanceOf(e, TypeError);
@@ -528,7 +554,9 @@ describe('exportHostVersion', () => {
     } = await parseSemVer(hostVersion);
     const minVer = `${major > 0 ? major - 1 : 0}.${minor}.${patch}`;
     const version = hostVersion;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(200, {
       'dist-tags': {
         latest: version
       }
@@ -557,7 +585,9 @@ describe('exportHostVersion', () => {
     } = await parseSemVer(hostVersion);
     const minVer = `${major > 0 ? major - 1 : 0}.${minor}.${patch}`;
     const version = `${major}.${minor}.${patch + 1}`;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(200, {
       'dist-tags': {
         latest: version
       }
@@ -586,7 +616,9 @@ describe('exportHostVersion', () => {
     } = await parseSemVer(hostVersion);
     const minVer = hostVersion;
     const version = `${major}.${minor}.${patch + 1}`;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(200, {
       'dist-tags': {
         latest: version
       }
@@ -612,7 +644,9 @@ describe('exportHostVersion', () => {
     const hostVersion = process.env.npm_package_version;
     const minVer = hostVersion;
     const version = hostVersion;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(200, {
       'dist-tags': {
         latest: version
       }
@@ -641,7 +675,9 @@ describe('exportHostVersion', () => {
       major
     } = await parseSemVer(hostVersion);
     const version = `${major + 1}.0.0-a.1`;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(200, {
       'dist-tags': {
         latest: version
       }
@@ -670,7 +706,9 @@ describe('exportHostVersion', () => {
     } = await parseSemVer(hostVersion);
     const minVer = `${major > 0 ? major - 1 : 0}.${minor}.${patch}`;
     const version = `${major > 0 ? major - 1 : 0}.${minor}.${patch}`;
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(200, {
       'dist-tags': {
         latest: version
       }
@@ -2322,11 +2360,17 @@ describe('handleCreatedTmpFile', () => {
 });
 
 describe('handleMsg', () => {
+  const globalDispatcher = getGlobalDispatcher();
+  const mockAgent = new MockAgent();
   beforeEach(() => {
     editorConfig.editorPath = '';
+    setGlobalDispatcher(mockAgent);
+    mockAgent.disableNetConnect();
   });
   afterEach(() => {
     editorConfig.editorPath = '';
+    mockAgent.enableNetConnect();
+    setGlobalDispatcher(globalDispatcher);
   });
 
   it('should call function', async () => {
@@ -2490,7 +2534,9 @@ describe('handleMsg', () => {
         result: 0
       }
     });
-    nock('https://registry.npmjs.org').get(`/${hostName}`).reply(200, {
+    mockAgent.get('https://registry.npmjs.org').intercept({
+      path: `/${hostName}`
+    }).reply(200, {
       'dist-tags': {
         latest: version
       }
