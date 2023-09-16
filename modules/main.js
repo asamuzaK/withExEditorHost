@@ -7,8 +7,8 @@ import { watch } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
-import undici from 'undici';
 import { compareSemVer, isValidSemVer } from 'semver-parser';
+import undici from 'undici';
 import {
   ChildProcess, CmdArgs, Input, Output,
   convertUriToFilePath, createDirectory, createFile,

@@ -5,10 +5,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
-import sinon from 'sinon';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { compareSemVer, parseSemVer } from 'semver-parser';
+import sinon from 'sinon';
 import undici, {
   getGlobalDispatcher, MockAgent, setGlobalDispatcher
 } from 'undici';

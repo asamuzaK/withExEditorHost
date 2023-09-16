@@ -5,9 +5,9 @@ import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import readline from 'readline-sync';
-import sinon from 'sinon';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import sinon from 'sinon';
 import {
   Setup, createDirectory, createFile, isFile, removeDir
 } from 'web-ext-native-msg';

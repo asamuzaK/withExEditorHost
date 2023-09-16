@@ -8,9 +8,9 @@
 
 /* api */
 import process from 'node:process';
+import { parseCommand } from './modules/commander.js';
 import { logErr, throwErr } from './modules/common.js';
 import { startup } from './modules/main.js';
-import { parseCommand } from './modules/commander.js';
 
 /* process */
 process.on('uncaughtException', throwErr);
