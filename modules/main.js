@@ -7,7 +7,7 @@ import { watch } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
-import { HttpsProxyAgent } from 'https-proxy-agent';
+import undici from 'undici';
 import { compareSemVer, isValidSemVer } from 'semver-parser';
 import {
   ChildProcess, CmdArgs, Input, Output,
@@ -163,19 +163,9 @@ export const exportFileData = async (obj = {}) => {
  * @returns {?string} - latest host version string
  */
 export const fetchLatestHostVersion = async () => {
-  const url = `https://registry.npmjs.org/${HOST}`;
-  const proxy = process.env.HTTPS_PROXY || process.env.https_proxy ||
-                process.env.HTTP_PROXY || process.env.http_proxy;
   let version;
   try {
-    let res;
-    if (proxy) {
-      res = await fetch(url, {
-        agent: new HttpsProxyAgent(proxy)
-      });
-    } else {
-      res = await fetch(url);
-    }
+    const res = await fetch(`https://registry.npmjs.org/${HOST}`);
     if (res.ok) {
       const data = await res.json();
       const { latest } = data['dist-tags'];
@@ -741,6 +731,19 @@ export const handleExit = code => {
 };
 
 /**
+ * set dispatcher
+ * @returns {void}
+ */
+export const setDispatcher = () => {
+  const proxy = process.env.HTTPS_PROXY || process.env.https_proxy ||
+                process.env.HTTP_PROXY || process.env.http_proxy;
+  if (proxy) {
+    const agent = new undici.ProxyAgent(proxy);
+    undici.setGlobalDispatcher(agent);
+  }
+};
+
+/**
  * add process listeners
  * @returns {void}
  */
@@ -756,6 +759,7 @@ export const addProcessListeners = () => {
  */
 export const startup = () => Promise.all([
   addProcessListeners(),
+  setDispatcher(),
   createDirectory(TMPDIR_FILES, PERM_DIR),
   createDirectory(TMPDIR_FILES_PB, PERM_DIR)
 ]).then(exportAppStatus).catch(handleReject);
