@@ -29,14 +29,14 @@ import {
   handleReject, hostMsg, initPrivateTmpDir, readStdin, removeTmpFileData,
   setDispatcher, startup, unwatchFile, viewLocalFile, watchTmpFile, writeStdout
 } from '../modules/main.js';
+
+/* constants */
 import {
   EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
   FILE_WATCH, HOST_VERSION, HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW,
   MODE_EDIT, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
   TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES
 } from '../modules/constant.js';
-
-/* constant */
 const APP = `${process.pid}`;
 const CHAR = 'utf8';
 const IS_WIN = os.platform() === 'win32';

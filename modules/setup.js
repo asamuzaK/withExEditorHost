@@ -10,11 +10,11 @@ import {
   CmdArgs, Setup, createFile, getStat, isDir, isExecutable, isFile
 } from 'web-ext-native-msg';
 import { isString, throwErr } from './common.js';
+
+/* constants */
 import {
   EDITOR_CONFIG_FILE, EXT_CHROME_ID, EXT_WEB_ID, HOST, HOST_DESC
 } from './constant.js';
-
-/* constants */
 const CHAR = 'utf8';
 const INDENT = 2;
 const PERM_FILE = 0o644;

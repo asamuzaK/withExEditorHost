@@ -17,9 +17,9 @@ import {
   abortSetup, createEditorConfig, handleCmdArgsInput, handleEditorPathInput,
   handleSetupCallback, runSetup, setupOpts
 } from '../modules/setup.js';
-import { EDITOR_CONFIG_FILE } from '../modules/constant.js';
 
-/* constant */
+/* constants */
+import { EDITOR_CONFIG_FILE } from '../modules/constant.js';
 const CHAR = 'utf8';
 const DIR_TMP = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
                 os.tmpdir();

@@ -17,6 +17,8 @@ import {
 } from 'web-ext-native-msg';
 import { getType, quoteArg, isObjectNotEmpty, isString } from './common.js';
 import { version as hostVersion } from './version.js';
+
+/* constants */
 import {
   EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
   FILE_WATCH, HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL,
@@ -25,8 +27,6 @@ import {
   TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_PLACEHOLDER,
   TMP_FILE_RES
 } from './constant.js';
-
-/* constants */
 const APP = `${process.pid}`;
 const CHAR = 'utf8';
 const FILE_NOT_FOUND_TIMESTAMP = -1;
