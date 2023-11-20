@@ -22,14 +22,14 @@
     "web-ext-native-msg": "^6.1.10"
   },
   "devDependencies": {
-    "boxednode": "^2.1.2",
+    "boxednode": "^2.2.0",
     "c8": "^8.0.1",
     "chai": "^4.3.10",
-    "esbuild": "^0.19.5",
-    "eslint": "^8.53.0",
+    "esbuild": "^0.19.6",
+    "eslint": "^8.54.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-jsdoc": "^46.8.2",
+    "eslint-plugin-jsdoc": "^46.9.0",
     "eslint-plugin-regexp": "^2.1.1",
     "eslint-plugin-unicorn": "^49.0.0",
     "genversion": "^3.1.1",
