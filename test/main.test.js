@@ -2619,7 +2619,6 @@ describe('set dispatcher', () => {
     const stubAgent = sinon.stub(undici, 'setGlobalDispatcher');
     process.env.HTTP_PROXY = 'http://localhost:3000';
     setDispatcher();
-    console.log(stubAgent.called);
     const { calledOnce: agentCalled } = stubAgent;
     stubAgent.restore();
     delete process.env.HTTP_PROXY;
