@@ -22,7 +22,7 @@
     "web-ext-native-msg": "^6.2.1"
   },
   "devDependencies": {
-    "boxednode": "^2.2.0",
+    "boxednode": "^2.3.0",
     "c8": "^9.1.0",
     "chai": "^5.1.0",
     "esbuild": "^0.20.1",
@@ -48,5 +48,5 @@
     "test": "c8 --reporter=text mocha --exit test/*.test.js",
     "zip-jszip": "jszip"
   },
-  "version": "8.0.2"
+  "version": "8.0.1"
 }
