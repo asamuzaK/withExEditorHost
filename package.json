@@ -19,7 +19,7 @@
     "readline-sync": "^1.4.10",
     "semver-parser": "^4.1.6",
     "undici": "^6.6.2",
-    "web-ext-native-msg": "^6.2.1"
+    "web-ext-native-msg": "^6.2.2"
   },
   "devDependencies": {
     "boxednode": "^2.3.0",
@@ -29,7 +29,7 @@
     "eslint": "^8.56.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsdoc": "^48.1.0",
+    "eslint-plugin-jsdoc": "^48.2.0",
     "eslint-plugin-regexp": "^2.2.0",
     "eslint-plugin-unicorn": "^51.0.1",
     "genversion": "^3.2.0",
@@ -48,5 +48,5 @@
     "test": "c8 --reporter=text mocha --exit test/*.test.js",
     "zip-jszip": "jszip"
   },
-  "version": "8.0.1"
+  "version": "8.0.4"
 }
