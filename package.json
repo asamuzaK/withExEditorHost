@@ -39,7 +39,7 @@
   },
   "scripts": {
     "bundle-js": "esbuild --platform=node --outdir=./bundle --bundle --minify ./index.js",
-    "bundle-bin": "boxednode --node-version=lts --source=./bundle/index.js",
+    "bundle-bin": "boxednode --node-version=20.11.0 --source=./bundle/index.js",
     "genversion": "genversion --es6 --semi ./modules/version.js",
     "lint": "eslint --fix .",
     "prebuild": "npm run genversion && npm run lint && npm run test",
@@ -48,5 +48,5 @@
     "test": "c8 --reporter=text mocha --exit test/*.test.js",
     "zip-jszip": "jszip"
   },
-  "version": "8.0.1"
+  "version": "8.0.3"
 }
