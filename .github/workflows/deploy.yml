@@ -14,28 +14,28 @@ jobs:
     strategy:
       matrix:
         include:
-          - asset-name: linux-x86_64.tar.gz
-            node-version: 20.x
+          - node-version: 20.x
             os: ubuntu-latest
             python-version: '3.x'
+            asset-name: linux-x86_64.tar.gz
             pkg-dir: pkg/linux
             bin-file: ./pkg/linux/index
             make-args: --make-args="-j4"
             zip-cmd: cd ./pkg/linux && tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
-          - asset-name: macos.tar.gz
-            node-version: 20.x
+          - node-version: 20.x
             os: macos-latest
             python-version: '3.x'
+            asset-name: macos.tar.gz
             pkg-dir: pkg/macos
             bin-file: ./pkg/macos/index
             make-args: --make-args="-j4"
             zip-cmd: cd ./pkg/macos && tar -cvzf macos.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
-          - asset-name: win64.zip
-            node-version: 20.x
+          - node-version: 20.x
             os: windows-latest
             python-version: '3.x'
+            asset-name: win64.zip
             pkg-dir: pkg/win
             bin-file: ./pkg/win/index.exe
             make-args: ''
