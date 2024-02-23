@@ -48,5 +48,5 @@
     "test": "c8 --reporter=text mocha --exit test/*.test.js",
     "zip-jszip": "jszip"
   },
-  "version": "8.0.5-a.1"
+  "version": "8.0.5"
 }
