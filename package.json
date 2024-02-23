@@ -19,7 +19,7 @@
     "readline-sync": "^1.4.10",
     "semver-parser": "^4.1.6",
     "undici": "^6.6.2",
-    "web-ext-native-msg": "^6.2.2"
+    "web-ext-native-msg": "^6.2.3"
   },
   "devDependencies": {
     "boxednode": "^2.3.0",
