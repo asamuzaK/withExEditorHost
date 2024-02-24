@@ -7,11 +7,11 @@ import { watch } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import { compareSemVer, isValidSemVer } from 'semver-parser';
 import undici from 'undici';
 import {
-  ChildProcess, CmdArgs, Input, Output,
-  convertUriToFilePath, createDirectory, createFile,
+  ChildProcess, CmdArgs, Input, Output, createDirectory, createFile,
   getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
   removeDir, removeDirectory, readFile
 } from 'web-ext-native-msg';
@@ -623,7 +623,7 @@ export const viewLocalFile = async uri => {
   let func;
   const { protocol } = new URL(uri);
   if (protocol === 'file:') {
-    const file = await convertUriToFilePath(uri);
+    const file = fileURLToPath(uri);
     if (file && isFile(file)) {
       func = execChildProcess(file);
     }
