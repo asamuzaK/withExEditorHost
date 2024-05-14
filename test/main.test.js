@@ -855,12 +855,12 @@ describe('handleChildProcessStdout', () => {
 describe('execChildProcess', () => {
   beforeEach(() => {
     editorConfig.editorPath = '';
-    editorConfig.cmdArgs = [];
+    editorConfig.cmdArgs = '';
     editorConfig.hasPlaceholder = false;
   });
   afterEach(() => {
     editorConfig.editorPath = '';
-    editorConfig.cmdArgs = [];
+    editorConfig.cmdArgs = '';
     editorConfig.hasPlaceholder = false;
   });
 
@@ -984,6 +984,36 @@ describe('execChildProcess', () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
+    editorConfig.cmdArgs = 'foo bar';
+    const res = await execChildProcess(filePath, editorPath);
+    const { called: writeCalled } = stubWrite;
+    const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
+    stubWrite.restore();
+    stubSpawn.restore();
+    assert.isFalse(writeCalled);
+    assert.isTrue(spawnCalled);
+    assert.strictEqual(spawnArgs[0][0], editorPath);
+    assert.deepEqual(spawnArgs[0][1], ['foo', 'bar', filePath]);
+    assert.isObject(res);
+  });
+
+  it('should call function', async () => {
+    const stubWrite = sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const stubSpawn = sinon.stub(childProcess, 'spawn').returns({
+      on: a => a,
+      stderr: {
+        on: a => a
+      },
+      stdout: {
+        on: a => a
+      }
+    });
+    const filePath = path.resolve('test', 'file', 'test.txt');
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve('test', 'file', app);
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
     editorConfig.cmdArgs = ['foo', 'bar'];
     const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;
@@ -1044,7 +1074,38 @@ describe('execChildProcess', () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    editorConfig.cmdArgs = ['foo ${file}', 'bar'];
+    editorConfig.cmdArgs = 'foo ${file} bar';
+    editorConfig.hasPlaceholder = true;
+    const res = await execChildProcess(filePath, editorPath);
+    const { called: writeCalled } = stubWrite;
+    const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
+    stubWrite.restore();
+    stubSpawn.restore();
+    assert.isFalse(writeCalled);
+    assert.isTrue(spawnCalled);
+    assert.strictEqual(spawnArgs[0][0], editorPath);
+    assert.deepEqual(spawnArgs[0][1], ['foo', filePath, 'bar']);
+    assert.isObject(res);
+  });
+
+  it('should call function', async () => {
+    const stubWrite = sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const stubSpawn = sinon.stub(childProcess, 'spawn').returns({
+      on: a => a,
+      stderr: {
+        on: a => a
+      },
+      stdout: {
+        on: a => a
+      }
+    });
+    const filePath = path.resolve('test', 'file', 'test.txt');
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve('test', 'file', app);
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    editorConfig.cmdArgs = '"foo ${file}" bar';
     editorConfig.hasPlaceholder = true;
     const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;
@@ -1076,6 +1137,37 @@ describe('execChildProcess', () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     editorConfig.cmdArgs = ['foo ${file}', 'bar'];
+    editorConfig.hasPlaceholder = true;
+    const res = await execChildProcess(filePath, editorPath);
+    const { called: writeCalled } = stubWrite;
+    const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
+    stubWrite.restore();
+    stubSpawn.restore();
+    assert.isFalse(writeCalled);
+    assert.isTrue(spawnCalled);
+    assert.strictEqual(spawnArgs[0][0], editorPath);
+    assert.deepEqual(spawnArgs[0][1], [`foo ${filePath}`, 'bar']);
+    assert.isObject(res);
+  });
+
+  it('should call function', async () => {
+    const stubWrite = sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const stubSpawn = sinon.stub(childProcess, 'spawn').returns({
+      on: a => a,
+      stderr: {
+        on: a => a
+      },
+      stdout: {
+        on: a => a
+      }
+    });
+    const filePath = path.resolve('test', 'file', 'sub dir', 'test.txt');
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve('test', 'file', app);
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    editorConfig.cmdArgs = '"foo ${file}" bar';
     editorConfig.hasPlaceholder = true;
     const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;
@@ -1106,7 +1198,7 @@ describe('execChildProcess', () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    editorConfig.cmdArgs = ['foo', 'bar=baz ${file}'];
+    editorConfig.cmdArgs = 'foo bar="baz ${file}"';
     editorConfig.hasPlaceholder = true;
     const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;
@@ -1137,7 +1229,7 @@ describe('execChildProcess', () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    editorConfig.cmdArgs = ['foo', 'bar=baz ${file}'];
+    editorConfig.cmdArgs = 'foo bar="baz ${file}"';
     editorConfig.hasPlaceholder = true;
     const res = await execChildProcess(filePath, editorPath);
     const { called: writeCalled } = stubWrite;

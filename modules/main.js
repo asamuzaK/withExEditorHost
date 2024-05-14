@@ -15,7 +15,7 @@ import {
   getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
   removeDir, removeDirectory, readFile
 } from 'web-ext-native-msg';
-import { getType, quoteArg, isObjectNotEmpty, isString } from './common.js';
+import { getType, isObjectNotEmpty, isString } from './common.js';
 import { version as hostVersion } from './version.js';
 
 /* constants */
@@ -41,7 +41,7 @@ const TMPDIR_FILES_PB = path.join(TMPDIR_APP, TMP_FILES_PB);
 /* editor config */
 export const editorConfig = {
   editorPath: '',
-  cmdArgs: [],
+  cmdArgs: '',
   hasPlaceholder: false
 };
 
@@ -125,7 +125,7 @@ export const exportEditorConfig = async (data, editorConfigPath) => {
         editorConfig[key] = value;
       }
       if (key === 'cmdArgs') {
-        editorConfig[key] = new CmdArgs(value).toArray();
+        editorConfig[key] = value;
         editorConfig.hasPlaceholder = reg.test(value);
       }
     }
@@ -313,7 +313,6 @@ export const execChildProcess = async (file, app = editorConfig.editorPath) => {
     args = new CmdArgs(cmdArgs).toArray();
   }
   if (hasPlaceholder) {
-    const [filePath] = new CmdArgs(quoteArg(file)).toArray();
     const reg =
       new RegExp(`\\$(?:${TMP_FILE_PLACEHOLDER}|{${TMP_FILE_PLACEHOLDER}})`);
     const l = args.length;
@@ -321,7 +320,7 @@ export const execChildProcess = async (file, app = editorConfig.editorPath) => {
     while (i < l) {
       const arg = args[i];
       if (reg.test(arg)) {
-        args.splice(i, 1, arg.replace(reg, filePath));
+        args.splice(i, 1, arg.replace(reg, file));
       }
       i++;
     }
