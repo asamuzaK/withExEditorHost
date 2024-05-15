@@ -160,12 +160,12 @@ describe('exportAppStatus', () => {
 describe('exportEditorConfig', () => {
   beforeEach(() => {
     editorConfig.editorPath = '';
-    editorConfig.cmdArgs = [];
+    editorConfig.cmdArgs = '';
     editorConfig.hasPlaceholder = false;
   });
   afterEach(() => {
     editorConfig.editorPath = '';
-    editorConfig.cmdArgs = [];
+    editorConfig.cmdArgs = '';
     editorConfig.hasPlaceholder = false;
   });
 
