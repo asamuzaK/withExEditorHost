@@ -18,23 +18,23 @@
     "commander": "^12.1.0",
     "readline-sync": "^1.4.10",
     "semver-parser": "^4.1.6",
-    "undici": "^6.18.2",
+    "undici": "^6.19.2",
     "web-ext-native-msg": "^7.0.2"
   },
   "devDependencies": {
     "boxednode": "^2.4.3",
-    "c8": "^9.1.0",
+    "c8": "^10.1.2",
     "chai": "^5.1.1",
-    "esbuild": "^0.21.4",
+    "esbuild": "^0.23.0",
     "eslint": "^8.57.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsdoc": "^48.2.7",
+    "eslint-plugin-jsdoc": "^48.6.0",
     "eslint-plugin-regexp": "^2.6.0",
-    "eslint-plugin-unicorn": "^53.0.0",
+    "eslint-plugin-unicorn": "^54.0.0",
     "genversion": "^3.2.0",
     "jszip-cli": "^1.4.24",
-    "mocha": "^10.4.0",
+    "mocha": "^10.6.0",
     "sinon": "^18.0.0"
   },
   "scripts": {
@@ -48,5 +48,5 @@
     "test": "c8 --reporter=text mocha --exit test/*.test.js",
     "zip-jszip": "jszip"
   },
-  "version": "8.0.7"
+  "version": "8.0.8"
 }
