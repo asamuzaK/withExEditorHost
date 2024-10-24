@@ -13,8 +13,8 @@ import undici, {
   getGlobalDispatcher, MockAgent, setGlobalDispatcher
 } from 'undici';
 import {
-  Input, Output,
-  createDirectory, createFile, getFileTimestamp, isDir, isFile, removeDir
+  Input, Output, createDirectory, createFile, getFileTimestamp, isDir, isFile,
+  removeDirSync, removeDirectory
 } from 'web-ext-native-msg';
 
 /* test */
@@ -1368,13 +1368,13 @@ describe('initPrivateTmpDir', () => {
     fileMap[FILE_WATCH].clear();
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES_PB].clear();
-    removeDir(TMPDIR_APP, TMPDIR);
+    removeDirSync(TMPDIR_APP, TMPDIR);
   });
   afterEach(() => {
     fileMap[FILE_WATCH].clear();
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES_PB].clear();
-    removeDir(TMPDIR_APP, TMPDIR);
+    removeDirSync(TMPDIR_APP, TMPDIR);
   });
 
   it('should not init private directory', async () => {
@@ -1672,13 +1672,13 @@ describe('createTmpFileResMsg', () => {
     fileMap[FILE_WATCH].clear();
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES_PB].clear();
-    removeDir(TMPDIR_APP, TMPDIR);
+    removeDirSync(TMPDIR_APP, TMPDIR);
   });
   afterEach(() => {
     fileMap[FILE_WATCH].clear();
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES_PB].clear();
-    removeDir(TMPDIR_APP, TMPDIR);
+    removeDirSync(TMPDIR_APP, TMPDIR);
   });
 
   it('should get null', async () => {
@@ -1768,13 +1768,13 @@ describe('getTmpFileFromWatcherFileName', () => {
     fileMap[FILE_WATCH].clear();
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES_PB].clear();
-    removeDir(TMPDIR_APP, TMPDIR);
+    removeDirSync(TMPDIR_APP, TMPDIR);
   });
   afterEach(() => {
     fileMap[FILE_WATCH].clear();
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES_PB].clear();
-    removeDir(TMPDIR_APP, TMPDIR);
+    removeDirSync(TMPDIR_APP, TMPDIR);
   });
 
   it('should get empty array', async () => {
@@ -1861,13 +1861,13 @@ describe('createTmpFile', () => {
     fileMap[FILE_WATCH].clear();
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES_PB].clear();
-    removeDir(TMPDIR_APP, TMPDIR);
+    removeDirSync(TMPDIR_APP, TMPDIR);
   });
   afterEach(() => {
     fileMap[FILE_WATCH].clear();
     fileMap[TMP_FILES].clear();
     fileMap[TMP_FILES_PB].clear();
-    removeDir(TMPDIR_APP, TMPDIR);
+    removeDirSync(TMPDIR_APP, TMPDIR);
   });
 
   it('should get object', async () => {
@@ -2430,7 +2430,7 @@ describe('handleMsg', () => {
     assert.isTrue(Array.isArray(res));
     assert.strictEqual(res.length, 1);
     assert.deepEqual(res, [undefined]);
-    await removeDir(TMPDIR_APP, TMPDIR);
+    removeDirectory(TMPDIR_APP, TMPDIR);
   });
 
   it('should call function', async () => {
@@ -2595,10 +2595,10 @@ describe('readStdin', () => {
 
 describe('handleExit', () => {
   beforeEach(() => {
-    removeDir(TMPDIR_APP, TMPDIR);
+    removeDirSync(TMPDIR_APP, TMPDIR);
   });
   afterEach(() => {
-    removeDir(TMPDIR_APP, TMPDIR);
+    removeDirSync(TMPDIR_APP, TMPDIR);
   });
 
   it('should not call function', async () => {
@@ -2738,10 +2738,10 @@ describe('set dispatcher', () => {
 
 describe('startup', () => {
   beforeEach(() => {
-    removeDir(TMPDIR_APP, TMPDIR);
+    removeDirSync(TMPDIR_APP, TMPDIR);
   });
   afterEach(() => {
-    removeDir(TMPDIR_APP, TMPDIR);
+    removeDirSync(TMPDIR_APP, TMPDIR);
   });
 
   it('should call function', async () => {

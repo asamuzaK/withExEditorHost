@@ -13,7 +13,7 @@ import undici from 'undici';
 import {
   ChildProcess, CmdArgs, Input, Output, createDirectory, createFile,
   getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
-  removeDir, removeDirectory, readFile
+  removeDirSync, removeDirectory, readFile
 } from 'web-ext-native-msg';
 import { getType, isObjectNotEmpty, isString } from './common.js';
 import { version as hostVersion } from './version.js';
@@ -719,7 +719,7 @@ export const readStdin = chunk => {
  */
 export const handleExit = code => {
   if (isDir(TMPDIR_APP)) {
-    removeDir(TMPDIR_APP, TMPDIR);
+    removeDirSync(TMPDIR_APP, TMPDIR);
   }
   if (code) {
     const msg = new Output().encode(hostMsg(`exit ${code}`, 'exit'));

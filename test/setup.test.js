@@ -9,7 +9,7 @@ import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import sinon from 'sinon';
 import {
-  Setup, createDirectory, createFile, isFile, removeDir
+  Setup, createDirectory, createFile, isFile, removeDirSync
 } from 'web-ext-native-msg';
 
 /* test */
@@ -225,12 +225,12 @@ describe('handleEditorPathInput', () => {
 describe('createEditorConfig', () => {
   beforeEach(() => {
     const configDirPath = path.join(DIR_TMP, 'withexeditorhost-test');
-    removeDir(configDirPath, DIR_TMP);
+    removeDirSync(configDirPath, DIR_TMP);
     setupOpts.clear();
   });
   afterEach(() => {
     const configDirPath = path.join(DIR_TMP, 'withexeditorhost-test');
-    removeDir(configDirPath, DIR_TMP);
+    removeDirSync(configDirPath, DIR_TMP);
     setupOpts.clear();
   });
 
@@ -281,12 +281,12 @@ describe('createEditorConfig', () => {
 describe('handleSetupCallback', () => {
   beforeEach(() => {
     const configDirPath = path.join(DIR_TMP, 'withexeditorhost-test');
-    removeDir(configDirPath, DIR_TMP);
+    removeDirSync(configDirPath, DIR_TMP);
     setupOpts.clear();
   });
   afterEach(() => {
     const configDirPath = path.join(DIR_TMP, 'withexeditorhost-test');
-    removeDir(configDirPath, DIR_TMP);
+    removeDirSync(configDirPath, DIR_TMP);
     setupOpts.clear();
   });
 
