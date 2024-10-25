@@ -1,4 +1,4 @@
-'use strict';
+/* eslint-disable no-template-curly-in-string */
 /* api */
 import fs from 'node:fs';
 import os from 'node:os';
@@ -128,6 +128,46 @@ describe('handleEditorPathInput', () => {
     const res = await handleEditorPathInput(editorPath);
     assert.isFalse(stubInput.called);
     assert.strictEqual(res, editorPath);
+    stubInput.restore();
+  });
+
+  it('should call function and get string', async () => {
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve('test', 'file', app);
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const stubInput = sinon.stub(inquirer, 'input').resolves(editorPath);
+    const envVarPath = path.resolve('${TEST}', '$FILE', app);
+    process.env.TEST = 'test';
+    process.env.FILE = 'file';
+    const res = await handleEditorPathInput(envVarPath);
+    delete process.env.TEST;
+    delete process.env.FILE;
+    assert.isFalse(stubInput.called);
+    assert.strictEqual(res, envVarPath);
+    stubInput.restore();
+  });
+
+  it('should call function and get string', async () => {
+    let wrn;
+    const stubWarn = sinon.stub(console, 'warn').callsFake(msg => {
+      wrn = msg;
+    });
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve('test', 'file', app);
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const stubInput = sinon.stub(inquirer, 'input').resolves(editorPath);
+    const envVarPath = path.resolve('${TEST}', '$FILE', app);
+    process.env.TEST = 'test';
+    const res = await handleEditorPathInput(envVarPath);
+    delete process.env.TEST;
+    assert.strictEqual(wrn, `${envVarPath} not found.`);
+    assert.isTrue(stubInput.called);
+    assert.strictEqual(res, editorPath);
+    stubWarn.restore();
     stubInput.restore();
   });
 

@@ -74,31 +74,39 @@ export const handleCmdArgsInput = async editorArgs => {
  * @returns {string} - editor path
  */
 export const handleEditorPathInput = async editorFilePath => {
-  let editorPath;
-  if (isFile(editorFilePath) && isExecutable(editorFilePath)) {
-    editorPath = editorFilePath;
-  } else {
-    const ans = await inquirer.input({
+  if (!editorFilePath) {
+    editorFilePath = await inquirer.input({
       message: 'Input editor path:',
       required: true
     });
-    const stat = getStat(ans);
-    if (stat) {
-      if (stat.isFile()) {
-        if (isExecutable(ans)) {
-          editorPath = ans;
-        } else {
-          console.warn(`${ans} is not executable.`);
-          editorPath = await handleEditorPathInput();
-        }
+  }
+  let parsedPath = editorFilePath;
+  if (/\$\{\w+\}|\$\w+/.test(editorFilePath)) {
+    const envVars = editorFilePath.match(/\$\{\w+\}|\$\w+/g);
+    for (const envVar of envVars) {
+      const key = envVar.replace(/^\$\{?/, '').replace(/\}$/, '');
+      if (process.env[key]) {
+        parsedPath = parsedPath.replace(envVar, process.env[key]);
+      }
+    }
+  }
+  let editorPath;
+  const stat = getStat(parsedPath);
+  if (stat) {
+    if (stat.isFile()) {
+      if (isExecutable(parsedPath)) {
+        editorPath = editorFilePath;
       } else {
-        console.warn(`${ans} is not a file.`);
+        console.warn(`${editorFilePath} is not executable.`);
         editorPath = await handleEditorPathInput();
       }
     } else {
-      console.warn(`${ans} not found.`);
+      console.warn(`${editorFilePath} is not a file.`);
       editorPath = await handleEditorPathInput();
     }
+  } else {
+    console.warn(`${editorFilePath} not found.`);
+    editorPath = await handleEditorPathInput();
   }
   return editorPath;
 };

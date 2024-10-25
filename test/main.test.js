@@ -212,7 +212,48 @@ describe('exportEditorConfig', () => {
     stubErrWrite.restore();
     assert.isTrue(writeCalled);
     assert.isFalse(errWriteCalled);
+    assert.strictEqual(editorConfig.editorName, 'test');
     assert.strictEqual(editorConfig.editorPath, editorPath);
+    assert.deepEqual(editorConfig.cmdArgs, ['--foo', '--bar']);
+    assert.isFalse(editorConfig.hasPlaceholder);
+    assert.deepEqual(res, msg);
+  });
+
+  it('should call function', async () => {
+    const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
+    const stubErrWrite =
+      sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const editorConfigPath = path.resolve('test', 'file', 'editorconfig.json');
+    const timestamp = getFileTimestamp(editorConfigPath);
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve('test', 'file', app);
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const envVarPath = path.resolve('${TEST}', 'file', app);
+    process.env.TEST = 'test';
+    const editorConfigData = {
+      editorPath: envVarPath,
+      cmdArgs: ['--foo', '--bar']
+    };
+    const value = `${JSON.stringify(editorConfigData)}\n`;
+    const msg = new Output().encode({
+      [EDITOR_CONFIG_RES]: {
+        editorName: 'test',
+        executable: true,
+        [EDITOR_CONFIG_TS]: timestamp
+      }
+    });
+    const res = await exportEditorConfig(value, editorConfigPath);
+    const { calledOnce: writeCalled } = stubWrite;
+    const { called: errWriteCalled } = stubErrWrite;
+    delete process.env.TEST;
+    stubWrite.restore();
+    stubErrWrite.restore();
+    assert.isTrue(writeCalled);
+    assert.isFalse(errWriteCalled);
+    assert.strictEqual(editorConfig.editorName, 'test');
+    assert.strictEqual(editorConfig.editorPath, envVarPath);
     assert.deepEqual(editorConfig.cmdArgs, ['--foo', '--bar']);
     assert.isFalse(editorConfig.hasPlaceholder);
     assert.deepEqual(res, msg);
@@ -248,6 +289,7 @@ describe('exportEditorConfig', () => {
     stubErrWrite.restore();
     assert.isTrue(writeCalled);
     assert.isFalse(errWriteCalled);
+    assert.strictEqual(editorConfig.editorName, 'test');
     assert.strictEqual(editorConfig.editorPath, editorPath);
     assert.deepEqual(editorConfig.cmdArgs, ['--foo', '$file']);
     assert.isTrue(editorConfig.hasPlaceholder);
@@ -284,6 +326,7 @@ describe('exportEditorConfig', () => {
     stubErrWrite.restore();
     assert.isTrue(writeCalled);
     assert.isFalse(errWriteCalled);
+    assert.strictEqual(editorConfig.editorName, 'test');
     assert.strictEqual(editorConfig.editorPath, editorPath);
     assert.deepEqual(editorConfig.cmdArgs, ['--foo="bar baz"']);
     assert.isFalse(editorConfig.hasPlaceholder);
@@ -320,6 +363,7 @@ describe('exportEditorConfig', () => {
     stubErrWrite.restore();
     assert.isTrue(writeCalled);
     assert.isFalse(errWriteCalled);
+    assert.strictEqual(editorConfig.editorName, 'test');
     assert.strictEqual(editorConfig.editorPath, editorPath);
     assert.deepEqual(editorConfig.cmdArgs, ['--foo', '${file}']);
     assert.isTrue(editorConfig.hasPlaceholder);
@@ -687,15 +731,10 @@ describe('handleChildProcessClose', () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
       info = buf;
     });
-    const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve('test', 'file', app);
-    if (!IS_WIN) {
-      fs.chmodSync(editorPath, PERM_APP);
-    }
-    editorConfig.editorPath = editorPath;
+    editorConfig.editorName = 'foo';
     const msg = new Output().encode({
       withexeditorhost: {
-        message: 'test close all stdio with code 0',
+        message: 'foo close all stdio with code 0',
         status: 'close'
       }
     });
@@ -711,15 +750,10 @@ describe('handleChildProcessClose', () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
       info = buf;
     });
-    const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve('test', 'file', app);
-    if (!IS_WIN) {
-      fs.chmodSync(editorPath, PERM_APP);
-    }
-    editorConfig.editorPath = editorPath;
+    editorConfig.editorName = 'foo';
     const msg = new Output().encode({
       withexeditorhost: {
-        message: 'test close all stdio with code 1',
+        message: 'foo close all stdio with code 1',
         status: 'close'
       }
     });
@@ -733,10 +767,10 @@ describe('handleChildProcessClose', () => {
 
 describe('handleChildProcessExit', () => {
   beforeEach(() => {
-    editorConfig.editorPath = '';
+    editorConfig.editorName = '';
   });
   afterEach(() => {
-    editorConfig.editorPath = '';
+    editorConfig.editorName = '';
   });
 
   it('should not call function', async () => {
@@ -752,15 +786,10 @@ describe('handleChildProcessExit', () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
       info = buf;
     });
-    const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve('test', 'file', app);
-    if (!IS_WIN) {
-      fs.chmodSync(editorPath, PERM_APP);
-    }
-    editorConfig.editorPath = editorPath;
+    editorConfig.editorName = 'foo';
     const msg = new Output().encode({
       withexeditorhost: {
-        message: 'test exited with code 0',
+        message: 'foo exited with code 0',
         status: 'exit'
       }
     });
@@ -776,15 +805,10 @@ describe('handleChildProcessExit', () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => {
       info = buf;
     });
-    const app = IS_WIN ? 'test.cmd' : 'test.sh';
-    const editorPath = path.resolve('test', 'file', app);
-    if (!IS_WIN) {
-      fs.chmodSync(editorPath, PERM_APP);
-    }
-    editorConfig.editorPath = editorPath;
+    editorConfig.editorName = 'foo';
     const msg = new Output().encode({
       withexeditorhost: {
-        message: 'test exited with code 1',
+        message: 'foo exited with code 1',
         status: 'exit'
       }
     });
@@ -901,6 +925,38 @@ describe('execChildProcess', () => {
     const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
     stubWrite.restore();
     stubSpawn.restore();
+    assert.isFalse(writeCalled);
+    assert.isTrue(spawnCalled);
+    assert.strictEqual(spawnArgs[0][0], editorPath);
+    assert.deepEqual(spawnArgs[0][1], [filePath]);
+    assert.isObject(res);
+  });
+
+  it('should call function', async () => {
+    const stubWrite = sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const stubSpawn = sinon.stub(childProcess, 'spawn').returns({
+      on: a => a,
+      stderr: {
+        on: a => a
+      },
+      stdout: {
+        on: a => a
+      }
+    });
+    const filePath = path.resolve('test', 'file', 'test.txt');
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve('test', 'file', app);
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const envVarPath = path.resolve('${TEST}', 'file', app);
+    process.env.TEST = 'test';
+    const res = await execChildProcess(filePath, envVarPath);
+    const { called: writeCalled } = stubWrite;
+    const { args: spawnArgs, calledOnce: spawnCalled } = stubSpawn;
+    stubWrite.restore();
+    stubSpawn.restore();
+    delete process.env.TEST;
     assert.isFalse(writeCalled);
     assert.isTrue(spawnCalled);
     assert.strictEqual(spawnArgs[0][0], editorPath);

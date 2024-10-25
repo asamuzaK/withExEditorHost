@@ -40,6 +40,7 @@ const TMPDIR_FILES_PB = path.join(TMPDIR_APP, TMP_FILES_PB);
 
 /* editor config */
 export const editorConfig = {
+  editorName: '',
   editorPath: '',
   cmdArgs: '',
   hasPlaceholder: false
@@ -113,8 +114,18 @@ export const exportEditorConfig = async (data, editorConfigPath) => {
   data = data && JSON.parse(data);
   if (isObjectNotEmpty(data)) {
     const { editorPath } = data;
-    const editorName = getFileNameFromFilePath(editorPath);
-    const executable = isExecutable(editorPath);
+    let parsedPath = editorPath;
+    if (/\$\{\w+\}|\$\w+/.test(parsedPath)) {
+      const envVars = parsedPath.match(/\$\{\w+\}|\$\w+/g);
+      for (const envVar of envVars) {
+        const key = envVar.replace(/^\$\{?/, '').replace(/\}$/, '');
+        if (process.env[key]) {
+          parsedPath = parsedPath.replace(envVar, process.env[key]);
+        }
+      }
+    }
+    const editorName = getFileNameFromFilePath(parsedPath);
+    const executable = isExecutable(parsedPath);
     const timestamp = await getFileTimestamp(editorConfigPath);
     const reg =
       new RegExp(`\\$(?:${TMP_FILE_PLACEHOLDER}|{${TMP_FILE_PLACEHOLDER}})`);
@@ -123,12 +134,12 @@ export const exportEditorConfig = async (data, editorConfigPath) => {
       const value = data[key];
       if (key === 'editorPath') {
         editorConfig[key] = value;
-      }
-      if (key === 'cmdArgs') {
+      } else if (key === 'cmdArgs') {
         editorConfig[key] = value;
         editorConfig.hasPlaceholder = reg.test(value);
       }
     }
+    editorConfig.editorName = editorName;
     const msg = {
       [EDITOR_CONFIG_RES]: {
         editorName,
@@ -234,8 +245,7 @@ export const handleChildProcessErr = e => {
  */
 export const handleChildProcessClose = code => {
   if (Number.isInteger(code)) {
-    const { editorPath } = editorConfig;
-    const editorName = getFileNameFromFilePath(editorPath);
+    const { editorName } = editorConfig;
     const msg = new Output().encode(
       hostMsg(`${editorName} close all stdio with code ${code}`, 'close')
     );
@@ -250,8 +260,7 @@ export const handleChildProcessClose = code => {
  */
 export const handleChildProcessExit = code => {
   if (Number.isInteger(code)) {
-    const { editorPath } = editorConfig;
-    const editorName = getFileNameFromFilePath(editorPath);
+    const { editorName } = editorConfig;
     const msg = new Output().encode(
       hostMsg(`${editorName} exited with code ${code}`, 'exit')
     );
@@ -296,6 +305,15 @@ export const handleChildProcessStdout = data => {
 export const execChildProcess = async (file, app = editorConfig.editorPath) => {
   if (!isFile(file)) {
     throw new Error(`No such file: ${file}`);
+  }
+  if (/\$\{\w+\}|\$\w+/.test(app)) {
+    const envVars = app.match(/\$\{\w+\}|\$\w+/g);
+    for (const envVar of envVars) {
+      const key = envVar.replace(/^\$\{?/, '').replace(/\}$/, '');
+      if (process.env[key]) {
+        app = app.replace(envVar, process.env[key]);
+      }
+    }
   }
   if (!isExecutable(app)) {
     throw new Error('Application is not executable.');
