@@ -41,7 +41,7 @@ export const abortSetup = msg => {
 /**
  * handle editor cmd args input
  * @param {Array} editorArgs - editor cmd args
- * @returns {Array} - cmd args in array
+ * @returns {Promise.<Array>} - cmd args in array
  */
 export const handleCmdArgsInput = async editorArgs => {
   let cmdArgs;
@@ -71,7 +71,7 @@ export const handleCmdArgsInput = async editorArgs => {
 /**
  * handle editor path input
  * @param {string} editorFilePath - editor path
- * @returns {string} - editor path
+ * @returns {Promise.<string>} - editor path
  */
 export const handleEditorPathInput = async editorFilePath => {
   if (!editorFilePath) {
@@ -113,7 +113,7 @@ export const handleEditorPathInput = async editorFilePath => {
 
 /**
  * create editor config
- * @returns {string} - editor config path
+ * @returns {Promise.<string>} - editor config path
  */
 export const createEditorConfig = async () => {
   const configPath = setupOpts.get('configPath');
@@ -137,7 +137,7 @@ export const createEditorConfig = async () => {
 /**
  * confirm overwrite editorconfig file
  * @param {string} file - file path
- * @returns {Promise.<string|void>} - handleEditorPathInput() / abortSetup()
+ * @returns {Promise.<Promise|void>} - handleEditorPathInput() / abortSetup()
  */
 export const confirmOverwriteEditorConfig = async file => {
   let func;
@@ -156,7 +156,7 @@ export const confirmOverwriteEditorConfig = async file => {
 /**
  * handle setup callback
  * @param {object} info - info
- * @returns {Promise.<string|void>} - promise chain
+ * @returns {Promise} - promise chain
  */
 export const handleSetupCallback = (info = {}) => {
   const { configDirPath: configPath } = info;

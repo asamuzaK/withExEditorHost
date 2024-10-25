@@ -82,7 +82,7 @@ export const handleReject = e => {
 /**
  * write stdout
  * @param {*} msg - message
- * @returns {?Function} - write message to the Writable stream
+ * @returns {Promise.<?Function>} - write message to the Writable stream
  */
 export const writeStdout = async msg => {
   let func;
@@ -95,7 +95,7 @@ export const writeStdout = async msg => {
 
 /**
  * export app status
- * @returns {Function} - writeStdout()
+ * @returns {Promise.<Promise>} - writeStdout()
  */
 export const exportAppStatus = async () =>
   writeStdout(hostMsg(EDITOR_CONFIG_GET, 'ready'));
@@ -104,7 +104,7 @@ export const exportAppStatus = async () =>
  * export editor config
  * @param {string} data - editor config
  * @param {string} editorConfigPath - editor config file path
- * @returns {?Function} - writeStdout()
+ * @returns {Promise.<?Promise>} - writeStdout()
  */
 export const exportEditorConfig = async (data, editorConfigPath) => {
   if (!isString(data)) {
@@ -155,7 +155,7 @@ export const exportEditorConfig = async (data, editorConfigPath) => {
 /**
  * export file data
  * @param {object} obj - file data
- * @returns {?Function} - writeStdout()
+ * @returns {Promise.<?Promise>} - writeStdout()
  */
 export const exportFileData = async (obj = {}) => {
   const { data } = obj;
@@ -171,7 +171,7 @@ export const exportFileData = async (obj = {}) => {
 
 /**
  * fetch latest host version
- * @returns {?string} - latest host version string
+ * @returns {Promise.<?string>} - latest host version string
  */
 export const fetchLatestHostVersion = async () => {
   let version;
@@ -191,7 +191,7 @@ export const fetchLatestHostVersion = async () => {
 /**
  * export host version
  * @param {string} minVer - required min version
- * @returns {Function} - writeStdout()
+ * @returns {Promise.<Promise>} - writeStdout()
  */
 export const exportHostVersion = async minVer => {
   if (!isString(minVer)) {
@@ -300,7 +300,7 @@ export const handleChildProcessStdout = data => {
  * execute child process
  * @param {string} file - file path
  * @param {string} app - app path
- * @returns {ChildProcess|Function} - child process / writeStderr()
+ * @returns {Promise.<object>} - child process
  */
 export const execChildProcess = async (file, app = editorConfig.editorPath) => {
   if (!isFile(file)) {
@@ -363,7 +363,7 @@ export const fileMap = {
  * delete key from fileMap
  * @param {string} prop - fileMap property
  * @param {string} key - key
- * @returns {boolean} - result, true if deleted
+ * @returns {Promise.<boolean>} - result, true if deleted
  */
 export const deleteKeyFromFileMap = async (prop, key) => {
   let bool;
@@ -448,7 +448,7 @@ export const getTmpFileFromFileData = async (fileData = {}) => {
 /**
  * get file ID from file path
  * @param {string} filePath - file path
- * @returns {?string} - file ID
+ * @returns {Promise.<?string>} - file ID
  */
 export const getFileIdFromFilePath = async filePath => {
   let fileId;
@@ -468,7 +468,7 @@ export const getFileIdFromFilePath = async filePath => {
 /**
  * create tmp file res message
  * @param {string} key - key
- * @returns {?Function} - writeStdout()
+ * @returns {Promise.<?Promise>} - writeStdout()
  */
 export const createTmpFileResMsg = async key => {
   let func;
@@ -520,7 +520,7 @@ export const getTmpFileFromWatcherFileName = async (evtType, fileName) => {
  * watch temporary file
  * @param {string} evtType - event type
  * @param {string} fileName - file name
- * @returns {Function} - getTempFileFromFileName()
+ * @returns {Promise} - getTempFileFromFileName()
  */
 export const watchTmpFile = (evtType, fileName) =>
   getTmpFileFromWatcherFileName(evtType, fileName).catch(handleReject);
@@ -528,7 +528,7 @@ export const watchTmpFile = (evtType, fileName) =>
 /**
  * create temporary file
  * @param {object} obj - temporary file data object
- * @returns {object} - temporary file data
+ * @returns {Promise.<object>} - temporary file data
  */
 export const createTmpFile = async (obj = {}) => {
   const { data, value } = obj;
@@ -631,7 +631,7 @@ export const getEditorConfig = async editorConfigPath => {
 /**
  * view local file
  * @param {string} uri - local file uri
- * @returns {?Function} - execChildProcess()
+ * @returns {Promise.<?Promise>} - execChildProcess()
  */
 export const viewLocalFile = async uri => {
   if (!isString(uri)) {
@@ -772,7 +772,7 @@ export const setDispatcher = () => {
 
 /**
  * handle startup
- * @returns {Promise.<Array|Error>} - promise chain
+ * @returns {Promise.<Array>} - promise chain
  */
 export const startup = () => Promise.all([
   addProcessListeners(),
