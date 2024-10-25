@@ -15,11 +15,11 @@
   "type": "module",
   "main": "./index.js",
   "dependencies": {
+    "@inquirer/prompts": "^7.0.0",
     "commander": "^12.1.0",
-    "readline-sync": "^1.4.10",
     "semver-parser": "^4.1.6",
     "undici": "^6.20.1",
-    "web-ext-native-msg": "^8.0.2"
+    "web-ext-native-msg": "^8.0.3"
   },
   "devDependencies": {
     "boxednode": "^2.4.4",

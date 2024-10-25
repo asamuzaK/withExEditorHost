@@ -4,7 +4,6 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
-import readline from 'readline-sync';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import sinon from 'sinon';
@@ -14,8 +13,9 @@ import {
 
 /* test */
 import {
-  abortSetup, createEditorConfig, handleCmdArgsInput, handleEditorPathInput,
-  handleSetupCallback, runSetup, setupOpts
+  abortSetup, confirmOverwriteEditorConfig, createEditorConfig, inquirer,
+  handleCmdArgsInput, handleEditorPathInput, handleSetupCallback, runSetup,
+  setupOpts
 } from '../modules/setup.js';
 
 /* constants */
@@ -47,75 +47,73 @@ describe('abortSetup', () => {
 
 describe('handleCmdArgsInput', () => {
   it('should get array', async () => {
-    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(true);
-    const stubRlQues =
-      sinon.stub(readline, 'question').returns('foo "bar baz" qux');
+    const stubConfirm = sinon.stub(inquirer, 'confirm').resolves(true);
+    const stubInput =
+      sinon.stub(inquirer, 'input').resolves('foo "bar baz" qux');
     const cmdArgs = ['foo', 'bar', 'baz'];
     const res = await handleCmdArgsInput(cmdArgs);
-    assert.isFalse(stubRlKey.called);
-    assert.isFalse(stubRlQues.called);
+    assert.isFalse(stubConfirm.called);
+    assert.isFalse(stubInput.called);
     assert.deepEqual(res, cmdArgs);
-    stubRlKey.restore();
-    stubRlQues.restore();
+    stubConfirm.restore();
+    stubInput.restore();
   });
 
   it('should call function and get array', async () => {
-    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(true);
-    const stubRlQues =
-      sinon.stub(readline, 'question').returns('foo bar baz');
+    const stubConfirm = sinon.stub(inquirer, 'confirm').resolves(true);
+    const stubInput = sinon.stub(inquirer, 'input').resolves('foo bar baz');
     const res = await handleCmdArgsInput();
-    assert.isTrue(stubRlKey.calledOnce);
-    assert.isTrue(stubRlQues.calledOnce);
+    assert.isTrue(stubConfirm.calledOnce);
+    assert.isTrue(stubInput.calledOnce);
     assert.deepEqual(res, [
       'foo',
       'bar',
       'baz'
     ]);
-    stubRlKey.restore();
-    stubRlQues.restore();
+    stubConfirm.restore();
+    stubInput.restore();
   });
 
   it('should call function and get array', async () => {
-    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(true);
-    const stubRlQues =
-      sinon.stub(readline, 'question').returns('foo "bar baz" qux');
+    const stubConfirm = sinon.stub(inquirer, 'confirm').resolves(true);
+    const stubInput =
+      sinon.stub(inquirer, 'input').resolves('foo "bar baz" qux');
     const res = await handleCmdArgsInput();
-    assert.isTrue(stubRlKey.calledOnce);
-    assert.isTrue(stubRlQues.calledOnce);
+    assert.isTrue(stubConfirm.calledOnce);
+    assert.isTrue(stubInput.calledOnce);
     assert.deepEqual(res, [
       'foo',
       'bar baz',
       'qux'
     ]);
-    stubRlKey.restore();
-    stubRlQues.restore();
+    stubConfirm.restore();
+    stubInput.restore();
   });
 
   it('should call function and get array', async () => {
-    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(true);
-    const stubRlQues =
-      sinon.stub(readline, 'question').returns('foo bar="baz qux"');
+    const stubConfirm = sinon.stub(inquirer, 'confirm').resolves(true);
+    const stubInput =
+      sinon.stub(inquirer, 'input').resolves('foo bar="baz qux"');
     const res = await handleCmdArgsInput();
-    assert.isTrue(stubRlKey.calledOnce);
-    assert.isTrue(stubRlQues.calledOnce);
+    assert.isTrue(stubConfirm.calledOnce);
+    assert.isTrue(stubInput.calledOnce);
     assert.deepEqual(res, [
       'foo',
       'bar=baz qux'
     ]);
-    stubRlKey.restore();
-    stubRlQues.restore();
+    stubConfirm.restore();
+    stubInput.restore();
   });
 
   it('should call function and get array', async () => {
-    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(false);
-    const stubRlQues =
-      sinon.stub(readline, 'question').returns('foo bar baz');
+    const stubConfirm = sinon.stub(inquirer, 'confirm').resolves(false);
+    const stubInput = sinon.stub(inquirer, 'input').resolves('foo bar baz');
     const res = await handleCmdArgsInput();
-    assert.isTrue(stubRlKey.calledOnce);
-    assert.isFalse(stubRlQues.calledOnce);
+    assert.isTrue(stubConfirm.calledOnce);
+    assert.isFalse(stubInput.calledOnce);
     assert.deepEqual(res, []);
-    stubRlKey.restore();
-    stubRlQues.restore();
+    stubConfirm.restore();
+    stubInput.restore();
   });
 });
 
@@ -126,11 +124,11 @@ describe('handleEditorPathInput', () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const stubRlPath = sinon.stub(readline, 'question').returns(editorPath);
+    const stubInput = sinon.stub(inquirer, 'input').resolves(editorPath);
     const res = await handleEditorPathInput(editorPath);
-    assert.isFalse(stubRlPath.called);
+    assert.isFalse(stubInput.called);
     assert.strictEqual(res, editorPath);
-    stubRlPath.restore();
+    stubInput.restore();
   });
 
   it('should call function and get string', async () => {
@@ -139,11 +137,11 @@ describe('handleEditorPathInput', () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const stubRlPath = sinon.stub(readline, 'question').returns(editorPath);
+    const stubInput = sinon.stub(inquirer, 'input').resolves(editorPath);
     const res = await handleEditorPathInput();
-    assert.isTrue(stubRlPath.calledOnce);
+    assert.isTrue(stubInput.calledOnce);
     assert.strictEqual(res, editorPath);
-    stubRlPath.restore();
+    stubInput.restore();
   });
 
   it('should call function and get string', async () => {
@@ -157,18 +155,18 @@ describe('handleEditorPathInput', () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     const inputPath = path.resolve('test', 'file', 'test.txt');
-    const stubRlPath = sinon.stub(readline, 'question');
-    const i = stubRlPath.callCount;
-    stubRlPath.onFirstCall().returns(inputPath);
-    stubRlPath.onSecondCall().returns(editorPath);
+    const stubInput = sinon.stub(inquirer, 'input');
+    const i = stubInput.callCount;
+    stubInput.onFirstCall().resolves(inputPath);
+    stubInput.onSecondCall().resolves(editorPath);
     const res = await handleEditorPathInput();
     const { calledOnce: warnCalled } = stubWarn;
     stubWarn.restore();
     assert.isTrue(warnCalled);
     assert.strictEqual(wrn, `${inputPath} is not executable.`);
-    assert.strictEqual(stubRlPath.callCount, i + 2);
+    assert.strictEqual(stubInput.callCount, i + 2);
     assert.strictEqual(res, editorPath);
-    stubRlPath.restore();
+    stubInput.restore();
   });
 
   it('should call function and get string', async () => {
@@ -182,18 +180,18 @@ describe('handleEditorPathInput', () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     const inputPath = path.resolve('test', 'file');
-    const stubRlPath = sinon.stub(readline, 'question');
-    const i = stubRlPath.callCount;
-    stubRlPath.onFirstCall().returns(inputPath);
-    stubRlPath.onSecondCall().returns(editorPath);
+    const stubInput = sinon.stub(inquirer, 'input');
+    const i = stubInput.callCount;
+    stubInput.onFirstCall().resolves(inputPath);
+    stubInput.onSecondCall().resolves(editorPath);
     const res = await handleEditorPathInput();
     const { calledOnce: warnCalled } = stubWarn;
     stubWarn.restore();
     assert.isTrue(warnCalled);
     assert.strictEqual(wrn, `${inputPath} is not a file.`);
-    assert.strictEqual(stubRlPath.callCount, i + 2);
+    assert.strictEqual(stubInput.callCount, i + 2);
     assert.strictEqual(res, editorPath);
-    stubRlPath.restore();
+    stubInput.restore();
   });
 
   it('should call function and get string', async () => {
@@ -207,18 +205,18 @@ describe('handleEditorPathInput', () => {
       fs.chmodSync(editorPath, PERM_APP);
     }
     const inputPath = path.resolve('test', 'file', 'foo');
-    const stubRlPath = sinon.stub(readline, 'question');
-    const i = stubRlPath.callCount;
-    stubRlPath.onFirstCall().returns(inputPath);
-    stubRlPath.onSecondCall().returns(editorPath);
+    const stubInput = sinon.stub(inquirer, 'input');
+    const i = stubInput.callCount;
+    stubInput.onFirstCall().resolves(inputPath);
+    stubInput.onSecondCall().resolves(editorPath);
     const res = await handleEditorPathInput();
     const { calledOnce: warnCalled } = stubWarn;
     stubWarn.restore();
     assert.isTrue(warnCalled);
     assert.strictEqual(wrn, `${inputPath} not found.`);
-    assert.strictEqual(stubRlPath.callCount, i + 2);
+    assert.strictEqual(stubInput.callCount, i + 2);
     assert.strictEqual(res, editorPath);
-    stubRlPath.restore();
+    stubInput.restore();
   });
 });
 
@@ -278,6 +276,85 @@ describe('createEditorConfig', () => {
   });
 });
 
+describe('confirmOverwriteEditorConfig', () => {
+  beforeEach(() => {
+    const configDirPath = path.join(DIR_TMP, 'withexeditorhost-test');
+    removeDirSync(configDirPath, DIR_TMP);
+    setupOpts.clear();
+  });
+  afterEach(() => {
+    const configDirPath = path.join(DIR_TMP, 'withexeditorhost-test');
+    removeDirSync(configDirPath, DIR_TMP);
+    setupOpts.clear();
+  });
+
+  it('should abort', async () => {
+    let info;
+    const stubInfo = sinon.stub(console, 'info').callsFake(msg => {
+      info = msg;
+    });
+    const stubExit = sinon.stub(process, 'exit');
+    const stubConfirm = sinon.stub(inquirer, 'confirm').resolves(false);
+    const res = await confirmOverwriteEditorConfig('/foo/bar');
+    const { calledOnce: infoCalled } = stubInfo;
+    const { calledOnce: exitCalled } = stubExit;
+    stubInfo.restore();
+    stubExit.restore();
+    assert.isTrue(stubConfirm.calledOnce);
+    assert.isTrue(infoCalled);
+    assert.isTrue(exitCalled);
+    assert.strictEqual(info, 'Setup aborted: /foo/bar already exists.');
+    assert.isUndefined(res);
+    stubConfirm.restore();
+  });
+
+  it('should call function', async () => {
+    let info;
+    const stubInfo = sinon.stub(console, 'info').callsFake(msg => {
+      info = msg;
+    });
+    const stubExit = sinon.stub(process, 'exit');
+    const app = IS_WIN ? 'test.cmd' : 'test.sh';
+    const editorPath = path.resolve('test', 'file', app);
+    if (!IS_WIN) {
+      fs.chmodSync(editorPath, PERM_APP);
+    }
+    const stubRl = sinon.stub(inquirer, 'input');
+    const i = stubRl.callCount;
+    stubRl.onFirstCall().resolves(editorPath);
+    stubRl.onSecondCall().resolves('');
+    const stubConfirm = sinon.stub(inquirer, 'confirm');
+    const j = stubConfirm.callCount;
+    stubConfirm.onFirstCall().resolves(true);
+    stubConfirm.onSecondCall().resolves(true);
+    const configDirPath = await createDirectory(
+      path.join(DIR_TMP, 'withexeditorhost-test')
+    );
+    const filePath = path.join(configDirPath, EDITOR_CONFIG_FILE);
+    const content = `${JSON.stringify({}, null, INDENT)}\n`;
+    await createFile(filePath, content, {
+      encoding: CHAR,
+      flag: 'w'
+    });
+    setupOpts.set('configPath', configDirPath);
+    const res = await confirmOverwriteEditorConfig(filePath);
+    const { calledOnce: infoCalled } = stubInfo;
+    const { calledOnce: exitCalled } = stubExit;
+    stubInfo.restore();
+    stubExit.restore();
+    assert.strictEqual(setupOpts.get('configPath'), configDirPath);
+    assert.strictEqual(stubRl.callCount, i + 2);
+    assert.strictEqual(stubConfirm.callCount, j + 2);
+    assert.isTrue(infoCalled);
+    assert.isFalse(exitCalled);
+    assert.strictEqual(info, `Created: ${filePath}`);
+    assert.isTrue(isFile(filePath));
+    assert.strictEqual(res, filePath);
+    stubRl.restore();
+    stubConfirm.restore();
+  });
+});
+
 describe('handleSetupCallback', () => {
   beforeEach(() => {
     const configDirPath = path.join(DIR_TMP, 'withexeditorhost-test');
@@ -312,11 +389,11 @@ describe('handleSetupCallback', () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const stubRl = sinon.stub(readline, 'question');
+    const stubRl = sinon.stub(inquirer, 'input');
     const i = stubRl.callCount;
-    stubRl.onFirstCall().returns(editorPath);
-    stubRl.onSecondCall().returns('');
-    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(true);
+    stubRl.onFirstCall().resolves(editorPath);
+    stubRl.onSecondCall().resolves('');
+    const stubConfirm = sinon.stub(inquirer, 'confirm').resolves(true);
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, 'withexeditorhost-test')
     );
@@ -328,14 +405,14 @@ describe('handleSetupCallback', () => {
     stubExit.restore();
     assert.strictEqual(setupOpts.get('configPath'), configDirPath);
     assert.strictEqual(stubRl.callCount, i + 2);
-    assert.isTrue(stubRlKey.calledOnce);
+    assert.isTrue(stubConfirm.calledOnce);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
     assert.strictEqual(info, `Created: ${filePath}`);
     assert.isTrue(isFile(filePath));
     assert.strictEqual(res, filePath);
     stubRl.restore();
-    stubRlKey.restore();
+    stubConfirm.restore();
   });
 
   it('should abort', async () => {
@@ -349,11 +426,11 @@ describe('handleSetupCallback', () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const stubRl = sinon.stub(readline, 'question');
+    const stubRl = sinon.stub(inquirer, 'input');
     const i = stubRl.callCount;
-    stubRl.onFirstCall().returns(editorPath);
-    stubRl.onSecondCall().returns('');
-    const stubRlKey = sinon.stub(readline, 'keyInYNStrict').returns(false);
+    stubRl.onFirstCall().resolves(editorPath);
+    stubRl.onSecondCall().resolves('');
+    const stubConfirm = sinon.stub(inquirer, 'confirm').resolves(false);
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, 'withexeditorhost-test')
     );
@@ -370,14 +447,14 @@ describe('handleSetupCallback', () => {
     stubExit.restore();
     assert.strictEqual(setupOpts.get('configPath'), configDirPath);
     assert.strictEqual(stubRl.callCount, i);
-    assert.isTrue(stubRlKey.calledOnce);
+    assert.isTrue(stubConfirm.calledOnce);
     assert.isTrue(infoCalled);
     assert.isTrue(exitCalled);
     assert.strictEqual(info, `Setup aborted: ${filePath} already exists.`);
     assert.isTrue(isFile(filePath));
-    assert.isNull(res);
+    assert.isUndefined(res);
     stubRl.restore();
-    stubRlKey.restore();
+    stubConfirm.restore();
   });
 
   it('should call function', async () => {
@@ -391,14 +468,14 @@ describe('handleSetupCallback', () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const stubRl = sinon.stub(readline, 'question');
+    const stubRl = sinon.stub(inquirer, 'input');
     const i = stubRl.callCount;
-    stubRl.onFirstCall().returns(editorPath);
-    stubRl.onSecondCall().returns('');
-    const stubRlKey = sinon.stub(readline, 'keyInYNStrict');
-    const j = stubRlKey.callCount;
-    stubRlKey.onFirstCall().returns(true);
-    stubRlKey.onSecondCall().returns(true);
+    stubRl.onFirstCall().resolves(editorPath);
+    stubRl.onSecondCall().resolves('');
+    const stubConfirm = sinon.stub(inquirer, 'confirm');
+    const j = stubConfirm.callCount;
+    stubConfirm.onFirstCall().resolves(true);
+    stubConfirm.onSecondCall().resolves(true);
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, 'withexeditorhost-test')
     );
@@ -415,14 +492,14 @@ describe('handleSetupCallback', () => {
     stubExit.restore();
     assert.strictEqual(setupOpts.get('configPath'), configDirPath);
     assert.strictEqual(stubRl.callCount, i + 2);
-    assert.strictEqual(stubRlKey.callCount, j + 2);
+    assert.strictEqual(stubConfirm.callCount, j + 2);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
     assert.strictEqual(info, `Created: ${filePath}`);
     assert.isTrue(isFile(filePath));
     assert.strictEqual(res, filePath);
     stubRl.restore();
-    stubRlKey.restore();
+    stubConfirm.restore();
   });
 
   it('should call function', async () => {
@@ -436,14 +513,14 @@ describe('handleSetupCallback', () => {
     if (!IS_WIN) {
       fs.chmodSync(editorPath, PERM_APP);
     }
-    const stubRl = sinon.stub(readline, 'question');
+    const stubRl = sinon.stub(inquirer, 'input');
     const i = stubRl.callCount;
-    stubRl.onFirstCall().returns(editorPath);
-    stubRl.onSecondCall().returns('');
-    const stubRlKey = sinon.stub(readline, 'keyInYNStrict');
-    const j = stubRlKey.callCount;
-    stubRlKey.onFirstCall().returns(true);
-    stubRlKey.onSecondCall().returns(true);
+    stubRl.onFirstCall().resolves(editorPath);
+    stubRl.onSecondCall().resolves('');
+    const stubConfirm = sinon.stub(inquirer, 'confirm');
+    const j = stubConfirm.callCount;
+    stubConfirm.onFirstCall().resolves(true);
+    stubConfirm.onSecondCall().resolves(true);
     const configDirPath = await createDirectory(
       path.join(DIR_TMP, 'withexeditorhost-test')
     );
@@ -465,14 +542,14 @@ describe('handleSetupCallback', () => {
     assert.strictEqual(setupOpts.get('editorFilePath'), editorPath);
     assert.deepEqual(setupOpts.get('editorCmdArgs'), ['foo', 'bar', 'baz']);
     assert.strictEqual(stubRl.callCount, i);
-    assert.strictEqual(stubRlKey.callCount, j);
+    assert.strictEqual(stubConfirm.callCount, j);
     assert.isTrue(infoCalled);
     assert.isFalse(exitCalled);
     assert.strictEqual(info, `Created: ${filePath}`);
     assert.isTrue(isFile(filePath));
     assert.strictEqual(res, filePath);
     stubRl.restore();
-    stubRlKey.restore();
+    stubConfirm.restore();
   });
 });
 

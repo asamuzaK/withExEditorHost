@@ -5,7 +5,7 @@
 /* api */
 import path from 'node:path';
 import process from 'node:process';
-import readline from 'readline-sync';
+import { confirm, input } from '@inquirer/prompts';
 import {
   CmdArgs, Setup, createFile, getStat, isDir, isExecutable, isFile
 } from 'web-ext-native-msg';
@@ -18,6 +18,12 @@ import {
 const CHAR = 'utf8';
 const INDENT = 2;
 const PERM_FILE = 0o644;
+
+/* wrap inquirer (for test) */
+export const inquirer = {
+  confirm,
+  input
+};
 
 /* setup command options */
 export const setupOpts = new Map();
@@ -42,11 +48,19 @@ export const handleCmdArgsInput = async editorArgs => {
   if (Array.isArray(editorArgs)) {
     cmdArgs = editorArgs;
   } else {
-    const useCmdArgs =
-      readline.keyInYNStrict('Execute editor with command line options?');
+    const useCmdArgs = await inquirer.confirm({
+      message: 'Execute editor with command line options?',
+      default: false
+    });
     if (useCmdArgs) {
-      const ans = readline.question('Input command line options: ');
-      cmdArgs = new CmdArgs(ans.trim()).toArray();
+      const ans = await inquirer.input({
+        message: 'Input command line options:'
+      });
+      if (ans) {
+        cmdArgs = new CmdArgs(ans.trim()).toArray();
+      } else {
+        cmdArgs = [];
+      }
     } else {
       cmdArgs = [];
     }
@@ -64,7 +78,10 @@ export const handleEditorPathInput = async editorFilePath => {
   if (isFile(editorFilePath) && isExecutable(editorFilePath)) {
     editorPath = editorFilePath;
   } else {
-    const ans = readline.question('Input editor path: ');
+    const ans = await inquirer.input({
+      message: 'Input editor path:',
+      required: true
+    });
     const stat = getStat(ans);
     if (stat) {
       if (stat.isFile()) {
@@ -110,38 +127,52 @@ export const createEditorConfig = async () => {
 };
 
 /**
+ * confirm overwrite editorconfig file
+ * @param {string} file - file path
+ * @returns {Promise.<string|void>} - handleEditorPathInput() / abortSetup()
+ */
+export const confirmOverwriteEditorConfig = async file => {
+  let func;
+  const ans = await inquirer.confirm({
+    message: `${file} already exists. Overwrite?`,
+    default: false
+  });
+  if (ans) {
+    func = createEditorConfig();
+  } else {
+    func = abortSetup(`${file} already exists.`);
+  }
+  return func;
+};
+
+/**
  * handle setup callback
  * @param {object} info - info
- * @returns {Function} - handleEditorPathInput() / abortSetup()
+ * @returns {Promise.<string|void>} - promise chain
  */
 export const handleSetupCallback = (info = {}) => {
   const { configDirPath: configPath } = info;
   if (!isDir(configPath)) {
     throw new Error(`No such directory: ${configPath}.`);
   }
-  const editorArgs = setupOpts.get('editorArgs');
-  const editorPath = setupOpts.get('editorPath');
-  const overwriteEditorConfig = setupOpts.get('overwriteEditorConfig');
-  const file = path.join(configPath, EDITOR_CONFIG_FILE);
-  let func;
   setupOpts.set('configPath', configPath);
+  const editorPath = setupOpts.get('editorPath');
   if (isString(editorPath)) {
     setupOpts.set('editorFilePath', editorPath.trim());
   }
+  const editorArgs = setupOpts.get('editorArgs');
   if (isString(editorArgs)) {
     setupOpts.set('editorCmdArgs', new CmdArgs(editorArgs.trim()).toArray());
   }
+  let func;
+  const file = path.join(configPath, EDITOR_CONFIG_FILE);
+  const overwriteEditorConfig = setupOpts.get('overwriteEditorConfig');
   if (isFile(file) && !overwriteEditorConfig) {
-    const ans = readline.keyInYNStrict(`${file} already exists.\nOverwrite?`);
-    if (ans) {
-      func = createEditorConfig().catch(throwErr);
-    } else {
-      func = abortSetup(`${file} already exists.`);
-    }
+    func = confirmOverwriteEditorConfig(file).catch(throwErr);
   } else {
     func = createEditorConfig().catch(throwErr);
   }
-  return func || null;
+  return func;
 };
 
 /**
