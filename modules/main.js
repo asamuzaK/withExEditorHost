@@ -20,10 +20,10 @@ import { version as hostVersion } from './version.js';
 
 /* constants */
 import {
-  EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES, EDITOR_CONFIG_TS,
-  FILE_WATCH, HOST, HOST_VERSION, HOST_VERSION_CHECK, LABEL,
-  LOCAL_FILE_VIEW, MODE_EDIT, PROCESS_CHILD,
-  TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
+  EDITOR_CMD_ARGS, EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES,
+  EDITOR_CONFIG_TS, EDITOR_NAME, EDITOR_PATH, FILE_WATCH, HOST, HOST_VERSION,
+  HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT, PLACEHOLDER,
+  PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
   TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_PLACEHOLDER,
   TMP_FILE_RES
 } from './constant.js';
@@ -39,12 +39,7 @@ const TMPDIR_FILES = path.join(TMPDIR_APP, TMP_FILES);
 const TMPDIR_FILES_PB = path.join(TMPDIR_APP, TMP_FILES_PB);
 
 /* editor config */
-export const editorConfig = {
-  editorName: '',
-  editorPath: '',
-  cmdArgs: '',
-  hasPlaceholder: false
-};
+export const editorConfig = new Map();
 
 /* output */
 /**
@@ -103,12 +98,15 @@ export const exportAppStatus = async () =>
 /**
  * export editor config
  * @param {string} data - editor config
- * @param {string} editorConfigPath - editor config file path
+ * @param {string} configFile - editor config file path
  * @returns {Promise.<?Promise>} - writeStdout()
  */
-export const exportEditorConfig = async (data, editorConfigPath) => {
+export const exportEditorConfig = async (data, configFile) => {
   if (!isString(data)) {
     throw new TypeError(`Expected String but got ${getType(data)}.`);
+  }
+  if (!isString(configFile)) {
+    throw new TypeError(`Expected String but got ${getType(configFile)}.`);
   }
   let func;
   data = data && JSON.parse(data);
@@ -124,32 +122,42 @@ export const exportEditorConfig = async (data, editorConfigPath) => {
         }
       }
     }
-    const editorName = getFileNameFromFilePath(parsedPath);
-    const executable = isExecutable(parsedPath);
-    const timestamp = await getFileTimestamp(editorConfigPath);
-    const reg =
-      new RegExp(`\\$(?:${TMP_FILE_PLACEHOLDER}|{${TMP_FILE_PLACEHOLDER}})`);
-    const keys = Object.keys(editorConfig);
-    for (const key of keys) {
-      const value = data[key];
-      if (key === 'editorPath') {
-        editorConfig[key] = value;
-      } else if (key === 'cmdArgs') {
-        editorConfig[key] = value;
-        editorConfig.hasPlaceholder = reg.test(value);
+    if (isFile(parsedPath)) {
+      const editorName = getFileNameFromFilePath(parsedPath);
+      const executable = isExecutable(parsedPath);
+      const timestamp = await getFileTimestamp(configFile);
+      const reg =
+        new RegExp(`\\$(?:${TMP_FILE_PLACEHOLDER}|{${TMP_FILE_PLACEHOLDER}})`);
+      const keys = [EDITOR_PATH, EDITOR_CMD_ARGS];
+      for (const key of keys) {
+        const value = data[key];
+        editorConfig.set(key, value);
+        if (key === EDITOR_CMD_ARGS) {
+          editorConfig.set(PLACEHOLDER, reg.test(value));
+        }
       }
+      editorConfig.set(EDITOR_NAME, editorName);
+      const msg = {
+        [EDITOR_CONFIG_RES]: {
+          editorName,
+          executable,
+          [EDITOR_CONFIG_TS]: timestamp
+        }
+      };
+      func = writeStdout(msg);
+    } else {
+      const msg = {
+        [EDITOR_CONFIG_RES]: null
+      };
+      func = writeStdout(msg);
     }
-    editorConfig.editorName = editorName;
+  } else {
     const msg = {
-      [EDITOR_CONFIG_RES]: {
-        editorName,
-        executable,
-        [EDITOR_CONFIG_TS]: timestamp
-      }
+      [EDITOR_CONFIG_RES]: null
     };
     func = writeStdout(msg);
   }
-  return func || null;
+  return func;
 };
 
 /**
@@ -245,7 +253,7 @@ export const handleChildProcessErr = e => {
  */
 export const handleChildProcessClose = code => {
   if (Number.isInteger(code)) {
-    const { editorName } = editorConfig;
+    const editorName = editorConfig.get(EDITOR_NAME);
     const msg = new Output().encode(
       hostMsg(`${editorName} close all stdio with code ${code}`, 'close')
     );
@@ -260,7 +268,7 @@ export const handleChildProcessClose = code => {
  */
 export const handleChildProcessExit = code => {
   if (Number.isInteger(code)) {
-    const { editorName } = editorConfig;
+    const editorName = editorConfig.get(EDITOR_NAME);
     const msg = new Output().encode(
       hostMsg(`${editorName} exited with code ${code}`, 'exit')
     );
@@ -302,9 +310,12 @@ export const handleChildProcessStdout = data => {
  * @param {string} app - app path
  * @returns {Promise.<object>} - child process
  */
-export const execChildProcess = async (file, app = editorConfig.editorPath) => {
+export const execChildProcess = async (file, app) => {
   if (!isFile(file)) {
     throw new Error(`No such file: ${file}`);
+  }
+  if (!app) {
+    app = editorConfig.get(EDITOR_PATH);
   }
   if (/\$\{\w+\}|\$\w+/.test(app)) {
     const envVars = app.match(/\$\{\w+\}|\$\w+/g);
@@ -318,7 +329,8 @@ export const execChildProcess = async (file, app = editorConfig.editorPath) => {
   if (!isExecutable(app)) {
     throw new Error('Application is not executable.');
   }
-  const { cmdArgs, hasPlaceholder } = editorConfig;
+  const cmdArgs = editorConfig.get(EDITOR_CMD_ARGS);
+  const hasPlaceholder = editorConfig.get(PLACEHOLDER);
   const opt = {
     cwd: null,
     encoding: CHAR,
@@ -609,19 +621,19 @@ export const removeTmpFileData = async (data = {}) => {
 /* local files */
 /**
  * get editor config
- * @param {string} editorConfigPath - editor config file path
+ * @param {string} configFile - editor config file path
  * @returns {Promise.<Array>} - results of each handler
  */
-export const getEditorConfig = async editorConfigPath => {
+export const getEditorConfig = async configFile => {
   const func = [];
-  if (isFile(editorConfigPath)) {
-    const data = await readFile(editorConfigPath, {
+  if (isFile(configFile)) {
+    const data = await readFile(configFile, {
       encoding: CHAR, flag: 'r'
     });
-    func.push(exportEditorConfig(data, editorConfigPath));
+    func.push(exportEditorConfig(data, configFile));
   } else {
     func.push(
-      writeStdout(hostMsg(`No such file: ${editorConfigPath}`, 'warn')),
+      writeStdout(hostMsg(`No such file: ${configFile}`, 'warn')),
       writeStdout({ [EDITOR_CONFIG_RES]: null })
     );
   }
@@ -675,8 +687,8 @@ export const handleMsg = async msg => {
     for (const [key, value] of items) {
       switch (key) {
         case EDITOR_CONFIG_GET: {
-          const editorConfigPath = path.resolve('.', EDITOR_CONFIG_FILE);
-          func.push(getEditorConfig(editorConfigPath));
+          const configFile = path.resolve('.', EDITOR_CONFIG_FILE);
+          func.push(getEditorConfig(configFile));
           break;
         }
         case HOST_VERSION_CHECK:
