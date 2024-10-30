@@ -15,11 +15,11 @@
   "type": "module",
   "main": "./index.js",
   "dependencies": {
-    "@inquirer/prompts": "^7.0.0",
+    "@inquirer/prompts": "^7.0.1",
     "commander": "^12.1.0",
     "semver-parser": "^4.1.6",
     "undici": "^6.20.1",
-    "web-ext-native-msg": "^8.0.3"
+    "web-ext-native-msg": "^8.0.4"
   },
   "devDependencies": {
     "boxednode": "^2.4.4",
@@ -27,14 +27,14 @@
     "chai": "^5.1.2",
     "esbuild": "^0.24.0",
     "eslint": "^9.13.0",
-    "eslint-plugin-import-x": "^4.3.1",
+    "eslint-plugin-import-x": "^4.4.0",
     "eslint-plugin-jsdoc": "^50.4.3",
     "eslint-plugin-regexp": "^2.6.0",
     "eslint-plugin-unicorn": "^56.0.0",
     "genversion": "^3.2.0",
     "globals": "^15.11.0",
     "jszip-cli": "^1.4.24",
-    "mocha": "^10.7.3",
+    "mocha": "^10.8.1",
     "neostandard": "^0.11.7",
     "sinon": "^19.0.2"
   },
@@ -49,5 +49,5 @@
     "test": "c8 --reporter=text mocha --exit test/*.test.js",
     "zip-jszip": "jszip"
   },
-  "version": "8.0.11"
+  "version": "8.1.0"
 }
