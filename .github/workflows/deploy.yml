@@ -21,6 +21,7 @@ jobs:
             pkg-dir: pkg/linux
             bin-file: ./pkg/linux/index
             make-args: --make-args="-j4"
+            bundle-node-version: --node-version=lts
             zip-cmd: cd ./pkg/linux && tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
           - node-version: 22.x
@@ -30,6 +31,7 @@ jobs:
             pkg-dir: pkg/macos
             bin-file: ./pkg/macos/index
             make-args: --make-args="-j4"
+            bundle-node-version: --node-version=lts
             zip-cmd: cd ./pkg/macos && tar -cvzf macos.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
           - node-version: 20.x
@@ -39,6 +41,7 @@ jobs:
             pkg-dir: pkg/win
             bin-file: ./pkg/win/index.exe
             make-args: ''
+            bundle-node-version: --node-version=22.x
             zip-cmd: npm run zip-jszip -- -o ./pkg/win/win64.zip ./pkg/win/LICENSE ./pkg/win/README.md ./pkg/win/README.ja.md ./pkg/win/index.exe
             zip-mime: application/zip
     runs-on: ${{ matrix.os }}
@@ -70,7 +73,7 @@ jobs:
       - name: build binary
         run: |
           npm run bundle-js
-          npm run bundle-bin -- -t ${{ matrix.bin-file }} ${{ matrix.make-args }}
+          npm run bundle-bin -- ${{ matrix.bundle-node-version }} -t ${{ matrix.bin-file }} ${{ matrix.make-args }}
       - name: verify binary
         run: stat ${{ matrix.bin-file }}
       - name: zip package

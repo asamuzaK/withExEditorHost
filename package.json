@@ -40,7 +40,7 @@
   },
   "scripts": {
     "bundle-js": "esbuild --platform=node --outdir=./bundle --bundle --minify ./index.js",
-    "bundle-bin": "boxednode --node-version=lts --source=./bundle/index.js",
+    "bundle-bin": "boxednode --source=./bundle/index.js",
     "genversion": "genversion --es6 --semi ./modules/version.js",
     "lint": "eslint --fix .",
     "prebuild": "npm run genversion && npm run lint && npm run test",
