@@ -15,33 +15,33 @@ jobs:
       matrix:
         include:
           - node-version: 22.x
+            asset-name: linux-x86_64.tar.gz
             os: ubuntu-latest
             python-version: '3.x'
-            asset-name: linux-x86_64.tar.gz
             pkg-dir: pkg/linux
+            bundle-node-version: --node-version=lts
             bin-file: ./pkg/linux/index
             make-args: --make-args="-j4"
-            bundle-node-version: --node-version=lts
             zip-cmd: cd ./pkg/linux && tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
           - node-version: 22.x
+            asset-name: macos.tar.gz
             os: macos-latest
             python-version: '3.x'
-            asset-name: macos.tar.gz
             pkg-dir: pkg/macos
+            bundle-node-version: --node-version=lts
             bin-file: ./pkg/macos/index
             make-args: --make-args="-j4"
-            bundle-node-version: --node-version=lts
             zip-cmd: cd ./pkg/macos && tar -cvzf macos.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
           - node-version: 20.x
+            asset-name: win64.zip
             os: windows-latest
             python-version: '3.x'
-            asset-name: win64.zip
             pkg-dir: pkg/win
+            bundle-node-version: --node-version=20.x
             bin-file: ./pkg/win/index.exe
             make-args: ''
-            bundle-node-version: --node-version=20.x
             zip-cmd: npm run zip-jszip -- -o ./pkg/win/win64.zip ./pkg/win/LICENSE ./pkg/win/README.md ./pkg/win/README.ja.md ./pkg/win/index.exe
             zip-mime: application/zip
     runs-on: ${{ matrix.os }}
