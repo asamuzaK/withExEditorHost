@@ -38,7 +38,7 @@ jobs:
             asset-name: win64.zip
             pkg-dir: pkg/win
             bin-file: ./pkg/win/index.exe
-            make-args: ''
+            make-args: --make-args="vs2022"
             zip-cmd: npm run zip-jszip -- -o ./pkg/win/win64.zip ./pkg/win/LICENSE ./pkg/win/README.md ./pkg/win/README.ja.md ./pkg/win/index.exe
             zip-mime: application/zip
     runs-on: ${{ matrix.os }}
