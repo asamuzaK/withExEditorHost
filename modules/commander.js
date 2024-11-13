@@ -21,7 +21,7 @@ import {
  * @returns {void}
  */
 export const parseCommand = args => {
-  const reg = /^(?:(?:--)?help|-[h|v]|--version|s(?:etup)?)$/;
+  const reg = /^(?:(?:--)?help|-[hv]|--version|s(?:etup)?)$/;
   if (Array.isArray(args) && args.some(arg => reg.test(arg))) {
     commander.exitOverride();
     commander.version(hostVersion, '-v, --version');
