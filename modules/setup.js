@@ -31,11 +31,33 @@ export const setupOpts = new Map();
 /**
  * abort setup
  * @param {string} msg - message
+ * @param {number} [code] - exit code
  * @returns {void}
  */
-export const abortSetup = msg => {
+export const abortSetup = (msg, code) => {
+  setupOpts.clear();
   console.info(`Setup aborted: ${msg}`);
-  process.exit();
+  if (!Number.isInteger(code)) {
+    code = 1;
+  }
+  process.exit(code);
+};
+
+/**
+ * handle inquirer error
+ * @param {object} e - Error
+ * @throws
+ * @returns {Function} - abortSetup
+ */
+export const handleInquirerError = e => {
+  if (e instanceof Error) {
+    let code = 1;
+    if (e.name === 'ExitPromptError') {
+      code = 130;
+    }
+    return abortSetup(e.message, code);
+  }
+  return abortSetup('Unknown error.', 1);
 };
 
 /**
@@ -51,11 +73,11 @@ export const handleCmdArgsInput = async editorArgs => {
     const useCmdArgs = await inquirer.confirm({
       message: 'Execute editor with command line options?',
       default: false
-    });
+    }).catch(handleInquirerError);
     if (useCmdArgs) {
       const ans = await inquirer.input({
         message: 'Input command line options:'
-      });
+      }).catch(handleInquirerError);
       if (ans) {
         cmdArgs = new CmdArgs(ans.trim()).toArray();
       } else {
@@ -78,7 +100,7 @@ export const handleEditorPathInput = async editorFilePath => {
     editorFilePath = await inquirer.input({
       message: 'Input editor path:',
       required: true
-    });
+    }).catch(handleInquirerError);
   }
   let parsedPath = editorFilePath;
   if (/\$\{\w+\}|\$\w+/.test(editorFilePath)) {
@@ -144,11 +166,11 @@ export const confirmOverwriteEditorConfig = async file => {
   const ans = await inquirer.confirm({
     message: `${file} already exists. Overwrite?`,
     default: false
-  });
+  }).catch(handleInquirerError);
   if (ans) {
     func = createEditorConfig();
   } else {
-    func = abortSetup(`${file} already exists.`);
+    func = abortSetup(`${file} already exists.`, 1);
   }
   return func;
 };
