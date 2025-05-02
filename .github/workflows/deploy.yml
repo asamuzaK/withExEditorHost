@@ -1,4 +1,6 @@
 name: deploy
+permissions:
+  contents: read
 
 on:
   release:
@@ -15,7 +17,7 @@ jobs:
       matrix:
         include:
           - asset-name: linux-x86_64.tar.gz
-            node-version: 22.x
+            node-version: lts/*
             os: ubuntu-latest
             python-version: '3.x'
             pkg-dir: pkg/linux
@@ -24,7 +26,7 @@ jobs:
             zip-cmd: cd ./pkg/linux && tar -cvzf linux-x86_64.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
           - asset-name: macos.tar.gz
-            node-version: 22.x
+            node-version: lts/*
             os: macos-latest
             python-version: '3.x'
             pkg-dir: pkg/macos
@@ -33,7 +35,7 @@ jobs:
             zip-cmd: cd ./pkg/macos && tar -cvzf macos.tar.gz LICENSE README.md README.ja.md index && cd ../../
             zip-mime: application/gzip
           - asset-name: win64.zip
-            node-version: 22.x
+            node-version: lts/*
             os: windows-latest
             python-version: '3.x'
             pkg-dir: pkg/win
@@ -59,8 +61,8 @@ jobs:
       - name: use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          check-latest: true
           node-version: ${{ matrix.node-version }}
+          check-latest: true
       - name: install dependencies
         run: npm ci
       - name: prepare build

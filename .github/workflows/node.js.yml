@@ -2,6 +2,8 @@
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
 name: build
+permissions:
+  contents: read
 
 on:
   push:
@@ -13,7 +15,7 @@ jobs:
   build:
     strategy:
       matrix:
-        node-version: [ 18.x, 20.x, 22.x, 23.x ]
+        node-version: [ 20.x, lts/*, latest ]
         os: [ ubuntu-latest, macos-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
@@ -22,6 +24,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          check-latest: true
       - run: npm ci
       - run: npm run lint
       - run: npm test
