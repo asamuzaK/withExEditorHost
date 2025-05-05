@@ -71,8 +71,8 @@ jobs:
         run: mkdir -p ./{bundle,${{ matrix.pkg-dir }}}
       - name: build binary
         run: |
-          npm run bundle-js
-          npm run bundle-bin -- -t ${{ matrix.bin-file }} ${{ matrix.make-args }}
+          npm run bundle:js
+          npm run bundle:bin -- -t ${{ matrix.bin-file }} ${{ matrix.make-args }}
       - name: verify binary
         run: stat ${{ matrix.bin-file }}
       - name: zip package
