@@ -1,0 +1,14 @@
+*.bak
+.git
+.gitattributes
+.github
+.gitignore
+.npmingore
+eslint.config.mjs
+bundle/
+coverage/
+dest/
+dist/
+pkg/
+test/
+tmp/
