@@ -44,7 +44,7 @@ export const editorConfig = new Map();
 /* output */
 /**
  * host message
- * @param {*} message - message
+ * @param {object} message - message
  * @param {string} status - status
  * @returns {object} - host message object
  */
@@ -56,7 +56,7 @@ export const hostMsg = (message, status) => ({
 
 /**
  * handle rejection
- * @param {*} e - Error or any
+ * @param {Error|string|object} e - Error or any
  * @returns {boolean} - false
  */
 export const handleReject = e => {
@@ -76,8 +76,8 @@ export const handleReject = e => {
 
 /**
  * write stdout
- * @param {*} msg - message
- * @returns {Promise.<?Function>} - write message to the Writable stream
+ * @param {string|object} msg - message
+ * @returns {Promise.<string|Buffer>} - write message to the Writable stream
  */
 export const writeStdout = async msg => {
   let func;
@@ -278,7 +278,7 @@ export const handleChildProcessExit = code => {
 
 /**
  * handle child process stderr
- * @param {*} data - data
+ * @param {string|object} data - data
  * @returns {void}
  */
 export const handleChildProcessStderr = data => {
@@ -292,7 +292,7 @@ export const handleChildProcessStderr = data => {
 
 /**
  * handle child process stdout
- * @param {*} data - data
+ * @param {string|object} data - data
  * @returns {void}
  */
 export const handleChildProcessStdout = data => {
@@ -677,7 +677,7 @@ export const handleCreatedTmpFile = async (obj = {}) => {
 
 /**
  * handle message
- * @param {*} msg - message
+ * @param {object} msg - message
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleMsg = async msg => {

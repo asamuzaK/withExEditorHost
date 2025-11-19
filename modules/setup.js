@@ -46,8 +46,7 @@ export const abortSetup = (msg, code) => {
 /**
  * handle inquirer error
  * @param {object} e - Error
- * @throws
- * @returns {Function} - abortSetup
+ * @returns {void} - abortSetup
  */
 export const handleInquirerError = e => {
   if (e instanceof Error) {
@@ -208,7 +207,7 @@ export const handleSetupCallback = (info = {}) => {
 /**
  * run setup
  * @param {object} cmdOpts - cmd options
- * @returns {Function} - setup.run()
+ * @returns {Promise} - setup.run()
  */
 export const runSetup = (cmdOpts = {}) => {
   const {
