@@ -21,7 +21,7 @@
     "web-ext-native-msg": "^8.0.14"
   },
   "devDependencies": {
-    "boxednode": "^3.0.0",
+    "boxednode": "^2.4.4",
     "c8": "^10.1.3",
     "chai": "^6.2.2",
     "esbuild": "^0.27.2",
