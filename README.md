@@ -11,7 +11,6 @@ Native messaging host for browser extension *withExEditor*.
 The browser interacts with the host via messages, and the editor is executed by this host.
 
 * [withExEditor :: Add-ons for Firefox](https://addons.mozilla.org/addon/withexeditor/ "withExEditor :: Add-ons for Firefox")
-* [withExEditor - Chrome Web Store](https://chrome.google.com/webstore/detail/withexeditor/koghhpkkcndhhclklnnnhcpkkplfkgoi "withExEditor - Chrome Web Store")
 
 ## Supported browsers
 
@@ -20,17 +19,8 @@ The browser interacts with the host via messages, and the editor is executed by 
 |Firefox         |   ✓   |   ✓   |   ✓   |
 |Waterfox Current|   ✓   |   ✓   |   ✓   |
 |LibreWolf       |   ✓ *1|   ✓   |       |
-|Chrome          |   ✓   |   ✓   |   ✓   |
-|Chrome Beta     |   ✓ *2|   ✓   |   ✓   |
-|Chrome Canary   |   ✓ *2|       |   ✓   |
-|Chromium        |       |   ✓   |   ✓   |
-|Brave           |   ✓ *2|   ✓   |   ✓   |
-|Edge            |   ✓   |   ✓   |   ✓   |
-|Opera           |   ✓ *2|       |   ✓ *2|
-|Vivaldi         |   ✓ *2|   ✓   |   ✓   |
 
 *1: Shares host with Firefox.
-*2: Shares host with Chrome.
 
 If your browser is not listed or OS for that browser is left blank, file an [issue](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost") for adding support.
 When filing an issue, if you know [where to save the application manifest](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging#App_manifest_location "Native messaging - Mozilla | MDN") in that browser, please let me know.

@@ -12,9 +12,7 @@ import {
 import { isString, throwErr } from './common.js';
 
 /* constants */
-import {
-  EDITOR_CONFIG_FILE, EXT_CHROME_ID, EXT_WEB_ID, HOST, HOST_DESC
-} from './constant.js';
+import { EDITOR_CONFIG_FILE, EXT_WEB_ID, HOST, HOST_DESC } from './constant.js';
 const CHAR = 'utf8';
 const INDENT = 2;
 const PERM_FILE = 0o644;
@@ -217,7 +215,6 @@ export const runSetup = (cmdOpts = {}) => {
   const opt = {
     hostDescription: HOST_DESC,
     hostName: HOST,
-    chromeExtensionIds: [EXT_CHROME_ID],
     webExtensionIds: [EXT_WEB_ID],
     callback: handleSetupCallback
   };
@@ -225,7 +222,17 @@ export const runSetup = (cmdOpts = {}) => {
   if (isString(browser) && browser.length) {
     setup.browser = browser.trim();
   } else {
-    const excludedBrowsers = ['thunderbird'];
+    const excludedBrowsers = [
+      'thunderbird',
+      'chrome',
+      'chromebeta',
+      'chromecanary',
+      'chromium',
+      'brave',
+      'edge',
+      'opera',
+      'vivaldi'
+    ];
     setup.supportedBrowsers = setup.supportedBrowsers.filter(item =>
       !excludedBrowsers.includes(item.toLowerCase())
     );

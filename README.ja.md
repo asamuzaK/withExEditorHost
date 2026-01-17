@@ -11,7 +11,6 @@
 ブラウザはメッセージを介してホストと対話し、エディタはこのホストによって実行されます。
 
 * [withExEditor :: Add-ons for Firefox](https://addons.mozilla.org/addon/withexeditor/ "withExEditor :: Add-ons for Firefox")
-* [withExEditor - Chrome ウェブストア](https://chrome.google.com/webstore/detail/withexeditor/koghhpkkcndhhclklnnnhcpkkplfkgoi "withExEditor - Chrome ウェブストア")
 
 ## ブラウザサポート状況
 
@@ -20,17 +19,8 @@
 |Firefox         |   ✓   |   ✓   |   ✓   |
 |Waterfox Current|   ✓   |   ✓   |   ✓   |
 |LibreWolf       |   ✓ *1|   ✓   |       |
-|Chrome          |   ✓   |   ✓   |   ✓   |
-|Chrome Beta     |   ✓ *2|   ✓   |   ✓   |
-|Chrome Canary   |   ✓ *2|       |   ✓   |
-|Chromium        |       |   ✓   |   ✓   |
-|Brave           |   ✓ *2|   ✓   |   ✓   |
-|Edge            |   ✓   |   ✓   |   ✓   |
-|Opera           |   ✓ *2|       |   ✓ *2|
-|Vivaldi         |   ✓ *2|   ✓   |   ✓   |
 
 *1: Firefoxとホストを共有。
-*2: Chromeとホストを共有。
 
 ブラウザが一覧にない場合やOSがサポート対象になっていない場合は、サポート要望の[イシュー](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost")を登録してください。
 イシューを登録する際、そのブラウザでは[アプリケーションマニフェストをどこに保存すべきか](https://developer.mozilla.org/ja/Add-ons/WebExtensions/Native_messaging#App_manifest_%E3%81%AE%E5%A0%B4%E6%89%80 "Native messaging - Mozilla | MDN")もしご存知でしたら、お知らせください。
