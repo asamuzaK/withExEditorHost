@@ -27,8 +27,6 @@ export const EDITOR_CONFIG_RES = 'resEditorConfig';
 export const EDITOR_CONFIG_TS = 'editorConfigTimestamp';
 export const EDITOR_NAME = 'editorName';
 export const EDITOR_PATH = 'editorPath';
-export const EXT_CHROME_ID =
-  'chrome-extension://koghhpkkcndhhclklnnnhcpkkplfkgoi/';
 export const EXT_WEB_ID = 'jid1-WiAigu4HIo0Tag@jetpack';
 export const FILE_WATCH = 'watchFile';
 export const HOST = 'withexeditorhost';
