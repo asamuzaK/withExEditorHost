@@ -238,7 +238,6 @@ describe('exportEditorConfig', () => {
   });
 
   it('should call function', async () => {
-    console.log(editorConfig);
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
     const stubErrWrite =
       sinon.stub(process.stderr, 'write').callsFake(buf => buf);
