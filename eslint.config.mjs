@@ -33,12 +33,6 @@ export default [
         asyncArrow: 'always',
         named: 'never'
       }],
-      'import-x/order': ['error', {
-        alphabetize: {
-          order: 'ignore',
-          caseInsensitive: false
-        }
-      }],
       'no-await-in-loop': 'error',
       'no-use-before-define': ['error', {
         allowNamedExports: false,
