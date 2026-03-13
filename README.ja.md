@@ -25,23 +25,20 @@
 ブラウザが一覧にない場合やOSがサポート対象になっていない場合は、サポート要望の[イシュー](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost")を登録してください。
 イシューを登録する際、そのブラウザでは[アプリケーションマニフェストをどこに保存すべきか](https://developer.mozilla.org/ja/Add-ons/WebExtensions/Native_messaging#App_manifest_%E3%81%AE%E5%A0%B4%E6%89%80 "Native messaging - Mozilla | MDN")もしご存知でしたら、お知らせください。
 
-## npm からのホストのセットアップ
+## ホストのインストールとセットアップ
 
-備考：[Node.js](https://nodejs.org/ja/ "Node.js")が必要です。メンテナンスLTSかそれ以上のバージョンを使用してください。
+備考：[Node.js](https://nodejs.org/ja/ "Node.js")が必要です。
 
 ホストを設定するときは、ブラウザにインストールされているwithExEditorを無効化してください。
 
-ホストは[withexeditorhost - npm](https://www.npmjs.com/package/withexeditorhost)から入手できます。
-ホストをグローバルにインストールした後に、インストール先に移動してください。
-
-備考：Windowsでのインストール先は基本的に`C:\Users\XXX\AppData\Roaming\npm\node_modules\withexeditorhost`で、macOSとLinuxでは`/usr/local/lib/node_modules/withexeditorhost`となっているはずです。
-もし見つからない場合、npmのグローバルインストールパスは`npm root -g`で取得できます。
-参照： [Where does npm install the packages?](https://nodejs.dev/learn/where-does-npm-install-the-packages)
+ホストをグローバルインストールした後に、インストール先に移動してください。
 
 ```console
 npm i -g withexeditorhost
 cd path/to/npm/node_modules/withexeditorhost
 ```
+
+備考： npmのグローバルインストールパスは`npm root -g`で取得できます。 参照： [npm-root](https://docs.npmjs.com/cli/commands/npm-root)
 
 ホストを設定するためのコマンド`npm run setup`を実行します。
 
@@ -49,9 +46,7 @@ cd path/to/npm/node_modules/withexeditorhost
 npm run setup
 ```
 
-どのブラウザ向けにホストを設定するのか尋ねられますので、リストに表示されたブラウザから選択してください。
-
-続いて、エディタ関連の以下の入力を求められますので適宜入力してください。
+セットアップ時にはエディタ関連の以下の入力を求められますので適宜入力してください。
 
 * エディタのパス
 * コマンドラインオプション
@@ -99,7 +94,7 @@ npm run setup -- --config-path="C:\Users\XXX\path\to\another\location"
 npm run setup -- --help
 ```
 
-### アップグレード
+## ホストのアップグレード
 
 ホストをアップグレードする前に、ブラウザにインストールされているwithExEditorを無効にしてください。
 下記コマンドを実行します。
@@ -108,7 +103,7 @@ npm run setup -- --help
 npm i -g withexeditorhost
 ```
 
-アップグレード後にセットアップスクリプトを再度実行する必要はありません。
-アップグレード後にはwithExEditorを有効化してください。
+コマンド実行後、再びwithExEditorを有効化してください。
+セットアップスクリプトを再度実行する必要はありません。
 
 ***

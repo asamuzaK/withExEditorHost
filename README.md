@@ -7,7 +7,7 @@ EN | [JA](./README.ja.md)
 
 # withExEditorHost
 
-Native messaging host for browser extension *withExEditor*.
+Native messaging host for the *withExEditor* browser extension.
 The browser interacts with the host via messages, and the editor is executed by this host.
 
 * [withExEditor :: Add-ons for Firefox](https://addons.mozilla.org/addon/withexeditor/ "withExEditor :: Add-ons for Firefox")
@@ -25,22 +25,20 @@ The browser interacts with the host via messages, and the editor is executed by 
 If your browser is not listed or OS for that browser is left blank, file an [issue](https://github.com/asamuzaK/withExEditorHost/issues "Issues · asamuzaK/withExEditorHost") for adding support.
 When filing an issue, if you know [where to save the application manifest](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging#App_manifest_location "Native messaging - Mozilla | MDN") in that browser, please let me know.
 
-## Host setup from npm
+## Installation and Setup
 
-NOTE: [Node.js](https://nodejs.org/en/ "Node.js") is required. Use maintenance LTS or higher.
+**Note:** [Node.js](https://nodejs.org/en/ "Node.js") is required.
 
-When setting up the host, disable withExEditor installed in the browser.
+When setting up the host, disable the withExEditor extension installed in the browser.
 
-Get host from [withexeditorhost - npm](https://www.npmjs.com/package/withexeditorhost) and install globally, move to installed path.
-
-NOTE: The installation path on Windows is basically `C:\Users\XXX\AppData\Roaming\npm\node_modules\withexeditorhost`, and on macOS and Linux it should be `/usr/local/lib/node_modules/withexeditorhost`.
-If you can't find it, you can get the global installation path for npm with `npm root -g`.
-Ref: [Where does npm install the packages?](https://nodejs.dev/learn/where-does-npm-install-the-packages)
+Install withExEditorHost globally, then move to the installed path.
 
 ```console
 npm i -g withexeditorhost
 cd path/to/npm/node_modules/withexeditorhost
 ```
+
+**Note:** To find the installation path, run `npm root -g`. Ref: [npm-root](https://docs.npmjs.com/cli/commands/npm-root)
 
 Run the setup command `npm run setup`.
 
@@ -48,29 +46,26 @@ Run the setup command `npm run setup`.
 npm run setup
 ```
 
-Then you will be asked which browser you want to setup the host for, so please select from the browsers listed.
+During the setup process, you will be prompted to provide the following information.
+Please enter the appropriate values:
 
-After that, you will be prompted for the following, please input as appropriate.
+* **Enter editor path:** Provide the full path to your preferred text editor.  
+* **Enter command line options:** Specify any command-line arguments your editor requires.  
+  * *Note:* Enclose the argument in quotes if it contains spaces or backslashes. (Example: `-a -b "C:\\Program Files"`)  
+  * *Note:* You can use the `${file}` placeholder in the arguments to represent the temporary file. (Example: `-a ${file} \-b`)
 
-* Enter editor path
-* Enter command line options
-  * NOTE: Quote the argument if it contains spaces or backslashes.
-    For example: `-a -b "C:\Program Files"`
-  * NOTE: You can use the temporary file placeholder `${file}` in the arguments.
-    For example: `-a ${file} -b`
+**Note:** If you have enabled Mandatory Access Control (e.g., AppArmor) for your web browser, ensure that its profile allows the execution of the withexeditorhost.sh script.
 
 If config files are created successfully, enable withExEditor again.
 The browser and the host get connected and the editor will be ready to use.
 
-NOTE: If you have enabled Mandatory Access Control (for example, AppArmor) for your web-browser, ensure the profile allows the `withexeditorhost.sh` script to be executed.
-
 ### Options
 
-In the setup script you can specify some options.
+You can specify several options when running the setup script:
 
 #### -b --browser
 
-To specify the browser, please use `-b` or `--browser` option.
+Use this option to specify the target browser for the installation.
 
 ```console
 npm run setup -- --browser=firefox
@@ -83,8 +78,8 @@ By default, configuration files are saved under user's home directory.
 * Mac: `~/Library/Application Support/withexeditorhost/config/`
 * Linux: `~/.config/withexeditorhost/config/`
 
-If you want to save configuration files in different location, use `-c` or `--config-path` option.
-Quote path if it contains spaces or backslashes.
+If you want to save the configuration files in a different location, use this option.
+Enclose the path in quotes if it contains spaces or backslashes.
 
 ```console
 npm run setup -- --config-path="C:\Users\XXX\path\to\another\location"
@@ -98,16 +93,14 @@ For other options, see help
 npm run setup -- --help
 ```
 
-### Upgrade
+## Upgrading
 
-Before upgrading the host, disable withExEditor installed in the browser.
-Run install command.
-
-```console
-npm i -g withexeditorhost
-```
-
-There is no need to run the setup script again after the upgrade.
-Enable withExEditor after the upgrade.
+1. **Disable** the withExEditor extension installed in your browser.
+2. Run the update command:
+   ```console
+   npm i -g withexeditorhost@latest
+   ```
+3. **Re-enable** the withExEditor extension.
+   There is no need to run the setup script again.
 
 ***
