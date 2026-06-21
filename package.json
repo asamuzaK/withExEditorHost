@@ -17,17 +17,17 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@inquirer/prompts": "^8.5.1",
+    "@inquirer/prompts": "^8.5.2",
     "commander": "^15.0.0",
     "semver-parser": "^4.2.1",
-    "undici": "^8.0.2",
+    "undici": "^7.28.0",
     "web-ext-native-msg": "^9.0.2"
   },
   "devDependencies": {
     "c8": "^11.0.0",
     "chai": "^6.2.2",
     "eslint": "^9.39.4",
-    "eslint-plugin-jsdoc": "^63.0.0",
+    "eslint-plugin-jsdoc": "^63.0.6",
     "eslint-plugin-regexp": "^3.1.0",
     "eslint-plugin-unicorn": "^64.0.0",
     "genversion": "^3.2.0",
@@ -41,10 +41,12 @@
       "yargs": "^18.0.0"
     },
     "eslint": {
-      "brace-expansion": "^1.1.13"
+      "brace-expansion": "^1.1.13",
+      "js-yaml": "^4.2.0"
     },
     "mocha": {
-      "diff": "^8.0.3"
+      "diff": "^8.0.3",
+      "js-yaml": "^4.2.0"
     },
     "serialize-javascript": "^7.0.4"
   },
