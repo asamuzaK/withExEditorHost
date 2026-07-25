@@ -21,7 +21,7 @@
     "commander": "^15.0.0",
     "semver-parser": "^4.2.1",
     "undici": "^8.9.0",
-    "web-ext-native-msg": "^9.0.3"
+    "web-ext-native-msg": "^9.0.4"
   },
   "devDependencies": {
     "c8": "^12.0.0",
@@ -57,5 +57,5 @@
     "start": "node ./index.js",
     "test": "c8 --reporter=text mocha --exit test/*.test.js"
   },
-  "version": "10.0.0"
+  "version": "10.0.1"
 }
