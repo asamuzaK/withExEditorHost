@@ -10,7 +10,7 @@ import { afterEach, beforeEach, describe, it } from 'mocha';
 import { compareSemVer, parseSemVer } from 'semver-parser';
 import sinon from 'sinon';
 import undici, {
-  getGlobalDispatcher, MockAgent, setGlobalDispatcher
+  fetch as undiciFetch, getGlobalDispatcher, MockAgent, setGlobalDispatcher
 } from 'undici';
 import {
   Input, Output, createDirectory, createFile, getFileTimestamp, isDir, isFile,
@@ -465,15 +465,18 @@ describe('exportFileData', () => {
 });
 
 describe('fetchLatestHostVersion', () => {
+  const originalFetch = globalThis.fetch;
   const globalDispatcher = getGlobalDispatcher();
   const mockAgent = new MockAgent();
   beforeEach(() => {
     setGlobalDispatcher(mockAgent);
     mockAgent.disableNetConnect();
+    globalThis.fetch = undiciFetch;
   });
   afterEach(() => {
     mockAgent.enableNetConnect();
     setGlobalDispatcher(globalDispatcher);
+    globalThis.fetch = originalFetch;
   });
 
   it('should get null', async () => {
@@ -514,15 +517,18 @@ describe('fetchLatestHostVersion', () => {
 });
 
 describe('exportHostVersion', () => {
+  const originalFetch = globalThis.fetch;
   const globalDispatcher = getGlobalDispatcher();
   const mockAgent = new MockAgent();
   beforeEach(() => {
     setGlobalDispatcher(mockAgent);
     mockAgent.disableNetConnect();
+    globalThis.fetch = undiciFetch;
   });
   afterEach(() => {
     mockAgent.enableNetConnect();
     setGlobalDispatcher(globalDispatcher);
+    globalThis.fetch = originalFetch;
   });
 
   it('should throw', async () => {
@@ -2465,17 +2471,20 @@ describe('handleCreatedTmpFile', () => {
 });
 
 describe('handleMsg', () => {
+  const originalFetch = globalThis.fetch;
   const globalDispatcher = getGlobalDispatcher();
   const mockAgent = new MockAgent();
   beforeEach(() => {
     editorConfig.clear();
     setGlobalDispatcher(mockAgent);
     mockAgent.disableNetConnect();
+    globalThis.fetch = undiciFetch;
   });
   afterEach(() => {
     editorConfig.clear();
     mockAgent.enableNetConnect();
     setGlobalDispatcher(globalDispatcher);
+    globalThis.fetch = originalFetch;
   });
 
   it('should call function', async () => {
