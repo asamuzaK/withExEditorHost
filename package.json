@@ -17,31 +17,24 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@inquirer/prompts": "^8.5.2",
+    "@inquirer/prompts": "^8.7.1",
     "commander": "^15.0.0",
     "semver-parser": "^4.2.1",
-    "undici": "^8.10.0",
+    "undici": "^8.10.2",
     "web-ext-native-msg": "^9.0.4"
   },
   "devDependencies": {
     "c8": "^12.0.0",
     "chai": "^6.2.2",
-    "eslint": "^10.8.1",
-    "eslint-plugin-jsdoc": "^64.1.0",
-    "eslint-plugin-regexp": "^3.2.0",
-    "eslint-plugin-unicorn": "^73.0.0",
+    "eslint": "^10.10.0",
+    "eslint-plugin-jsdoc": "^64.3.5",
+    "eslint-plugin-regexp": "^3.3.0",
+    "eslint-plugin-unicorn": "^74.0.0",
     "genversion": "^3.2.0",
-    "globals": "^17.11.0",
-    "mocha": "^11.8.0",
+    "globals": "^17.12.0",
+    "mocha": "^12.0.0",
     "neostandard": "^0.14.0-next",
     "sinon": "^22.1.0"
-  },
-  "overrides": {
-    "mocha": {
-      "diff": "^8.0.4",
-      "js-yaml": "^4.3.1",
-      "serialize-javascript": "^7.0.5"
-    }
   },
   "scripts": {
     "build": "npm run genversion && npm run lint && npm run test",
@@ -51,5 +44,5 @@
     "start": "node ./index.js",
     "test": "c8 --reporter=text mocha --exit test/*.test.js"
   },
-  "version": "10.0.2"
+  "version": "10.0.3"
 }
