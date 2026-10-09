@@ -11,20 +11,50 @@ import { fileURLToPath } from 'node:url';
 import { compareSemVer, isValidSemVer } from 'semver-parser';
 import undici from 'undici';
 import {
-  ChildProcess, CmdArgs, Input, Output, createDirectory, createFile,
-  getFileNameFromFilePath, getFileTimestamp, isDir, isExecutable, isFile,
-  removeDirSync, removeDirectory, readFile
+  ChildProcess,
+  CmdArgs,
+  Input,
+  Output,
+  createDirectory,
+  createFile,
+  getFileNameFromFilePath,
+  getFileTimestamp,
+  isDir,
+  isExecutable,
+  isFile,
+  removeDirSync,
+  removeDirectory,
+  readFile
 } from 'web-ext-native-msg';
 import { getType, isObjectNotEmpty, isString } from './common.js';
 import { version as hostVersion } from './version.js';
 
 /* constants */
 import {
-  EDITOR_CMD_ARGS, EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES,
-  EDITOR_CONFIG_TS, EDITOR_NAME, EDITOR_PATH, FILE_WATCH, HOST, HOST_VERSION,
-  HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT, PLACEHOLDER,
-  PROCESS_CHILD, TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
-  TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_PLACEHOLDER,
+  EDITOR_CMD_ARGS,
+  EDITOR_CONFIG_FILE,
+  EDITOR_CONFIG_GET,
+  EDITOR_CONFIG_RES,
+  EDITOR_CONFIG_TS,
+  EDITOR_NAME,
+  EDITOR_PATH,
+  FILE_WATCH,
+  HOST,
+  HOST_VERSION,
+  HOST_VERSION_CHECK,
+  LABEL,
+  LOCAL_FILE_VIEW,
+  MODE_EDIT,
+  PLACEHOLDER,
+  PROCESS_CHILD,
+  TMP_FILES,
+  TMP_FILES_PB,
+  TMP_FILES_PB_REMOVE,
+  TMP_FILE_CREATE,
+  TMP_FILE_DATA_PORT,
+  TMP_FILE_DATA_REMOVE,
+  TMP_FILE_GET,
+  TMP_FILE_PLACEHOLDER,
   TMP_FILE_RES
 } from './constant.js';
 const APP = `${process.pid}`;
@@ -32,8 +62,8 @@ const CHAR = 'utf8';
 const FILE_NOT_FOUND_TIMESTAMP = -1;
 const PERM_DIR = 0o700;
 const PERM_FILE = 0o600;
-const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
-               os.tmpdir();
+const TMPDIR =
+  process.env.TMP || process.env.TMPDIR || process.env.TEMP || os.tmpdir();
 const TMPDIR_APP = path.resolve(TMPDIR, LABEL, APP);
 const TMPDIR_FILES = path.join(TMPDIR_APP, TMP_FILES);
 const TMPDIR_FILES_PB = path.join(TMPDIR_APP, TMP_FILES_PB);
@@ -50,7 +80,8 @@ export const editorConfig = new Map();
  */
 export const hostMsg = (message, status) => ({
   [HOST]: {
-    message, status
+    message,
+    status
   }
 });
 
@@ -126,8 +157,9 @@ export const exportEditorConfig = async (data, configFile) => {
       const editorName = getFileNameFromFilePath(parsedPath);
       const executable = isExecutable(parsedPath);
       const timestamp = await getFileTimestamp(configFile);
-      const reg =
-        new RegExp(`\\$(?:${TMP_FILE_PLACEHOLDER}|{${TMP_FILE_PLACEHOLDER}})`);
+      const reg = new RegExp(
+        `\\$(?:${TMP_FILE_PLACEHOLDER}|{${TMP_FILE_PLACEHOLDER}})`
+      );
       const keys = [EDITOR_PATH, EDITOR_CMD_ARGS];
       for (const key of keys) {
         const value = data[key];
@@ -343,8 +375,9 @@ export const execChildProcess = async (file, app) => {
     args = new CmdArgs(cmdArgs).toArray();
   }
   if (hasPlaceholder) {
-    const reg =
-      new RegExp(`\\$(?:${TMP_FILE_PLACEHOLDER}|{${TMP_FILE_PLACEHOLDER}})`);
+    const reg = new RegExp(
+      `\\$(?:${TMP_FILE_PLACEHOLDER}|{${TMP_FILE_PLACEHOLDER}})`
+    );
     const l = args.length;
     let i = 0;
     while (i < l) {
@@ -379,8 +412,12 @@ export const fileMap = {
  */
 export const deleteKeyFromFileMap = async (prop, key) => {
   let bool;
-  if (isString(prop) && fileMap[prop] &&
-      isString(key) && fileMap[prop].has(key)) {
+  if (
+    isString(prop) &&
+    fileMap[prop] &&
+    isString(key) &&
+    fileMap[prop].has(key)
+  ) {
     bool = fileMap[prop].delete(key);
   }
   return !!bool;
@@ -449,9 +486,11 @@ export const getTmpFileFromFileData = async (fileData = {}) => {
     };
     func.push(writeStdout(msg));
     if (dataId) {
-      func.push(writeStdout(
-        hostMsg(`Failed to get temporary file. ID: ${dataId}`, 'warn')
-      ));
+      func.push(
+        writeStdout(
+          hostMsg(`Failed to get temporary file. ID: ${dataId}`, 'warn')
+        )
+      );
     }
   }
   return Promise.all(func);
@@ -467,8 +506,9 @@ export const getFileIdFromFilePath = async filePath => {
   if (isString(filePath)) {
     const { dir, name } = path.parse(filePath);
     if (dir.startsWith(TMPDIR_APP)) {
-      const [, , windowId, tabId, host] =
-        dir.replace(TMPDIR_APP, '').split(path.sep);
+      const [, , windowId, tabId, host] = dir
+        .replace(TMPDIR_APP, '')
+        .split(path.sep);
       if (windowId && tabId && host && name) {
         fileId = [windowId, tabId, host, name].join('_');
       }
@@ -492,11 +532,12 @@ export const createTmpFileResMsg = async key => {
         const { data } = obj;
         if (data) {
           const value =
-            await readFile(key, { encoding: CHAR, flag: 'r' }) || '';
+            (await readFile(key, { encoding: CHAR, flag: 'r' })) || '';
           data.timestamp = await getFileTimestamp(key);
           func = writeStdout({
             [TMP_FILE_RES]: {
-              data, value
+              data,
+              value
             }
           });
         }
@@ -547,18 +588,32 @@ export const createTmpFile = async (obj = {}) => {
   let filePath;
   if (data) {
     const {
-      dataId, dir, extType, host, incognito, mode, syncAuto, tabId,
+      dataId,
+      dir,
+      extType,
+      host,
+      incognito,
+      mode,
+      syncAuto,
+      tabId,
       windowId
     } = data;
     if (dataId && dir && extType && host && tabId && windowId) {
       const dirPath = await createDirectory(
-        path.join(TMPDIR_APP, dir, windowId, tabId, host), PERM_DIR
+        path.join(TMPDIR_APP, dir, windowId, tabId, host),
+        PERM_DIR
       );
       const fileId = [windowId, tabId, host, dataId].join('_');
       const fileName = dataId && encodeURIComponent(dataId);
-      filePath = dirPath && fileName && extType &&
-        await createFile(path.join(dirPath, `${fileName}${extType}`), value,
-          { encoding: CHAR, flag: 'w', mode: PERM_FILE });
+      filePath =
+        dirPath &&
+        fileName &&
+        extType &&
+        (await createFile(path.join(dirPath, `${fileName}${extType}`), value, {
+          encoding: CHAR,
+          flag: 'w',
+          mode: PERM_FILE
+        }));
       if (filePath && dir && fileMap[dir]) {
         fileMap[dir].set(fileId, { data, filePath });
       }
@@ -628,7 +683,8 @@ export const getEditorConfig = async configFile => {
   const func = [];
   if (isFile(configFile)) {
     const data = await readFile(configFile, {
-      encoding: CHAR, flag: 'r'
+      encoding: CHAR,
+      flag: 'r'
     });
     func.push(exportEditorConfig(data, configFile));
   } else {
@@ -774,8 +830,11 @@ export const addProcessListeners = () => {
  * @returns {void}
  */
 export const setDispatcher = () => {
-  const proxy = process.env.HTTPS_PROXY || process.env.https_proxy ||
-                process.env.HTTP_PROXY || process.env.http_proxy;
+  const proxy =
+    process.env.HTTPS_PROXY ||
+    process.env.https_proxy ||
+    process.env.HTTP_PROXY ||
+    process.env.http_proxy;
   if (proxy) {
     const agent = new undici.ProxyAgent(proxy);
     undici.setGlobalDispatcher(agent);
@@ -786,9 +845,12 @@ export const setDispatcher = () => {
  * handle startup
  * @returns {Promise.<Array>} - promise chain
  */
-export const startup = () => Promise.all([
-  addProcessListeners(),
-  setDispatcher(),
-  createDirectory(TMPDIR_FILES, PERM_DIR),
-  createDirectory(TMPDIR_FILES_PB, PERM_DIR)
-]).then(exportAppStatus).catch(handleReject);
+export const startup = () =>
+  Promise.all([
+    addProcessListeners(),
+    setDispatcher(),
+    createDirectory(TMPDIR_FILES, PERM_DIR),
+    createDirectory(TMPDIR_FILES_PB, PERM_DIR)
+  ])
+    .then(exportAppStatus)
+    .catch(handleReject);

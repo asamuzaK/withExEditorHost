@@ -5,8 +5,15 @@ import sinon from 'sinon';
 
 /* test */
 import {
-  escapeChar, getType, isObjectNotEmpty, isString, logErr, logMsg, logWarn,
-  quoteArg, throwErr
+  escapeChar,
+  getType,
+  isObjectNotEmpty,
+  isString,
+  logErr,
+  logMsg,
+  logWarn,
+  quoteArg,
+  throwErr
 } from '../modules/common.js';
 
 describe('escapeChar', () => {

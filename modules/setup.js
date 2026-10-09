@@ -7,7 +7,13 @@ import path from 'node:path';
 import process from 'node:process';
 import { confirm, input } from '@inquirer/prompts';
 import {
-  CmdArgs, Setup, createFile, getStat, isDir, isExecutable, isFile
+  CmdArgs,
+  Setup,
+  createFile,
+  getStat,
+  isDir,
+  isExecutable,
+  isFile
 } from 'web-ext-native-msg';
 import { isString, throwErr } from './common.js';
 
@@ -67,14 +73,18 @@ export const handleCmdArgsInput = async editorArgs => {
   if (Array.isArray(editorArgs)) {
     cmdArgs = editorArgs;
   } else {
-    const useCmdArgs = await inquirer.confirm({
-      message: 'Execute editor with command line options?',
-      default: false
-    }).catch(handleInquirerError);
+    const useCmdArgs = await inquirer
+      .confirm({
+        message: 'Execute editor with command line options?',
+        default: false
+      })
+      .catch(handleInquirerError);
     if (useCmdArgs) {
-      const ans = await inquirer.input({
-        message: 'Input command line options:'
-      }).catch(handleInquirerError);
+      const ans = await inquirer
+        .input({
+          message: 'Input command line options:'
+        })
+        .catch(handleInquirerError);
       if (ans) {
         cmdArgs = new CmdArgs(ans.trim()).toArray();
       } else {
@@ -94,10 +104,12 @@ export const handleCmdArgsInput = async editorArgs => {
  */
 export const handleEditorPathInput = async editorFilePath => {
   if (!editorFilePath) {
-    editorFilePath = await inquirer.input({
-      message: 'Input editor path:',
-      required: true
-    }).catch(handleInquirerError);
+    editorFilePath = await inquirer
+      .input({
+        message: 'Input editor path:',
+        required: true
+      })
+      .catch(handleInquirerError);
   }
   let parsedPath = editorFilePath;
   if (/\$\{\w+\}|\$\w+/.test(editorFilePath)) {
@@ -140,8 +152,9 @@ export const createEditorConfig = async () => {
     throw new Error(`No such directory: ${configPath}`);
   }
   const filePath = path.join(configPath, EDITOR_CONFIG_FILE);
-  const editorPath =
-    await handleEditorPathInput(setupOpts.get('editorFilePath'));
+  const editorPath = await handleEditorPathInput(
+    setupOpts.get('editorFilePath')
+  );
   const cmdArgs = await handleCmdArgsInput(setupOpts.get('editorCmdArgs'));
   const content = `${JSON.stringify({ editorPath, cmdArgs }, null, INDENT)}\n`;
   await createFile(filePath, content, {
@@ -160,10 +173,12 @@ export const createEditorConfig = async () => {
  */
 export const confirmOverwriteEditorConfig = async file => {
   let func;
-  const ans = await inquirer.confirm({
-    message: `${file} already exists. Overwrite?`,
-    default: false
-  }).catch(handleInquirerError);
+  const ans = await inquirer
+    .confirm({
+      message: `${file} already exists. Overwrite?`,
+      default: false
+    })
+    .catch(handleInquirerError);
   if (ans) {
     func = createEditorConfig();
   } else {
@@ -209,7 +224,11 @@ export const handleSetupCallback = (info = {}) => {
  */
 export const runSetup = (cmdOpts = {}) => {
   const {
-    browser, configPath, editorArgs, editorPath, overwriteConfig,
+    browser,
+    configPath,
+    editorArgs,
+    editorPath,
+    overwriteConfig,
     overwriteEditorConfig
   } = cmdOpts;
   const opt = {
@@ -233,8 +252,8 @@ export const runSetup = (cmdOpts = {}) => {
       'opera',
       'vivaldi'
     ];
-    setup.supportedBrowsers = setup.supportedBrowsers.filter(item =>
-      !excludedBrowsers.includes(item.toLowerCase())
+    setup.supportedBrowsers = setup.supportedBrowsers.filter(
+      item => !excludedBrowsers.includes(item.toLowerCase())
     );
   }
   if (isString(configPath) && configPath.length) {

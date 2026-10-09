@@ -8,21 +8,32 @@ import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import sinon from 'sinon';
 import {
-  Setup, createDirectory, createFile, isFile, removeDirSync
+  Setup,
+  createDirectory,
+  createFile,
+  isFile,
+  removeDirSync
 } from 'web-ext-native-msg';
 
 /* test */
 import {
-  abortSetup, confirmOverwriteEditorConfig, createEditorConfig, inquirer,
-  handleCmdArgsInput, handleEditorPathInput, handleInquirerError,
-  handleSetupCallback, runSetup, setupOpts
+  abortSetup,
+  confirmOverwriteEditorConfig,
+  createEditorConfig,
+  inquirer,
+  handleCmdArgsInput,
+  handleEditorPathInput,
+  handleInquirerError,
+  handleSetupCallback,
+  runSetup,
+  setupOpts
 } from '../modules/setup.js';
 
 /* constants */
 import { EDITOR_CONFIG_FILE } from '../modules/constant.js';
 const CHAR = 'utf8';
-const DIR_TMP = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
-                os.tmpdir();
+const DIR_TMP =
+  process.env.TMP || process.env.TMPDIR || process.env.TEMP || os.tmpdir();
 const INDENT = 2;
 const IS_WIN = os.platform() === 'win32';
 const PERM_APP = 0o755;
@@ -121,8 +132,9 @@ describe('handleInquirerError', () => {
 describe('handleCmdArgsInput', () => {
   it('should get array', async () => {
     const stubConfirm = sinon.stub(inquirer, 'confirm').resolves(true);
-    const stubInput =
-      sinon.stub(inquirer, 'input').resolves('foo "bar baz" qux');
+    const stubInput = sinon
+      .stub(inquirer, 'input')
+      .resolves('foo "bar baz" qux');
     const cmdArgs = ['foo', 'bar', 'baz'];
     const res = await handleCmdArgsInput(cmdArgs);
     assert.isFalse(stubConfirm.called);
@@ -138,42 +150,33 @@ describe('handleCmdArgsInput', () => {
     const res = await handleCmdArgsInput();
     assert.isTrue(stubConfirm.calledOnce);
     assert.isTrue(stubInput.calledOnce);
-    assert.deepEqual(res, [
-      'foo',
-      'bar',
-      'baz'
-    ]);
+    assert.deepEqual(res, ['foo', 'bar', 'baz']);
     stubConfirm.restore();
     stubInput.restore();
   });
 
   it('should call function and get array', async () => {
     const stubConfirm = sinon.stub(inquirer, 'confirm').resolves(true);
-    const stubInput =
-      sinon.stub(inquirer, 'input').resolves('foo "bar baz" qux');
+    const stubInput = sinon
+      .stub(inquirer, 'input')
+      .resolves('foo "bar baz" qux');
     const res = await handleCmdArgsInput();
     assert.isTrue(stubConfirm.calledOnce);
     assert.isTrue(stubInput.calledOnce);
-    assert.deepEqual(res, [
-      'foo',
-      'bar baz',
-      'qux'
-    ]);
+    assert.deepEqual(res, ['foo', 'bar baz', 'qux']);
     stubConfirm.restore();
     stubInput.restore();
   });
 
   it('should call function and get array', async () => {
     const stubConfirm = sinon.stub(inquirer, 'confirm').resolves(true);
-    const stubInput =
-      sinon.stub(inquirer, 'input').resolves('foo bar="baz qux"');
+    const stubInput = sinon
+      .stub(inquirer, 'input')
+      .resolves('foo bar="baz qux"');
     const res = await handleCmdArgsInput();
     assert.isTrue(stubConfirm.calledOnce);
     assert.isTrue(stubInput.calledOnce);
-    assert.deepEqual(res, [
-      'foo',
-      'bar=baz qux'
-    ]);
+    assert.deepEqual(res, ['foo', 'bar=baz qux']);
     stubConfirm.restore();
     stubInput.restore();
   });
@@ -481,14 +484,15 @@ describe('handleSetupCallback', () => {
   });
 
   it('should throw', () => {
-    assert.throws(() => handleSetupCallback(),
-      'No such directory: undefined');
+    assert.throws(() => handleSetupCallback(), 'No such directory: undefined');
   });
 
   it('should throw', () => {
     const configDirPath = path.normalize('/foo/bar');
-    assert.throws(() => handleSetupCallback({ configDirPath }),
-                  `No such directory: ${configDirPath}`);
+    assert.throws(
+      () => handleSetupCallback({ configDirPath }),
+      `No such directory: ${configDirPath}`
+    );
   });
 
   it('should call function', async () => {

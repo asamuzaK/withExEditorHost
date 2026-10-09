@@ -1,45 +1,58 @@
 import jsdoc from 'eslint-plugin-jsdoc';
+import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import regexp from 'eslint-plugin-regexp';
 import unicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
-import neostandard, { plugins as neostdplugins } from 'neostandard';
+import neostandard from 'neostandard';
 
 export default [
   ...neostandard({
-    semi: true
+    noStyle: true
   }),
   jsdoc.configs['flat/recommended'],
   regexp.configs['flat/recommended'],
+  prettierRecommended,
   {
-    ignores: ['bundle/']
+    ignores: ['test/file/']
   },
   {
     languageOptions: {
       globals: {
-        ...globals.node
+        ...globals.browser,
+        ...globals.node,
+        ...globals.webextensions
       }
     },
     linterOptions: {
       reportUnusedDisableDirectives: true
     },
     plugins: {
-      '@stylistic': neostdplugins['@stylistic'],
       regexp,
       unicorn
     },
+    settings: {
+      jsdoc: {
+        mode: 'typescript'
+      }
+    },
     rules: {
-      '@stylistic/space-before-function-paren': ['error', {
-        anonymous: 'always',
-        asyncArrow: 'always',
-        named: 'never'
-      }],
+      curly: ['error', 'all'],
+      'jsdoc/no-undefined-types': [
+        'error',
+        {
+          definedTypes: ['ReadonlyArray']
+        }
+      ],
       'no-await-in-loop': 'error',
-      'no-use-before-define': ['error', {
-        allowNamedExports: false,
-        classes: true,
-        functions: true,
-        variables: true
-      }],
+      'no-use-before-define': [
+        'error',
+        {
+          allowNamedExports: false,
+          classes: true,
+          functions: true,
+          variables: true
+        }
+      ],
       'prefer-object-has-own': 'error',
       'unicorn/prefer-node-protocol': 'error'
     }

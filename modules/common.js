@@ -64,7 +64,7 @@ export const getType = o =>
  */
 export const isObjectNotEmpty = o => {
   const items = /Object/i.test(getType(o)) && Object.keys(o);
-  return !!(items?.length);
+  return !!items?.length;
 };
 
 /**

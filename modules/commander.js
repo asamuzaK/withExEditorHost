@@ -9,10 +9,21 @@ import { version as hostVersion } from './version.js';
 
 /* constants */
 import {
-  CMD_BROWSER, CMD_BROWSER_DESC, CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC,
-  CMD_EDITOR_ARGS, CMD_EDITOR_ARGS_DESC, CMD_EDITOR_PATH, CMD_EDITOR_PATH_DESC,
-  CMD_OVERWRITE_CONFIG, CMD_OVERWRITE_CONFIG_DESC, CMD_OVERWRITE_EDITOR_CONFIG,
-  CMD_OVERWRITE_EDITOR_CONFIG_DESC, CMD_SETUP, CMD_SETUP_ALIAS, CMD_SETUP_DESC
+  CMD_BROWSER,
+  CMD_BROWSER_DESC,
+  CMD_CONFIG_PATH,
+  CMD_CONFIG_PATH_DESC,
+  CMD_EDITOR_ARGS,
+  CMD_EDITOR_ARGS_DESC,
+  CMD_EDITOR_PATH,
+  CMD_EDITOR_PATH_DESC,
+  CMD_OVERWRITE_CONFIG,
+  CMD_OVERWRITE_CONFIG_DESC,
+  CMD_OVERWRITE_EDITOR_CONFIG,
+  CMD_OVERWRITE_EDITOR_CONFIG_DESC,
+  CMD_SETUP,
+  CMD_SETUP_ALIAS,
+  CMD_SETUP_DESC
 } from './constant.js';
 
 /**
@@ -26,7 +37,9 @@ export const parseCommand = args => {
     commander.exitOverride();
     commander.version(hostVersion, '-v, --version');
     if (args.includes('setup') || args.includes('s')) {
-      commander.command(CMD_SETUP).alias(CMD_SETUP_ALIAS)
+      commander
+        .command(CMD_SETUP)
+        .alias(CMD_SETUP_ALIAS)
         .description(CMD_SETUP_DESC)
         .option(CMD_BROWSER, CMD_BROWSER_DESC)
         .option(CMD_CONFIG_PATH, CMD_CONFIG_PATH_DESC)
@@ -44,6 +57,4 @@ export const parseCommand = args => {
   }
 };
 
-export {
-  commander
-};
+export { commander };

@@ -10,41 +10,94 @@ import { afterEach, beforeEach, describe, it } from 'mocha';
 import { compareSemVer, parseSemVer } from 'semver-parser';
 import sinon from 'sinon';
 import undici, {
-  fetch as undiciFetch, getGlobalDispatcher, MockAgent, setGlobalDispatcher
+  fetch as undiciFetch,
+  getGlobalDispatcher,
+  MockAgent,
+  setGlobalDispatcher
 } from 'undici';
 import {
-  Input, Output, createDirectory, createFile, getFileTimestamp, isDir, isFile,
-  removeDirSync, removeDirectory
+  Input,
+  Output,
+  createDirectory,
+  createFile,
+  getFileTimestamp,
+  isDir,
+  isFile,
+  removeDirSync,
+  removeDirectory
 } from 'web-ext-native-msg';
 
 /* test */
 import {
-  addProcessListeners, createTmpFile, createTmpFileResMsg,
-  deleteKeyFromFileMap, editorConfig, execChildProcess, exportAppStatus,
-  exportEditorConfig, exportFileData, exportHostVersion, fetchLatestHostVersion,
-  fileMap, getEditorConfig, getFileIdFromFilePath, getTmpFileFromFileData,
-  getTmpFileFromWatcherFileName, handleChildProcessClose,
-  handleChildProcessErr, handleChildProcessExit, handleChildProcessStderr,
-  handleChildProcessStdout, handleCreatedTmpFile, handleExit, handleMsg,
-  handleReject, hostMsg, initPrivateTmpDir, readStdin, removeTmpFileData,
-  setDispatcher, startup, unwatchFile, viewLocalFile, watchTmpFile, writeStdout
+  addProcessListeners,
+  createTmpFile,
+  createTmpFileResMsg,
+  deleteKeyFromFileMap,
+  editorConfig,
+  execChildProcess,
+  exportAppStatus,
+  exportEditorConfig,
+  exportFileData,
+  exportHostVersion,
+  fetchLatestHostVersion,
+  fileMap,
+  getEditorConfig,
+  getFileIdFromFilePath,
+  getTmpFileFromFileData,
+  getTmpFileFromWatcherFileName,
+  handleChildProcessClose,
+  handleChildProcessErr,
+  handleChildProcessExit,
+  handleChildProcessStderr,
+  handleChildProcessStdout,
+  handleCreatedTmpFile,
+  handleExit,
+  handleMsg,
+  handleReject,
+  hostMsg,
+  initPrivateTmpDir,
+  readStdin,
+  removeTmpFileData,
+  setDispatcher,
+  startup,
+  unwatchFile,
+  viewLocalFile,
+  watchTmpFile,
+  writeStdout
 } from '../modules/main.js';
 
 /* constants */
 import {
-  EDITOR_CMD_ARGS, EDITOR_CONFIG_FILE, EDITOR_CONFIG_GET, EDITOR_CONFIG_RES,
-  EDITOR_CONFIG_TS, EDITOR_NAME, EDITOR_PATH, FILE_WATCH, HOST_VERSION,
-  HOST_VERSION_CHECK, LABEL, LOCAL_FILE_VIEW, MODE_EDIT, PLACEHOLDER,
-  TMP_FILES, TMP_FILES_PB, TMP_FILES_PB_REMOVE, TMP_FILE_CREATE,
-  TMP_FILE_DATA_PORT, TMP_FILE_DATA_REMOVE, TMP_FILE_GET, TMP_FILE_RES
+  EDITOR_CMD_ARGS,
+  EDITOR_CONFIG_FILE,
+  EDITOR_CONFIG_GET,
+  EDITOR_CONFIG_RES,
+  EDITOR_CONFIG_TS,
+  EDITOR_NAME,
+  EDITOR_PATH,
+  FILE_WATCH,
+  HOST_VERSION,
+  HOST_VERSION_CHECK,
+  LABEL,
+  LOCAL_FILE_VIEW,
+  MODE_EDIT,
+  PLACEHOLDER,
+  TMP_FILES,
+  TMP_FILES_PB,
+  TMP_FILES_PB_REMOVE,
+  TMP_FILE_CREATE,
+  TMP_FILE_DATA_PORT,
+  TMP_FILE_DATA_REMOVE,
+  TMP_FILE_GET,
+  TMP_FILE_RES
 } from '../modules/constant.js';
 const APP = `${process.pid}`;
 const CHAR = 'utf8';
 const IS_WIN = os.platform() === 'win32';
 const PERM_APP = 0o755;
 const PERM_FILE = 0o644;
-const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
-               os.tmpdir();
+const TMPDIR =
+  process.env.TMP || process.env.TMPDIR || process.env.TEMP || os.tmpdir();
 const TMPDIR_APP = path.resolve(TMPDIR, LABEL, APP);
 const TMPDIR_FILES = path.join(TMPDIR_APP, TMP_FILES);
 const TMPDIR_FILES_PB = path.join(TMPDIR_APP, TMP_FILES_PB);
@@ -182,8 +235,9 @@ describe('exportEditorConfig', () => {
 
   it('should call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const stubErrWrite = sinon
+      .stub(process.stderr, 'write')
+      .callsFake(buf => buf);
     const editorConfigPath = path.resolve('test', 'file', 'editorconfig.json');
     const msg = new Output().encode({
       [EDITOR_CONFIG_RES]: null
@@ -201,8 +255,9 @@ describe('exportEditorConfig', () => {
 
   it('should call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const stubErrWrite = sinon
+      .stub(process.stderr, 'write')
+      .callsFake(buf => buf);
     const editorConfigPath = path.resolve('test', 'file', 'editorconfig.json');
     const timestamp = getFileTimestamp(editorConfigPath);
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
@@ -239,8 +294,9 @@ describe('exportEditorConfig', () => {
 
   it('should call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const stubErrWrite = sinon
+      .stub(process.stderr, 'write')
+      .callsFake(buf => buf);
     const editorConfigPath = path.resolve('test', 'file', 'editorconfig.json');
     const timestamp = getFileTimestamp(editorConfigPath);
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
@@ -280,8 +336,9 @@ describe('exportEditorConfig', () => {
 
   it('should call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const stubErrWrite = sinon
+      .stub(process.stderr, 'write')
+      .callsFake(buf => buf);
     const editorConfigPath = path.resolve('test', 'file', 'editorconfig.json');
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
     const editorPath = path.resolve('test', 'file', app);
@@ -312,8 +369,9 @@ describe('exportEditorConfig', () => {
 
   it('should call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const stubErrWrite = sinon
+      .stub(process.stderr, 'write')
+      .callsFake(buf => buf);
     const editorConfigPath = path.resolve('test', 'file', 'editorconfig.json');
     const timestamp = getFileTimestamp(editorConfigPath);
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
@@ -350,8 +408,9 @@ describe('exportEditorConfig', () => {
 
   it('should call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const stubErrWrite = sinon
+      .stub(process.stderr, 'write')
+      .callsFake(buf => buf);
     const editorConfigPath = path.resolve('test', 'file', 'editorconfig.json');
     const timestamp = getFileTimestamp(editorConfigPath);
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
@@ -388,8 +447,9 @@ describe('exportEditorConfig', () => {
 
   it('should call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const stubErrWrite = sinon
+      .stub(process.stderr, 'write')
+      .callsFake(buf => buf);
     const editorConfigPath = path.resolve('test', 'file', 'editorconfig.json');
     const timestamp = getFileTimestamp(editorConfigPath);
     const app = IS_WIN ? 'test.cmd' : 'test.sh';
@@ -481,18 +541,24 @@ describe('fetchLatestHostVersion', () => {
 
   it('should get null', async () => {
     const hostName = process.env.npm_package_name;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(404);
+    mockAgent
+      .get('https://registry.npmjs.org')
+      .intercept({
+        path: `/${hostName}`
+      })
+      .reply(404);
     const res = await fetchLatestHostVersion();
     assert.isNull(res);
   });
 
   it('should get null', async () => {
     const hostName = process.env.npm_package_name;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).replyWithError(new Error('Error'));
+    mockAgent
+      .get('https://registry.npmjs.org')
+      .intercept({
+        path: `/${hostName}`
+      })
+      .replyWithError(new Error('Error'));
     const res = await fetchLatestHostVersion();
     assert.isNull(res);
   });
@@ -500,17 +566,18 @@ describe('fetchLatestHostVersion', () => {
   it('should get result', async () => {
     const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
-    const {
-      major, minor, patch
-    } = await parseSemVer(hostVersion);
+    const { major, minor, patch } = await parseSemVer(hostVersion);
     const version = `${major}.${minor}.${patch + 1}`;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(200, {
-      'dist-tags': {
-        latest: version
-      }
-    });
+    mockAgent
+      .get('https://registry.npmjs.org')
+      .intercept({
+        path: `/${hostName}`
+      })
+      .reply(200, {
+        'dist-tags': {
+          latest: version
+        }
+      });
     const res = await fetchLatestHostVersion();
     assert.strictEqual(res, version);
   });
@@ -553,18 +620,19 @@ describe('exportHostVersion', () => {
     });
     const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
-    const {
-      major, minor, patch
-    } = await parseSemVer(hostVersion);
+    const { major, minor, patch } = await parseSemVer(hostVersion);
     const minVer = `${major > 0 ? major - 1 : 0}.${minor}.${patch}`;
     const version = hostVersion;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(200, {
-      'dist-tags': {
-        latest: version
-      }
-    });
+    mockAgent
+      .get('https://registry.npmjs.org')
+      .intercept({
+        path: `/${hostName}`
+      })
+      .reply(200, {
+        'dist-tags': {
+          latest: version
+        }
+      });
     const res = await exportHostVersion(minVer);
     const { calledOnce: writeCalled } = stubWrite;
     stubWrite.restore();
@@ -584,18 +652,19 @@ describe('exportHostVersion', () => {
     });
     const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
-    const {
-      major, minor, patch
-    } = await parseSemVer(hostVersion);
+    const { major, minor, patch } = await parseSemVer(hostVersion);
     const minVer = `${major > 0 ? major - 1 : 0}.${minor}.${patch}`;
     const version = `${major}.${minor}.${patch + 1}`;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(200, {
-      'dist-tags': {
-        latest: version
-      }
-    });
+    mockAgent
+      .get('https://registry.npmjs.org')
+      .intercept({
+        path: `/${hostName}`
+      })
+      .reply(200, {
+        'dist-tags': {
+          latest: version
+        }
+      });
     const res = await exportHostVersion(minVer);
     const { calledOnce: writeCalled } = stubWrite;
     stubWrite.restore();
@@ -615,18 +684,19 @@ describe('exportHostVersion', () => {
     });
     const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
-    const {
-      major, minor, patch
-    } = await parseSemVer(hostVersion);
+    const { major, minor, patch } = await parseSemVer(hostVersion);
     const minVer = hostVersion;
     const version = `${major}.${minor}.${patch + 1}`;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(200, {
-      'dist-tags': {
-        latest: version
-      }
-    });
+    mockAgent
+      .get('https://registry.npmjs.org')
+      .intercept({
+        path: `/${hostName}`
+      })
+      .reply(200, {
+        'dist-tags': {
+          latest: version
+        }
+      });
     const res = await exportHostVersion(minVer);
     const { calledOnce: writeCalled } = stubWrite;
     stubWrite.restore();
@@ -648,13 +718,16 @@ describe('exportHostVersion', () => {
     const hostVersion = process.env.npm_package_version;
     const minVer = hostVersion;
     const version = hostVersion;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(200, {
-      'dist-tags': {
-        latest: version
-      }
-    });
+    mockAgent
+      .get('https://registry.npmjs.org')
+      .intercept({
+        path: `/${hostName}`
+      })
+      .reply(200, {
+        'dist-tags': {
+          latest: version
+        }
+      });
     const res = await exportHostVersion(minVer);
     const { calledOnce: writeCalled } = stubWrite;
     stubWrite.restore();
@@ -675,17 +748,18 @@ describe('exportHostVersion', () => {
     const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
     const minVer = hostVersion;
-    const {
-      major
-    } = await parseSemVer(hostVersion);
+    const { major } = await parseSemVer(hostVersion);
     const version = `${major + 1}.0.0-a.1`;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(200, {
-      'dist-tags': {
-        latest: version
-      }
-    });
+    mockAgent
+      .get('https://registry.npmjs.org')
+      .intercept({
+        path: `/${hostName}`
+      })
+      .reply(200, {
+        'dist-tags': {
+          latest: version
+        }
+      });
     const res = await exportHostVersion(minVer);
     const { calledOnce: writeCalled } = stubWrite;
     stubWrite.restore();
@@ -705,18 +779,19 @@ describe('exportHostVersion', () => {
     });
     const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
-    const {
-      major, minor, patch
-    } = await parseSemVer(hostVersion);
+    const { major, minor, patch } = await parseSemVer(hostVersion);
     const minVer = `${major > 0 ? major - 1 : 0}.${minor}.${patch}`;
     const version = `${major > 0 ? major - 1 : 0}.${minor}.${patch}`;
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(200, {
-      'dist-tags': {
-        latest: version
-      }
-    });
+    mockAgent
+      .get('https://registry.npmjs.org')
+      .intercept({
+        path: `/${hostName}`
+      })
+      .reply(200, {
+        'dist-tags': {
+          latest: version
+        }
+      });
     const res = await exportHostVersion(minVer);
     const { calledOnce: writeCalled } = stubWrite;
     stubWrite.restore();
@@ -1530,8 +1605,9 @@ describe('getTmpFileFromFileData', () => {
 
   it('should call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const stubErrWrite = sinon
+      .stub(process.stderr, 'write')
+      .callsFake(buf => buf);
     const msg = new Output().encode({
       [TMP_FILE_DATA_REMOVE]: {
         data: {
@@ -1551,8 +1627,9 @@ describe('getTmpFileFromFileData', () => {
 
   it('should call function', async () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
-    const stubErrWrite =
-      sinon.stub(process.stderr, 'write').callsFake(buf => buf);
+    const stubErrWrite = sinon
+      .stub(process.stderr, 'write')
+      .callsFake(buf => buf);
     const msg = new Output().encode({
       [TMP_FILE_DATA_REMOVE]: {
         data: {
@@ -1772,8 +1849,14 @@ describe('getFileIdFromFilePath', () => {
   });
 
   it('should get string', async () => {
-    const filePath =
-      path.join(TMPDIR_APP, 'foo', 'bar', 'baz', 'qux', 'quux.txt');
+    const filePath = path.join(
+      TMPDIR_APP,
+      'foo',
+      'bar',
+      'baz',
+      'qux',
+      'quux.txt'
+    );
     const res = await getFileIdFromFilePath(filePath);
     assert.strictEqual(res, 'bar_baz_qux_quux');
   });
@@ -1806,12 +1889,15 @@ describe('createTmpFileResMsg', () => {
   });
 
   it('should get null', async () => {
-    const dir =
-      await createDirectory(path.join(TMPDIR_APP, TMP_FILES, 'foo', 'bar'));
+    const dir = await createDirectory(
+      path.join(TMPDIR_APP, TMP_FILES, 'foo', 'bar')
+    );
     const value = '';
-    const filePath =
-      await createFile(path.join(dir, 'test.txt'), value,
-        { encoding: CHAR, flag: 'w', mode: PERM_FILE });
+    const filePath = await createFile(path.join(dir, 'test.txt'), value, {
+      encoding: CHAR,
+      flag: 'w',
+      mode: PERM_FILE
+    });
     const res = await createTmpFileResMsg(filePath);
     assert.isNull(res);
   });
@@ -1822,9 +1908,11 @@ describe('createTmpFileResMsg', () => {
       path.join(TMPDIR_APP, TMP_FILES, 'foo', 'bar', 'baz')
     );
     const value = '';
-    const filePath =
-      await createFile(path.join(dir, 'test.txt'), value,
-        { encoding: CHAR, flag: 'w', mode: PERM_FILE });
+    const filePath = await createFile(path.join(dir, 'test.txt'), value, {
+      encoding: CHAR,
+      flag: 'w',
+      mode: PERM_FILE
+    });
     const res = await createTmpFileResMsg(filePath);
     const { called: writeCalled } = stubWrite;
     stubWrite.restore();
@@ -1838,9 +1926,11 @@ describe('createTmpFileResMsg', () => {
       path.join(TMPDIR_APP, TMP_FILES, 'foo', 'bar', 'baz')
     );
     const value = '';
-    const filePath =
-      await createFile(path.join(dir, 'test.txt'), value,
-        { encoding: CHAR, flag: 'w', mode: PERM_FILE });
+    const filePath = await createFile(path.join(dir, 'test.txt'), value, {
+      encoding: CHAR,
+      flag: 'w',
+      mode: PERM_FILE
+    });
     fileMap[TMP_FILES].set('foo_bar_baz_test', { filePath });
     const res = await createTmpFileResMsg(filePath);
     const { called: writeCalled } = stubWrite;
@@ -1856,14 +1946,17 @@ describe('createTmpFileResMsg', () => {
     );
     const data = {};
     const value = '';
-    const filePath =
-      await createFile(path.join(dir, 'test.txt'), value,
-        { encoding: CHAR, flag: 'w', mode: PERM_FILE });
+    const filePath = await createFile(path.join(dir, 'test.txt'), value, {
+      encoding: CHAR,
+      flag: 'w',
+      mode: PERM_FILE
+    });
     const timestamp = await getFileTimestamp(filePath);
     data.timestamp = timestamp;
     const msg = new Output().encode({
       [TMP_FILE_RES]: {
-        data, value
+        data,
+        value
       }
     });
     fileMap[TMP_FILES].set('foo_bar_baz_test', { data, filePath });
@@ -1910,9 +2003,11 @@ describe('getTmpFileFromWatcherFileName', () => {
       path.join(TMPDIR_APP, TMP_FILES, 'foo', 'bar', 'baz')
     );
     const value = '';
-    const filePath =
-      await createFile(path.join(dir, 'test.txt'), value,
-        { encoding: CHAR, flag: 'w', mode: PERM_FILE });
+    const filePath = await createFile(path.join(dir, 'test.txt'), value, {
+      encoding: CHAR,
+      flag: 'w',
+      mode: PERM_FILE
+    });
     fileMap[FILE_WATCH].set(filePath, {
       close: stubClose
     });
@@ -1930,16 +2025,25 @@ describe('getTmpFileFromWatcherFileName', () => {
     );
     const data = {};
     const value = '';
-    const filePath =
-      await createFile(path.join(dir, 'test.txt'), value,
-        { encoding: CHAR, flag: 'w', mode: PERM_FILE });
+    const filePath = await createFile(path.join(dir, 'test.txt'), value, {
+      encoding: CHAR,
+      flag: 'w',
+      mode: PERM_FILE
+    });
     const timestamp = await getFileTimestamp(filePath);
-    const filePath2 =
-      path.join(TMPDIR_APP, TMP_FILES, 'foo', 'bar', 'qux', 'test.txt');
+    const filePath2 = path.join(
+      TMPDIR_APP,
+      TMP_FILES,
+      'foo',
+      'bar',
+      'qux',
+      'test.txt'
+    );
     data.timestamp = timestamp;
     const msg = new Output().encode({
       [TMP_FILE_RES]: {
-        data, value
+        data,
+        value
       }
     });
     fileMap[TMP_FILES].set('foo_bar_baz_test', { data, filePath });
@@ -2039,15 +2143,23 @@ describe('createTmpFile', () => {
     };
     const value = '';
     const obj = {
-      data, value
+      data,
+      value
     };
-    const filePath =
-      path.join(TMPDIR_APP, TMP_FILES, 'foo', 'bar', 'baz', 'qux.txt');
+    const filePath = path.join(
+      TMPDIR_APP,
+      TMP_FILES,
+      'foo',
+      'bar',
+      'baz',
+      'qux.txt'
+    );
     const res = await createTmpFile(obj);
     assert.isTrue(isFile(filePath));
     assert.isTrue(fileMap[FILE_WATCH].has(filePath));
     assert.deepEqual(res, {
-      data, filePath
+      data,
+      filePath
     });
     await fileMap[FILE_WATCH].get(filePath).close();
   });
@@ -2066,15 +2178,23 @@ describe('createTmpFile', () => {
     };
     const value = '';
     const obj = {
-      data, value
+      data,
+      value
     };
-    const filePath =
-      path.join(TMPDIR_APP, TMP_FILES, 'foo', 'bar', 'baz', 'qux.txt');
+    const filePath = path.join(
+      TMPDIR_APP,
+      TMP_FILES,
+      'foo',
+      'bar',
+      'baz',
+      'qux.txt'
+    );
     const res = await createTmpFile(obj);
     assert.isTrue(isFile(filePath));
     assert.isFalse(fileMap[FILE_WATCH].has(filePath));
     assert.deepEqual(res, {
-      data, filePath
+      data,
+      filePath
     });
   });
 
@@ -2093,10 +2213,17 @@ describe('createTmpFile', () => {
     };
     const value = '';
     const obj = {
-      data, value
+      data,
+      value
     };
-    const filePath =
-      path.join(TMPDIR_APP, TMP_FILES, 'foo', 'bar', 'baz', 'qux.txt');
+    const filePath = path.join(
+      TMPDIR_APP,
+      TMP_FILES,
+      'foo',
+      'bar',
+      'baz',
+      'qux.txt'
+    );
     fileMap[FILE_WATCH].set(filePath, {
       close: stubClose
     });
@@ -2105,7 +2232,8 @@ describe('createTmpFile', () => {
     assert.isTrue(stubClose.calledOnce);
     assert.isFalse(fileMap[FILE_WATCH].has(filePath));
     assert.deepEqual(res, {
-      data, filePath
+      data,
+      filePath
     });
   });
 });
@@ -2166,10 +2294,7 @@ describe('removeTmpFileData', () => {
     });
     const res = await removeTmpFileData(obj);
     assert.isTrue(stubWatcher.calledOnce);
-    assert.deepEqual(res, [
-      undefined,
-      true
-    ]);
+    assert.deepEqual(res, [undefined, true]);
   });
 
   it('should get results', async () => {
@@ -2199,10 +2324,7 @@ describe('removeTmpFileData', () => {
     });
     const res = await removeTmpFileData(obj);
     assert.isTrue(stubWatcher.calledOnce);
-    assert.deepEqual(res, [
-      undefined,
-      true
-    ]);
+    assert.deepEqual(res, [undefined, true]);
   });
 
   it('should get results', async () => {
@@ -2449,7 +2571,8 @@ describe('handleCreatedTmpFile', () => {
       foo: 'bar'
     };
     const obj = {
-      filePath, data
+      filePath,
+      data
     };
     const msg = new Output().encode({
       [TMP_FILE_DATA_PORT]: {
@@ -2635,9 +2758,7 @@ describe('handleMsg', () => {
     const stubWrite = sinon.stub(process.stdout, 'write').callsFake(buf => buf);
     const hostName = process.env.npm_package_name;
     const hostVersion = process.env.npm_package_version;
-    const {
-      major, minor, patch
-    } = await parseSemVer(hostVersion);
+    const { major, minor, patch } = await parseSemVer(hostVersion);
     const version = `${major}.${minor}.${patch + 1}`;
     const currentResult = await compareSemVer(hostVersion, version);
     const isLatest = currentResult >= 0;
@@ -2648,13 +2769,16 @@ describe('handleMsg', () => {
         result: 0
       }
     });
-    mockAgent.get('https://registry.npmjs.org').intercept({
-      path: `/${hostName}`
-    }).reply(200, {
-      'dist-tags': {
-        latest: version
-      }
-    });
+    mockAgent
+      .get('https://registry.npmjs.org')
+      .intercept({
+        path: `/${hostName}`
+      })
+      .reply(200, {
+        'dist-tags': {
+          latest: version
+        }
+      });
     const res = await handleMsg({
       [HOST_VERSION_CHECK]: hostVersion
     });
