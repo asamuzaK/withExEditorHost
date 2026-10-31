@@ -17,27 +17,27 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@inquirer/prompts": "^8.7.3",
+    "@inquirer/prompts": "^8.7.5",
     "commander": "^15.0.0",
-    "semver-parser": "^4.2.1",
-    "undici": "^8.11.2",
+    "semver-parser": "^4.2.2",
+    "undici": "^8.12.3",
     "web-ext-native-msg": "^9.0.6"
   },
   "devDependencies": {
     "c8": "^12.0.0",
     "chai": "^6.3.0",
-    "eslint": "^10.12.0",
+    "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-jsdoc": "^65.2.1",
-    "eslint-plugin-prettier": "^5.5.6",
-    "eslint-plugin-regexp": "^3.3.1",
-    "eslint-plugin-unicorn": "^77.0.0",
+    "eslint-plugin-jsdoc": "^65.4.2",
+    "eslint-plugin-prettier": "^5.5.7",
+    "eslint-plugin-regexp": "^3.3.2",
+    "eslint-plugin-unicorn": "^79.0.0",
     "genversion": "^3.2.0",
     "globals": "^17.13.0",
     "mocha": "^12.0.3",
-    "neostandard": "^0.14.0",
-    "prettier": "^3.9.9",
-    "prettier-plugin-brace-style": "^0.10.3",
+    "neostandard": "^0.14.1",
+    "prettier": "^3.9.10",
+    "prettier-plugin-brace-style": "^0.10.4",
     "sinon": "^22.1.0"
   },
   "scripts": {
