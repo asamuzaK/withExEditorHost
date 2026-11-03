@@ -39,6 +39,10 @@
     "prettier-plugin-brace-style": "^0.10.4",
     "sinon": "^22.1.0"
   },
+  "overrides": {
+    "glob": "^14.0.3",
+    "minimatch": "^11.0.4"
+  },
   "scripts": {
     "build": "npm run lint && npm run test",
     "lint": "eslint . --fix",
@@ -46,5 +50,5 @@
     "start": "node ./index.js",
     "test": "c8 --reporter=text mocha --exit test/*.test.js"
   },
-  "version": "10.0.5"
+  "version": "10.0.6"
 }
