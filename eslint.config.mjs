@@ -21,7 +21,8 @@ export default [
         ...globals.browser,
         ...globals.node,
         ...globals.webextensions
-      }
+      },
+      ecmaVersion: 'latest'
     },
     linterOptions: {
       reportUnusedDisableDirectives: true
