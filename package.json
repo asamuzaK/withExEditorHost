@@ -32,7 +32,6 @@
     "eslint-plugin-prettier": "^5.5.7",
     "eslint-plugin-regexp": "^3.3.2",
     "eslint-plugin-unicorn": "^79.0.0",
-    "genversion": "^3.2.0",
     "globals": "^17.13.0",
     "mocha": "^12.0.3",
     "neostandard": "^0.14.1",
@@ -41,8 +40,7 @@
     "sinon": "^22.1.0"
   },
   "scripts": {
-    "build": "npm run genversion && npm run lint && npm run test",
-    "genversion": "genversion --es6 --semi ./modules/version.js",
+    "build": "npm run lint && npm run test",
     "lint": "eslint . --fix",
     "setup": "node ./index.js setup",
     "start": "node ./index.js",

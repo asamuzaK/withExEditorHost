@@ -4,8 +4,8 @@
 
 /* api */
 import { program as commander } from 'commander';
+import pkgJson from '../package.json' with { type: 'json' };
 import { runSetup } from './setup.js';
-import { version as hostVersion } from './version.js';
 
 /* constants */
 import {
@@ -35,7 +35,7 @@ export const parseCommand = args => {
   const reg = /^(?:(?:--)?help|-[hv]|--version|s(?:etup)?)$/;
   if (Array.isArray(args) && args.some(arg => reg.test(arg))) {
     commander.exitOverride();
-    commander.version(hostVersion, '-v, --version');
+    commander.version(pkgJson.version, '-v, --version');
     if (args.includes('setup') || args.includes('s')) {
       commander
         .command(CMD_SETUP)

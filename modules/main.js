@@ -26,8 +26,8 @@ import {
   removeDirectory,
   readFile
 } from 'web-ext-native-msg';
+import pkgJson from '../package.json' with { type: 'json' };
 import { getType, isObjectNotEmpty, isString } from './common.js';
-import { version as hostVersion } from './version.js';
 
 /* constants */
 import {
@@ -240,6 +240,7 @@ export const exportHostVersion = async minVer => {
   if (!isValidSemVer(minVer)) {
     throw new Error(`${minVer} is not valid SemVer.`);
   }
+  const hostVersion = pkgJson.version;
   const result = await compareSemVer(hostVersion, minVer);
   const latest = await fetchLatestHostVersion();
   let isLatest;
